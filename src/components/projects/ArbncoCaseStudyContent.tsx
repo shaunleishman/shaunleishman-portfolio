@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertCircle, Bookmark, CheckSquare, Library } from "lucide-react";
+import { AlertCircle, Bookmark, CheckSquare, ExternalLink, Library } from "lucide-react";
 import type { Project } from "@/content/projects";
 import {
   arbncoAtAGlance,
@@ -153,14 +153,19 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           href={FIGMA_PROTOTYPE_URL}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Prototype for Half Hourly Project (opens in a new tab)"
           className="group flex items-center justify-between gap-4 rounded-xl border border-[var(--color-border)] bg-neutral-50 px-5 py-4 hover:border-[#0d7377] transition-colors not-prose"
         >
           <div>
             <p className="text-body font-semibold mb-1 group-hover:text-[#0d7377]">
               Prototype for Half Hourly Project
             </p>
-            <p className="text-body-sm text-[var(--color-text-muted)]">Open in Figma Make →</p>
+            <p className="text-body-sm text-[var(--color-text-muted)]">View prototype in Figma Make</p>
           </div>
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white px-3 py-1.5 text-body-sm font-medium text-[var(--color-text-secondary)] group-hover:border-[#0d7377]/40 group-hover:text-[#0d7377] transition-colors">
+            <ExternalLink className="size-4" aria-hidden />
+            New tab
+          </span>
         </Link>
       </CaseStudySection>
 
