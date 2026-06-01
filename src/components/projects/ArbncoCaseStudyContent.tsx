@@ -245,14 +245,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
         </div>
       </CaseStudySection>
 
-      <section id="reflection" aria-labelledby="reflection-heading" className="scroll-mt-36">
-        <h2 id="reflection-heading" className="text-h3 font-semibold mb-2">
-          {arbncoSectionTitle("reflection")}
-        </h2>
-        <p className="text-body text-[var(--color-text-muted)] mb-8 max-w-2xl">
-          What this work reinforced about trust, complex systems, and shipping under constraint.
-        </p>
-
+      <section id="reflection" aria-label="Reflection" className="scroll-mt-36">
         <CaseStudySplitSection
           title="Limitations"
           lead="Working within real product and engineering constraints, not a blank canvas."
