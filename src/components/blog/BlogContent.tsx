@@ -1,7 +1,10 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { KanoCategoryOverview } from "./kano/KanoCategoryOverview";
 import { KanoCurveExplorer } from "./kano/KanoCurveExplorer";
 import { KanoExpectationShift } from "./kano/KanoExpectationShift";
+import { Reveal } from "@/components/ui/Reveal";
 
 const VIZ_MARKERS: Record<string, ReactNode> = {
   "kano-overview": <KanoCategoryOverview />,
@@ -12,19 +15,23 @@ const VIZ_MARKERS: Record<string, ReactNode> = {
 function renderMarkdownBlock(block: string, key: number) {
   if (block.startsWith("## ")) {
     return (
-      <h2 key={key} className="text-h3 font-semibold mt-10 mb-4">
-        {block.replace("## ", "")}
-      </h2>
+      <Reveal key={key} variant="up">
+        <h2 className="text-h3 font-semibold mt-10 mb-4">
+          {block.replace("## ", "")}
+        </h2>
+      </Reveal>
     );
   }
   if (block.startsWith("- ")) {
     const items = block.split("\n").filter((l) => l.startsWith("- "));
     return (
-      <ul key={key} className="list-disc pl-5 space-y-2 my-4">
-        {items.map((item, j) => (
-          <li key={j}>{item.replace("- ", "")}</li>
-        ))}
-      </ul>
+      <Reveal key={key} variant="up">
+        <ul className="list-disc pl-5 space-y-2 my-4">
+          {items.map((item, j) => (
+            <li key={j}>{item.replace("- ", "")}</li>
+          ))}
+        </ul>
+      </Reveal>
     );
   }
   const withLinks = block.replace(
@@ -32,11 +39,12 @@ function renderMarkdownBlock(block: string, key: number) {
     '<a href="$2" class="text-[var(--color-accent)] hover:underline">$1</a>',
   );
   return (
-    <p
-      key={key}
-      className="text-body-lg text-[var(--color-text-secondary)] my-4"
-      dangerouslySetInnerHTML={{ __html: withLinks }}
-    />
+    <Reveal key={key} variant="fade">
+      <p
+        className="text-body-lg text-[var(--color-text-secondary)] my-4"
+        dangerouslySetInnerHTML={{ __html: withLinks }}
+      />
+    </Reveal>
   );
 }
 
@@ -50,7 +58,13 @@ export function BlogContent({ content }: { content: string }) {
     if (i % 2 === 1) {
       const vizId = segments[i];
       const viz = VIZ_MARKERS[vizId];
-      if (viz) nodes.push(<div key={`viz-${key++}`}>{viz}</div>);
+      if (viz) {
+        nodes.push(
+          <Reveal key={`viz-${key++}`} variant="scale" delay={40}>
+            <div>{viz}</div>
+          </Reveal>,
+        );
+      }
       continue;
     }
 

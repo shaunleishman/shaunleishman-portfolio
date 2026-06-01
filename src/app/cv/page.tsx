@@ -4,6 +4,8 @@ import { siteConfig } from "@/content/projects";
 import { cvContent } from "@/content/cv";
 import { SiteLogo } from "@/components/layout/SiteLogo";
 import { PrintCvButton } from "@/components/cv/PrintCvButton";
+import { CvHeader, CvQuote, CvSection } from "@/components/cv/CvAnimatedSections";
+import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "CV",
@@ -31,7 +33,7 @@ export default function CvPage() {
       </header>
 
       <main className="container-site max-w-3xl py-10 md:py-14 print:py-8">
-        <div className="mb-8 border-b border-[#e5e5e5] pb-8 print:mb-6 print:pb-6">
+        <CvHeader>
           <p className="text-label uppercase tracking-widest text-[#737373] mb-3">CV</p>
           <h1 className="text-h2 font-semibold mb-2">{siteConfig.name}</h1>
           <p className="text-body-lg text-[#525252] mb-4">{cvContent.headline}</p>
@@ -53,21 +55,21 @@ export default function CvPage() {
               </a>
             </li>
           </ul>
-        </div>
+        </CvHeader>
 
-        <blockquote className="mb-10 border-l-4 border-[#3b66f5] pl-5 text-body-lg italic text-[#525252] print:mb-8">
-          {siteConfig.quote}
-        </blockquote>
+        <CvQuote>{siteConfig.quote}</CvQuote>
 
-        <section className="mb-10 space-y-4 print:mb-8">
-          {cvContent.summary.map((paragraph) => (
-            <p key={paragraph.slice(0, 24)} className="text-body text-[#525252] leading-relaxed">
-              {paragraph}
-            </p>
-          ))}
-        </section>
+        <Reveal delay={120} variant="fade">
+          <section className="mb-10 space-y-4 print:mb-8">
+            {cvContent.summary.map((paragraph) => (
+              <p key={paragraph.slice(0, 24)} className="text-body text-[#525252] leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
+          </section>
+        </Reveal>
 
-        <CvSection title="Key strengths">
+        <CvSection title="Key strengths" delay={40}>
           <ul className="grid gap-2 sm:grid-cols-2">
             {cvContent.strengths.map((item) => (
               <li key={item} className="text-body-sm text-[#525252] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[0.55em] before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#3b66f5]">
@@ -77,7 +79,7 @@ export default function CvPage() {
           </ul>
         </CvSection>
 
-        <CvSection title="Experience">
+        <CvSection title="Experience" delay={60}>
           <div className="space-y-8">
             {cvContent.experience.map((job) => (
               <article key={`${job.company}-${job.period}`}>
@@ -99,11 +101,11 @@ export default function CvPage() {
           </div>
         </CvSection>
 
-        <CvSection title="Leadership, communication and AI">
+        <CvSection title="Leadership, communication and AI" delay={40}>
           <p className="text-body-sm text-[#525252] leading-relaxed">{cvContent.leadership}</p>
         </CvSection>
 
-        <CvSection title="Education">
+        <CvSection title="Education" delay={40}>
           <ul className="space-y-3">
             {cvContent.education.map((item) => (
               <li key={item.title}>
@@ -114,7 +116,7 @@ export default function CvPage() {
           </ul>
         </CvSection>
 
-        <CvSection title="Skills">
+        <CvSection title="Skills" delay={40}>
           <div className="space-y-4">
             {cvContent.skills.map((group) => (
               <div key={group.label}>
@@ -125,24 +127,17 @@ export default function CvPage() {
           </div>
         </CvSection>
 
-        <CvSection title="Interests">
+        <CvSection title="Interests" delay={40}>
           <p className="text-body-sm text-[#525252] leading-relaxed">{cvContent.interests}</p>
         </CvSection>
 
-        <footer className="mt-12 pt-6 border-t border-[#e5e5e5] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 print:mt-8">
-          <SiteLogo className="text-body" />
-          <p className="text-body-sm text-[#737373]">{siteConfig.brand}</p>
-        </footer>
+        <Reveal delay={60}>
+          <footer className="mt-12 pt-6 border-t border-[#e5e5e5] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 print:mt-8">
+            <SiteLogo className="text-body" />
+            <p className="text-body-sm text-[#737373]">{siteConfig.brand}</p>
+          </footer>
+        </Reveal>
       </main>
     </div>
-  );
-}
-
-function CvSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="mb-10 print:mb-8">
-      <h2 className="text-label uppercase tracking-widest text-[#3b66f5] mb-4">{title}</h2>
-      {children}
-    </section>
   );
 }

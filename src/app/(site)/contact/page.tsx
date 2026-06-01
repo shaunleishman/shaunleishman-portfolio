@@ -5,6 +5,8 @@ import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
 import { siteConfig } from "@/content/projects";
 import { Button } from "@/components/ui/Button";
 import { IconBadge } from "@/components/ui/IconBadge";
+import { PageHero } from "@/components/layout/PageHero";
+import { Reveal } from "@/components/ui/Reveal";
 import type { LucideIcon } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -51,7 +53,7 @@ export default function ContactPage() {
   return (
     <>
       <section className="grid-bg text-white section-padding pb-12">
-        <div className="container-site max-w-3xl">
+        <PageHero>
           <nav aria-label="Breadcrumb" className="mb-8">
             <ol className="flex gap-2 text-body-sm text-neutral-400">
               <li>
@@ -70,43 +72,42 @@ export default function ContactPage() {
             I&apos;m actively looking for UX/UI design roles. The fastest way to reach
             me is email or LinkedIn.
           </p>
-        </div>
+        </PageHero>
       </section>
 
       <section className="section-padding bg-white">
         <div className="container-site max-w-3xl">
           <div className="grid gap-6 sm:grid-cols-3">
-            {contactMethods.map((method) => (
-              <article
-                key={method.title}
-                className="flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-6"
-              >
-                <IconBadge
-                  icon={method.icon}
-                  size="lg"
-                  variant="light"
-                  className="mb-4"
-                >
-                  {method.customIcon}
-                </IconBadge>
-                <h2 className="text-h4 font-semibold mb-2">{method.title}</h2>
-                <p className="text-body-sm text-[var(--color-text-secondary)] mb-4 flex-1">
-                  {method.description}
-                </p>
-                {method.title === "CV" ? (
-                  <Button href={method.href} variant="secondary" className="w-full justify-center">
-                    {method.label}
-                  </Button>
-                ) : (
-                  <a
-                    href={method.href}
-                    className="text-body-sm font-medium text-[var(--color-accent)] hover:underline min-h-[44px] inline-flex items-center"
-                    {...(method.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            {contactMethods.map((method, index) => (
+              <Reveal key={method.title} delay={index * 70}>
+                <article className="surface-card-interactive flex h-full flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-6">
+                  <IconBadge
+                    icon={method.icon}
+                    size="lg"
+                    variant="light"
+                    className="mb-4"
                   >
-                    {method.label}
-                  </a>
-                )}
-              </article>
+                    {method.customIcon}
+                  </IconBadge>
+                  <h2 className="text-h4 font-semibold mb-2">{method.title}</h2>
+                  <p className="text-body-sm text-[var(--color-text-secondary)] mb-4 flex-1">
+                    {method.description}
+                  </p>
+                  {method.title === "CV" ? (
+                    <Button href={method.href} variant="secondary" className="w-full justify-center">
+                      {method.label}
+                    </Button>
+                  ) : (
+                    <a
+                      href={method.href}
+                      className="text-body-sm font-medium text-[var(--color-accent)] hover:underline min-h-[44px] inline-flex items-center"
+                      {...(method.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    >
+                      {method.label}
+                    </a>
+                  )}
+                </article>
+              </Reveal>
             ))}
           </div>
         </div>

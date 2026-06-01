@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
 import { BlogPostList } from "@/components/blog/BlogPostList";
+import { PageHero } from "@/components/layout/PageHero";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -14,7 +15,7 @@ export default function BlogPage() {
   return (
     <>
       <section className="grid-bg text-white section-padding pb-12">
-        <div className="container-site max-w-3xl">
+        <PageHero>
           <nav aria-label="Breadcrumb" className="mb-8">
             <ol className="flex gap-2 text-body-sm text-neutral-400">
               <li>
@@ -33,7 +34,7 @@ export default function BlogPage() {
             Insights from my design work, written to share ideas and spark conversations with other
             designers and hiring teams.
           </p>
-        </div>
+        </PageHero>
       </section>
 
       <section className="section-padding bg-white">

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { companies } from "@/content/companies";
 import { cn } from "@/lib/utils";
+import { Reveal } from "@/components/ui/Reveal";
 
 /** Every logo sits in the same footprint so visual weight stays even */
 const LOGO_SLOT = {
@@ -149,9 +150,11 @@ export function LogoMarquee() {
       data-analytics-section="companies"
       className="py-12 bg-[var(--color-bg-dark)] overflow-hidden border-y border-white/10"
     >
-      <p className="text-label text-neutral-500 text-center mb-8 px-4">
-        Companies worked with
-      </p>
+      <Reveal variant="fade">
+        <p className="text-label text-neutral-500 text-center mb-8 px-4">
+          Companies worked with
+        </p>
+      </Reveal>
 
       <div
         className="overflow-hidden touch-none select-none"

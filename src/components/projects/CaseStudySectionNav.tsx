@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
+import { Reveal } from "@/components/ui/Reveal";
 
 type NavItem = { id: string; label: string };
 
@@ -38,7 +39,8 @@ export function CaseStudySectionNav({ items, className }: CaseStudySectionNavPro
   }, [items]);
 
   return (
-    <nav
+    <Reveal variant="fade">
+      <nav
       aria-label="Case study sections"
       className={cn(
         "sticky top-16 z-40 -mx-4 px-4 py-3 mb-10 bg-white/95 backdrop-blur-sm border-b border-[var(--color-border)] lg:top-[4.5rem]",
@@ -60,5 +62,6 @@ export function CaseStudySectionNav({ items, className }: CaseStudySectionNavPro
         ))}
       </ul>
     </nav>
+    </Reveal>
   );
 }

@@ -1,4 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import { Reveal } from "@/components/ui/Reveal";
 
 type CaseStudySectionProps = {
   id: string;
@@ -7,6 +10,7 @@ type CaseStudySectionProps = {
   lead?: string;
   children: React.ReactNode;
   className?: string;
+  delay?: number;
 };
 
 export function CaseStudySection({
@@ -15,17 +19,20 @@ export function CaseStudySection({
   lead,
   children,
   className,
+  delay = 0,
 }: CaseStudySectionProps) {
   return (
-    <section id={id} aria-labelledby={`${id}-heading`} className={cn("mb-14 scroll-mt-36", className)}>
-      <h2 id={`${id}-heading`} className="text-h3 font-semibold mb-2">
-        {title}
-      </h2>
-      {lead && (
-        <p className="text-body text-[var(--color-text-muted)] mb-6 max-w-2xl">{lead}</p>
-      )}
-      {!lead && <div className="mb-4" />}
-      <div className="text-body-lg text-[var(--color-text-secondary)]">{children}</div>
-    </section>
+    <Reveal delay={delay} variant="up">
+      <section id={id} aria-labelledby={`${id}-heading`} className={cn("mb-14 scroll-mt-36", className)}>
+        <h2 id={`${id}-heading`} className="text-h3 font-semibold mb-2">
+          {title}
+        </h2>
+        {lead && (
+          <p className="text-body text-[var(--color-text-muted)] mb-6 max-w-2xl">{lead}</p>
+        )}
+        {!lead && <div className="mb-4" />}
+        <div className="text-body-lg text-[var(--color-text-secondary)]">{children}</div>
+      </section>
+    </Reveal>
   );
 }

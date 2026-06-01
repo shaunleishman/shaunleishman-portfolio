@@ -41,20 +41,22 @@ export function BlogPostList({ posts }: BlogPostListProps) {
 
   return (
     <>
-      <div className="mb-10 flex flex-wrap gap-2" role="group" aria-label="Filter articles by topic">
-        {FILTERS.map((topic) => (
-          <FilterChip
-            key={topic}
-            label={topic}
-            selected={filter === topic}
-            onClick={() => selectFilter(topic)}
-            aria-pressed={filter === topic}
-          />
-        ))}
-      </div>
+      <Reveal immediate>
+        <div className="mb-10 flex flex-wrap gap-2" role="group" aria-label="Filter articles by topic">
+          {FILTERS.map((topic) => (
+            <FilterChip
+              key={topic}
+              label={topic}
+              selected={filter === topic}
+              onClick={() => selectFilter(topic)}
+              aria-pressed={filter === topic}
+            />
+          ))}
+        </div>
+      </Reveal>
 
       {pending ? (
-        <div className="space-y-8" aria-busy="true" aria-label="Loading articles">
+        <div className="space-y-8 motion-safe:animate-[fade-in_0.2s_ease-out]" aria-busy="true" aria-label="Loading articles">
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className="py-4 space-y-3">
               <Skeleton className="h-4 w-36" />
@@ -64,7 +66,9 @@ export function BlogPostList({ posts }: BlogPostListProps) {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <p className="text-body text-[var(--color-text-muted)]">No articles match this filter yet.</p>
+        <p className="text-body text-[var(--color-text-muted)] motion-safe:animate-[fade-in_0.25s_ease-out]">
+          No articles match this filter yet.
+        </p>
       ) : (
         <ul className="divide-y divide-[var(--color-border)]">
           {filtered.map((post, index) => (

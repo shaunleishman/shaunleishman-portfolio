@@ -5,6 +5,8 @@ import { getAllPosts, getPostBySlug } from "@/lib/blog";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CTASection } from "@/components/sections/CTASection";
 import { BlogContent } from "@/components/blog/BlogContent";
+import { PageHero } from "@/components/layout/PageHero";
+import { Reveal } from "@/components/ui/Reveal";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -39,7 +41,7 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <>
       <section className="grid-bg text-white section-padding pb-12">
-        <div className="container-site max-w-3xl">
+        <PageHero>
           <nav aria-label="Breadcrumb" className="mb-8">
             <ol className="flex flex-wrap gap-2 text-body-sm text-neutral-400">
               <li>
@@ -73,7 +75,7 @@ export default async function BlogPostPage({ params }: Props) {
           </SectionLabel>
           <h1 className="text-h1 font-semibold mb-4">{post.title}</h1>
           <p className="text-body-lg text-neutral-300">{post.description}</p>
-        </div>
+        </PageHero>
       </section>
 
       <article className="section-padding bg-white">
@@ -81,14 +83,14 @@ export default async function BlogPostPage({ params }: Props) {
           <BlogContent content={post.content} />
         </div>
 
-        <div className="container-site max-w-3xl mt-12 pt-8 border-t border-[var(--color-border)]">
+        <Reveal delay={80} className="container-site max-w-3xl mt-12 pt-8 border-t border-[var(--color-border)]">
           <p className="text-body-sm text-[var(--color-text-muted)] mb-4">
             Share this on LinkedIn — copy the link below:
           </p>
           <p className="text-body font-mono bg-[var(--color-bg-muted)] p-4 rounded-lg break-all">
             /blog/{post.slug}
           </p>
-        </div>
+        </Reveal>
       </article>
 
       <CTASection dark={false} />

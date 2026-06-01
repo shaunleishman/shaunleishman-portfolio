@@ -15,8 +15,8 @@ export type Project = {
   approachWhy: string[];
   keyFindings: string[];
   metrics: ProjectMetric[];
-  /** Narrative highlights for project cards (replaces metrics on listing) */
-  cardHighlights?: string[];
+  /** Narrative highlights on the home featured card */
+  cardHighlights: string[];
   nextSteps: string[];
   limitations: string[];
   learnings: string[];
@@ -62,6 +62,11 @@ export const projects: Project[] = [
       { value: "6 weeks", label: "End-to-end delivery from research to handoff" },
       { value: "4", label: "Key usability findings addressed in the prototype" },
       { value: "100%", label: "Practitioner involvement through co-design workshops" },
+    ],
+    cardHighlights: [
+      "Co-designed workshops and prototyped a safer medication assignment flow",
+      "Moderated usability testing and documented findings for the product team",
+      "Six-week delivery from practitioner interviews through to handoff",
     ],
     nextSteps: [
       "Make the changes to the prototype with the insights gathered from the test",
@@ -117,6 +122,11 @@ export const projects: Project[] = [
       { value: "5", label: "Personas created from mixed-method research" },
       { value: "4 weeks", label: "From recruitment to final report delivery" },
       { value: "3", label: "Research methods triangulated for accuracy" },
+    ],
+    cardHighlights: [
+      "Mapped caller journeys through interviews and affinity analysis",
+      "Strengthened findings with survey data and thematic analysis",
+      "Four-week delivery from recruitment through to research report",
     ],
     nextSteps: [
       "Integrate the outcomes in further team discussions",

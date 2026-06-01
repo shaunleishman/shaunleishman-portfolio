@@ -10,7 +10,11 @@ import { ProjectThumbnail } from "@/components/projects/ProjectThumbnail";
 import { CaseStudyVisualBlocks } from "@/components/projects/CaseStudyVisualBlock";
 import { CaseStudyListWithVisuals } from "@/components/projects/CaseStudyListWithVisuals";
 import { ArbncoCaseStudyContent } from "@/components/projects/ArbncoCaseStudyContent";
+import { CaseStudyBlock } from "@/components/projects/CaseStudyBlock";
+import { CaseStudyTextSection } from "@/components/projects/CaseStudyTextSection";
 import { CTASection } from "@/components/sections/CTASection";
+import { PageHero } from "@/components/layout/PageHero";
+import { Reveal } from "@/components/ui/Reveal";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -40,7 +44,7 @@ export default async function CaseStudyPage({ params }: Props) {
   return (
     <>
       <section className="grid-bg text-white section-padding pb-12">
-        <div className="container-site max-w-3xl">
+        <PageHero wide={isArbnco}>
           <nav aria-label="Breadcrumb" className="mb-8">
             <ol className="flex flex-wrap gap-2 text-body-sm text-neutral-400">
               <li>
@@ -81,36 +85,40 @@ export default async function CaseStudyPage({ params }: Props) {
               className="mt-10"
             />
           )}
-        </div>
+        </PageHero>
       </section>
 
       {!isArbnco && (
-        <div
-          className="relative aspect-[16/10] max-h-80 md:max-h-96 w-full overflow-hidden bg-neutral-100"
-          role="img"
-          aria-label={`${project.title} project thumbnail`}
-        >
-          <ProjectThumbnail project={project} priority />
-        </div>
+        <Reveal variant="fade">
+          <div
+            className="relative aspect-[16/10] max-h-80 md:max-h-96 w-full overflow-hidden bg-neutral-100"
+            role="img"
+            aria-label={`${project.title} project thumbnail`}
+          >
+            <ProjectThumbnail project={project} priority />
+          </div>
+        </Reveal>
       )}
 
       <article className="section-padding bg-white">
         <div className={`container-site ${isArbnco ? "max-w-4xl" : "max-w-3xl"}`}>
           {!isArbnco && (
-            <dl className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 pb-16 border-b border-[var(--color-border)]">
-              <div>
-                <dt className="text-label text-[var(--color-text-muted)] mb-1">Duration</dt>
-                <dd className="text-body font-semibold">{project.duration}</dd>
-              </div>
-              {project.metrics.map((m) => (
-                <div key={m.label}>
-                  <dt className="text-h4 font-semibold tabular-nums text-[var(--color-text-primary)] mb-1">
-                    {m.value}
-                  </dt>
-                  <dd className="text-body-sm text-[var(--color-text-muted)]">{m.label}</dd>
+            <Reveal delay={60}>
+              <dl className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 pb-16 border-b border-[var(--color-border)]">
+                <div>
+                  <dt className="text-label text-[var(--color-text-muted)] mb-1">Duration</dt>
+                  <dd className="text-body font-semibold">{project.duration}</dd>
                 </div>
-              ))}
-            </dl>
+                {project.metrics.map((m) => (
+                  <div key={m.label}>
+                    <dt className="text-h4 font-semibold tabular-nums text-[var(--color-text-primary)] mb-1">
+                      {m.value}
+                    </dt>
+                    <dd className="text-body-sm text-[var(--color-text-muted)]">{m.label}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Reveal>
           )}
 
           {isArbnco ? (
@@ -121,7 +129,7 @@ export default async function CaseStudyPage({ params }: Props) {
                 <p>{project.problem}</p>
               </CaseStudyTextSection>
 
-              <CaseStudyBlock title="What was my role?">
+              <CaseStudyBlock title="What was my role?" delay={40}>
                 <ul className="list-disc pl-5 space-y-2">
                   {project.role.map((item) => (
                     <li key={item}>{item}</li>
@@ -129,7 +137,7 @@ export default async function CaseStudyPage({ params }: Props) {
                 </ul>
               </CaseStudyBlock>
 
-              <CaseStudyBlock title="What was our approach?">
+              <CaseStudyBlock title="What was our approach?" delay={40}>
                 <CaseStudyListWithVisuals slug={slug} section="approach" items={project.approach} />
                 <h3 className="text-h4 font-semibold mb-3 mt-8">Why this method?</h3>
                 <ul className="list-disc pl-5 space-y-2">
@@ -139,11 +147,11 @@ export default async function CaseStudyPage({ params }: Props) {
                 </ul>
               </CaseStudyBlock>
 
-              <CaseStudyBlock title="Key findings">
+              <CaseStudyBlock title="Key findings" delay={40}>
                 <CaseStudyListWithVisuals slug={slug} section="findings" items={project.keyFindings} />
               </CaseStudyBlock>
 
-              <CaseStudyBlock title="What did I learn?">
+              <CaseStudyBlock title="What did I learn?" delay={40}>
                 <ul className="space-y-4">
                   {project.learnings.map((item) => (
                     <li key={item} className="text-[var(--color-text-secondary)]">
@@ -153,7 +161,7 @@ export default async function CaseStudyPage({ params }: Props) {
                 </ul>
               </CaseStudyBlock>
 
-              <CaseStudyBlock title="Limitations">
+              <CaseStudyBlock title="Limitations" delay={40}>
                 <CaseStudyVisualBlocks
                   blocks={getIntroVisualBlocks(slug, "limitations")}
                   className="mb-8"
@@ -165,12 +173,14 @@ export default async function CaseStudyPage({ params }: Props) {
                 </ul>
               </CaseStudyBlock>
 
-              <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row gap-4">
-                <Button href="/work">← All projects</Button>
-                <Button href="/contact" variant="secondary">
-                  Discuss this project
-                </Button>
-              </div>
+              <Reveal delay={60}>
+                <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row gap-4">
+                  <Button href="/work">← All projects</Button>
+                  <Button href="/contact" variant="secondary">
+                    Discuss this project
+                  </Button>
+                </div>
+              </Reveal>
             </>
           )}
         </div>
@@ -178,51 +188,5 @@ export default async function CaseStudyPage({ params }: Props) {
 
       <CTASection dark={false} />
     </>
-  );
-}
-
-function CaseStudyBlock({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  const id = title.replace(/\s/g, "-").toLowerCase();
-
-  return (
-    <section className="mb-12" aria-labelledby={id}>
-      <h2 id={id} className="text-h3 font-semibold mb-4">
-        {title}
-      </h2>
-      <div className="text-body-lg text-[var(--color-text-secondary)]">{children}</div>
-    </section>
-  );
-}
-
-function CaseStudyTextSection({
-  title,
-  slug,
-  section,
-  children,
-}: {
-  title: string;
-  slug: string;
-  section: "problem";
-  children: React.ReactNode;
-}) {
-  const id = title.replace(/\s/g, "-").toLowerCase();
-  const introVisuals = getIntroVisualBlocks(slug, section);
-
-  return (
-    <section className="mb-12" aria-labelledby={id}>
-      <h2 id={id} className="text-h3 font-semibold mb-4">
-        {title}
-      </h2>
-      <div className="text-body-lg text-[var(--color-text-secondary)] space-y-8">
-        {children}
-        {introVisuals.length > 0 && <CaseStudyVisualBlocks blocks={introVisuals} />}
-      </div>
-    </section>
   );
 }
