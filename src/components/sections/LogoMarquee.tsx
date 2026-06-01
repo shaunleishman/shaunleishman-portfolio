@@ -8,8 +8,8 @@ import { Reveal } from "@/components/ui/Reveal";
 
 /** Every logo sits in the same footprint so visual weight stays even */
 const LOGO_SLOT = {
-  width: 120,
-  height: 40,
+  width: 148,
+  height: 52,
 } as const;
 
 /** Even gap between slots — not tied to logo width */

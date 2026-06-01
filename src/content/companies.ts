@@ -20,8 +20,8 @@ export const companies: CompanyLogo[] = [
   { name: "Aegon", logo: "/companies/aegon.png", scale: 0.72 },
   { name: "abrdn", logo: "/companies/abrdn.png", scale: 1.05 },
   { name: "CBRE", logo: "/companies/cbre.png", scale: 0.88 },
-  { name: "Vodafone", logo: "/companies/vodafone.png", scale: 1.08 },
-  { name: "Emirates", logo: "/companies/emirates.png", scale: 0.78 },
-  { name: "Scottish Rugby", logo: "/companies/scottish-rugby.png", scale: 1.18 },
+  { name: "Vodafone", logo: "/companies/vodafone.png", scale: 1.32 },
+  { name: "Emirates", logo: "/companies/emirates.png", scale: 1.15 },
+  { name: "Scottish Rugby", logo: "/companies/scottish-rugby.png", scale: 1.32 },
   { name: "ICAS", logo: "/companies/icas.png", scale: 0.72 },
 ];
