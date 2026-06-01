@@ -277,18 +277,64 @@
   animation: figma-caret-blink 1s step-end infinite;
 }
 
-/* Branded CV — print / save as PDF */
+/* Branded CV — print / PDF export */
+.cv-pdf-export [data-cv-pdf-root] > div {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
 @media print {
+  @page {
+    size: A4;
+    margin: 14mm 16mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
   .cv-no-print {
     display: none !important;
   }
 
   .cv-document {
     min-height: auto;
+    color: #0a0a0a;
   }
 
   .cv-document main {
     max-width: none;
     padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .cv-document section {
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  .cv-document article {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .cv-document h2,
+  .cv-document h3 {
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
+  .cv-document blockquote {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .cv-document a {
+    color: #3b66f5 !important;
+    text-decoration: none;
   }
 }

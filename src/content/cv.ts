@@ -95,3 +95,9 @@ export const cvContent = {
     portfolio: siteConfig.siteUrl,
   },
 };
+
+export function getCvPdfFilename(date = new Date()) {
+  const month = date.toLocaleString("en-GB", { month: "long" });
+  const year = date.getFullYear();
+  return `Shaun-Leishman-UX-Designer-CV-${month}-${year}.pdf`;
+}

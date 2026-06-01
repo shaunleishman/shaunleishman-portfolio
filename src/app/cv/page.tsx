@@ -3,7 +3,7 @@ import Link from "next/link";
 import { siteConfig } from "@/content/projects";
 import { cvContent } from "@/content/cv";
 import { SiteLogo } from "@/components/layout/SiteLogo";
-import { PrintCvButton } from "@/components/cv/PrintCvButton";
+import { DownloadCvButton } from "@/components/cv/DownloadCvButton";
 import { CvHeader, CvQuote, CvSection } from "@/components/cv/CvAnimatedSections";
 import { Reveal } from "@/components/ui/Reveal";
 
@@ -21,7 +21,7 @@ export default function CvPage() {
             <SiteLogo className="text-body text-white" />
           </Link>
           <div className="flex items-center gap-3">
-            <PrintCvButton />
+            <DownloadCvButton />
             <Link
               href="/"
               className="text-body-sm text-neutral-400 hover:text-white transition-colors min-h-[44px] inline-flex items-center"
@@ -32,7 +32,7 @@ export default function CvPage() {
         </div>
       </header>
 
-      <main className="container-site max-w-3xl py-10 md:py-14 print:py-8">
+      <main data-cv-pdf-root className="container-site max-w-3xl py-10 md:py-14 print:py-8">
         <CvHeader>
           <p className="text-label uppercase tracking-widest text-[#737373] mb-3">CV</p>
           <h1 className="text-h2 font-semibold mb-2">{siteConfig.name}</h1>
