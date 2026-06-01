@@ -92,6 +92,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
             src="/projects/arbnco-synthetic-ai-data/switching-to-synthetic-data.gif"
             alt="Animated toggle showing switching to generated hourly data on the platform"
             size="md"
+            className="w-[200px]"
             animated
           />
         }
