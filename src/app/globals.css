@@ -1,0 +1,184 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --color-bg-dark: #0a0a0a;
+  --color-bg-light: #ffffff;
+  --color-bg-muted: #f7f7f7;
+  --color-text-primary: #0a0a0a;
+  --color-text-secondary: #525252;
+  --color-text-muted: #737373;
+  --color-text-inverse: #ffffff;
+  --color-accent: #3b66f5;
+  --color-accent-hover: #2d52d4;
+  --color-border: #e5e5e5;
+  --color-border-dark: #262626;
+
+  /* Fluid type scale — min at 320px, max at 1280px */
+  --text-display: clamp(2.25rem, 1.5rem + 3.75vw, 4.5rem);
+  --text-h1: clamp(2rem, 1.4rem + 3vw, 3.75rem);
+  --text-h2: clamp(1.75rem, 1.3rem + 2.25vw, 3rem);
+  --text-h3: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
+  --text-h4: clamp(1.125rem, 1.05rem + 0.375vw, 1.375rem);
+  --text-body-lg: clamp(1.0625rem, 1rem + 0.3125vw, 1.25rem);
+  --text-body: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-body-sm: clamp(0.875rem, 0.85rem + 0.125vw, 1rem);
+  --text-label: clamp(0.6875rem, 0.65rem + 0.1875vw, 0.8125rem);
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.6;
+
+  --space-section: clamp(4rem, 3rem + 5vw, 8rem);
+  --container-max: 75rem;
+  --container-padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+@theme inline {
+  --color-background: var(--color-bg-light);
+  --color-foreground: var(--color-text-primary);
+  --font-sans: var(--font-inter);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background: var(--color-bg-light);
+    color: var(--color-text-primary);
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-size: var(--text-body);
+    line-height: var(--leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .text-display {
+    font-size: var(--text-display);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.03em;
+  }
+
+  .text-h1 {
+    font-size: var(--text-h1);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.025em;
+  }
+
+  .text-h2 {
+    font-size: var(--text-h2);
+    line-height: var(--leading-snug);
+    letter-spacing: -0.02em;
+  }
+
+  .text-h3 {
+    font-size: var(--text-h3);
+    line-height: var(--leading-snug);
+    letter-spacing: -0.015em;
+  }
+
+  .text-h4 {
+    font-size: var(--text-h4);
+    line-height: var(--leading-snug);
+  }
+
+  .text-body-lg {
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-normal);
+  }
+
+  .text-body-sm {
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-normal);
+  }
+
+  .text-label {
+    font-size: var(--text-label);
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+}
+
+@layer utilities {
+  .container-site {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--container-padding);
+  }
+
+  .section-padding {
+    padding-block: var(--space-section);
+  }
+
+  .grid-bg {
+    background-color: var(--color-bg-dark);
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background: var(--color-accent);
+    color: white;
+    border-radius: 9999px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .skip-link:focus {
+    top: 1rem;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
