@@ -4,6 +4,14 @@ import { useCallback, useId, useState } from "react";
 import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
 
+const MIN_SCORE = 1;
+const MAX_SCORE = 7;
+const THUMB_SIZE_PX = 20;
+
+function getTickPercent(value: number) {
+  return ((value - MIN_SCORE) / (MAX_SCORE - MIN_SCORE)) * 100;
+}
+
 const SCORE_LABELS = [
   "Not relevant at all",
   "Not very relevant",
@@ -124,45 +132,53 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
           {hasInteracted ? getScoreLabel(score) : "Move the slider, then confirm your rating"}
         </p>
 
-        <input
-          id={sliderId}
-          type="range"
-          min={1}
-          max={7}
-          step={1}
-          value={score}
-          disabled={submitting}
-          onChange={(event) => handleSliderChange(Number(event.target.value))}
-          className={cn(
-            "h-2 w-full cursor-pointer appearance-none rounded-full bg-white",
-            "accent-[#0d7377]",
-            "[&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[#0d7377] [&::-webkit-slider-thumb]:shadow-md",
-            "[&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[#0d7377] [&::-moz-range-thumb]:shadow-md",
-          )}
-          aria-valuetext={`${score} out of 7. ${getScoreLabel(score)}`}
-          aria-valuemin={1}
-          aria-valuemax={7}
-          aria-valuenow={score}
-        />
+        <div
+          style={{
+            paddingLeft: THUMB_SIZE_PX / 2,
+            paddingRight: THUMB_SIZE_PX / 2,
+          }}
+        >
+          <input
+            id={sliderId}
+            type="range"
+            min={MIN_SCORE}
+            max={MAX_SCORE}
+            step={1}
+            value={score}
+            disabled={submitting}
+            onChange={(event) => handleSliderChange(Number(event.target.value))}
+            className={cn(
+              "block h-2 w-full cursor-pointer appearance-none rounded-full bg-white",
+              "accent-[#0d7377]",
+              "[&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[#0d7377] [&::-webkit-slider-thumb]:shadow-md",
+              "[&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[#0d7377] [&::-moz-range-thumb]:shadow-md",
+            )}
+            aria-valuetext={`${score} out of 7. ${getScoreLabel(score)}`}
+            aria-valuemin={MIN_SCORE}
+            aria-valuemax={MAX_SCORE}
+            aria-valuenow={score}
+          />
 
-        <div className="mt-3 grid grid-cols-7 gap-1" aria-hidden>
-          {SCORE_LABELS.map((_, index) => {
-            const point = index + 1;
-            return (
-              <span
-                key={point}
-                className={cn(
-                  "mx-auto block h-1.5 w-1.5 rounded-full transition-colors",
-                  score === point ? "bg-[#0d7377]" : "bg-[var(--color-border)]",
-                )}
-              />
-            );
-          })}
-        </div>
+          <div className="relative mt-3 h-1.5" aria-hidden>
+            {SCORE_LABELS.map((_, index) => {
+              const point = index + 1;
+              return (
+                <span
+                  key={point}
+                  className={cn(
+                    "absolute top-0 size-1.5 -translate-x-1/2 rounded-full transition-colors",
+                    score === point ? "bg-[#0d7377]" : "bg-[var(--color-border)]",
+                  )}
+                  style={{ left: `${getTickPercent(point)}%` }}
+                />
+              );
+            })}
+          </div>
 
-        <div className="mt-2 flex justify-between gap-2 text-body-sm text-[var(--color-text-muted)]">
-          <span>Not relevant</span>
-          <span>Very relevant</span>
+          <div className="mt-2 flex justify-between gap-2 text-body-sm text-[var(--color-text-muted)]">
+            <span>Not relevant</span>
+            <span>Very relevant</span>
+          </div>
         </div>
       </div>
 
