@@ -4,10 +4,14 @@ import { useCallback, useId, useState } from "react";
 import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
 
-const RELEVANCE_STOPS = [
-  { value: 0, id: "not", label: "Not relevant" },
-  { value: 1, id: "somewhat", label: "Somewhat relevant" },
-  { value: 2, id: "very", label: "Very relevant" },
+const SCORE_LABELS = [
+  "Not relevant at all",
+  "Not very relevant",
+  "Slightly relevant",
+  "Moderately relevant",
+  "Quite relevant",
+  "Very relevant",
+  "Extremely relevant",
 ] as const;
 
 const REASONS = [
@@ -20,30 +24,36 @@ const REASONS = [
   "Not the kind of project I hire for",
 ] as const;
 
-type RelevanceId = (typeof RELEVANCE_STOPS)[number]["id"];
+type FeedbackBucket = "not" | "somewhat" | "very";
 
 type CaseStudyFeedbackProps = {
   projectSlug: string;
 };
 
-function getRelevance(value: number) {
-  return RELEVANCE_STOPS.find((stop) => stop.value === value) ?? RELEVANCE_STOPS[1];
+function getScoreLabel(score: number) {
+  return SCORE_LABELS[score - 1] ?? SCORE_LABELS[3];
+}
+
+function getFeedbackBucket(score: number): FeedbackBucket {
+  if (score <= 2) return "not";
+  if (score <= 4) return "somewhat";
+  return "very";
 }
 
 export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
   const sliderId = useId();
-  const [sliderValue, setSliderValue] = useState(1);
+  const [score, setScore] = useState(4);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [reason, setReason] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const relevance = getRelevance(sliderValue);
-  const isNegative = relevance.id !== "very";
+  const isNegative = score <= 4;
   const showReasons = hasInteracted && isNegative;
+  const canConfirm = hasInteracted && (!isNegative || reason !== null);
 
   const sendFeedback = useCallback(
-    async (feedback: RelevanceId, nextReason?: string) => {
+    async (feedback: FeedbackBucket, relevanceScore: number, nextReason?: string) => {
       setSubmitting(true);
 
       try {
@@ -64,6 +74,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
             path: `/work/${projectSlug}`,
             metadata: {
               feedback,
+              score: relevanceScore,
               reason: nextReason ?? null,
             },
           }),
@@ -79,20 +90,15 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
     [projectSlug],
   );
 
-  function handleSliderChange(nextValue: number) {
+  function handleSliderChange(nextScore: number) {
     setHasInteracted(true);
-    setSliderValue(nextValue);
+    setScore(nextScore);
     setReason(null);
-
-    const nextRelevance = getRelevance(nextValue);
-    if (nextRelevance.id === "very") {
-      void sendFeedback("very");
-    }
   }
 
-  function handleReasonSelect(nextReason: string) {
-    setReason(nextReason);
-    void sendFeedback(relevance.id, nextReason);
+  function handleConfirm() {
+    if (!canConfirm) return;
+    void sendFeedback(getFeedbackBucket(score), score, reason ?? undefined);
   }
 
   if (submitted) {
@@ -115,16 +121,16 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
           aria-live="polite"
           aria-atomic="true"
         >
-          {hasInteracted ? relevance.label : "Drag the slider to respond"}
+          {hasInteracted ? getScoreLabel(score) : "Move the slider, then confirm your rating"}
         </p>
 
         <input
           id={sliderId}
           type="range"
-          min={0}
-          max={2}
+          min={1}
+          max={7}
           step={1}
-          value={sliderValue}
+          value={score}
           disabled={submitting}
           onChange={(event) => handleSliderChange(Number(event.target.value))}
           className={cn(
@@ -133,15 +139,29 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
             "[&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[#0d7377] [&::-webkit-slider-thumb]:shadow-md",
             "[&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[#0d7377] [&::-moz-range-thumb]:shadow-md",
           )}
-          aria-valuetext={relevance.label}
-          aria-valuemin={0}
-          aria-valuemax={2}
-          aria-valuenow={sliderValue}
+          aria-valuetext={`${score} out of 7. ${getScoreLabel(score)}`}
+          aria-valuemin={1}
+          aria-valuemax={7}
+          aria-valuenow={score}
         />
+
+        <div className="mt-3 grid grid-cols-7 gap-1" aria-hidden>
+          {SCORE_LABELS.map((_, index) => {
+            const point = index + 1;
+            return (
+              <span
+                key={point}
+                className={cn(
+                  "mx-auto block h-1.5 w-1.5 rounded-full transition-colors",
+                  score === point ? "bg-[#0d7377]" : "bg-[var(--color-border)]",
+                )}
+              />
+            );
+          })}
+        </div>
 
         <div className="mt-2 flex justify-between gap-2 text-body-sm text-[var(--color-text-muted)]">
           <span>Not relevant</span>
-          <span className="hidden sm:inline">Somewhat relevant</span>
           <span>Very relevant</span>
         </div>
       </div>
@@ -160,13 +180,31 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
                 key={option}
                 label={option}
                 selected={reason === option}
-                onClick={() => handleReasonSelect(option)}
+                onClick={() => setReason(option)}
                 accent="neutral"
               />
             ))}
           </div>
         </fieldset>
       )}
+
+      <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        {showReasons && !reason && (
+          <p className="text-body-sm text-[var(--color-text-muted)]">Select a reason to continue.</p>
+        )}
+        <button
+          type="button"
+          onClick={handleConfirm}
+          disabled={!canConfirm || submitting}
+          className={cn(
+            "inline-flex min-h-[44px] items-center justify-center rounded-full px-6 py-2.5 text-body-sm font-medium transition-colors",
+            "bg-[#0d7377] text-white hover:bg-[#0a5c5f] disabled:cursor-not-allowed disabled:opacity-45",
+            !showReasons && "sm:ml-auto",
+          )}
+        >
+          {submitting ? "Submitting…" : "Confirm rating"}
+        </button>
+      </div>
     </div>
   );
 }
