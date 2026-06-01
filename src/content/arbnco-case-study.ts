@@ -40,7 +40,7 @@ export function arbncoSectionTitle(id: ArbncoSectionId): string {
 }
 
 export const arbncoRoleItems = [
-  "Owned UI/UX for synthetic data visibility from journey map through to final screens",
+  "Led end-to-end UI/UX for synthetic data visibility, from journey mapping through to final screens",
   "Designed updates across graphs, tables, filters, reports, and results pages",
   "Ran design reviews and aligned engineering on product status patterns, product eligibility logic, and developer handoff specifications",
 ];
