@@ -13,7 +13,7 @@ type CaseStudyAtAGlanceProps = {
   contribution: string;
   highlights: string[];
   methods: string[];
-  accentClass?: string;
+  accentColor?: string;
 };
 
 export function CaseStudyAtAGlance({
@@ -24,7 +24,7 @@ export function CaseStudyAtAGlance({
   contribution,
   highlights,
   methods,
-  accentClass = "from-[#0d7377] to-[#14a085]",
+  accentColor = "#0d7377",
 }: CaseStudyAtAGlanceProps) {
   return (
     <Reveal variant="up">
@@ -47,13 +47,10 @@ export function CaseStudyAtAGlance({
             return (
               <li key={item} className="min-h-0">
                 <Reveal delay={index * 50} variant="scale">
-                  <div className="relative flex h-full flex-col gap-3 overflow-hidden rounded-xl border border-[var(--color-border)] bg-white p-4 shadow-sm">
-                    <div
-                      className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${accentClass}`}
-                      aria-hidden
-                    />
+                  <div className="flex h-full flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-white p-4 shadow-sm">
                     <span
-                      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${accentClass} text-white shadow-sm`}
+                      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
+                      style={{ backgroundColor: accentColor }}
                       aria-hidden
                     >
                       <Icon size={20} strokeWidth={1.75} />
@@ -91,7 +88,8 @@ export function CaseStudyAtAGlance({
             {methods.map((method) => (
               <li
                 key={method}
-                className={`rounded-full bg-gradient-to-r ${accentClass} px-3 py-1 text-body-sm font-medium text-white`}
+                className="rounded-full px-3 py-1 text-body-sm font-medium text-white"
+                style={{ backgroundColor: accentColor }}
               >
                 {method}
               </li>
