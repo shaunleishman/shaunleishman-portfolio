@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "a11y:audit": "node scripts/a11y-audit.mjs",
-    "logos:generate": "node scripts/generate-logos.mjs"
+    "logos:generate": "node scripts/generate-logos.mjs",
+    "logos:fetch": "node scripts/fetch-logos.mjs"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",

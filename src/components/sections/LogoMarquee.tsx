@@ -1,24 +1,26 @@
 import Image from "next/image";
 import { companies } from "@/content/companies";
+import { cn } from "@/lib/utils";
 
 /** Fixed slot size — every logo occupies the same footprint in the carousel */
 const LOGO_SLOT = {
   width: 176,
   height: 48,
-  imageMaxH: 32,
-  imageMaxW: 140,
+  imageMaxH: 36,
+  imageMaxW: 148,
 } as const;
 
 type CompanyLogoImageProps = {
   name: string;
   logo: string;
+  invert?: boolean;
   className?: string;
 };
 
-export function CompanyLogoImage({ name, logo, className }: CompanyLogoImageProps) {
+export function CompanyLogoImage({ name, logo, invert, className }: CompanyLogoImageProps) {
   return (
     <div
-      className={`flex items-center justify-center shrink-0 ${className ?? ""}`}
+      className={cn("flex items-center justify-center shrink-0", className)}
       style={{ width: LOGO_SLOT.width, height: LOGO_SLOT.height }}
     >
       <Image
@@ -26,12 +28,14 @@ export function CompanyLogoImage({ name, logo, className }: CompanyLogoImageProp
         alt={`${name} logo`}
         width={LOGO_SLOT.imageMaxW}
         height={LOGO_SLOT.imageMaxH}
-        className="object-contain opacity-60 hover:opacity-90 transition-opacity"
+        className={cn(
+          "object-contain w-auto h-auto transition-opacity duration-200",
+          "opacity-70 hover:opacity-100",
+          invert && "brightness-0 invert",
+        )}
         style={{
           maxHeight: LOGO_SLOT.imageMaxH,
           maxWidth: LOGO_SLOT.imageMaxW,
-          width: "auto",
-          height: "auto",
         }}
       />
     </div>
@@ -57,7 +61,11 @@ export function LogoMarquee() {
             key={`${company.name}-${i}`}
             className="inline-flex items-center justify-center border-r border-white/10 px-6"
           >
-            <CompanyLogoImage name={company.name} logo={company.logo} />
+            <CompanyLogoImage
+              name={company.name}
+              logo={company.logo}
+              invert={company.invert}
+            />
           </div>
         ))}
       </div>
