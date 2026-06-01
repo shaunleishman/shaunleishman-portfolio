@@ -2,9 +2,8 @@
 
 import { PenLine } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { HeroIllustration } from "@/components/illustrations/HeroIllustration";
+import { FigmaHeroAnimation } from "@/components/illustrations/FigmaHeroAnimation";
 import { IconBadge } from "@/components/ui/IconBadge";
-import { Reveal } from "@/components/ui/Reveal";
 import { Stagger } from "@/components/ui/Stagger";
 import { siteConfig } from "@/content/projects";
 
@@ -15,7 +14,7 @@ export function HomeHero() {
       data-analytics-section="hero"
       className="grid-bg text-white section-padding pb-16 lg:pb-24 overflow-hidden"
     >
-      <div className="container-site grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+      <div className="container-site grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
         <Stagger immediate step={70} variant="up" className="text-center lg:text-left max-w-xl mx-auto lg:mx-0">
           <p className="text-label text-neutral-400 mb-6 inline-flex items-center gap-2 justify-center lg:justify-start">
             <IconBadge icon={PenLine} size="sm" variant="dark" />
@@ -41,9 +40,9 @@ export function HomeHero() {
           </div>
         </Stagger>
 
-        <Reveal immediate delay={280} variant="scale" className="relative hidden sm:block lg:pl-8">
-          <HeroIllustration />
-        </Reveal>
+        <div className="relative w-full min-h-[240px] sm:min-h-[280px] lg:min-h-[320px]">
+          <FigmaHeroAnimation className="drop-shadow-[0_24px_48px_rgba(0,0,0,0.35)]" />
+        </div>
       </div>
     </section>
   );
