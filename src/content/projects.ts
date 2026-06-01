@@ -303,8 +303,6 @@ export const faqs = [
   },
 ];
 
-export const companies = ["OMRON", "NHS", "Arbnco"];
-
 export const siteConfig = {
   name: "Shaun Leishman",
   domain: "shaunleishman.design",
