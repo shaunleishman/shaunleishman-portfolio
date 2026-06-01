@@ -14,9 +14,19 @@ export function HomeHero() {
       data-analytics-section="hero"
       className="grid-bg text-white section-padding pb-16 lg:pb-24 overflow-hidden"
     >
-      <div className="container-site grid gap-10 md:grid-cols-2 md:gap-12 lg:gap-16 items-center">
-        <Stagger immediate step={70} variant="up" className="text-center lg:text-left max-w-xl mx-auto lg:mx-0">
-          <p className="text-label text-neutral-400 mb-6 inline-flex items-center gap-2 justify-center lg:justify-start">
+      <div className="container-site grid gap-8 md:grid-cols-2 md:gap-12 lg:gap-16 items-center">
+        {/* Animation first on mobile so it's visible without scrolling */}
+        <div className="relative order-1 md:order-2 w-full min-h-[220px] sm:min-h-[260px] lg:min-h-[320px] ring-1 ring-white/10 rounded-2xl bg-white/[0.02] p-2">
+          <FigmaHeroAnimation className="drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)]" />
+        </div>
+
+        <Stagger
+          immediate
+          step={70}
+          variant="up"
+          className="order-2 md:order-1 text-center md:text-left max-w-xl mx-auto md:mx-0"
+        >
+          <p className="text-label text-neutral-400 mb-6 inline-flex items-center gap-2 justify-center md:justify-start">
             <IconBadge icon={PenLine} size="sm" variant="dark" />
             Hi, I&apos;m Shaun
           </p>
@@ -26,7 +36,7 @@ export function HomeHero() {
           <p className="text-body-lg text-neutral-300 mb-10">
             {siteConfig.quote}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             <Button href="/work" variant="primary">
               View my work
             </Button>
@@ -39,10 +49,6 @@ export function HomeHero() {
             </Button>
           </div>
         </Stagger>
-
-        <div className="relative w-full min-h-[240px] sm:min-h-[280px] lg:min-h-[320px]">
-          <FigmaHeroAnimation className="drop-shadow-[0_24px_48px_rgba(0,0,0,0.35)]" />
-        </div>
       </div>
     </section>
   );

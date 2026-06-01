@@ -154,11 +154,12 @@ function ArtboardBackground() {
   const frameY = 24;
   const frameW = 472;
   const frameH = 332;
-  const chromeH = 40;
-  const canvasX = 40;
-  const canvasY = frameY + chromeH + 8;
-  const canvasW = frameW - 32;
-  const canvasH = frameH - chromeH - 24;
+  const chromeH = 36;
+  const inset = 12;
+  const canvasX = frameX + inset;
+  const canvasY = frameY + chromeH + inset;
+  const canvasW = frameW - inset * 2;
+  const canvasH = frameH - chromeH - inset * 2;
 
   return (
     <>
@@ -183,28 +184,28 @@ function ArtboardBackground() {
         width={frameW}
         height={frameH}
         rx={18}
-        fill="#1a1a1a"
-        stroke="rgba(255,255,255,0.2)"
+        fill="#181818"
+        stroke="rgba(255,255,255,0.22)"
         strokeWidth={1.5}
       />
 
       <g clipPath="url(#figma-frame-clip)">
-        <rect x={frameX} y={frameY} width={frameW} height={chromeH} fill="rgba(255,255,255,0.05)" />
-        <circle cx={48} cy={frameY + 20} r={4} fill="rgba(255,255,255,0.2)" />
-        <circle cx={62} cy={frameY + 20} r={4} fill="rgba(255,255,255,0.12)" />
-        <circle cx={76} cy={frameY + 20} r={4} fill="rgba(255,255,255,0.12)" />
-
-        <rect x={canvasX} y={canvasY} width={canvasW} height={canvasH} rx={8} fill="#121212" />
+        {/* Single fill — no layered rects that create seams */}
+        <rect x={frameX} y={frameY} width={frameW} height={frameH} fill="#181818" />
+        <rect x={frameX} y={frameY} width={frameW} height={chromeH} fill="rgba(255,255,255,0.04)" />
+        <circle cx={48} cy={frameY + 18} r={4} fill="rgba(255,255,255,0.22)" />
+        <circle cx={62} cy={frameY + 18} r={4} fill="rgba(255,255,255,0.12)" />
+        <circle cx={76} cy={frameY + 18} r={4} fill="rgba(255,255,255,0.12)" />
 
         <g clipPath="url(#figma-canvas-clip)">
           {Array.from({ length: 8 }).map((_, i) => (
             <line
               key={`v-${i}`}
-              x1={canvasX + 16 + i * 54}
+              x1={canvasX + 12 + i * 54}
               y1={canvasY}
-              x2={canvasX + 16 + i * 54}
+              x2={canvasX + 12 + i * 54}
               y2={canvasY + canvasH}
-              stroke="rgba(255,255,255,0.045)"
+              stroke="rgba(255,255,255,0.05)"
               strokeWidth={1}
             />
           ))}
@@ -212,14 +213,25 @@ function ArtboardBackground() {
             <line
               key={`h-${i}`}
               x1={canvasX}
-              y1={canvasY + 16 + i * 52}
+              y1={canvasY + 12 + i * 52}
               x2={canvasX + canvasW}
-              y2={canvasY + 16 + i * 52}
-              stroke="rgba(255,255,255,0.045)"
+              y2={canvasY + 12 + i * 52}
+              stroke="rgba(255,255,255,0.05)"
               strokeWidth={1}
             />
           ))}
         </g>
+
+        <rect
+          x={canvasX}
+          y={canvasY}
+          width={canvasW}
+          height={canvasH}
+          rx={8}
+          fill="none"
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth={1}
+        />
       </g>
     </>
   );
