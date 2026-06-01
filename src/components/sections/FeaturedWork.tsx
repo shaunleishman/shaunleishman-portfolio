@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { featuredProjects } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { Tag } from "@/components/ui/Tag";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionIntro } from "@/components/ui/SectionIntro";
 import { ProjectThumbnail } from "@/components/projects/ProjectThumbnail";
@@ -34,17 +33,29 @@ export function FeaturedWork() {
                   aria-label={`View case study: ${project.title}`}
                 >
                   <ProjectThumbnail project={project} priority={index === 0} />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
-                  <span
-                    className="absolute top-4 right-4 rounded-full bg-white/20 backdrop-blur-sm p-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    aria-hidden
-                  >
-                    <ArrowUpRight size={20} />
-                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 flex items-end justify-between p-6 md:p-8">
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-body-sm text-white"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <span
+                      className="rounded-full bg-white/20 p-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      aria-hidden
+                    >
+                      <ArrowUpRight size={20} />
+                    </span>
+                  </div>
                 </Link>
 
                 <div className={`order-2 ${index % 2 === 1 ? "lg:order-1" : ""}`}>
-                  <h3 className="text-h3 font-semibold mb-3">
+                  <h3 className="text-h3 font-semibold mb-4">
                     <Link
                       href={`/work/${project.slug}`}
                       className="hover:text-[var(--color-accent)] transition-colors"
@@ -53,15 +64,7 @@ export function FeaturedWork() {
                     </Link>
                   </h3>
 
-                  <ul className="flex flex-wrap gap-2 mb-4" aria-label="Project tags">
-                    {project.tags.map((tag) => (
-                      <li key={tag}>
-                        <Tag>{tag}</Tag>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <p className="text-body-lg text-[var(--color-text-secondary)] mb-6">
+                  <p className="text-body-lg text-[var(--color-text-secondary)] mb-8">
                     {project.overview.slice(0, 180)}…
                   </p>
 
