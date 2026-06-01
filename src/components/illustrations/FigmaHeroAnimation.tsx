@@ -90,6 +90,24 @@ function FigmaCursor({ x, y, pressing }: { x: number; y: number; pressing: boole
   );
 }
 
+function measureCommentBubble(text: string, showCaret: boolean) {
+  const padX = 10;
+  const padY = 8;
+  const avatarR = 11;
+  const gap = 8;
+  const fontSize = 13;
+  const charW = 7.15;
+  const minTextW = showCaret ? 4 : 0;
+  const textW = Math.max(minTextW, text.length * charW + (showCaret ? 3 : 0));
+  const width = padX + avatarR * 2 + gap + textW + padX;
+  const height = padY * 2 + avatarR * 2;
+  const midY = height / 2;
+  const avatarCx = padX + avatarR;
+  const textX = padX + avatarR * 2 + gap;
+
+  return { width, height, midY, avatarCx, textX, fontSize };
+}
+
 function CommentBubble({
   x,
   y,
@@ -103,7 +121,8 @@ function CommentBubble({
   opacity: number;
   showCaret: boolean;
 }) {
-  const width = Math.max(168, text.length * 7.5 + 56);
+  const { width, height, midY, avatarCx, textX, fontSize } = measureCommentBubble(text, showCaret);
+  const tailX = Math.min(width * 0.22, 28);
 
   return (
     <g transform={`translate(${x}, ${y})`} opacity={opacity}>
@@ -111,17 +130,23 @@ function CommentBubble({
         x={0}
         y={0}
         width={width}
-        height={52}
-        rx={10}
+        height={height}
+        rx={8}
         fill="#ffffff"
         filter="url(#bubble-shadow)"
       />
-      <path d="M14 52 L22 44 L30 52 Z" fill="#ffffff" />
-      <circle cx={22} cy={26} r={12} fill="#3b66f5" />
-      <text x={22} y={30} textAnchor="middle" fill="#ffffff" fontSize={11} fontWeight={600}>
+      <path d={`M${tailX} ${height} L${tailX + 8} ${height - 8} L${tailX + 16} ${height} Z`} fill="#ffffff" />
+      <circle cx={avatarCx} cy={midY} r={11} fill="#3b66f5" />
+      <text x={avatarCx} y={midY + 4} textAnchor="middle" fill="#ffffff" fontSize={10} fontWeight={600}>
         S
       </text>
-      <text x={42} y={30} fill="#0a0a0a" fontSize={13} fontFamily="var(--font-inter, Inter, sans-serif)">
+      <text
+        x={textX}
+        y={midY + 4}
+        fill="#0a0a0a"
+        fontSize={fontSize}
+        fontFamily="var(--font-inter, Inter, sans-serif)"
+      >
         {text}
         {showCaret && (
           <tspan className="figma-caret-blink" fill="#3b66f5">
@@ -246,6 +271,9 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
   const [showCaret, setShowCaret] = useState(false);
   const [shapes, setShapes] = useState<Shape[]>([]);
   const [dragPreview, setDragPreview] = useState<(Shape & { dashed?: boolean }) | null>(null);
+  const [marqueePreview, setMarqueePreview] = useState<{ x: number; y: number; w: number; h: number } | null>(
+    null,
+  );
   const [reducedMotion, setReducedMotion] = useState<boolean | null>(null);
   const shapeId = useRef(0);
   const cursorRef = useRef<Point>({ x: 72, y: 300 });
@@ -315,6 +343,60 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
     await animateLinear(duration, (t) => setCommentOpacity(lerp(from, to, t)), signal);
   }, []);
 
+  const animateMarqueeSelect = useCallback(async (from: Point, to: Point, signal: AbortSignal) => {
+    setPressing(true);
+    const x = Math.min(from.x, to.x);
+    const y = Math.min(from.y, to.y);
+    const w = Math.abs(to.x - from.x);
+    const h = Math.abs(to.y - from.y);
+    const duration = linearDuration(from, to, DRAG_SPEED_PX_S, 240);
+
+    await animateLinear(
+      duration,
+      (t) => {
+        const next = { x: lerp(from.x, to.x, t), y: lerp(from.y, to.y, t) };
+        cursorRef.current = next;
+        setCursor(next);
+        setMarqueePreview({ x, y, w: w * t, h: h * t });
+      },
+      signal,
+    );
+
+    setPressing(false);
+    setMarqueePreview(null);
+  }, []);
+
+  const animateGroupDrag = useCallback(
+    async (from: Point, to: Point, startShapes: Shape[], signal: AbortSignal) => {
+      setPressing(true);
+      const duration = linearDuration(from, to, DRAG_SPEED_PX_S, 360);
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+
+      await animateLinear(
+        duration,
+        (t) => {
+          const next = { x: lerp(from.x, to.x, t), y: lerp(from.y, to.y, t) };
+          cursorRef.current = next;
+          setCursor(next);
+          setShapes(
+            startShapes.map((s) => ({
+              ...s,
+              x: s.x + dx * t,
+              y: s.y + dy * t,
+              opacity: t > 0.65 ? 1 - (t - 0.65) / 0.35 : 1,
+              selected: true,
+            })),
+          );
+        },
+        signal,
+      );
+
+      setPressing(false);
+    },
+    [],
+  );
+
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReducedMotion(mq.matches);
@@ -338,6 +420,7 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
       setShowCaret(false);
       setShapes([]);
       setDragPreview(null);
+      setMarqueePreview(null);
     };
 
     const run = async () => {
@@ -370,25 +453,22 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
 
         await animateCursor({ x: 288, y: 238 }, signal);
         await animateDragShape("ellipse", { x: 288, y: 238 }, { x: 392, y: 306 }, signal);
-        await sleep(200, signal);
+        await sleep(250, signal);
 
-        await animateCursor({ x: 304, y: 184 }, signal);
-        setPressing(true);
-        await sleep(80, signal);
-        setPressing(false);
-        setShapes((prev) => prev.map((s) => ({ ...s, selected: true })));
-        await sleep(350, signal);
+        await animateCursor({ x: 236, y: 136 }, signal);
+        await animateMarqueeSelect({ x: 236, y: 136 }, { x: 406, y: 316 }, signal);
+        let dragShapes: Shape[] = [];
+        setShapes((prev) => {
+          dragShapes = prev.map((s) => ({ ...s, selected: true }));
+          return dragShapes;
+        });
+        await sleep(280, signal);
 
-        await animateCursor({ x: 330, y: 230 }, signal);
-        setPressing(true);
-        await sleep(80, signal);
-        setPressing(false);
-
-        await animateLinear(350, (t) => {
-          setShapes((prev) => prev.map((s) => ({ ...s, opacity: 1 - t, selected: true })));
-        }, signal);
+        await animateCursor({ x: 318, y: 218 }, signal);
+        await sleep(100, signal);
+        await animateGroupDrag({ x: 318, y: 218 }, { x: 560, y: 360 }, dragShapes, signal);
         setShapes([]);
-        await sleep(150, signal);
+        await sleep(200, signal);
 
         await animateCursor({ x: 72, y: 300 }, signal);
         await sleep(500, signal);
@@ -400,7 +480,7 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
     });
 
     return () => controller.abort();
-  }, [reducedMotion, animateCursor, animateDragShape, fadeComment]);
+  }, [reducedMotion, animateCursor, animateDragShape, animateMarqueeSelect, animateGroupDrag, fadeComment, setCursorPoint]);
 
   if (reducedMotion === null) {
     return (
@@ -418,8 +498,9 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
     );
   }
 
-  const bubbleX = cursor.x + 18;
-  const bubbleY = cursor.y - 68;
+  const bubbleMetrics = measureCommentBubble(typedText, showCaret);
+  const bubbleX = cursor.x + 16;
+  const bubbleY = cursor.y - bubbleMetrics.height - 14;
 
   return (
     <div className={cn("relative", className)}>
@@ -431,6 +512,19 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
         aria-label="Animated design canvas showing a comment and shapes being drawn"
       >
         <ArtboardBackground />
+
+        {shapes.length > 1 && shapes.every((s) => s.selected) && (
+          <rect
+            x={Math.min(...shapes.map((s) => s.x)) - 6}
+            y={Math.min(...shapes.map((s) => s.y)) - 6}
+            width={Math.max(...shapes.map((s) => s.x + s.w)) - Math.min(...shapes.map((s) => s.x)) + 12}
+            height={Math.max(...shapes.map((s) => s.y + s.h)) - Math.min(...shapes.map((s) => s.y)) + 12}
+            rx={6}
+            fill="rgba(59,102,245,0.06)"
+            stroke="#3b66f5"
+            strokeWidth={1.5}
+          />
+        )}
 
         {shapes.map((shape) => (
           <g key={shape.id} opacity={shape.opacity}>
@@ -500,6 +594,18 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
               />
             )}
           </g>
+        )}
+
+        {marqueePreview && (
+          <rect
+            x={marqueePreview.x}
+            y={marqueePreview.y}
+            width={Math.max(marqueePreview.w, 1)}
+            height={Math.max(marqueePreview.h, 1)}
+            fill="rgba(59,102,245,0.12)"
+            stroke="#3b66f5"
+            strokeWidth={1.5}
+          />
         )}
 
         {commentOpen && (
