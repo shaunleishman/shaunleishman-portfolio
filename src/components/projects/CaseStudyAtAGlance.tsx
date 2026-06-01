@@ -7,6 +7,7 @@ const HIGHLIGHT_ICONS: LucideIcon[] = [GitBranch, LayoutDashboard, Timer];
 
 type CaseStudyAtAGlanceProps = {
   id?: string;
+  title?: string;
   summary?: string;
   problem: string;
   contribution: string;
@@ -17,6 +18,7 @@ type CaseStudyAtAGlanceProps = {
 
 export function CaseStudyAtAGlance({
   id = "at-a-glance",
+  title = "Summary",
   summary,
   problem,
   contribution,
@@ -32,7 +34,7 @@ export function CaseStudyAtAGlance({
         className="mb-14 scroll-mt-36 surface-muted p-6 md:p-8"
       >
         <h2 id={`${id}-heading`} className="text-h4 font-semibold mb-1">
-          At a glance
+          {title}
         </h2>
         {summary && (
           <p className="text-body-sm text-[var(--color-text-muted)] mb-6 max-w-2xl">{summary}</p>

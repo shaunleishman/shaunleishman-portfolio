@@ -33,6 +33,12 @@ export const arbncoSectionNav = [
   { id: "reflection", label: "Reflection" },
 ] as const;
 
+export type ArbncoSectionId = (typeof arbncoSectionNav)[number]["id"];
+
+export function arbncoSectionTitle(id: ArbncoSectionId): string {
+  return arbncoSectionNav.find((item) => item.id === id)?.label ?? id;
+}
+
 export const arbncoRoleItems = [
   "Owned UI/UX for synthetic data visibility from journey map through to final screens",
   "Designed updates across graphs, tables, filters, reports, and results pages",

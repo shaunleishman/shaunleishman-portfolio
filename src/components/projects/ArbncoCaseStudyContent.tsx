@@ -7,6 +7,7 @@ import {
   arbncoReflectionItems,
   arbncoRoleItems,
   arbncoSectionNav,
+  arbncoSectionTitle,
 } from "@/content/arbnco-case-study";
 import { Button } from "@/components/ui/Button";
 import { CaseStudyAtAGlance } from "@/components/projects/CaseStudyAtAGlance";
@@ -73,6 +74,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
       <CaseStudySectionNav items={arbncoSectionNav} />
 
       <CaseStudyAtAGlance
+        title={arbncoSectionTitle("at-a-glance")}
         summary={arbncoAtAGlance.summary}
         problem={arbncoAtAGlance.problem}
         contribution={arbncoAtAGlance.contribution}
@@ -83,7 +85,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
 
       <CaseStudySplitSection
         id="the-challenge"
-        title="The challenge"
+        title={arbncoSectionTitle("the-challenge")}
         lead="The business needed finer data. Users needed clarity. Generated estimates only work when people trust what they are seeing."
         visual={
           <CaseStudyIllustration
@@ -106,7 +108,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
 
       <CaseStudySection
         id="my-role"
-        title="Areas I owned"
+        title={arbncoSectionTitle("my-role")}
         lead="Key responsibilities across research, design, and handoff."
       >
         <ul className="list-disc pl-5 space-y-2">
@@ -118,7 +120,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
 
       <CaseStudySplitSection
         id="considerations"
-        title="Key design considerations"
+        title={arbncoSectionTitle("considerations")}
         lead="Trust, data accessibility, and plain language guided every screen."
         visual={
           <CaseStudyIllustration
@@ -134,7 +136,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
 
       <CaseStudySection
         id="iteration"
-        title="Iteration &amp; prototype"
+        title={arbncoSectionTitle("iteration")}
         lead="Explored ideas quickly, then refined through design review. AI helped explore options, not replace judgment."
       >
         <div className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 mb-6 text-body-sm text-amber-950 not-prose">
@@ -163,7 +165,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
 
       <CaseStudySection
         id="design-review"
-        title="Design review feedback"
+        title={arbncoSectionTitle("design-review")}
         lead="Feedback from review sessions that shaped the refined solution."
       >
         <ul className="space-y-3 not-prose">
@@ -178,7 +180,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
 
       <CaseStudySection
         id="refined-solution"
-        title="Refined solution"
+        title={arbncoSectionTitle("refined-solution")}
         lead="How users move from their project list to a confirmed generated-data state. Screenshots show representative examples from the flow."
       >
         <h3 className="text-h4 font-semibold mb-4 text-[var(--color-text-primary)]">User flow</h3>
@@ -245,7 +247,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
 
       <section id="reflection" aria-labelledby="reflection-heading" className="scroll-mt-36">
         <h2 id="reflection-heading" className="text-h3 font-semibold mb-2">
-          Reflecting on the project
+          {arbncoSectionTitle("reflection")}
         </h2>
         <p className="text-body text-[var(--color-text-muted)] mb-8 max-w-2xl">
           What this work reinforced about trust, complex systems, and shipping under constraint.
@@ -270,7 +272,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
         </CaseStudySplitSection>
 
         <div className="mb-10">
-          <h3 className="text-h4 font-semibold mb-4 text-[var(--color-text-primary)]">Reflection</h3>
+          <h3 className="text-h4 font-semibold mb-4 text-[var(--color-text-primary)]">Key takeaways</h3>
           <ul className="space-y-4">
             {arbncoReflectionItems.map((item) => (
               <li key={item}>{item}</li>
