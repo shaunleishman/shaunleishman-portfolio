@@ -70,10 +70,11 @@ export default function CvPage() {
         </Reveal>
 
         <CvSection title="Key strengths" delay={40}>
-          <ul className="grid gap-2 sm:grid-cols-2">
+          <ul className="grid gap-x-6 gap-y-2 sm:grid-cols-2 sm:items-start">
             {cvContent.strengths.map((item) => (
-              <li key={item} className="text-body-sm text-[#525252] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[0.55em] before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#3b66f5]">
-                {item}
+              <li key={item} className="flex gap-2 text-body-sm leading-snug text-[#525252]">
+                <span className="mt-[0.45em] size-1.5 shrink-0 rounded-full bg-[#3b66f5]" aria-hidden />
+                <span>{item}</span>
               </li>
             ))}
           </ul>
@@ -91,8 +92,9 @@ export default function CvPage() {
                 </div>
                 <ul className="space-y-2">
                   {job.highlights.map((item) => (
-                    <li key={item.slice(0, 32)} className="text-body-sm text-[#525252] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[0.55em] before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#737373]">
-                      {item}
+                    <li key={item.slice(0, 32)} className="flex gap-2 text-body-sm leading-snug text-[#525252]">
+                      <span className="mt-[0.45em] size-1.5 shrink-0 rounded-full bg-[#737373]" aria-hidden />
+                      <span>{item}</span>
                     </li>
                   ))}
                 </ul>
