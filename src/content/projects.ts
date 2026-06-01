@@ -15,12 +15,15 @@ export type Project = {
   approachWhy: string[];
   keyFindings: string[];
   metrics: ProjectMetric[];
+  /** Narrative highlights for project cards (replaces metrics on listing) */
+  cardHighlights?: string[];
   nextSteps: string[];
   limitations: string[];
   learnings: string[];
   featured: boolean;
   accentColor: string;
   accentClass: string;
+  thumbnail: string;
 };
 
 export const projects: Project[] = [
@@ -77,6 +80,7 @@ export const projects: Project[] = [
     featured: true,
     accentColor: "#003da5",
     accentClass: "from-[#003da5] to-[#0055cc]",
+    thumbnail: "/projects/omron-patient-monitoring.gif",
   },
   {
     slug: "nhs-111-waiting-times",
@@ -130,20 +134,21 @@ export const projects: Project[] = [
     featured: true,
     accentColor: "#005eb8",
     accentClass: "from-[#005eb8] to-[#41b6e6]",
+    thumbnail: "/projects/nhs-111-waiting-times.gif",
   },
   {
     slug: "arbnco-synthetic-ai-data",
-    title: "Arbnco — Synthetic AI data switch",
+    title: "Arbnco - Synthetic Data Switch",
     tags: ["UI design", "Service Design", "Product Design"],
     duration: "3–4 weeks",
     overview:
-      "This project was about helping users work with synthetic data in a clearer way. When a project had enough mixed energy data, the platform could create synthetic hourly data to give users more detailed results. My role was to make this easy to understand, so users could see when synthetic data was being used, what it meant, and what they needed to do next.",
+      "Energy platform users often only had monthly meter readings, which limited how much detail they could see in their carbon reports. When enough data was available, machine learning could generate more detailed hourly estimates. The design challenge was helping people understand when those estimates were being used, turn the feature on with confidence, and trust what they were seeing.",
     problem:
-      "Customers needed more granular insights for making the best next step in their carbon offsetting journey.",
+      "Users needed clearer carbon insights, but low-resolution energy data limited reporting. Generated hourly data could help, only if people understood when it was active and could trust it.",
     role: [
-      "Helped make synthetic data clear and easy to understand",
+      "Owned UI/UX for synthetic data visibility from journey mapping through to final screens",
       "Designed updates across graphs, tables, filters, reports, and results pages",
-      "Made sure users could trust the data and switch views when needed",
+      "Ran design reviews and aligned engineering on product status patterns, product eligibility logic, and developer handoff specifications",
     ],
     approach: [
       "Mapped where synthetic data would affect the existing user journey",
@@ -156,14 +161,19 @@ export const projects: Project[] = [
       "Designed around the available machine learning solution for generating synthetic data",
     ],
     keyFindings: [
-      "Users needed to know when synthetic data was being used",
-      "The original low frequency data still needed to feel accessible and reliable",
-      "Messaging had to be clear without making the feature feel overly technical or alarming",
+      "Users need to know when generated data is being used, not just that a toggle exists",
+      "Original low-frequency readings still need to feel accessible and reliable alongside generated data",
+      "Plain-language messaging matters: explain the feature without making it feel technical or alarming",
     ],
     metrics: [
       { value: "4", label: "Core user flow stages redesigned end-to-end" },
       { value: "3–4 weeks", label: "From journey mapping to prototype handoff" },
       { value: "6+", label: "UI surfaces updated across the platform" },
+    ],
+    cardHighlights: [
+      "Redesigned core user flows end-to-end",
+      "Updated key platform interfaces",
+      "3–4 week delivery from journey mapping to prototype handoff",
     ],
     nextSteps: [
       "Validate designs with users once engineering constraints are confirmed",
@@ -175,13 +185,13 @@ export const projects: Project[] = [
       "The UI had to clarify eligibility and ineligible cases",
     ],
     learnings: [
-      "I learnt that complex technical features need to be explained in a simple way, especially when they affect how users understand and trust the data.",
-      "I learnt that clear status states, labels, tooltips, and visual indicators help users understand what is available, what is missing, and what they need to do next.",
-      "I learnt that design decisions are often shaped by real constraints, so I will take a more practical, trust-focused approach into the next project.",
+      "This project reinforced how important it is to make complex technical systems understandable and trustworthy, especially when they change how people read their data.",
+      "Clear product status patterns, labels, tooltips, and visual indicators helped users understand what was available, what was missing, and what to do next.",
     ],
     featured: true,
     accentColor: "#0d7377",
     accentClass: "from-[#0d7377] to-[#14a085]",
+    thumbnail: "/projects/arbnco-synthetic-ai-data.gif",
   },
 ];
 
@@ -196,37 +206,37 @@ export const processSteps = [
     number: "01",
     title: "Discover",
     description:
-      "I start by understanding the problem space, business goals, and the people affected. Through interviews, surveys, and stakeholder conversations, I define what we're solving and why it matters.",
+      "Start by understanding the problem space, business goals, and the people affected. Through interviews, surveys, and stakeholder conversations, the team defines what we're solving and why it matters.",
   },
   {
     number: "02",
     title: "Define",
     description:
-      "I synthesise research into clear insights — personas, journey maps, and problem statements — so the team shares a common understanding of user needs and priorities.",
+      "Research is synthesised into clear insights: personas, journey maps, and problem statements, so the team shares a common understanding of user needs and priorities.",
   },
   {
     number: "03",
     title: "Ideate",
     description:
-      "I facilitate co-design workshops and sketching sessions to explore solutions collaboratively. This keeps stakeholders involved and surfaces ideas grounded in real context.",
+      "Co-design workshops and sketching sessions explore solutions collaboratively, keeping stakeholders involved and surfacing ideas grounded in real context.",
   },
   {
     number: "04",
     title: "Prototype",
     description:
-      "I translate ideas into wireframes and interactive prototypes, focusing on layout, hierarchy, and flow before adding visual polish.",
+      "Ideas become wireframes and interactive prototypes, with layout, hierarchy, and flow established before visual polish.",
   },
   {
     number: "05",
     title: "Test",
     description:
-      "I plan and run usability tests, capturing what works and what creates friction. Findings are documented clearly so teams can act on them quickly.",
+      "Usability tests capture what works and what creates friction. Findings are documented clearly so teams can act on them quickly.",
   },
   {
     number: "06",
     title: "Deliver",
     description:
-      "I hand off designs with implementation guidance and support iteration based on user behaviour, analytics, and evolving product needs.",
+      "Designs are handed off with implementation guidance, then refined based on user behaviour, analytics, and evolving product needs.",
   },
 ];
 
@@ -294,24 +304,28 @@ export const faqs = [
   {
     question: "Do you work remotely?",
     answer:
-      "Yes. I'm based in the UK and comfortable collaborating remotely with async communication, regular check-ins, and workshop sessions over video.",
+      "Yes. Based in the UK and comfortable collaborating remotely through regular check-ins, workshops, and async communication.",
   },
   {
     question: "Can I see detailed case studies?",
     answer:
-      "Each project on the Work page includes the full case study — problem, approach, findings, and learnings. I'm happy to walk through any project in more detail during an interview.",
+      "Each project on the Work page includes the full case study: problem, approach, findings, and learnings. Happy to discuss any project in more detail.",
   },
 ];
 
 export const siteConfig = {
   name: "Shaun Leishman",
-  domain: "shaunleishman.design",
-  tagline:
-    "UX/UI designer helping teams build products users trust through research-led design.",
+  brand: "sleishman.design",
+  brandHandle: "sleishman",
+  logo: "/brand/logo.png",
+  domain: "sleishman.design",
+  siteUrl: "https://shaunleishman-portfolio.vercel.app",
+  tagline: "UX/UI designer helping teams build products users trust.",
   quote:
-    "It's one thing shaping experiences that improve lives, but to encourage better decision making is where the true magic happens.",
-  email: "hello@shaunleishman.com",
-  linkedIn: "https://www.linkedin.com/in/shaunleishman",
-  cvUrl: "#",
-  experience: "3+ years",
+    "It's one thing shaping experiences that improve lives, but to encourage better decision-making is where the true magic happens.",
+  email: "postalshaun@outlook.com",
+  phone: "07708002642",
+  linkedIn: "https://www.linkedin.com/feed/",
+  cvUrl: "/cv",
+  experience: "5+ years",
 };

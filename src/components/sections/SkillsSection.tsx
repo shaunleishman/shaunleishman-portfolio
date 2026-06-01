@@ -1,5 +1,7 @@
 import { skills } from "@/content/projects";
+import { skillIcons } from "@/lib/icon-maps";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { IconBadge } from "@/components/ui/IconBadge";
 
 export function SkillsSection() {
   return (
@@ -19,27 +21,33 @@ export function SkillsSection() {
         </p>
 
         <ul className="divide-y divide-[var(--color-border)] border-t border-[var(--color-border)]">
-          {skills.map((skill) => (
-            <li
-              key={skill.title}
-              className="grid gap-4 py-8 md:grid-cols-[200px_1fr] lg:grid-cols-[240px_1fr_1fr] lg:gap-12 items-start"
-            >
-              <h3 className="text-h4 font-semibold">{skill.title}</h3>
-              <p className="text-body text-[var(--color-text-secondary)] lg:col-span-1">
-                {skill.description}
-              </p>
-              <ul className="flex flex-wrap gap-2 lg:justify-end">
-                {skill.items.map((item) => (
-                  <li
-                    key={item}
-                    className="rounded-full border border-[var(--color-border)] px-3 py-1 text-body-sm text-[var(--color-text-secondary)]"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
+          {skills.map((skill) => {
+            const Icon = skillIcons[skill.title];
+            return (
+              <li
+                key={skill.title}
+                className="grid gap-4 py-8 md:grid-cols-[auto_1fr] lg:grid-cols-[auto_200px_1fr_1fr] lg:gap-8 items-start"
+              >
+                <div className="flex gap-4 items-start md:contents">
+                  {Icon && <IconBadge icon={Icon} size="lg" variant="light" className="shrink-0" />}
+                  <h3 className="text-h4 font-semibold flex-1 md:col-start-2">{skill.title}</h3>
+                </div>
+                <p className="text-body text-[var(--color-text-secondary)] md:col-start-2 lg:col-start-3">
+                  {skill.description}
+                </p>
+                <ul className="flex flex-wrap gap-2 lg:col-start-4 lg:justify-end">
+                  {skill.items.map((item) => (
+                    <li
+                      key={item}
+                      className="rounded-full border border-[var(--color-border)] px-3 py-1 text-body-sm text-[var(--color-text-secondary)]"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </section>

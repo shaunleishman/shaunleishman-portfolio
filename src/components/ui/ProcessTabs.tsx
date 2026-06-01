@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { processSteps } from "@/content/projects";
+import { processIcons } from "@/lib/icon-maps";
+import { ProcessIllustration } from "@/components/illustrations/ProcessIllustration";
+import { IconBadge } from "@/components/ui/IconBadge";
 
 export function ProcessTabs() {
   const [active, setActive] = useState(0);
@@ -16,6 +19,7 @@ export function ProcessTabs() {
       >
         {processSteps.map((step, index) => {
           const isSelected = active === index;
+          const Icon = processIcons[index];
           return (
             <button
               key={step.number}
@@ -26,23 +30,33 @@ export function ProcessTabs() {
               aria-controls={`process-panel-${index}`}
               tabIndex={isSelected ? 0 : -1}
               className={cn(
-                "flex gap-6 py-6 text-left transition-colors min-h-[44px]",
+                "flex gap-4 py-6 text-left transition-colors min-h-[44px]",
                 isSelected
                   ? "text-[var(--color-text-primary)]"
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]",
               )}
               onClick={() => setActive(index)}
             >
-              <span className="text-h3 font-light tabular-nums shrink-0 w-10">
-                {step.number}
-              </span>
-              <span>
-                <span className="block text-h4 font-semibold mb-2">{step.title}</span>
-                {isSelected && (
-                  <span className="block text-body text-[var(--color-text-secondary)] lg:hidden">
-                    {step.description}
-                  </span>
-                )}
+              {Icon && (
+                <IconBadge
+                  icon={Icon}
+                  size="md"
+                  variant={isSelected ? "accent" : "muted"}
+                  className="mt-0.5"
+                />
+              )}
+              <span className="flex gap-4 flex-1 min-w-0">
+                <span className="text-h3 font-light tabular-nums shrink-0 w-8">
+                  {step.number}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-h4 font-semibold mb-2">{step.title}</span>
+                  {isSelected && (
+                    <span className="block text-body text-[var(--color-text-secondary)] lg:hidden">
+                      {step.description}
+                    </span>
+                  )}
+                </span>
               </span>
             </button>
           );
@@ -53,12 +67,13 @@ export function ProcessTabs() {
         role="tabpanel"
         id={`process-panel-${active}`}
         aria-labelledby={`process-tab-${active}`}
-        className="rounded-2xl bg-[var(--color-bg-muted)] p-8 lg:p-12 min-h-[280px] hidden lg:block"
+        className="rounded-2xl bg-white border border-[var(--color-border)] p-6 lg:p-8 min-h-[280px] hidden lg:block"
       >
-        <p className="text-label text-[var(--color-text-muted)] mb-4">
+        <ProcessIllustration step={active} className="w-full mb-6 rounded-xl" />
+        <p className="text-label text-[var(--color-text-muted)] mb-3">
           Step {processSteps[active].number}
         </p>
-        <h3 className="text-h3 font-semibold mb-4">{processSteps[active].title}</h3>
+        <h3 className="text-h3 font-semibold mb-3">{processSteps[active].title}</h3>
         <p className="text-body-lg text-[var(--color-text-secondary)]">
           {processSteps[active].description}
         </p>

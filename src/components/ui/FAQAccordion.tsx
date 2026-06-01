@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { ChevronDown, CircleHelp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type FAQ = {
@@ -34,16 +35,24 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
                 aria-controls={panelId}
                 onClick={() => setOpenIndex(isOpen ? null : index)}
               >
-                <span>{item.question}</span>
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "shrink-0 text-2xl font-light transition-transform duration-200",
-                    isOpen && "rotate-45",
-                  )}
-                >
-                  +
+                <span className="flex items-start gap-3">
+                  <CircleHelp
+                    size={20}
+                    strokeWidth={1.75}
+                    className="shrink-0 mt-1 text-[var(--color-accent)]"
+                    aria-hidden
+                  />
+                  {item.question}
                 </span>
+                <ChevronDown
+                  size={22}
+                  strokeWidth={1.75}
+                  aria-hidden
+                  className={cn(
+                    "shrink-0 text-[var(--color-text-muted)] transition-transform duration-200",
+                    isOpen && "rotate-180",
+                  )}
+                />
               </button>
             </h3>
             <div
@@ -51,7 +60,7 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
               role="region"
               aria-labelledby={buttonId}
               hidden={!isOpen}
-              className="pb-6 text-[var(--color-text-secondary)] text-body-lg"
+              className="pb-6 pl-8 text-[var(--color-text-secondary)] text-body-lg"
             >
               {item.answer}
             </div>

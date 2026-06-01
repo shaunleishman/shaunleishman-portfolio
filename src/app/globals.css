@@ -49,6 +49,7 @@
 
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 9rem;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -162,6 +163,54 @@
   .skip-link:focus {
     top: 1rem;
   }
+
+  .animate-skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgb(229 229 229 / 0.9) 0%,
+      rgb(245 245 245 / 1) 50%,
+      rgb(229 229 229 / 0.9) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+
+  .surface-card {
+    border-radius: 1rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-light);
+  }
+
+  .surface-muted {
+    border-radius: 1rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-muted);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-skeleton-shimmer {
+    animation: none;
+    background: rgb(229 229 229 / 0.9);
+  }
 }
 
 @keyframes marquee {
@@ -180,5 +229,21 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee {
     animation: none;
+  }
+}
+
+/* Branded CV — print / save as PDF */
+@media print {
+  .cv-no-print {
+    display: none !important;
+  }
+
+  .cv-document {
+    min-height: auto;
+  }
+
+  .cv-document main {
+    max-width: none;
+    padding-top: 0;
   }
 }

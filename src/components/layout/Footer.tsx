@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { FileText, Mail } from "lucide-react";
+import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
 import { siteConfig } from "@/content/projects";
+import { SiteLogoLink } from "@/components/layout/SiteLogo";
 
 const footerLinks = {
   pages: [
@@ -9,7 +12,10 @@ const footerLinks = {
     { href: "/contact", label: "Contact" },
     { href: "/blog", label: "Blog" },
   ],
-  social: [{ href: siteConfig.linkedIn, label: "LinkedIn", external: true }],
+  social: [
+    { href: siteConfig.linkedIn, label: "LinkedIn", linkedIn: true, external: true as const },
+    { href: siteConfig.cvUrl, label: "CV", icon: FileText, external: false as const },
+  ],
 };
 
 export function Footer() {
@@ -18,7 +24,7 @@ export function Footer() {
       <div className="container-site section-padding pb-8">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
           <div>
-            <p className="text-body font-semibold mb-4">{siteConfig.name}</p>
+            <SiteLogoLink className="text-body mb-4 text-white" />
             <p className="text-body-sm text-neutral-400 max-w-xs">
               UX/UI designer focused on research-led product design for healthcare,
               public services, and sustainability.
@@ -44,23 +50,42 @@ export function Footer() {
           <nav aria-label="Social links">
             <p className="text-label text-neutral-500 mb-4">Connect</p>
             <ul className="space-y-3">
-              {footerLinks.social.map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    className="text-body-sm text-neutral-300 hover:text-white transition-colors min-h-[44px] inline-flex items-center"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
+              {footerLinks.social.map((link) => {
+                const className =
+                  "text-body-sm text-neutral-300 hover:text-white transition-colors min-h-[44px] inline-flex items-center gap-2";
+                const icon = "linkedIn" in link && link.linkedIn ? (
+                  <LinkedInIcon size={16} />
+                ) : link.icon ? (
+                  <link.icon size={16} strokeWidth={1.75} aria-hidden />
+                ) : null;
+
+                return (
+                  <li key={link.href}>
+                    {link.external ? (
+                      <a
+                        href={link.href}
+                        className={className}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {icon}
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link href={link.href} className={className}>
+                        {icon}
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
               <li>
                 <a
                   href={`mailto:${siteConfig.email}`}
-                  className="text-body-sm text-neutral-300 hover:text-white transition-colors min-h-[44px] inline-flex items-center"
+                  className="text-body-sm text-neutral-300 hover:text-white transition-colors min-h-[44px] inline-flex items-center gap-2"
                 >
+                  <Mail size={16} strokeWidth={1.75} aria-hidden />
                   Email
                 </a>
               </li>

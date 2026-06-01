@@ -1,8 +1,9 @@
-"use client";
-
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { featuredProjects } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { Reveal } from "@/components/ui/Reveal";
+import { ProjectThumbnail } from "@/components/projects/ProjectThumbnail";
 
 export function FeaturedWork() {
   return (
@@ -19,16 +20,18 @@ export function FeaturedWork() {
 
         <div className="flex flex-col gap-16 lg:gap-24">
           {featuredProjects.map((project, index) => (
+            <Reveal key={project.slug} delay={index * 80}>
             <article
-              key={project.slug}
               className="grid gap-8 lg:grid-cols-2 lg:gap-16 items-center"
             >
               <Link
                 href={`/work/${project.slug}`}
-                className={`group relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br ${project.accentClass} order-1 ${index % 2 === 1 ? "lg:order-2" : ""}`}
+                className={`group relative aspect-[16/10] rounded-2xl overflow-hidden bg-neutral-100 order-1 ${index % 2 === 1 ? "lg:order-2" : ""}`}
                 aria-label={`View case study: ${project.title}`}
               >
-                <div className="absolute inset-0 flex items-end p-8">
+                <ProjectThumbnail project={project} priority={index === 0} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 flex items-end justify-between p-6 md:p-8">
                   <div className="flex flex-wrap gap-2">
                     {project.tags.slice(0, 3).map((tag) => (
                       <span
@@ -39,6 +42,9 @@ export function FeaturedWork() {
                       </span>
                     ))}
                   </div>
+                  <span className="rounded-full bg-white/20 p-2 text-white opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden>
+                    <ArrowUpRight size={20} />
+                  </span>
                 </div>
               </Link>
 
@@ -55,18 +61,35 @@ export function FeaturedWork() {
                   {project.overview.slice(0, 180)}…
                 </p>
 
-                <dl className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {project.metrics.map((metric) => (
-                    <div key={metric.label}>
-                      <dt className="text-h3 font-semibold tabular-nums">{metric.value}</dt>
-                      <dd className="text-body-sm text-[var(--color-text-muted)] mt-1">
-                        {metric.label}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
+                {project.cardHighlights ? (
+                  <ul className="space-y-2">
+                    {project.cardHighlights.map((item) => (
+                      <li
+                        key={item}
+                        className="flex gap-2 text-body-sm text-[var(--color-text-secondary)]"
+                      >
+                        <span className="text-[var(--color-accent)]" aria-hidden>
+                          →
+                        </span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <dl className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    {project.metrics.map((metric) => (
+                      <div key={metric.label}>
+                        <dt className="text-h3 font-semibold tabular-nums">{metric.value}</dt>
+                        <dd className="text-body-sm text-[var(--color-text-muted)] mt-1">
+                          {metric.label}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
               </div>
             </article>
+            </Reveal>
           ))}
         </div>
 

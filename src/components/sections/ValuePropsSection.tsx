@@ -1,5 +1,7 @@
 import { valueProps } from "@/content/projects";
+import { valuePropIcons } from "@/lib/icon-maps";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { IconBadge } from "@/components/ui/IconBadge";
 
 export function ValuePropsSection() {
   return (
@@ -14,15 +16,24 @@ export function ValuePropsSection() {
           4 reasons why
         </h2>
 
-        <div className="grid gap-10 sm:grid-cols-2 lg:gap-16">
-          {valueProps.map((prop) => (
-            <article key={prop.title}>
-              <h3 className="text-h4 font-semibold mb-3">{prop.title}</h3>
-              <p className="text-body text-[var(--color-text-secondary)]">
-                {prop.description}
-              </p>
-            </article>
-          ))}
+        <div className="grid gap-6 sm:grid-cols-2 lg:gap-8">
+          {valueProps.map((prop, index) => {
+            const Icon = valuePropIcons[index];
+            return (
+              <article
+                key={prop.title}
+                className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-8"
+              >
+                {Icon && (
+                  <IconBadge icon={Icon} size="lg" variant="light" className="mb-5" />
+                )}
+                <h3 className="text-h4 font-semibold mb-3">{prop.title}</h3>
+                <p className="text-body text-[var(--color-text-secondary)]">
+                  {prop.description}
+                </p>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

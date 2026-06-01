@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
-import { siteConfig } from "@/content/projects";
+import { SiteLogoLink } from "@/components/layout/SiteLogo";
 
 const navLinks = [
   { href: "/work", label: "Work" },
@@ -20,8 +20,9 @@ export function Header() {
   const [prevPathname, setPrevPathname] = useState(pathname);
   const isDarkHero =
     pathname === "/" ||
-    pathname.startsWith("/work/") ||
+    pathname.startsWith("/work") ||
     pathname === "/about" ||
+    pathname.startsWith("/blog") ||
     pathname === "/contact";
 
   if (pathname !== prevPathname) {
@@ -46,13 +47,7 @@ export function Header() {
       )}
     >
       <div className="container-site flex h-16 items-center justify-between lg:h-[4.5rem]">
-        <Link
-          href="/"
-          className="text-body font-semibold tracking-tight focus-visible:outline-offset-4"
-          aria-current={pathname === "/" ? "page" : undefined}
-        >
-          {siteConfig.name.toLowerCase().replace(" ", "")}.design
-        </Link>
+        <SiteLogoLink ariaCurrent={pathname === "/"} className="text-body" />
 
         <nav aria-label="Main navigation" className="hidden lg:block">
           <ul className="flex items-center gap-8">
@@ -61,7 +56,7 @@ export function Header() {
                 <Link
                   href={link.href}
                   className={cn(
-                    "text-body-sm font-medium transition-colors hover:opacity-80 min-h-[44px] inline-flex items-center",
+                    "relative text-body-sm font-medium transition-colors hover:opacity-80 min-h-[44px] inline-flex items-center",
                     pathname === link.href || pathname.startsWith(`${link.href}/`)
                       ? "opacity-100"
                       : "opacity-70",
@@ -73,6 +68,12 @@ export function Header() {
                   }
                 >
                   {link.label}
+                  {(pathname === link.href || pathname.startsWith(`${link.href}/`)) && (
+                    <span
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full bg-[var(--color-accent)] motion-safe:animate-[scale-in_0.2s_ease-out]"
+                      aria-hidden
+                    />
+                  )}
                 </Link>
               </li>
             ))}

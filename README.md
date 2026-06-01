@@ -54,8 +54,8 @@ Recommended: [Vercel](https://vercel.com) connected to your GitHub repo. Set `AD
 
 ## Content to add
 
-- [ ] Profile photo (`/public/images/profile.jpg`)
-- [ ] Project screenshots
-- [ ] CV PDF link (update `cvUrl` in `src/content/projects.ts`)
-- [ ] LinkedIn URL (update `linkedIn` in `src/content/projects.ts`)
-- [ ] Email address (update `email` in `src/content/projects.ts`)
+- [x] Profile photo (`/public/images/profile.png`)
+- [x] Project screenshots and illustrations
+- [x] CV page at `/cv`
+- [x] LinkedIn URL (update `linkedIn` in `src/content/projects.ts`)
+- [x] Email address (update `email` in `src/content/projects.ts`)
