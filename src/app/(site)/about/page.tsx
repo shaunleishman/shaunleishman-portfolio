@@ -50,10 +50,10 @@ export default function AboutPage() {
               aria-label={`Photo of ${siteConfig.name}`}
             >
               <Image
-                src="/images/profile.png"
+                src="/images/profile.jpg"
                 alt={`${siteConfig.name}, UX/UI designer`}
-                width={560}
-                height={560}
+                width={794}
+                height={1024}
                 className="h-full w-full object-cover object-center"
                 priority
               />

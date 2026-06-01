@@ -335,7 +335,7 @@ export const siteConfig = {
     "It's one thing shaping experiences that improve lives, but to encourage better decision-making is where the true magic happens.",
   email: "postalshaun@outlook.com",
   phone: "07708002642",
-  linkedIn: "https://www.linkedin.com/feed/",
+  linkedIn: "https://www.linkedin.com/in/shaun-leishman-94a46b130/",
   cvUrl: "/cv",
   experience: "5+ years",
 };

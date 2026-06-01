@@ -18,8 +18,8 @@ export function PageEnter({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={cn(
-        "motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-out",
-        visible ? "motion-safe:opacity-100 motion-safe:translate-y-0" : "motion-safe:opacity-0 motion-safe:translate-y-1",
+        "motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out",
+        visible ? "motion-safe:opacity-100" : "motion-safe:opacity-0",
       )}
     >
       {children}
