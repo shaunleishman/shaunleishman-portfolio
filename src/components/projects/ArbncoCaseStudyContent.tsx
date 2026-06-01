@@ -280,18 +280,6 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           </ul>
         </div>
 
-        <aside className="rounded-2xl border border-[#0d7377]/20 bg-[#0d7377]/5 p-6 md:p-8 not-prose mb-8">
-          <h3 className="text-h4 font-semibold mb-3 text-[var(--color-text-primary)]">
-            Complex products need clear interfaces
-          </h3>
-          <p className="text-body text-[var(--color-text-secondary)] mb-4">
-            This project focused on trust in technical products: helping non-technical users
-            understand machine-generated data, navigate eligibility rules, and make confident
-            decisions without needing to know how the model works.
-          </p>
-          <Button href="/contact">Let&apos;s talk</Button>
-        </aside>
-
         <CaseStudyFeedback projectSlug="arbnco-synthetic-ai-data" />
       </section>
 
