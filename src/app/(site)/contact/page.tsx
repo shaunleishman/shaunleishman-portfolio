@@ -3,7 +3,8 @@ import Link from "next/link";
 import { FileText, Mail } from "lucide-react";
 import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
 import { siteConfig } from "@/content/projects";
-import { Button } from "@/components/ui/Button";
+import { ContactCvCard } from "@/components/contact/ContactCvCard";
+import { EmailCopyAction } from "@/components/contact/EmailCopyAction";
 import { IconBadge } from "@/components/ui/IconBadge";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
@@ -80,33 +81,40 @@ export default function ContactPage() {
           <div className="grid gap-6 sm:grid-cols-3">
             {contactMethods.map((method, index) => (
               <Reveal key={method.title} delay={index * 70}>
-                <article className="surface-card-interactive flex h-full flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-6">
-                  <IconBadge
-                    icon={method.icon}
-                    size="lg"
-                    variant="light"
-                    className="mb-4"
-                  >
-                    {method.customIcon}
-                  </IconBadge>
-                  <h2 className="text-h4 font-semibold mb-2">{method.title}</h2>
-                  <p className="text-body-sm text-[var(--color-text-secondary)] mb-4 flex-1">
-                    {method.description}
-                  </p>
-                  {method.title === "CV" ? (
-                    <Button href={method.href} variant="secondary" className="w-full justify-center">
-                      {method.label}
-                    </Button>
-                  ) : (
-                    <a
-                      href={method.href}
-                      className="text-body-sm font-medium text-[var(--color-accent)] hover:underline min-h-[44px] inline-flex items-center"
-                      {...(method.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                {method.title === "CV" ? (
+                  <ContactCvCard
+                    title={method.title}
+                    description={method.description}
+                    href={method.href}
+                    label={method.label}
+                  />
+                ) : (
+                  <article className="surface-card-interactive flex h-full flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-6">
+                    <IconBadge
+                      icon={method.icon}
+                      size="lg"
+                      variant="light"
+                      className="mb-4"
                     >
-                      {method.label}
-                    </a>
-                  )}
-                </article>
+                      {method.customIcon}
+                    </IconBadge>
+                    <h2 className="text-h4 font-semibold mb-2">{method.title}</h2>
+                    <p className="text-body-sm text-[var(--color-text-secondary)] mb-4 flex-1">
+                      {method.description}
+                    </p>
+                    {method.title === "Email" ? (
+                      <EmailCopyAction />
+                    ) : (
+                      <a
+                        href={method.href}
+                        className="text-body-sm font-medium text-[var(--color-accent)] hover:underline min-h-[44px] inline-flex items-center"
+                        {...(method.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      >
+                        {method.label}
+                      </a>
+                    )}
+                  </article>
+                )}
               </Reveal>
             ))}
           </div>
