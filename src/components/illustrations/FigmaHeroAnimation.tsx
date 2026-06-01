@@ -378,8 +378,8 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
 
   if (reducedMotion === null) {
     return (
-      <div className={cn("relative aspect-[520/380] w-full", className)}>
-        <div className="absolute inset-0 rounded-2xl bg-white/[0.04] ring-1 ring-white/10 animate-pulse" aria-hidden />
+      <div className={cn("relative w-full", className)}>
+        <StaticFallback />
       </div>
     );
   }
