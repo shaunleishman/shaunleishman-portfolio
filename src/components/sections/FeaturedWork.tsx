@@ -33,20 +33,20 @@ export function FeaturedWork() {
                   aria-label={`View case study: ${project.title}`}
                 >
                   <ProjectThumbnail project={project} priority={index === 0} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-                  <div className="absolute inset-0 flex items-end justify-between p-6 md:p-8">
-                    <div className="flex flex-wrap gap-2">
+                  <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 z-20 flex items-end justify-between p-6 md:p-8 pointer-events-none">
+                    <div className="flex flex-wrap gap-2 pointer-events-none">
                       {project.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-body-sm text-white"
+                          className="rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-body-sm font-medium text-white shadow-sm"
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
                     <span
-                      className="rounded-full bg-white/20 p-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      className="rounded-full bg-white/20 p-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                       aria-hidden
                     >
                       <ArrowUpRight size={20} />
