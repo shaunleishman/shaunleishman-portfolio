@@ -78,6 +78,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
         contribution={arbncoAtAGlance.contribution}
         highlights={arbncoAtAGlance.highlights}
         methods={arbncoAtAGlance.methods}
+        accentClass={project.accentClass}
       />
 
       <CaseStudySplitSection

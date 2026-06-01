@@ -1,6 +1,9 @@
 "use client";
 
+import { GitBranch, LayoutDashboard, Timer, type LucideIcon } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
+
+const HIGHLIGHT_ICONS: LucideIcon[] = [GitBranch, LayoutDashboard, Timer];
 
 type CaseStudyAtAGlanceProps = {
   id?: string;
@@ -35,16 +38,32 @@ export function CaseStudyAtAGlance({
           <p className="text-body-sm text-[var(--color-text-muted)] mb-6 max-w-2xl">{summary}</p>
         )}
 
-        <ul className="grid gap-3 sm:grid-cols-3 mb-8 pb-8 border-b border-[var(--color-border)]">
-          {highlights.map((item, index) => (
-            <li key={item}>
-              <Reveal delay={index * 50} variant="scale">
-                <div className="rounded-lg bg-white border border-[var(--color-border)] px-3 py-2.5 text-body-sm text-[var(--color-text-secondary)]">
-                  {item}
-                </div>
-              </Reveal>
-            </li>
-          ))}
+        <ul className="grid gap-4 sm:grid-cols-3 mb-8 pb-8 border-b border-[var(--color-border)]">
+          {highlights.map((item, index) => {
+            const Icon = HIGHLIGHT_ICONS[index % HIGHLIGHT_ICONS.length];
+
+            return (
+              <li key={item} className="min-h-0">
+                <Reveal delay={index * 50} variant="scale">
+                  <div className="relative flex h-full flex-col gap-3 overflow-hidden rounded-xl border border-[var(--color-border)] bg-white p-4 shadow-sm">
+                    <div
+                      className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${accentClass}`}
+                      aria-hidden
+                    />
+                    <span
+                      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${accentClass} text-white shadow-sm`}
+                      aria-hidden
+                    >
+                      <Icon size={20} strokeWidth={1.75} />
+                    </span>
+                    <p className="text-body-sm font-medium leading-snug text-[var(--color-text-primary)]">
+                      {item}
+                    </p>
+                  </div>
+                </Reveal>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="grid gap-6 md:grid-cols-2">
