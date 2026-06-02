@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { siteConfig } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CTASection } from "@/components/sections/CTASection";
 import { BlogContent } from "@/components/blog/BlogContent";
+import { LinkedInShare } from "@/components/blog/LinkedInShare";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 
@@ -37,6 +39,8 @@ export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post || !post.published) notFound();
+
+  const shareUrl = `${siteConfig.siteUrl}/blog/${post.slug}`;
 
   return (
     <>
@@ -84,12 +88,7 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
 
         <Reveal delay={80} className="container-site max-w-3xl mt-12 pt-8 border-t border-[var(--color-border)]">
-          <p className="text-body-sm text-[var(--color-text-muted)] mb-4">
-            Share this on LinkedIn — copy the link below:
-          </p>
-          <p className="text-body font-mono bg-[var(--color-bg-muted)] p-4 rounded-lg break-all">
-            /blog/{post.slug}
-          </p>
+          <LinkedInShare url={shareUrl} title={post.title} />
         </Reveal>
       </article>
 
