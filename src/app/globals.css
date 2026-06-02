@@ -298,86 +298,25 @@
   transition: none !important;
 }
 
-.cv-pdf-export [data-cv-pdf-root] .text-h2 {
-  font-size: 1.3rem !important;
-  line-height: 1.2 !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .text-h4 {
-  font-size: 0.9rem !important;
-  line-height: 1.25 !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .text-body {
-  font-size: 0.78rem !important;
-  line-height: 1.45 !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .text-body-sm {
-  font-size: 0.72rem !important;
-  line-height: 1.4 !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .text-body-lg {
-  font-size: 0.84rem !important;
-  line-height: 1.45 !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .text-label {
-  font-size: 0.6rem !important;
-}
-
+/* Match print spacing — same look as the CV, slightly tighter vertical rhythm */
 .cv-pdf-export [data-cv-pdf-root] .mb-10 {
-  margin-bottom: 1rem !important;
+  margin-bottom: 2rem !important;
 }
 
 .cv-pdf-export [data-cv-pdf-root] .mb-8 {
-  margin-bottom: 0.85rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .mb-4 {
-  margin-bottom: 0.5rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .mb-3 {
-  margin-bottom: 0.35rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .mb-2 {
-  margin-bottom: 0.25rem !important;
+  margin-bottom: 1.5rem !important;
 }
 
 .cv-pdf-export [data-cv-pdf-root] .mt-12 {
-  margin-top: 1rem !important;
+  margin-top: 2rem !important;
 }
 
 .cv-pdf-export [data-cv-pdf-root] .pb-8 {
-  padding-bottom: 0.85rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .pt-6 {
-  padding-top: 0.65rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .space-y-4 > :not([hidden]) ~ :not([hidden]) {
-  margin-top: 0.5rem !important;
+  padding-bottom: 1.5rem !important;
 }
 
 .cv-pdf-export [data-cv-pdf-root] .space-y-8 > :not([hidden]) ~ :not([hidden]) {
-  margin-top: 0.75rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .space-y-3 > :not([hidden]) ~ :not([hidden]) {
-  margin-top: 0.4rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .space-y-2 > :not([hidden]) ~ :not([hidden]) {
-  margin-top: 0.25rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] section {
-  break-inside: auto;
-  page-break-inside: auto;
+  margin-top: 1.5rem !important;
 }
 
 .cv-pdf-export [data-cv-pdf-root] h2,
@@ -386,15 +325,10 @@
   page-break-after: avoid;
 }
 
-.cv-pdf-export [data-cv-pdf-root] blockquote {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
 @media print {
   @page {
     size: A4;
-    margin: 12mm 14mm;
+    margin: 8mm 10mm;
   }
 
   html,
@@ -417,35 +351,6 @@
     max-width: none;
     padding-top: 0;
     padding-bottom: 0;
-  }
-
-  .cv-document .text-h2 {
-    font-size: 1.3rem;
-    line-height: 1.2;
-  }
-
-  .cv-document .text-h4 {
-    font-size: 0.9rem;
-    line-height: 1.25;
-  }
-
-  .cv-document .text-body {
-    font-size: 0.78rem;
-    line-height: 1.45;
-  }
-
-  .cv-document .text-body-sm {
-    font-size: 0.72rem;
-    line-height: 1.4;
-  }
-
-  .cv-document .text-body-lg {
-    font-size: 0.84rem;
-    line-height: 1.45;
-  }
-
-  .cv-document .text-label {
-    font-size: 0.6rem;
   }
 
   .cv-document section {
