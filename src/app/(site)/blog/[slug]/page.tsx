@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
 import { siteConfig } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { CTASection } from "@/components/sections/CTASection";
+import { SiteFeedbackSection } from "@/components/sections/SiteFeedbackSection";
 import { BlogContent } from "@/components/blog/BlogContent";
 import { LinkedInShare } from "@/components/blog/LinkedInShare";
 import { PageHero } from "@/components/layout/PageHero";
@@ -92,7 +92,7 @@ export default async function BlogPostPage({ params }: Props) {
         </Reveal>
       </article>
 
-      <CTASection dark={false} />
+      <SiteFeedbackSection dark={false} />
     </>
   );
 }

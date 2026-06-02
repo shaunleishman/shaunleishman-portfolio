@@ -12,7 +12,7 @@ import { CaseStudyListWithVisuals } from "@/components/projects/CaseStudyListWit
 import { ArbncoCaseStudyContent } from "@/components/projects/ArbncoCaseStudyContent";
 import { CaseStudyBlock } from "@/components/projects/CaseStudyBlock";
 import { CaseStudyTextSection } from "@/components/projects/CaseStudyTextSection";
-import { CTASection } from "@/components/sections/CTASection";
+import { SiteFeedbackSection } from "@/components/sections/SiteFeedbackSection";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 
@@ -186,7 +186,7 @@ export default async function CaseStudyPage({ params }: Props) {
         </div>
       </article>
 
-      <CTASection dark={false} />
+      <SiteFeedbackSection dark={false} />
     </>
   );
 }

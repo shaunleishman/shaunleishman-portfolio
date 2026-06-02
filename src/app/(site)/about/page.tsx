@@ -4,7 +4,7 @@ import Image from "next/image";
 import { siteConfig } from "@/content/projects";
 import { Button } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { CTASection } from "@/components/sections/CTASection";
+import { SiteFeedbackSection } from "@/components/sections/SiteFeedbackSection";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 
@@ -92,11 +92,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <CTASection
-        dark={false}
-        title="Let's connect"
-        description="Whether you're hiring or just want to talk design, I'd love to hear from you."
-      />
+      <SiteFeedbackSection dark={false} />
     </>
   );
 }

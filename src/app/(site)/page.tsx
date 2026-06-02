@@ -5,7 +5,7 @@ import { ProcessSection } from "@/components/sections/ProcessSection";
 import { StatsMarquee } from "@/components/sections/StatsMarquee";
 import { ValuePropsSection } from "@/components/sections/ValuePropsSection";
 import { FAQSection } from "@/components/sections/FAQSection";
-import { CTASection } from "@/components/sections/CTASection";
+import { SiteFeedbackSection } from "@/components/sections/SiteFeedbackSection";
 
 export default function HomePage() {
   return (
@@ -17,7 +17,7 @@ export default function HomePage() {
       <StatsMarquee />
       <ValuePropsSection />
       <FAQSection />
-      <CTASection />
+      <SiteFeedbackSection />
     </>
   );
 }
