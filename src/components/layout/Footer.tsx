@@ -32,13 +32,13 @@ export function Footer() {
           </div>
 
           <nav aria-label="Footer navigation">
-            <p className="text-label text-neutral-500 mb-4">Pages</p>
-            <ul className="space-y-3">
+            <p className="text-label text-neutral-500 mb-2">Pages</p>
+            <ul className="flex flex-col gap-1">
               {footerLinks.pages.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-body-sm text-neutral-300 hover:text-white transition-colors min-h-[44px] inline-flex items-center"
+                    className="inline-flex items-center py-1 text-body-sm text-neutral-300 transition-colors hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -48,11 +48,11 @@ export function Footer() {
           </nav>
 
           <nav aria-label="Social links">
-            <p className="text-label text-neutral-500 mb-4">Connect</p>
-            <ul className="space-y-3">
+            <p className="text-label text-neutral-500 mb-2">Connect</p>
+            <ul className="flex flex-col gap-1">
               {footerLinks.social.map((link) => {
                 const className =
-                  "text-body-sm text-neutral-300 hover:text-white transition-colors min-h-[44px] inline-flex items-center gap-2";
+                  "inline-flex items-center gap-2 py-1 text-body-sm text-neutral-300 transition-colors hover:text-white";
                 const icon = "linkedIn" in link && link.linkedIn ? (
                   <LinkedInIcon size={16} />
                 ) : link.icon ? (
@@ -83,7 +83,7 @@ export function Footer() {
               <li>
                 <a
                   href={`mailto:${siteConfig.email}`}
-                  className="text-body-sm text-neutral-300 hover:text-white transition-colors min-h-[44px] inline-flex items-center gap-2"
+                  className="inline-flex items-center gap-2 py-1 text-body-sm text-neutral-300 transition-colors hover:text-white"
                 >
                   <Mail size={16} strokeWidth={1.75} aria-hidden />
                   Email
