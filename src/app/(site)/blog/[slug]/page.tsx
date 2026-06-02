@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
 import { siteConfig } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { SiteFeedbackSection } from "@/components/sections/SiteFeedbackSection";
+import { CaseStudyFeedback } from "@/components/projects/CaseStudyFeedback";
 import { BlogContent } from "@/components/blog/BlogContent";
 import { LinkedInShare } from "@/components/blog/LinkedInShare";
 import { PageHero } from "@/components/layout/PageHero";
@@ -90,9 +90,15 @@ export default async function BlogPostPage({ params }: Props) {
         <Reveal delay={80} className="container-site max-w-3xl mt-12 pt-8 border-t border-[var(--color-border)]">
           <LinkedInShare url={shareUrl} title={post.title} />
         </Reveal>
-      </article>
 
-      <SiteFeedbackSection dark={false} />
+        <Reveal delay={100} className="container-site max-w-3xl mt-10">
+          <CaseStudyFeedback
+            feedbackPath={`/blog/${post.slug}`}
+            question="How strong does this article come across?"
+            submittedDescription="Thanks — it helps me understand what's working in my writing."
+          />
+        </Reveal>
+      </article>
     </>
   );
 }

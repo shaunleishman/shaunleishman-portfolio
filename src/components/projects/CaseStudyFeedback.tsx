@@ -39,7 +39,9 @@ const REASONS = [
 type FeedbackBucket = "weak" | "decent" | "strong";
 
 type CaseStudyFeedbackProps = {
-  projectSlug: string;
+  feedbackPath: string;
+  question?: string;
+  submittedDescription?: string;
 };
 
 function getTickPositionPx(value: number, trackWidth: number, thumbSize: number) {
@@ -57,7 +59,11 @@ function getFeedbackBucket(score: number): FeedbackBucket {
   return "strong";
 }
 
-export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
+export function CaseStudyFeedback({
+  feedbackPath,
+  question = "How strong does this project come across?",
+  submittedDescription = "Thanks — it helps me understand what's working on this case study.",
+}: CaseStudyFeedbackProps) {
   const sliderId = useId();
   const sliderTrackRef = useRef<HTMLDivElement>(null);
   const [trackWidth, setTrackWidth] = useState(0);
@@ -106,7 +112,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
           body: JSON.stringify({
             sessionId,
             type: "click",
-            path: `/work/${projectSlug}`,
+            path: feedbackPath,
             metadata: {
               feedback,
               score: strengthScore,
@@ -122,7 +128,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
 
       setSubmitted(true);
     },
-    [projectSlug],
+    [feedbackPath],
   );
 
   function handleSliderChange(nextScore: number) {
@@ -138,14 +144,14 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
 
   if (submitted) {
     return (
-      <FeedbackSubmittedNotice description="Thanks — it helps me understand what's working on this case study." />
+      <FeedbackSubmittedNotice description={submittedDescription} />
     );
   }
 
   return (
     <div className="surface-muted rounded-xl p-5 not-prose">
       <label htmlFor={sliderId} className="text-body-sm font-medium text-[var(--color-text-primary)]">
-        How strong does this project come across?
+        {question}
       </label>
 
       <div className="mt-4">

@@ -279,7 +279,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           </ul>
         </div>
 
-        <CaseStudyFeedback projectSlug="arbnco-synthetic-ai-data" />
+        <CaseStudyFeedback feedbackPath="/work/arbnco-synthetic-ai-data" />
       </section>
 
       <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row gap-4 not-prose">
