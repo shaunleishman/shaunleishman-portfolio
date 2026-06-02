@@ -40,15 +40,15 @@ export function EmailCopyAction({ email = siteConfig.email, className }: EmailCo
         type="button"
         onClick={() => void handleCopy()}
         className={cn(
-          "inline-flex shrink-0 items-center justify-center gap-1.5 self-start rounded-full border px-3 py-1.5 text-body-sm font-medium transition-colors min-h-[36px]",
+          "inline-flex size-10 shrink-0 items-center justify-center self-start rounded-full border transition-colors",
           copied
             ? "border-[#0d7377]/30 bg-[#0d7377]/5 text-[#0d7377]"
             : "border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]",
         )}
         aria-label={copied ? "Email copied to clipboard" : `Copy ${email} to clipboard`}
+        title={copied ? "Copied" : "Copy email"}
       >
         {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
-        {copied ? "Copied" : "Copy email"}
       </button>
     </div>
   );
