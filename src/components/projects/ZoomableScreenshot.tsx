@@ -11,12 +11,23 @@ type ZoomableScreenshotProps = {
   alt: string;
   caption?: string;
   className?: string;
+  /** Cap inline preview height — full size is still available on zoom. */
+  previewMaxHeight?: number;
 };
 
-export function ZoomableScreenshot({ src, alt, caption, className }: ZoomableScreenshotProps) {
+const DEFAULT_PREVIEW_MAX_HEIGHT = 480;
+
+export function ZoomableScreenshot({
+  src,
+  alt,
+  caption,
+  className,
+  previewMaxHeight = DEFAULT_PREVIEW_MAX_HEIGHT,
+}: ZoomableScreenshotProps) {
   const dialogId = useId();
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const isAnimated = src.endsWith(".gif");
 
   function close() {
     setOpen(false);
@@ -35,33 +46,49 @@ export function ZoomableScreenshot({ src, alt, caption, className }: ZoomableScr
     };
   }, [open]);
 
+  const previewClassName = cn(
+    "h-auto w-full object-contain object-center transition-opacity duration-300",
+    loaded ? "opacity-100" : "opacity-0",
+  );
+
+  const previewStyle = { maxHeight: `min(${previewMaxHeight}px, 55vh)` } as const;
+
   return (
     <>
       <figure className={cn("surface-card overflow-hidden", className)}>
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="group relative block w-full cursor-zoom-in text-left"
+          className="group relative flex w-full min-h-[8rem] cursor-zoom-in items-center justify-center bg-neutral-100/70 text-left"
           aria-haspopup="dialog"
           aria-expanded={open}
           aria-controls={dialogId}
         >
           {!loaded && <Skeleton className="absolute inset-0 rounded-none" aria-hidden />}
-          <Image
-            src={src}
-            alt={alt}
-            width={2048}
-            height={1280}
-            onLoad={() => setLoaded(true)}
-            className={cn(
-              "h-auto w-full transition-opacity duration-300",
-              loaded ? "opacity-100" : "opacity-0",
-            )}
-            sizes="(max-width: 768px) 100vw, 960px"
-          />
+          {isAnimated ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={src}
+              alt={alt}
+              onLoad={() => setLoaded(true)}
+              style={previewStyle}
+              className={previewClassName}
+            />
+          ) : (
+            <Image
+              src={src}
+              alt={alt}
+              width={2048}
+              height={1280}
+              onLoad={() => setLoaded(true)}
+              style={previewStyle}
+              className={previewClassName}
+              sizes="(max-width: 768px) 100vw, 960px"
+            />
+          )}
           <span className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[0.75rem] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
             <ZoomIn className="size-3.5" aria-hidden />
-            Zoom
+            {isAnimated ? "Enlarge" : "Zoom"}
           </span>
         </button>
         {caption && (

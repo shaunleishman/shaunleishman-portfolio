@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/Button";
 import { CaseStudyAtAGlance } from "@/components/projects/CaseStudyAtAGlance";
 import { CaseStudySectionNav } from "@/components/projects/CaseStudySectionNav";
 import { CaseStudySection } from "@/components/projects/CaseStudySection";
-import { CaseStudyFeedback } from "@/components/projects/CaseStudyFeedback";
+import { CaseStudyReflection } from "@/components/projects/CaseStudyReflection";
+import { CaseStudySubsection } from "@/components/projects/CaseStudySubsection";
 import {
   CaseStudyIllustration,
   CaseStudySplitSection,
@@ -189,98 +190,74 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
         title={arbncoSectionTitle("refined-solution")}
         lead="How users move from their project list to a confirmed generated-data state. Screenshots show representative examples from the flow."
       >
-        <h3 className="text-h4 font-semibold mb-4 text-[var(--color-text-primary)]">User flow</h3>
-        <div className="overflow-x-auto rounded-xl border border-[var(--color-border)] mb-10 not-prose">
-          <table className="w-full min-w-[640px] text-left text-body-sm">
-            <thead className="bg-neutral-50 border-b border-[var(--color-border)]">
-              <tr>
-                <th scope="col" className="px-4 py-3 font-semibold">
-                  Stage
-                </th>
-                <th scope="col" className="px-4 py-3 font-semibold">
-                  User action
-                </th>
-                <th scope="col" className="px-4 py-3 font-semibold">
-                  Design response
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--color-border)]">
-              {userFlowStages.map((row) => (
-                <tr key={row.stage} className="align-top">
-                  <td className="px-4 py-3 font-medium text-[var(--color-text-primary)] whitespace-nowrap">
-                    {row.stage}
-                  </td>
-                  <td className="px-4 py-3">{row.action}</td>
-                  <td className="px-4 py-3">{row.response}</td>
+        <CaseStudySubsection title="User flow">
+          <div className="overflow-x-auto rounded-xl border border-[var(--color-border)] not-prose">
+            <table className="w-full min-w-[640px] text-left text-body-sm">
+              <thead className="bg-neutral-50 border-b border-[var(--color-border)]">
+                <tr>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Stage
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    User action
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Design response
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-[var(--color-border)]">
+                {userFlowStages.map((row) => (
+                  <tr key={row.stage} className="align-top">
+                    <td className="px-4 py-3 font-medium text-[var(--color-text-primary)] whitespace-nowrap">
+                      {row.stage}
+                    </td>
+                    <td className="px-4 py-3">{row.action}</td>
+                    <td className="px-4 py-3">{row.response}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CaseStudySubsection>
 
-        <div className="space-y-10 not-prose">
-          <div>
-            <h3 className="text-h4 font-semibold mb-2 text-[var(--color-text-primary)]">
-              Example: bulk enable across projects
-            </h3>
-            <p className="text-body text-[var(--color-text-muted)] mb-4">
-              Checkbox selection and synthesise/revert actions for managing multiple projects at once.
-            </p>
+        <div className="not-prose">
+          <CaseStudySubsection
+            title="Example: bulk enable across projects"
+            lead="Checkbox selection and synthesise/revert actions for managing multiple projects at once."
+          >
             <ZoomableScreenshot
               src="/projects/arbnco-synthetic-ai-data/flow-example-synthetic-data.png"
               alt="Example flow for turning on generated hourly data across multiple projects"
               caption="Example: bulk synthesise and revert flow across the projects list"
             />
-          </div>
+          </CaseStudySubsection>
 
-          <div>
-            <h3 className="text-h4 font-semibold mb-2 text-[var(--color-text-primary)]">
-              Example: Edit Project settings
-            </h3>
-            <p className="text-body text-[var(--color-text-muted)] mb-4">
-              Toggle, status badge, and checklist make eligibility and active state visible in
-              context.
-            </p>
+          <CaseStudySubsection
+            title="Example: Edit Project settings"
+            lead="Toggle, status badge, and checklist make eligibility and active state visible in context."
+          >
             <ZoomableScreenshot
               src="/projects/arbnco-synthetic-ai-data/enabling-half-hourly-data.png"
               alt="Example Edit Project screen showing generated hourly data controls"
               caption="Example: enabling generated hourly data from project settings"
             />
-          </div>
+          </CaseStudySubsection>
         </div>
       </CaseStudySection>
 
-      <section id="reflection" aria-label="Reflection" className="scroll-mt-36">
-        <CaseStudySplitSection
-          title="Limitations"
-          lead="Working within real product and engineering constraints, not a blank canvas."
-          visual={
-            <CaseStudyIllustration
-              src="/projects/arbnco-synthetic-ai-data/limitations-illustration.png"
-              alt="Illustration of pushing against project constraints and limitations"
-            />
-          }
-          className="mb-10"
-        >
-          <ul className="list-disc pl-5 space-y-2">
-            {project.limitations.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </CaseStudySplitSection>
-
-        <div className="mb-10">
-          <h3 className="text-h4 font-semibold mb-4 text-[var(--color-text-primary)]">Key takeaways</h3>
-          <ul className="space-y-4">
-            {arbncoReflectionItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
-
-        <CaseStudyFeedback feedbackPath="/work/arbnco-synthetic-ai-data" />
-      </section>
+      <CaseStudyReflection
+        limitationsLead="Working within real product and engineering constraints, not a blank canvas."
+        limitationsVisual={
+          <CaseStudyIllustration
+            src="/projects/arbnco-synthetic-ai-data/limitations-illustration.png"
+            alt="Illustration of pushing against project constraints and limitations"
+          />
+        }
+        limitations={project.limitations}
+        takeaways={arbncoReflectionItems}
+        feedbackPath="/work/arbnco-synthetic-ai-data"
+      />
 
       <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row gap-4 not-prose">
         <Button href="/work">← All projects</Button>

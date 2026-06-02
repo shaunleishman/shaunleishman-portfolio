@@ -47,9 +47,9 @@ export function CaseStudyAtAGlance({
             return (
               <li key={item} className="h-full">
                 <Reveal delay={index * 50} variant="scale" className="h-full">
-                  <div className="flex h-full flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-white p-4 shadow-sm">
+                  <div className="flex h-full flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-white p-4">
                     <span
-                      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
+                      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white"
                       style={{ backgroundColor: accentColor }}
                       aria-hidden
                     >

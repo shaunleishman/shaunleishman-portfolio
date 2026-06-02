@@ -1,22 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 /** Thin progress bar — shows reading position on long pages */
 export function ScrollProgress() {
-  const [progress, setProgress] = useState(0);
+  const pathname = usePathname();
+  const barRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    function onScroll() {
+    function updateProgress() {
+      rafRef.current = null;
+      const node = barRef.current;
+      if (!node) return;
+
       const doc = document.documentElement;
       const scrollable = doc.scrollHeight - doc.clientHeight;
-      setProgress(scrollable > 0 ? (doc.scrollTop / scrollable) * 100 : 0);
+      const ratio = scrollable > 0 ? doc.scrollTop / scrollable : 0;
+      node.style.transform = `scaleX(${ratio})`;
     }
 
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    function scheduleUpdate() {
+      if (rafRef.current === null) {
+        rafRef.current = requestAnimationFrame(updateProgress);
+      }
+    }
+
+    scheduleUpdate();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate, { passive: true });
+
+    const resizeObserver = new ResizeObserver(scheduleUpdate);
+    resizeObserver.observe(document.documentElement);
+    resizeObserver.observe(document.body);
+
+    return () => {
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      resizeObserver.disconnect();
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, [pathname]);
 
   return (
     <div
@@ -24,8 +49,9 @@ export function ScrollProgress() {
       aria-hidden
     >
       <div
-        className="h-full bg-[var(--color-accent)] transition-[width] duration-150 ease-out motion-reduce:transition-none"
-        style={{ width: `${progress}%` }}
+        ref={barRef}
+        className="h-full w-full origin-left bg-[var(--color-accent)] will-change-transform motion-reduce:transition-none"
+        style={{ transform: "scaleX(0)" }}
       />
     </div>
   );

@@ -42,6 +42,8 @@ type CaseStudyFeedbackProps = {
   feedbackPath: string;
   question?: string;
   submittedDescription?: string;
+  sectionTitle?: string;
+  sectionLead?: string;
 };
 
 function getTickPositionPx(value: number, trackWidth: number, thumbSize: number) {
@@ -63,6 +65,8 @@ export function CaseStudyFeedback({
   feedbackPath,
   question = "How strong does this project come across?",
   submittedDescription = "Thanks — it helps me understand what's working on this case study.",
+  sectionTitle = "Your feedback",
+  sectionLead = "An optional rating helps me understand whether this case study reads as credible and relevant — whether you're hiring, collaborating, or just browsing.",
 }: CaseStudyFeedbackProps) {
   const sliderId = useId();
   const sliderTrackRef = useRef<HTMLDivElement>(null);
@@ -73,9 +77,9 @@ export function CaseStudyFeedback({
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const isWeak = score <= 2;
-  const showReasons = hasInteracted && isWeak;
-  const canConfirm = hasInteracted && (!isWeak || reason !== null);
+  const needsReason = score <= 3;
+  const showReasons = hasInteracted && needsReason;
+  const canConfirm = hasInteracted && (!needsReason || reason !== null);
 
   useLayoutEffect(() => {
     const node = sliderTrackRef.current;
@@ -144,12 +148,28 @@ export function CaseStudyFeedback({
 
   if (submitted) {
     return (
-      <FeedbackSubmittedNotice description={submittedDescription} />
+      <div className="not-prose">
+        <div className="mb-5">
+          <h3 className="text-h4 font-semibold text-[var(--color-text-primary)]">{sectionTitle}</h3>
+          {sectionLead && (
+            <p className="mt-1 text-body-sm text-[var(--color-text-muted)] max-w-2xl">{sectionLead}</p>
+          )}
+        </div>
+        <FeedbackSubmittedNotice description={submittedDescription} />
+      </div>
     );
   }
 
   return (
-    <div className="surface-muted rounded-xl p-5 not-prose">
+    <div className="not-prose">
+      <div className="mb-5">
+        <h3 className="text-h4 font-semibold text-[var(--color-text-primary)]">{sectionTitle}</h3>
+        {sectionLead && (
+          <p className="mt-1 text-body-sm text-[var(--color-text-muted)] max-w-2xl">{sectionLead}</p>
+        )}
+      </div>
+
+      <div className="surface-muted rounded-xl p-5">
       <label htmlFor={sliderId} className="text-body-sm font-medium text-[var(--color-text-primary)]">
         {question}
       </label>
@@ -245,23 +265,28 @@ export function CaseStudyFeedback({
         </fieldset>
       )}
 
-      <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        {showReasons && !reason && (
-          <p className="text-body-sm text-[var(--color-text-muted)]">Select a reason to continue.</p>
-        )}
+      <div className="relative mt-5 min-h-[44px]">
+        <p
+          className={cn(
+            "text-body-sm text-[var(--color-text-muted)] sm:absolute sm:inset-y-0 sm:left-0 sm:flex sm:max-w-[calc(100%-12rem)] sm:items-center",
+            !(showReasons && !reason) && "hidden",
+          )}
+        >
+          Select a reason to continue.
+        </p>
         <button
           type="button"
           onClick={handleConfirm}
           disabled={!canConfirm || submitting}
           className={cn(
-            "inline-flex min-h-[44px] items-center justify-center rounded-full px-6 py-2.5 text-body-sm font-medium transition-colors",
+            "inline-flex min-h-[44px] mt-2 w-full items-center justify-center rounded-full px-6 py-2.5 text-body-sm font-medium transition-colors sm:absolute sm:right-0 sm:top-0 sm:mt-0 sm:w-auto",
             "bg-[#0d7377] text-white hover:bg-[#0a5c5f] disabled:cursor-not-allowed disabled:opacity-45",
-            !showReasons && "sm:ml-auto",
           )}
         >
           {submitting ? "Submitting…" : "Confirm rating"}
         </button>
       </div>
+    </div>
     </div>
   );
 }

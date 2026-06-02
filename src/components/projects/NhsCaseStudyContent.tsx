@@ -1,4 +1,4 @@
-import { ClipboardList, Map, Users } from "lucide-react";
+import { Building2, ClipboardList, Headset, Map, Route, Users } from "lucide-react";
 import type { Project } from "@/content/projects";
 import {
   nhsAtAGlance,
@@ -15,13 +15,16 @@ import { Button } from "@/components/ui/Button";
 import { CaseStudyAtAGlance } from "@/components/projects/CaseStudyAtAGlance";
 import { CaseStudySectionNav } from "@/components/projects/CaseStudySectionNav";
 import { CaseStudySection } from "@/components/projects/CaseStudySection";
-import { CaseStudyFeedback } from "@/components/projects/CaseStudyFeedback";
+import { CaseStudyReflection } from "@/components/projects/CaseStudyReflection";
 import {
   CaseStudyIllustration,
   CaseStudySplitSection,
 } from "@/components/projects/CaseStudyIllustration";
 import { ZoomableScreenshot } from "@/components/projects/ZoomableScreenshot";
 import { NhsPersonasInteractive } from "@/components/projects/NhsPersonasInteractive";
+import { NhsQuantitativeInteractive } from "@/components/projects/NhsQuantitativeInteractive";
+
+const findingHighlightIcons = [Building2, Headset, Route] as const;
 
 const deliverableHighlights = [
   {
@@ -30,7 +33,7 @@ const deliverableHighlights = [
   },
   {
     icon: Map,
-    text: "Journey maps for distressed, connection-seeking, and breaking-point callers highlighted wait-time and routing pain.",
+    text: "Five matching journey maps — frustrations, quotes, and emotional peaks mapped end-to-end for each persona.",
   },
   {
     icon: ClipboardList,
@@ -140,36 +143,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
           ))}
         </ul>
 
-        <NhsPersonasInteractive className="mb-10" />
-
-        <div className="space-y-10 not-prose">
-          <div>
-            <h3 className="text-h4 font-semibold mb-2 text-[var(--color-text-primary)]">
-              Journey maps
-            </h3>
-            <p className="text-body text-[var(--color-text-muted)] mb-4">
-              End-to-end journeys from first hearing about 111 through to after the call — with
-              frustrations, quotes, and emotional peaks highlighted.
-            </p>
-            <div className="grid gap-6">
-              <ZoomableScreenshot
-                src="/projects/nhs-111-waiting-times/journey-distressed-caller.png"
-                alt="Distressed caller journey map for NHS 111"
-                caption="Distressed caller journey"
-              />
-              <ZoomableScreenshot
-                src="/projects/nhs-111-waiting-times/journey-connection-seeker.png"
-                alt="Connection seeker journey map for NHS 111"
-                caption="Connection seeker journey"
-              />
-              <ZoomableScreenshot
-                src="/projects/nhs-111-waiting-times/journey-breaking-point.png"
-                alt="Breaking point caller journey map for NHS 111"
-                caption="Breaking point caller journey"
-              />
-            </div>
-          </div>
-        </div>
+        <NhsPersonasInteractive />
       </CaseStudySection>
 
       <CaseStudySection
@@ -183,23 +157,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
           ))}
         </ul>
 
-        <div className="space-y-10 not-prose">
-          <ZoomableScreenshot
-            src="/projects/nhs-111-waiting-times/survey-respondents.png"
-            alt="Chart showing who filled out the follow-up survey"
-            caption="Survey respondents — who took part in the quantitative follow-up"
-          />
-          <ZoomableScreenshot
-            src="/projects/nhs-111-waiting-times/trying-other-resources.png"
-            alt="Chart of callers who tried other resources before NHS 111"
-            caption="Trying other resources before calling 111"
-          />
-          <ZoomableScreenshot
-            src="/projects/nhs-111-waiting-times/999-trying-resources.png"
-            alt="Chart comparing 999 outcomes with trying other resources before the 111 call"
-            caption="999 outcomes vs trying other resources first"
-          />
-        </div>
+        <NhsQuantitativeInteractive />
       </CaseStudySection>
 
       <CaseStudySection
@@ -207,18 +165,30 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         title={nhsSectionTitle("key-findings")}
         lead="What the combined research told the NHS team about caller behaviour and service improvements."
       >
-        <div className="space-y-6 mb-10 not-prose">
-          {nhsFindingHighlights.map(({ title, text }) => (
-            <div
-              key={title}
-              className="rounded-xl border border-[var(--color-border)] bg-neutral-50 px-5 py-4"
-            >
-              <h3 className="text-body font-semibold text-[var(--color-text-primary)] mb-2">
-                {title}
-              </h3>
-              <p className="text-body-sm text-[var(--color-text-secondary)]">{text}</p>
-            </div>
-          ))}
+        <div className="space-y-4 mb-10 not-prose">
+          {nhsFindingHighlights.map(({ title, text }, index) => {
+            const Icon = findingHighlightIcons[index] ?? Building2;
+
+            return (
+              <div
+                key={title}
+                className="flex gap-4 rounded-xl border border-[var(--color-border)] bg-neutral-50 px-5 py-4"
+              >
+                <span
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#005eb8] text-white shadow-sm"
+                  aria-hidden
+                >
+                  <Icon size={20} strokeWidth={1.75} />
+                </span>
+                <div className="min-w-0">
+                  <h3 className="text-body font-semibold text-[var(--color-text-primary)] mb-1.5">
+                    {title}
+                  </h3>
+                  <p className="text-body-sm text-[var(--color-text-secondary)]">{text}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         <div className="space-y-10 not-prose">
@@ -240,36 +210,18 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         </div>
       </CaseStudySection>
 
-      <section id="reflection" aria-label="Reflection" className="scroll-mt-36">
-        <CaseStudySplitSection
-          title="Limitations"
-          lead="Working within recruitment and interview constraints, not an ideal lab study."
-          visual={
-            <CaseStudyIllustration
-              src="/projects/nhs-111-waiting-times/journey-planning.png"
-              alt="Illustration of planning and mapping the research journey"
-            />
-          }
-          className="mb-10"
-        >
-          <ul className="list-disc pl-5 space-y-2">
-            {project.limitations.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </CaseStudySplitSection>
-
-        <div className="mb-10">
-          <h3 className="text-h4 font-semibold mb-4 text-[var(--color-text-primary)]">Key takeaways</h3>
-          <ul className="space-y-4">
-            {nhsReflectionItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
-
-        <CaseStudyFeedback feedbackPath="/work/nhs-111-waiting-times" />
-      </section>
+      <CaseStudyReflection
+        limitationsLead="Working within recruitment and interview constraints, not an ideal lab study."
+        limitationsVisual={
+          <CaseStudyIllustration
+            src="/projects/nhs-111-waiting-times/journey-planning.png"
+            alt="Illustration of planning and mapping the research journey"
+          />
+        }
+        limitations={project.limitations}
+        takeaways={nhsReflectionItems}
+        feedbackPath="/work/nhs-111-waiting-times"
+      />
 
       <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row gap-4 not-prose">
         <Button href="/work">← All projects</Button>

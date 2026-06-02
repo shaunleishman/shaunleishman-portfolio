@@ -16,12 +16,14 @@ import { Button } from "@/components/ui/Button";
 import { CaseStudyAtAGlance } from "@/components/projects/CaseStudyAtAGlance";
 import { CaseStudySectionNav } from "@/components/projects/CaseStudySectionNav";
 import { CaseStudySection } from "@/components/projects/CaseStudySection";
-import { CaseStudyFeedback } from "@/components/projects/CaseStudyFeedback";
+import { CaseStudyReflection } from "@/components/projects/CaseStudyReflection";
+import { CaseStudySubsection } from "@/components/projects/CaseStudySubsection";
 import {
   CaseStudyIllustration,
   CaseStudySplitSection,
 } from "@/components/projects/CaseStudyIllustration";
 import { ZoomableScreenshot } from "@/components/projects/ZoomableScreenshot";
+import { OmronPractitionerBoardsInteractive } from "@/components/projects/OmronPractitionerBoardsInteractive";
 
 const actionCardFlow = [
   {
@@ -133,35 +135,15 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
           ))}
         </ul>
 
-        <div className="space-y-10 not-prose">
+        <div className="space-y-6 not-prose">
           <ZoomableScreenshot
             src="/projects/omron-patient-monitoring/co-design-workshop.png"
             alt="Co-design workshop with practitioner persona boards and sticky-note feedback"
             caption="Co-design session — persona boards and workshop feedback"
+            previewMaxHeight={420}
           />
 
-          <div className="grid gap-6">
-            <ZoomableScreenshot
-              src="/projects/omron-patient-monitoring/general-practitioner-user-group.png"
-              alt="General practitioner persona board for OMRON VISO"
-              caption="General practitioner — triage, monitoring, and VISO usage"
-            />
-            <ZoomableScreenshot
-              src="/projects/omron-patient-monitoring/nurse-practitioner-user-group.png"
-              alt="Nurse practitioner persona board for OMRON VISO"
-              caption="Nurse practitioner — remote monitoring and action cards"
-            />
-            <ZoomableScreenshot
-              src="/projects/omron-patient-monitoring/clinical-pharmacists-user-group.png"
-              alt="Clinical pharmacist persona board for OMRON VISO"
-              caption="Clinical pharmacist — medication management workflows"
-            />
-            <ZoomableScreenshot
-              src="/projects/omron-patient-monitoring/senior-nurse-user-group.png"
-              alt="Senior nurse persona board for OMRON VISO"
-              caption="Practice nurse — patient onboarding and monitoring setup"
-            />
-          </div>
+          <OmronPractitionerBoardsInteractive />
         </div>
       </CaseStudySection>
 
@@ -184,7 +166,7 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
           ))}
         </ul>
 
-        <div className="space-y-10 not-prose mb-10">
+        <div className="space-y-6 not-prose mb-10">
           <ZoomableScreenshot
             src="/projects/omron-patient-monitoring/wireframe-sketches.png"
             alt="Hand-drawn wireframes for action cards, dashboard, and patient assignment flows"
@@ -219,17 +201,10 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
         </Link>
       </CaseStudySection>
 
-      <CaseStudySplitSection
+      <CaseStudySection
         id="usability-testing"
         title={omronSectionTitle("usability-testing")}
         lead="Moderated sessions tested critical flows — especially assigning patients between practitioners."
-        visual={
-          <CaseStudyIllustration
-            src="/projects/omron-patient-monitoring/usability-research.png"
-            alt="Illustration of reviewing research findings"
-          />
-        }
-        visualFirst={false}
       >
         <p className="text-body text-[var(--color-text-secondary)] mb-4">
           {project.approachWhy.join(" · ")}
@@ -247,134 +222,103 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
             </div>
           ))}
         </div>
-      </CaseStudySplitSection>
+      </CaseStudySection>
 
       <CaseStudySection
         id="refined-solution"
         title={omronSectionTitle("refined-solution")}
         lead="How practitioners move from the monitoring dashboard to a completed action. Screenshots show representative examples from the prototype."
       >
-        <h3 className="text-h4 font-semibold mb-4 text-[var(--color-text-primary)]">User flow</h3>
-        <div className="overflow-x-auto rounded-xl border border-[var(--color-border)] mb-10 not-prose">
-          <table className="w-full min-w-[640px] text-left text-body-sm">
-            <thead className="bg-neutral-50 border-b border-[var(--color-border)]">
-              <tr>
-                <th scope="col" className="px-4 py-3 font-semibold">
-                  Stage
-                </th>
-                <th scope="col" className="px-4 py-3 font-semibold">
-                  User action
-                </th>
-                <th scope="col" className="px-4 py-3 font-semibold">
-                  Design response
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--color-border)]">
-              {actionCardFlow.map((row) => (
-                <tr key={row.stage} className="align-top">
-                  <td className="px-4 py-3 font-medium text-[var(--color-text-primary)] whitespace-nowrap">
-                    {row.stage}
-                  </td>
-                  <td className="px-4 py-3">{row.action}</td>
-                  <td className="px-4 py-3">{row.response}</td>
+        <CaseStudySubsection title="User flow">
+          <div className="overflow-x-auto rounded-xl border border-[var(--color-border)] not-prose">
+            <table className="w-full min-w-[640px] text-left text-body-sm">
+              <thead className="bg-neutral-50 border-b border-[var(--color-border)]">
+                <tr>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Stage
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    User action
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Design response
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="space-y-10 not-prose">
-          <div>
-            <h3 className="text-h4 font-semibold mb-2 text-[var(--color-text-primary)]">
-              Monitoring dashboard
-            </h3>
-            <p className="text-body text-[var(--color-text-muted)] mb-4">
-              Alert categories, referral filters, and a patient table help practitioners find who
-              needs attention first.
-            </p>
-            <ZoomableScreenshot
-              src="/projects/omron-patient-monitoring/monitoring-dashboard.png"
-              alt="OMRON monitoring dashboard with patient alerts and filters"
-              caption="Monitoring view — alert filters and assigned patient list"
-            />
+              </thead>
+              <tbody className="divide-y divide-[var(--color-border)]">
+                {actionCardFlow.map((row) => (
+                  <tr key={row.stage} className="align-top">
+                    <td className="px-4 py-3 font-medium text-[var(--color-text-primary)] whitespace-nowrap">
+                      {row.stage}
+                    </td>
+                    <td className="px-4 py-3">{row.action}</td>
+                    <td className="px-4 py-3">{row.response}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+        </CaseStudySubsection>
 
-          <div>
-            <h3 className="text-h4 font-semibold mb-2 text-[var(--color-text-primary)]">
-              Patient profile and tabs
-            </h3>
-            <p className="text-body text-[var(--color-text-muted)] mb-4">
-              Redesigned tabs group clinical context, readings, and actions in one place.
-            </p>
+        <div className="not-prose">
+          <CaseStudySubsection
+            title="Monitoring dashboard"
+            lead="Alert categories, referral filters, and a patient table help practitioners find who needs attention first."
+          >
+            <ZoomableScreenshot
+              src="/projects/omron-patient-monitoring/monitoring-dashboard.gif"
+              alt="OMRON monitoring dashboard prototype walkthrough with patient alerts and filters"
+              caption="Monitoring view — alert filters and assigned patient list (prototype walkthrough)"
+            />
+          </CaseStudySubsection>
+
+          <CaseStudySubsection
+            title="Patient profile and tabs"
+            lead="Redesigned tabs group clinical context, readings, and actions in one place."
+          >
             <ZoomableScreenshot
               src="/projects/omron-patient-monitoring/patient-existing-tabs.png"
               alt="Patient profile with redesigned tab structure"
               caption="Patient profile — clinical context and monitoring tabs"
             />
-          </div>
+          </CaseStudySubsection>
 
-          <div>
-            <h3 className="text-h4 font-semibold mb-2 text-[var(--color-text-primary)]">
-              Assign patient with mandatory handover
-            </h3>
-            <p className="text-body text-[var(--color-text-muted)] mb-4">
-              Reassigning a patient requires a reason — reducing silent transfers between
-              practitioners.
-            </p>
+          <CaseStudySubsection
+            title="Assign patient with mandatory handover"
+            lead="Reassigning a patient requires a reason — reducing silent transfers between practitioners."
+          >
             <ZoomableScreenshot
               src="/projects/omron-patient-monitoring/group-122.png"
               alt="Assign patient flow with required reason for transfer"
               caption="Assign patient — reason for transfer required"
             />
-          </div>
+          </CaseStudySubsection>
 
-          <div>
-            <h3 className="text-h4 font-semibold mb-2 text-[var(--color-text-primary)]">
-              Action card detail
-            </h3>
-            <p className="text-body text-[var(--color-text-muted)] mb-4">
-              Action cards surface the task, status, and next steps for each patient alert.
-            </p>
+          <CaseStudySubsection
+            title="Action card detail"
+            lead="Action cards surface the task, status, and next steps for each patient alert."
+          >
             <ZoomableScreenshot
               src="/projects/omron-patient-monitoring/group-123.png"
               alt="Action card detail view in the OMRON prototype"
               caption="Action card — task detail and completion states"
             />
-          </div>
+          </CaseStudySubsection>
         </div>
       </CaseStudySection>
 
-      <section id="reflection" aria-label="Reflection" className="scroll-mt-36">
-        <CaseStudySplitSection
-          title="Limitations"
-          lead="Working within a fixed scope and without full design-system integration."
-          visual={
-            <CaseStudyIllustration
-              src="/projects/omron-patient-monitoring/limitations-illustration.png"
-              alt="Illustration representing the weight of clinical workflow constraints"
-            />
-          }
-          className="mb-10"
-        >
-          <ul className="list-disc pl-5 space-y-2">
-            {project.limitations.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </CaseStudySplitSection>
-
-        <div className="mb-10">
-          <h3 className="text-h4 font-semibold mb-4 text-[var(--color-text-primary)]">Key takeaways</h3>
-          <ul className="space-y-4">
-            {omronReflectionItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
-
-        <CaseStudyFeedback feedbackPath="/work/omron-patient-monitoring" />
-      </section>
+      <CaseStudyReflection
+        limitationsLead="Working within a fixed scope and without full design-system integration."
+        limitationsVisual={
+          <CaseStudyIllustration
+            src="/projects/omron-patient-monitoring/limitations-illustration.png"
+            alt="Illustration representing the weight of clinical workflow constraints"
+          />
+        }
+        limitations={project.limitations}
+        takeaways={omronReflectionItems}
+        feedbackPath="/work/omron-patient-monitoring"
+      />
 
       <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row gap-4 not-prose">
         <Button href="/work">← All projects</Button>
