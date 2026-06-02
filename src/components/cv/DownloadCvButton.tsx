@@ -24,8 +24,10 @@ export function DownloadCvButton() {
       disabled={status === "preparing"}
       aria-busy={status === "preparing"}
       className={cn(
-        "inline-flex items-center justify-center gap-2 min-h-[44px] px-5 py-2 rounded-full bg-white text-[#0a0a0a] text-body-sm font-medium transition-colors",
-        status === "preparing" ? "opacity-70 cursor-wait" : "hover:bg-neutral-100",
+        "inline-flex items-center justify-center gap-2 min-h-[44px] px-5 py-2 rounded-full border border-white/30 bg-white/10 text-white text-body-sm font-medium transition-colors",
+        status === "preparing"
+          ? "cursor-wait opacity-70"
+          : "hover:border-white/50 hover:bg-white/15",
       )}
     >
       <Download className="size-4 shrink-0" aria-hidden />
