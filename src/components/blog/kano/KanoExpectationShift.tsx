@@ -7,12 +7,6 @@ import { KanoChart } from "./KanoChart";
 import { KanoChip, FilterChipRow, KanoSlider, KanoStat, KanoStatRow, ClientMount } from "./KanoControls";
 import { KanoWidget } from "./KanoWidget";
 
-const EXAMPLES = [
-  { label: "AI summaries", mature: "Basic expectation" },
-  { label: "One-click export", mature: "Performance need" },
-  { label: "Dark mode", mature: "Basic on many apps" },
-] as const;
-
 const MATURITY_STAGES = [
   { label: "At launch", value: 0 },
   { label: "Adapting", value: 0.5 },
@@ -23,7 +17,6 @@ const PRIMARY = "#14b8a6";
 
 export function KanoExpectationShift() {
   const [maturityIdx, setMaturityIdx] = useState(1);
-  const [exampleIdx, setExampleIdx] = useState(0);
   const [probeT, setProbeT] = useState(0.8);
 
   const maturity = MATURITY_STAGES[maturityIdx].value;
@@ -42,24 +35,13 @@ export function KanoExpectationShift() {
   );
 
   const currentSat = shiftedSatisfactionAt(probeT, maturity);
-  const example = EXAMPLES[exampleIdx];
+  const maturityLabel = MATURITY_STAGES[maturityIdx].label.toLowerCase();
 
   return (
     <KanoWidget
       title="Delighters become expectations"
       hint="Hover the chart to explore. Switch maturity to see the curve shift."
     >
-      <FilterChipRow label="Example">
-        {EXAMPLES.map((ex, i) => (
-          <KanoChip
-            key={ex.label}
-            label={ex.label}
-            selected={exampleIdx === i}
-            onClick={() => setExampleIdx(i)}
-          />
-        ))}
-      </FilterChipRow>
-
       <FilterChipRow label="Market maturity">
         {MATURITY_STAGES.map((stage, i) => (
           <KanoChip
@@ -72,8 +54,11 @@ export function KanoExpectationShift() {
       </FilterChipRow>
 
       <p className="mb-3 text-[0.8125rem] text-[var(--color-text-secondary)]">
-        <span className="font-medium text-[var(--color-text-primary)]">{example.label}</span> moves
-        toward <span className="font-medium text-[#eab308]">{example.mature}</span> as users adapt.
+        A feature like <span className="font-medium text-[var(--color-text-primary)]">AI summaries</span> can
+        feel like a delighter at launch, then drift toward a{" "}
+        <span className="font-medium text-[#eab308]">basic expectation</span> as competitors catch up. With
+        the market <span className="font-medium text-[var(--color-text-primary)]">{maturityLabel}</span>, the
+        same capability sits further along that shift.
       </p>
 
       <ClientMount>
