@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useCallback, useId, useState } from "react";
 import { FilterChip } from "@/components/ui/FilterChip";
+import { FeedbackSubmittedNotice } from "@/components/ui/FeedbackSubmittedNotice";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/utils";
 
@@ -118,9 +119,7 @@ function SiteFeedbackForm() {
 
   if (submitted) {
     return (
-      <p className="text-body-sm text-[var(--color-text-muted)] motion-safe:animate-[fade-in_0.3s_ease-out]">
-        Thanks — your feedback helps shape what I share next.
-      </p>
+      <FeedbackSubmittedNotice description="Thanks — your feedback helps shape what I share next." />
     );
   }
 

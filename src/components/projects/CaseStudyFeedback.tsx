@@ -3,6 +3,7 @@
 import { useCallback, useId, useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
+import { FeedbackSubmittedNotice } from "@/components/ui/FeedbackSubmittedNotice";
 
 const MIN_SCORE = 1;
 const MAX_SCORE = 7;
@@ -137,9 +138,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
 
   if (submitted) {
     return (
-      <p className="text-body-sm text-[var(--color-text-muted)] motion-safe:animate-[fade-in_0.3s_ease-out]">
-        Thanks for the feedback.
-      </p>
+      <FeedbackSubmittedNotice description="Thanks — it helps me understand what's working on this case study." />
     );
   }
 
