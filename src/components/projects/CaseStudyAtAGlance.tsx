@@ -40,13 +40,13 @@ export function CaseStudyAtAGlance({
           <p className="text-body-sm text-[var(--color-text-muted)] mb-6 max-w-2xl">{summary}</p>
         )}
 
-        <ul className="grid gap-4 sm:grid-cols-3 mb-8 pb-8 border-b border-[var(--color-border)]">
+        <ul className="mb-8 grid gap-4 border-b border-[var(--color-border)] pb-8 sm:grid-cols-3 sm:items-stretch">
           {highlights.map((item, index) => {
             const Icon = HIGHLIGHT_ICONS[index % HIGHLIGHT_ICONS.length];
 
             return (
-              <li key={item} className="min-h-0">
-                <Reveal delay={index * 50} variant="scale">
+              <li key={item} className="h-full">
+                <Reveal delay={index * 50} variant="scale" className="h-full">
                   <div className="flex h-full flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-white p-4 shadow-sm">
                     <span
                       className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
@@ -55,7 +55,7 @@ export function CaseStudyAtAGlance({
                     >
                       <Icon size={20} strokeWidth={1.75} />
                     </span>
-                    <p className="text-body-sm font-medium leading-snug text-[var(--color-text-primary)]">
+                    <p className="flex-1 text-body-sm font-medium leading-snug text-[var(--color-text-primary)]">
                       {item}
                     </p>
                   </div>
