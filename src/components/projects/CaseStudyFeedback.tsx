@@ -5,63 +5,72 @@ import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
 
 const MIN_SCORE = 1;
-const MAX_SCORE = 7;
+const MAX_SCORE = 10;
 const THUMB_SIZE_PX = 20;
 
-function getTickPercent(value: number) {
-  return ((value - MIN_SCORE) / (MAX_SCORE - MIN_SCORE)) * 100;
-}
+const ANCHOR_LABELS = {
+  low: "Weak or unconvincing",
+  mid: "Decent, but not especially memorable",
+  high: "Strong, credible and impressive",
+} as const;
 
-const SCORE_LABELS = [
-  "Not relevant at all",
-  "Not very relevant",
-  "Slightly relevant",
-  "Moderately relevant",
-  "Quite relevant",
-  "Very relevant",
-  "Extremely relevant",
-] as const;
+const SCORE_LABELS: Record<number, string> = {
+  1: ANCHOR_LABELS.low,
+  2: ANCHOR_LABELS.low,
+  3: "Weak in places",
+  4: "Some potential, not fully convincing",
+  5: ANCHOR_LABELS.mid,
+  6: ANCHOR_LABELS.mid,
+  7: "Fairly strong",
+  8: "Strong and credible",
+  9: ANCHOR_LABELS.high,
+  10: ANCHOR_LABELS.high,
+};
 
 const REASONS = [
   "Wrong industry",
   "Wrong skills or focus area",
   "Too technical",
   "Not enough detail",
-  "Wrong seniority level",
-  "Looking for different experience",
+  "Hard to follow the story",
+  "Doesn't show enough impact",
   "Not the kind of project I hire for",
 ] as const;
 
-type FeedbackBucket = "not" | "somewhat" | "very";
+type FeedbackBucket = "weak" | "decent" | "strong";
 
 type CaseStudyFeedbackProps = {
   projectSlug: string;
 };
 
+function getTickPercent(value: number) {
+  return ((value - MIN_SCORE) / (MAX_SCORE - MIN_SCORE)) * 100;
+}
+
 function getScoreLabel(score: number) {
-  return SCORE_LABELS[score - 1] ?? SCORE_LABELS[3];
+  return SCORE_LABELS[score] ?? ANCHOR_LABELS.mid;
 }
 
 function getFeedbackBucket(score: number): FeedbackBucket {
-  if (score <= 2) return "not";
-  if (score <= 4) return "somewhat";
-  return "very";
+  if (score <= 4) return "weak";
+  if (score <= 7) return "decent";
+  return "strong";
 }
 
 export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
   const sliderId = useId();
-  const [score, setScore] = useState(4);
+  const [score, setScore] = useState(5);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [reason, setReason] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const isNegative = score <= 4;
-  const showReasons = hasInteracted && isNegative;
-  const canConfirm = hasInteracted && (!isNegative || reason !== null);
+  const isWeak = score <= 4;
+  const showReasons = hasInteracted && isWeak;
+  const canConfirm = hasInteracted && (!isWeak || reason !== null);
 
   const sendFeedback = useCallback(
-    async (feedback: FeedbackBucket, relevanceScore: number, nextReason?: string) => {
+    async (feedback: FeedbackBucket, strengthScore: number, nextReason?: string) => {
       setSubmitting(true);
 
       try {
@@ -82,7 +91,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
             path: `/work/${projectSlug}`,
             metadata: {
               feedback,
-              score: relevanceScore,
+              score: strengthScore,
               reason: nextReason ?? null,
             },
           }),
@@ -120,7 +129,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
   return (
     <div className="surface-muted rounded-xl p-5 not-prose">
       <label htmlFor={sliderId} className="text-body-sm font-medium text-[var(--color-text-primary)]">
-        Was this project relevant to you?
+        How strong does this project come across?
       </label>
 
       <div className="mt-4">
@@ -129,7 +138,15 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
           aria-live="polite"
           aria-atomic="true"
         >
-          {hasInteracted ? getScoreLabel(score) : "Move the slider, then confirm your rating"}
+          {hasInteracted ? (
+            <>
+              <span className="tabular-nums">{score}</span>
+              <span className="text-[var(--color-text-muted)]"> / 10 — </span>
+              {getScoreLabel(score)}
+            </>
+          ) : (
+            "Move the slider, then confirm your rating"
+          )}
         </p>
 
         <div
@@ -153,14 +170,14 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
               "[&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[#0d7377] [&::-webkit-slider-thumb]:shadow-md",
               "[&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[#0d7377] [&::-moz-range-thumb]:shadow-md",
             )}
-            aria-valuetext={`${score} out of 7. ${getScoreLabel(score)}`}
+            aria-valuetext={`${score} out of 10. ${getScoreLabel(score)}`}
             aria-valuemin={MIN_SCORE}
             aria-valuemax={MAX_SCORE}
             aria-valuenow={score}
           />
 
           <div className="relative mt-3 h-1.5" aria-hidden>
-            {SCORE_LABELS.map((_, index) => {
+            {Array.from({ length: MAX_SCORE }, (_, index) => {
               const point = index + 1;
               return (
                 <span
@@ -175,9 +192,22 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
             })}
           </div>
 
-          <div className="mt-2 flex justify-between gap-2 text-body-sm text-[var(--color-text-muted)]">
-            <span>Not relevant</span>
-            <span>Very relevant</span>
+          <div className="mt-3 grid gap-3 text-body-sm text-[var(--color-text-muted)] sm:grid-cols-3 sm:gap-4">
+            <p className="leading-snug">
+              <span className="font-medium tabular-nums text-[var(--color-text-secondary)]">1</span>
+              {" · "}
+              {ANCHOR_LABELS.low}
+            </p>
+            <p className="leading-snug sm:text-center">
+              <span className="font-medium tabular-nums text-[var(--color-text-secondary)]">5</span>
+              {" · "}
+              {ANCHOR_LABELS.mid}
+            </p>
+            <p className="leading-snug sm:text-right">
+              <span className="font-medium tabular-nums text-[var(--color-text-secondary)]">10</span>
+              {" · "}
+              {ANCHOR_LABELS.high}
+            </p>
           </div>
         </div>
       </div>
@@ -188,7 +218,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
           disabled={submitting}
         >
           <legend className="text-body-sm font-medium text-[var(--color-text-primary)] mb-3">
-            Why wasn&apos;t this relevant enough?
+            What held it back?
           </legend>
           <div className="flex flex-wrap gap-2">
             {REASONS.map((option) => (
