@@ -1,5 +1,7 @@
 import { getCvPdfFilename } from "@/content/cv";
 
+const PDF_IFRAME_WIDTH_PX = 794;
+
 async function waitForCvRoot(): Promise<{ root: HTMLElement; cleanup: () => void }> {
   const existing = document.querySelector<HTMLElement>("[data-cv-pdf-root]");
   if (existing) {
@@ -8,8 +10,7 @@ async function waitForCvRoot(): Promise<{ root: HTMLElement; cleanup: () => void
 
   const iframe = document.createElement("iframe");
   iframe.setAttribute("aria-hidden", "true");
-  iframe.style.cssText =
-    "position:fixed;left:-9999px;top:0;width:900px;height:100vh;border:0;visibility:hidden";
+  iframe.style.cssText = `position:fixed;left:-9999px;top:0;width:${PDF_IFRAME_WIDTH_PX}px;height:100vh;border:0;visibility:hidden`;
   iframe.src = "/cv";
   document.body.appendChild(iframe);
 
@@ -25,9 +26,18 @@ async function waitForCvRoot(): Promise<{ root: HTMLElement; cleanup: () => void
     };
   });
 
-  await new Promise((resolve) => window.setTimeout(resolve, 600));
+  const iframeDoc = iframe.contentDocument;
+  if (!iframeDoc) {
+    iframe.remove();
+    throw new Error("CV iframe unavailable");
+  }
 
-  const root = iframe.contentDocument?.querySelector<HTMLElement>("[data-cv-pdf-root]");
+  iframeDoc.documentElement.classList.add("cv-pdf-export");
+  await iframeDoc.fonts?.ready;
+
+  await new Promise((resolve) => window.setTimeout(resolve, 400));
+
+  const root = iframeDoc.querySelector<HTMLElement>("[data-cv-pdf-root]");
   if (!root) {
     iframe.remove();
     throw new Error("CV content not found");
@@ -39,21 +49,35 @@ async function waitForCvRoot(): Promise<{ root: HTMLElement; cleanup: () => void
   };
 }
 
+function prepareRootForExport(root: HTMLElement) {
+  root.querySelectorAll<HTMLElement>("[class*='opacity-0']").forEach((node) => {
+    node.style.opacity = "1";
+    node.style.transform = "none";
+  });
+}
+
 export async function downloadCvPdf() {
   const { root, cleanup } = await waitForCvRoot();
   const iframeRoot = root.ownerDocument?.documentElement;
 
   document.documentElement.classList.add("cv-pdf-export");
   iframeRoot?.classList.add("cv-pdf-export");
+  prepareRootForExport(root);
+
+  await document.fonts?.ready;
+  await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)));
+
+  const captureHeight = root.scrollHeight;
+  const captureWidth = root.scrollWidth;
 
   try {
     const html2pdf = (await import("html2pdf.js")).default;
 
     await html2pdf()
       .set({
-        margin: [12, 14, 16, 14],
+        margin: [10, 12, 10, 12],
         filename: getCvPdfFilename(),
-        image: { type: "jpeg", quality: 0.96 },
+        image: { type: "jpeg", quality: 0.98 },
         html2canvas: {
           scale: 2,
           useCORS: true,
@@ -61,7 +85,10 @@ export async function downloadCvPdf() {
           backgroundColor: "#ffffff",
           scrollX: 0,
           scrollY: 0,
-          windowWidth: root.scrollWidth,
+          width: captureWidth,
+          height: captureHeight,
+          windowWidth: captureWidth,
+          windowHeight: captureHeight,
         },
         jsPDF: {
           unit: "mm",
@@ -70,7 +97,7 @@ export async function downloadCvPdf() {
         },
         pagebreak: {
           mode: ["css", "legacy"],
-          avoid: ["section", "article", "h2", "h3", "blockquote"],
+          avoid: ["h2", "h3", "blockquote"],
         },
       })
       .from(root)
