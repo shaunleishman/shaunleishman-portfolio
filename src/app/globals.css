@@ -287,8 +287,27 @@
 }
 
 .cv-pdf-export [data-cv-pdf-root] {
+  box-sizing: border-box !important;
   max-width: none !important;
+  overflow: visible !important;
   padding: 0 !important;
+  width: 100% !important;
+}
+
+.cv-pdf-export [data-cv-pdf-root] p,
+.cv-pdf-export [data-cv-pdf-root] li,
+.cv-pdf-export [data-cv-pdf-root] h1,
+.cv-pdf-export [data-cv-pdf-root] h2,
+.cv-pdf-export [data-cv-pdf-root] h3,
+.cv-pdf-export [data-cv-pdf-root] blockquote {
+  overflow: visible !important;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cv-pdf-export [data-cv-pdf-root] section {
+  break-inside: auto;
+  page-break-inside: auto;
 }
 
 .cv-pdf-export [data-cv-pdf-root] > div,

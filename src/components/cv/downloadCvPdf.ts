@@ -3,13 +3,15 @@ import { getCvPdfFilename } from "@/content/cv";
 const PDF_IFRAME_WIDTH_PX = 794;
 const A4_WIDTH_MM = 210;
 const A4_HEIGHT_MM = 297;
-const PDF_MARGIN_V_MM = 8;
-const PDF_MARGIN_H_MM = 10;
+const PDF_MARGIN_V_MM = 10;
+const PDF_MARGIN_H_MM = 12;
 const PDF_PAGE_COUNT = 2;
+/** Small scale reduction so page splits don't clip the last lines on each page. */
+const PDF_PAGE_FIT_SAFETY = 0.96;
 
 function getTwoPageTargetHeightPx(contentWidthPx: number) {
   const innerHeightMm = (A4_HEIGHT_MM - PDF_MARGIN_V_MM * 2) * PDF_PAGE_COUNT;
-  return (innerHeightMm / A4_WIDTH_MM) * contentWidthPx;
+  return (innerHeightMm / A4_WIDTH_MM) * contentWidthPx * PDF_PAGE_FIT_SAFETY;
 }
 
 async function waitForCvRoot(): Promise<{ root: HTMLElement; cleanup: () => void }> {
@@ -67,16 +69,12 @@ function prepareRootForExport(root: HTMLElement) {
 }
 
 function fitRootToTwoA4Pages(root: HTMLElement) {
-  const contentWidth = root.scrollWidth;
+  const contentWidth = root.getBoundingClientRect().width || root.scrollWidth;
   const targetHeight = getTwoPageTargetHeightPx(contentWidth);
   const naturalHeight = root.scrollHeight;
 
   if (naturalHeight <= targetHeight) {
-    return {
-      scale: 1,
-      captureWidth: contentWidth,
-      captureHeight: naturalHeight,
-    };
+    return 1;
   }
 
   const scale = targetHeight / naturalHeight;
@@ -89,11 +87,7 @@ function fitRootToTwoA4Pages(root: HTMLElement) {
     root.style.width = `${contentWidth / scale}px`;
   }
 
-  return {
-    scale,
-    captureWidth: contentWidth,
-    captureHeight: Math.ceil(naturalHeight * scale),
-  };
+  return scale;
 }
 
 function resetRootFit(root: HTMLElement) {
@@ -101,6 +95,10 @@ function resetRootFit(root: HTMLElement) {
   root.style.transform = "";
   root.style.transformOrigin = "";
   root.style.width = "";
+}
+
+function getCaptureWidth(root: HTMLElement) {
+  return Math.ceil(root.getBoundingClientRect().width || root.scrollWidth);
 }
 
 export async function downloadCvPdf() {
@@ -114,9 +112,11 @@ export async function downloadCvPdf() {
   await document.fonts?.ready;
   await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)));
 
-  const { captureWidth, captureHeight } = fitRootToTwoA4Pages(root);
+  fitRootToTwoA4Pages(root);
 
   await new Promise((resolve) => window.requestAnimationFrame(() => resolve(undefined)));
+
+  const captureWidth = getCaptureWidth(root);
 
   try {
     const html2pdf = (await import("html2pdf.js")).default;
@@ -134,9 +134,7 @@ export async function downloadCvPdf() {
           scrollX: 0,
           scrollY: 0,
           width: captureWidth,
-          height: captureHeight,
           windowWidth: captureWidth,
-          windowHeight: captureHeight,
         },
         jsPDF: {
           unit: "mm",
@@ -145,7 +143,7 @@ export async function downloadCvPdf() {
         },
         pagebreak: {
           mode: ["css", "legacy"],
-          avoid: ["h2", "h3"],
+          avoid: ["p", "li", "article", "h2", "h3", "blockquote"],
         },
       })
       .from(root)
