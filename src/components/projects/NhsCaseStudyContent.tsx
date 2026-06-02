@@ -21,11 +21,12 @@ import {
   CaseStudySplitSection,
 } from "@/components/projects/CaseStudyIllustration";
 import { ZoomableScreenshot } from "@/components/projects/ZoomableScreenshot";
+import { NhsPersonasInteractive } from "@/components/projects/NhsPersonasInteractive";
 
 const deliverableHighlights = [
   {
     icon: Users,
-    text: "Five personas mapped along a certainty spectrum — from unsure callers to those who know what they need.",
+    text: "Five interactive personas on a certainty spectrum — from unsure callers to those who know what they need.",
   },
   {
     icon: Map,
@@ -139,48 +140,9 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
           ))}
         </ul>
 
+        <NhsPersonasInteractive className="mb-10" />
+
         <div className="space-y-10 not-prose">
-          <div>
-            <h3 className="text-h4 font-semibold mb-2 text-[var(--color-text-primary)]">
-              Caller certainty spectrum
-            </h3>
-            <p className="text-body text-[var(--color-text-muted)] mb-4">
-              Five personas sit on a scale from very unsure to knowing what they need — helping the
-              team design for different levels of confidence and urgency.
-            </p>
-            <ZoomableScreenshot
-              src="/projects/nhs-111-waiting-times/persona-spectrum.png"
-              alt="Spectrum from very unsure callers to those who know what they need, with five persona types"
-              caption="Persona spectrum: connection seeker, distressed caller, confirmation seeker, breaking point, GP substitute"
-            />
-          </div>
-
-          <div>
-            <h3 className="text-h4 font-semibold mb-2 text-[var(--color-text-primary)]">
-              Persona boards
-            </h3>
-            <p className="text-body text-[var(--color-text-muted)] mb-4">
-              Detailed persona one-pagers combined motivations, frustrations, traits, and call patterns.
-            </p>
-            <div className="grid gap-6">
-              <ZoomableScreenshot
-                src="/projects/nhs-111-waiting-times/persona-confirmation-seeker.png"
-                alt="Confirmation seeker persona board for NHS 111"
-                caption="Confirmation seeker — wants reassurance that everything is fine"
-              />
-              <ZoomableScreenshot
-                src="/projects/nhs-111-waiting-times/persona-distressed-caller.png"
-                alt="Distressed caller persona board for NHS 111"
-                caption="Distressed caller — acute need with high anxiety during triage"
-              />
-              <ZoomableScreenshot
-                src="/projects/nhs-111-waiting-times/persona-connection-seeker.png"
-                alt="Connection seeker persona board for NHS 111"
-                caption="Connection seeker — calls for reassurance and to be heard"
-              />
-            </div>
-          </div>
-
           <div>
             <h3 className="text-h4 font-semibold mb-2 text-[var(--color-text-primary)]">
               Journey maps
