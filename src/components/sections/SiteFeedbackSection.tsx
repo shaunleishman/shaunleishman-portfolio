@@ -129,37 +129,40 @@ function SiteFeedbackForm() {
         How useful did you find this?
       </p>
 
-      <div
-        role="radiogroup"
-        aria-labelledby={`${groupId}-label`}
-        className="flex flex-wrap justify-center gap-2 sm:gap-3"
-      >
-        <span id={`${groupId}-label`} className="sr-only">
-          Rate usefulness from 1 to 5
-        </span>
-        {[1, 2, 3, 4, 5].map((value) => (
-          <button
-            key={value}
-            type="button"
-            role="radio"
-            aria-checked={score === value}
-            disabled={submitting}
-            onClick={() => handleScoreSelect(value)}
-            className={cn(
-              "inline-flex size-11 items-center justify-center rounded-full border text-body-sm font-semibold tabular-nums transition-colors",
-              score === value
-                ? "border-[#0d7377] bg-[#0d7377] text-white shadow-sm"
-                : "border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] hover:border-[#0d7377]/40 hover:text-[#0d7377]",
-            )}
-          >
-            {value}
-          </button>
-        ))}
-      </div>
+      <div className="w-full">
+        <div
+          role="radiogroup"
+          aria-labelledby={`${groupId}-label`}
+          className="grid grid-cols-5 gap-2"
+        >
+          <span id={`${groupId}-label`} className="sr-only">
+            Rate usefulness from 1 to 5
+          </span>
+          {[1, 2, 3, 4, 5].map((value) => (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={score === value}
+              disabled={submitting}
+              onClick={() => handleScoreSelect(value)}
+              className={cn(
+                "inline-flex min-h-11 w-full items-center justify-center rounded-lg border text-body-sm font-semibold tabular-nums transition-colors",
+                score === value
+                  ? "border-[#0d7377] bg-[#0d7377] text-white shadow-sm"
+                  : "border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] hover:border-[#0d7377]/40 hover:text-[#0d7377]",
+              )}
+            >
+              {value}
+            </button>
+          ))}
+        </div>
 
-      <div className="mt-2 flex justify-between text-[0.6875rem] text-[var(--color-text-muted)]">
-        <span>Not useful</span>
-        <span>Very useful</span>
+        <div className="mt-2 grid grid-cols-5 gap-2 text-[0.6875rem] text-[var(--color-text-muted)]">
+          <span className="text-left">Not useful</span>
+          <span className="col-span-3" aria-hidden />
+          <span className="text-right">Very useful</span>
+        </div>
       </div>
 
       {score !== null && (
