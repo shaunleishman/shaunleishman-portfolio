@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProject, projects } from "@/content/projects";
 import { arbncoCaseStudyMeta } from "@/content/arbnco-case-study";
+import { nhsCaseStudyMeta } from "@/content/nhs-case-study";
+import { omronCaseStudyMeta } from "@/content/omron-case-study";
 import { getIntroVisualBlocks } from "@/content/project-images";
 import { Tag } from "@/components/ui/Tag";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +12,8 @@ import { ProjectThumbnail } from "@/components/projects/ProjectThumbnail";
 import { CaseStudyVisualBlocks } from "@/components/projects/CaseStudyVisualBlock";
 import { CaseStudyListWithVisuals } from "@/components/projects/CaseStudyListWithVisuals";
 import { ArbncoCaseStudyContent } from "@/components/projects/ArbncoCaseStudyContent";
+import { NhsCaseStudyContent } from "@/components/projects/NhsCaseStudyContent";
+import { OmronCaseStudyContent } from "@/components/projects/OmronCaseStudyContent";
 import { CaseStudyBlock } from "@/components/projects/CaseStudyBlock";
 import { CaseStudyTextSection } from "@/components/projects/CaseStudyTextSection";
 import { CTASection } from "@/components/sections/CTASection";
@@ -40,11 +44,14 @@ export default async function CaseStudyPage({ params }: Props) {
   if (!project) notFound();
 
   const isArbnco = slug === "arbnco-synthetic-ai-data";
+  const isNhs = slug === "nhs-111-waiting-times";
+  const isOmron = slug === "omron-patient-monitoring";
+  const isRichCaseStudy = isArbnco || isNhs || isOmron;
 
   return (
     <>
       <section className="grid-bg text-white section-padding pb-12">
-        <PageHero wide={isArbnco}>
+        <PageHero wide={isRichCaseStudy}>
           <nav aria-label="Breadcrumb" className="mb-8">
             <ol className="flex flex-wrap gap-2 text-body-sm text-neutral-400">
               <li>
@@ -71,6 +78,16 @@ export default async function CaseStudyPage({ params }: Props) {
               {arbncoCaseStudyMeta.outcomeLine}
             </p>
           )}
+          {isNhs && (
+            <p className="text-body-lg font-medium text-[#41b6e6] mb-6 max-w-2xl">
+              {nhsCaseStudyMeta.outcomeLine}
+            </p>
+          )}
+          {isOmron && (
+            <p className="text-body-lg font-medium text-[#6ba3ff] mb-6 max-w-2xl">
+              {omronCaseStudyMeta.outcomeLine}
+            </p>
+          )}
           <p className="text-body-lg text-neutral-300 mb-6">{project.overview}</p>
           <ul className="flex flex-wrap gap-2" aria-label="Project tags">
             {project.tags.map((tag) => (
@@ -79,7 +96,7 @@ export default async function CaseStudyPage({ params }: Props) {
               </li>
             ))}
           </ul>
-          {!isArbnco && (
+          {!isRichCaseStudy && (
             <CaseStudyVisualBlocks
               blocks={getIntroVisualBlocks(slug, "overview")}
               className="mt-10"
@@ -88,7 +105,7 @@ export default async function CaseStudyPage({ params }: Props) {
         </PageHero>
       </section>
 
-      {!isArbnco && (
+      {!isRichCaseStudy && (
         <Reveal variant="fade">
           <div
             className="relative aspect-[16/10] max-h-80 md:max-h-96 w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-neutral-100"
@@ -101,8 +118,8 @@ export default async function CaseStudyPage({ params }: Props) {
       )}
 
       <article className="section-padding bg-white">
-        <div className={`container-site ${isArbnco ? "max-w-4xl" : "max-w-3xl"}`}>
-          {!isArbnco && (
+        <div className={`container-site ${isRichCaseStudy ? "max-w-4xl" : "max-w-3xl"}`}>
+          {!isRichCaseStudy && (
             <Reveal delay={60}>
               <dl className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 pb-16 border-b border-[var(--color-border)]">
                 <div>
@@ -123,6 +140,10 @@ export default async function CaseStudyPage({ params }: Props) {
 
           {isArbnco ? (
             <ArbncoCaseStudyContent project={project} />
+          ) : isNhs ? (
+            <NhsCaseStudyContent project={project} />
+          ) : isOmron ? (
+            <OmronCaseStudyContent project={project} />
           ) : (
             <>
               <CaseStudyTextSection title="What was the problem?" slug={slug} section="problem">

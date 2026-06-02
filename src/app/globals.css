@@ -277,73 +277,7 @@
   animation: figma-caret-blink 1s step-end infinite;
 }
 
-/* Branded CV — PDF export (html2pdf captures screen DOM, not @media print) */
-.cv-pdf-export .cv-document {
-  min-height: auto !important;
-}
-
-.cv-pdf-export .cv-no-print {
-  display: none !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] {
-  box-sizing: border-box !important;
-  max-width: none !important;
-  overflow: visible !important;
-  padding: 0 !important;
-  width: 100% !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] p,
-.cv-pdf-export [data-cv-pdf-root] li,
-.cv-pdf-export [data-cv-pdf-root] h1,
-.cv-pdf-export [data-cv-pdf-root] h2,
-.cv-pdf-export [data-cv-pdf-root] h3,
-.cv-pdf-export [data-cv-pdf-root] blockquote {
-  overflow: visible !important;
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-.cv-pdf-export [data-cv-pdf-root] section {
-  break-inside: auto;
-  page-break-inside: auto;
-}
-
-.cv-pdf-export [data-cv-pdf-root] > div,
-.cv-pdf-export [data-cv-pdf-root] blockquote {
-  opacity: 1 !important;
-  transform: none !important;
-  transition: none !important;
-}
-
-/* Match print spacing — same look as the CV, slightly tighter vertical rhythm */
-.cv-pdf-export [data-cv-pdf-root] .mb-10 {
-  margin-bottom: 2rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .mb-8 {
-  margin-bottom: 1.5rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .mt-12 {
-  margin-top: 2rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .pb-8 {
-  padding-bottom: 1.5rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] .space-y-8 > :not([hidden]) ~ :not([hidden]) {
-  margin-top: 1.5rem !important;
-}
-
-.cv-pdf-export [data-cv-pdf-root] h2,
-.cv-pdf-export [data-cv-pdf-root] h3 {
-  break-after: avoid-page;
-  page-break-after: avoid;
-}
-
+/* Branded CV — browser print from /cv */
 @media print {
   @page {
     size: A4;

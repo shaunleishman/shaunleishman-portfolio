@@ -6,10 +6,10 @@ import { companies } from "@/content/companies";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/Reveal";
 
-/** Every logo sits in the same footprint so visual weight stays even */
+/** Base footprint — individual `scale` multiplies width and height */
 const LOGO_SLOT = {
-  width: 148,
-  height: 52,
+  width: 168,
+  height: 60,
 } as const;
 
 /** Even gap between slots — not tied to logo width */
@@ -47,30 +47,24 @@ type CompanyLogoImageProps = {
 };
 
 function CompanyLogoImage({ name, logo, scale = 1 }: CompanyLogoImageProps) {
-  // Shrink base size inversely so scaled result always fits the slot — no clipping
-  const maxWidth = LOGO_SLOT.width / scale;
-  const maxHeight = LOGO_SLOT.height / scale;
+  const slotWidth = LOGO_SLOT.width * scale;
+  const slotHeight = LOGO_SLOT.height * scale;
 
   return (
     <div
-      className="flex items-center justify-center overflow-hidden"
-      style={{ width: LOGO_SLOT.width, height: LOGO_SLOT.height }}
+      className="flex items-center justify-center"
+      style={{ width: slotWidth, height: slotHeight }}
     >
-      <div
-        className="flex items-center justify-center"
-        style={{ transform: scale !== 1 ? `scale(${scale})` : undefined }}
-      >
-        <Image
-          src={logo}
-          alt={`${name} logo`}
-          width={Math.round(maxWidth)}
-          height={Math.round(maxHeight)}
-          unoptimized
-          draggable={false}
-          className="select-none object-contain"
-          style={{ maxWidth, maxHeight, width: "auto", height: "auto" }}
-        />
-      </div>
+      <Image
+        src={logo}
+        alt={`${name} logo`}
+        width={Math.round(slotWidth)}
+        height={Math.round(slotHeight)}
+        unoptimized
+        draggable={false}
+        className="select-none object-contain"
+        style={{ maxWidth: slotWidth, maxHeight: slotHeight, width: "auto", height: "auto" }}
+      />
     </div>
   );
 }
@@ -202,7 +196,7 @@ export function LogoMarquee() {
     <section
       aria-label="Companies worked with"
       data-analytics-section="companies"
-      className="py-12 bg-[var(--color-bg-dark)] overflow-hidden border-y border-white/10"
+      className="py-14 bg-[var(--color-bg-dark)] overflow-hidden border-y border-white/10"
     >
       <Reveal variant="fade">
         <p className="text-label text-neutral-500 text-center mb-8 px-4">
