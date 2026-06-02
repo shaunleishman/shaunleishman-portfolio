@@ -29,7 +29,7 @@ export function FeaturedWork() {
               <article className="grid gap-8 lg:grid-cols-2 lg:gap-16 items-center">
                 <Link
                   href={`/work/${project.slug}`}
-                  className={`group relative aspect-[16/10] rounded-2xl overflow-hidden bg-neutral-100 order-1 motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:scale-[1.01] ${index % 2 === 1 ? "lg:order-2" : ""}`}
+                  className={`group relative aspect-[16/10] rounded-2xl overflow-hidden border border-[var(--color-border)] bg-neutral-100 order-1 motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:scale-[1.01] ${index % 2 === 1 ? "lg:order-2" : ""}`}
                   aria-label={`View case study: ${project.title}`}
                 >
                   <ProjectThumbnail project={project} priority={index === 0} />

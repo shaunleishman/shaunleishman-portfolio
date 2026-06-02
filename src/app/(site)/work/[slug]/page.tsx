@@ -91,7 +91,7 @@ export default async function CaseStudyPage({ params }: Props) {
       {!isArbnco && (
         <Reveal variant="fade">
           <div
-            className="relative aspect-[16/10] max-h-80 md:max-h-96 w-full overflow-hidden bg-neutral-100"
+            className="relative aspect-[16/10] max-h-80 md:max-h-96 w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-neutral-100"
             role="img"
             aria-label={`${project.title} project thumbnail`}
           >

@@ -45,7 +45,7 @@ export default function WorkPage() {
                 <article className="group flex h-full flex-col">
                   <Link
                     href={`/work/${project.slug}`}
-                    className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-neutral-100 mb-5 focus-visible:outline-offset-4 group block motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:scale-[1.02]"
+                    className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-[var(--color-border)] bg-neutral-100 mb-5 focus-visible:outline-offset-4 group block motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:scale-[1.02]"
                     aria-label={`View case study: ${project.title}`}
                   >
                     <ProjectThumbnail project={project} />
