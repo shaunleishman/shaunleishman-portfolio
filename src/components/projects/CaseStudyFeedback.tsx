@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useId, useState } from "react";
+import { useCallback, useId, useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
 
 const MIN_SCORE = 1;
 const MAX_SCORE = 10;
-const THUMB_SIZE_PX = 20;
+const SLIDER_THUMB_SIZE_PX = 20;
 
 const ANCHOR_LABELS = {
   low: "Weak or unconvincing",
@@ -43,8 +43,9 @@ type CaseStudyFeedbackProps = {
   projectSlug: string;
 };
 
-function getTickPercent(value: number) {
-  return ((value - MIN_SCORE) / (MAX_SCORE - MIN_SCORE)) * 100;
+function getTickPositionPx(value: number, trackWidth: number, thumbSize: number) {
+  const ratio = (value - MIN_SCORE) / (MAX_SCORE - MIN_SCORE);
+  return thumbSize / 2 + ratio * Math.max(0, trackWidth - thumbSize);
 }
 
 function getScoreLabel(score: number) {
@@ -59,6 +60,8 @@ function getFeedbackBucket(score: number): FeedbackBucket {
 
 export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
   const sliderId = useId();
+  const sliderTrackRef = useRef<HTMLDivElement>(null);
+  const [trackWidth, setTrackWidth] = useState(0);
   const [score, setScore] = useState(5);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [reason, setReason] = useState<string | null>(null);
@@ -68,6 +71,22 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
   const isWeak = score <= 4;
   const showReasons = hasInteracted && isWeak;
   const canConfirm = hasInteracted && (!isWeak || reason !== null);
+
+  useLayoutEffect(() => {
+    const node = sliderTrackRef.current;
+    if (!node) return;
+
+    const updateTrackWidth = () => {
+      setTrackWidth(node.clientWidth);
+    };
+
+    updateTrackWidth();
+
+    const observer = new ResizeObserver(updateTrackWidth);
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, []);
 
   const sendFeedback = useCallback(
     async (feedback: FeedbackBucket, strengthScore: number, nextReason?: string) => {
@@ -149,12 +168,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
           )}
         </p>
 
-        <div
-          style={{
-            paddingLeft: THUMB_SIZE_PX / 2,
-            paddingRight: THUMB_SIZE_PX / 2,
-          }}
-        >
+        <div ref={sliderTrackRef} className="relative w-full">
           <input
             id={sliderId}
             type="range"
@@ -165,10 +179,11 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
             disabled={submitting}
             onChange={(event) => handleSliderChange(Number(event.target.value))}
             className={cn(
-              "block h-2 w-full cursor-pointer appearance-none rounded-full bg-white",
-              "accent-[#0d7377]",
-              "[&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[#0d7377] [&::-webkit-slider-thumb]:shadow-md",
-              "[&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[#0d7377] [&::-moz-range-thumb]:shadow-md",
+              "relative z-10 m-0 block h-5 w-full cursor-pointer appearance-none bg-transparent",
+              "[&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-white",
+              "[&::-moz-range-track]:h-2 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:border-0 [&::-moz-range-track]:bg-white",
+              "[&::-webkit-slider-thumb]:mt-[-6px] [&::-webkit-slider-thumb]:box-border [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[#0d7377] [&::-webkit-slider-thumb]:shadow-md",
+              "[&::-moz-range-thumb]:box-border [&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[#0d7377] [&::-moz-range-thumb]:shadow-md",
             )}
             aria-valuetext={`${score} out of 10. ${getScoreLabel(score)}`}
             aria-valuemin={MIN_SCORE}
@@ -179,6 +194,11 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
           <div className="relative mt-3 h-1.5" aria-hidden>
             {Array.from({ length: MAX_SCORE }, (_, index) => {
               const point = index + 1;
+              const leftPx =
+                trackWidth > 0
+                  ? getTickPositionPx(point, trackWidth, SLIDER_THUMB_SIZE_PX)
+                  : null;
+
               return (
                 <span
                   key={point}
@@ -186,7 +206,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
                     "absolute top-0 size-1.5 -translate-x-1/2 rounded-full transition-colors",
                     score === point ? "bg-[#0d7377]" : "bg-[var(--color-border)]",
                   )}
-                  style={{ left: `${getTickPercent(point)}%` }}
+                  style={leftPx === null ? undefined : { left: `${leftPx}px` }}
                 />
               );
             })}
