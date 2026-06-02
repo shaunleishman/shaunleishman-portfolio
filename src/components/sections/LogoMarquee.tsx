@@ -16,6 +16,29 @@ const LOGO_SLOT = {
 const LOGO_GAP = 64;
 
 const AUTO_SCROLL_PX_PER_SEC = 40;
+const MAX_VELOCITY_PX_PER_SEC = 1200;
+const VELOCITY_RETURN_MS = 1800;
+
+type DragState = {
+  active: boolean;
+  startX: number;
+  startOffset: number;
+  lastX: number;
+  lastTime: number;
+  velocity: number;
+};
+
+function wrapOffset(value: number, setWidth: number) {
+  if (setWidth <= 0) return value;
+  let next = value;
+  while (next <= -setWidth) next += setWidth;
+  while (next > 0) next -= setWidth;
+  return next;
+}
+
+function clampVelocity(velocity: number) {
+  return Math.max(-MAX_VELOCITY_PX_PER_SEC, Math.min(MAX_VELOCITY_PX_PER_SEC, velocity));
+}
 
 type CompanyLogoImageProps = {
   name: string;
@@ -56,10 +79,14 @@ export function LogoMarquee() {
   const trackRef = useRef<HTMLDivElement>(null);
   const setWidthRef = useRef(0);
   const offsetRef = useRef(0);
-  const dragRef = useRef<{ active: boolean; startX: number; startOffset: number }>({
+  const velocityRef = useRef(-AUTO_SCROLL_PX_PER_SEC);
+  const dragRef = useRef<DragState>({
     active: false,
     startX: 0,
     startOffset: 0,
+    lastX: 0,
+    lastTime: 0,
+    velocity: 0,
   });
   const lastTimeRef = useRef<number | null>(null);
   const rafRef = useRef<number>(0);
@@ -100,11 +127,16 @@ export function LogoMarquee() {
     const tick = (time: number) => {
       if (lastTimeRef.current !== null && !dragRef.current.active) {
         const delta = time - lastTimeRef.current;
-        let next = offsetRef.current - (AUTO_SCROLL_PX_PER_SEC * delta) / 1000;
+        const deltaSec = delta / 1000;
+
+        let next = offsetRef.current + velocityRef.current * deltaSec;
         const setWidth = setWidthRef.current;
-        if (setWidth > 0) {
-          while (next <= -setWidth) next += setWidth;
-        }
+        next = wrapOffset(next, setWidth);
+
+        const baseline = -AUTO_SCROLL_PX_PER_SEC;
+        const returnStrength = 1 - Math.exp(-delta / VELOCITY_RETURN_MS);
+        velocityRef.current += (baseline - velocityRef.current) * returnStrength;
+
         offsetRef.current = next;
         setOffset(next);
       }
@@ -117,28 +149,50 @@ export function LogoMarquee() {
   }, []);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    dragRef.current = { active: true, startX: e.clientX, startOffset: offsetRef.current };
+    const now = performance.now();
+    dragRef.current = {
+      active: true,
+      startX: e.clientX,
+      startOffset: offsetRef.current,
+      lastX: e.clientX,
+      lastTime: now,
+      velocity: velocityRef.current,
+    };
     setIsDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!dragRef.current.active) return;
-    const delta = e.clientX - dragRef.current.startX;
-    let next = dragRef.current.startOffset + delta;
-    const setWidth = setWidthRef.current;
-    if (setWidth > 0) {
-      while (next <= -setWidth) next += setWidth;
-      while (next > 0) next -= setWidth;
+
+    const now = performance.now();
+    const deltaTime = now - dragRef.current.lastTime;
+    const deltaX = e.clientX - dragRef.current.lastX;
+
+    if (deltaTime > 0) {
+      const instantVelocity = (deltaX / deltaTime) * 1000;
+      dragRef.current.velocity =
+        dragRef.current.velocity * 0.35 + instantVelocity * 0.65;
     }
+
+    dragRef.current.lastX = e.clientX;
+    dragRef.current.lastTime = now;
+
+    const dragDelta = e.clientX - dragRef.current.startX;
+    const setWidth = setWidthRef.current;
+    const next = wrapOffset(dragRef.current.startOffset + dragDelta, setWidth);
+
     offsetRef.current = next;
     setOffset(next);
   };
 
   const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!dragRef.current.active) return;
+
+    velocityRef.current = clampVelocity(dragRef.current.velocity);
     dragRef.current.active = false;
     setIsDragging(false);
+
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
