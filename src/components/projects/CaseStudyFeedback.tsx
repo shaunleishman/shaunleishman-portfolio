@@ -10,7 +10,7 @@ const THUMB_SIZE_PX = 20;
 
 const ANCHOR_LABELS = {
   low: "Weak or unconvincing",
-  mid: "Decent, but not especially memorable",
+  mid: "Neutral",
   high: "Strong, credible and impressive",
 } as const;
 
@@ -193,21 +193,9 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
           </div>
 
           <div className="mt-3 grid gap-3 text-body-sm text-[var(--color-text-muted)] sm:grid-cols-3 sm:gap-4">
-            <p className="leading-snug">
-              <span className="font-medium tabular-nums text-[var(--color-text-secondary)]">1</span>
-              {" · "}
-              {ANCHOR_LABELS.low}
-            </p>
-            <p className="leading-snug sm:text-center">
-              <span className="font-medium tabular-nums text-[var(--color-text-secondary)]">5</span>
-              {" · "}
-              {ANCHOR_LABELS.mid}
-            </p>
-            <p className="leading-snug sm:text-right">
-              <span className="font-medium tabular-nums text-[var(--color-text-secondary)]">10</span>
-              {" · "}
-              {ANCHOR_LABELS.high}
-            </p>
+            <p className="leading-snug">{ANCHOR_LABELS.low}</p>
+            <p className="leading-snug sm:text-center">{ANCHOR_LABELS.mid}</p>
+            <p className="leading-snug sm:text-right">{ANCHOR_LABELS.high}</p>
           </div>
         </div>
       </div>
