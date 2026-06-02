@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
 
 const MIN_SCORE = 1;
-const MAX_SCORE = 10;
+const MAX_SCORE = 7;
+const NEUTRAL_SCORE = 4;
 const SLIDER_THUMB_SIZE_PX = 20;
 
 const ANCHOR_LABELS = {
@@ -18,13 +19,10 @@ const SCORE_LABELS: Record<number, string> = {
   1: ANCHOR_LABELS.low,
   2: ANCHOR_LABELS.low,
   3: "Weak in places",
-  4: "Some potential, not fully convincing",
-  5: ANCHOR_LABELS.mid,
-  6: ANCHOR_LABELS.mid,
-  7: "Fairly strong",
-  8: "Strong and credible",
-  9: ANCHOR_LABELS.high,
-  10: ANCHOR_LABELS.high,
+  4: ANCHOR_LABELS.mid,
+  5: "Fairly strong",
+  6: "Strong and credible",
+  7: ANCHOR_LABELS.high,
 };
 
 const REASONS = [
@@ -53,8 +51,8 @@ function getScoreLabel(score: number) {
 }
 
 function getFeedbackBucket(score: number): FeedbackBucket {
-  if (score <= 4) return "weak";
-  if (score <= 7) return "decent";
+  if (score <= 2) return "weak";
+  if (score <= 5) return "decent";
   return "strong";
 }
 
@@ -62,13 +60,13 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
   const sliderId = useId();
   const sliderTrackRef = useRef<HTMLDivElement>(null);
   const [trackWidth, setTrackWidth] = useState(0);
-  const [score, setScore] = useState(5);
+  const [score, setScore] = useState(NEUTRAL_SCORE);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [reason, setReason] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const isWeak = score <= 4;
+  const isWeak = score <= 2;
   const showReasons = hasInteracted && isWeak;
   const canConfirm = hasInteracted && (!isWeak || reason !== null);
 
@@ -160,7 +158,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
           {hasInteracted ? (
             <>
               <span className="tabular-nums">{score}</span>
-              <span className="text-[var(--color-text-muted)]"> / 10 — </span>
+              <span className="text-[var(--color-text-muted)]"> / 7 — </span>
               {getScoreLabel(score)}
             </>
           ) : (
@@ -185,7 +183,7 @@ export function CaseStudyFeedback({ projectSlug }: CaseStudyFeedbackProps) {
               "[&::-webkit-slider-thumb]:mt-[-6px] [&::-webkit-slider-thumb]:box-border [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-[#0d7377] [&::-webkit-slider-thumb]:shadow-md",
               "[&::-moz-range-thumb]:box-border [&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-[#0d7377] [&::-moz-range-thumb]:shadow-md",
             )}
-            aria-valuetext={`${score} out of 10. ${getScoreLabel(score)}`}
+            aria-valuetext={`${score} out of 7. ${getScoreLabel(score)}`}
             aria-valuemin={MIN_SCORE}
             aria-valuemax={MAX_SCORE}
             aria-valuenow={score}
