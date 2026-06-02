@@ -68,16 +68,17 @@ export function FeaturedWork() {
                     {project.overview.slice(0, 180)}…
                   </p>
 
-                  <ul className="space-y-2">
+                  <ul className="space-y-2.5">
                     {project.cardHighlights.map((item) => (
                       <li
                         key={item}
-                        className="flex gap-2 text-body-sm text-[var(--color-text-secondary)]"
+                        className="flex gap-3 text-body-sm leading-snug text-[var(--color-text-secondary)]"
                       >
-                        <span className="text-[var(--color-accent)] shrink-0" aria-hidden>
-                          →
-                        </span>
-                        {item}
+                        <span
+                          className="mt-[0.55em] size-1.5 shrink-0 rounded-full bg-[var(--color-accent)]"
+                          aria-hidden
+                        />
+                        <span>{item}</span>
                       </li>
                     ))}
                   </ul>
