@@ -328,8 +328,8 @@ export const siteConfig = {
   brand: "sleishman.design",
   brandHandle: "sleishman",
   logo: "/brand/logo.png",
-  domain: "sleishman.design",
-  siteUrl: "https://shaunleishman-portfolio.vercel.app",
+  domain: "shaunleishmanportfolio.com",
+  siteUrl: "https://www.shaunleishmanportfolio.com",
   tagline: "UX/UI designer helping teams build products users trust.",
   quote:
     "It's one thing shaping experiences that improve lives, but to encourage better decision-making is where the true magic happens.",
