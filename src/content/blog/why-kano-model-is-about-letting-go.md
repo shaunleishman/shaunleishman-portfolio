@@ -4,7 +4,7 @@ description: "A simple way to think about features, assumptions, and the things 
 date: "2026-06-01"
 published: true
 tags: ["UX", "Product Design", "AI", "Prioritisation"]
-thumbnail: "/images/blog/why-kano-model-is-about-letting-go.png"
+thumbnail: "/images/blog/why-kano-model-is-about-letting-go.jpg"
 ---
 
 The Kano Model is usually described as a way to understand customer satisfaction. It helps teams sort features into categories like basic needs, performance features, delighters, indifferent features, and reverse features. On paper, that sounds neat and structured. Almost too neat. Like one of those diagrams that looks simple until a real product team sits in a room and starts disagreeing about what everything actually means.

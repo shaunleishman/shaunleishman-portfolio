@@ -13,6 +13,26 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+function thumbnailContentType(thumbnailPath: string, data: Buffer): string {
+  if (data.length >= 3 && data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff) {
+    return "image/jpeg";
+  }
+
+  if (
+    data.length >= 8 &&
+    data[0] === 0x89 &&
+    data[1] === 0x50 &&
+    data[2] === 0x4e &&
+    data[3] === 0x47
+  ) {
+    return "image/png";
+  }
+
+  if (thumbnailPath.toLowerCase().match(/\.jpe?g$/)) return "image/jpeg";
+  if (thumbnailPath.toLowerCase().endsWith(".png")) return "image/png";
+  return "application/octet-stream";
+}
+
 export default async function Image({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
@@ -25,10 +45,9 @@ export default async function Image({ params }: Props) {
     const filePath = join(process.cwd(), "public", post.thumbnail.replace(/^\//, ""));
     if (existsSync(filePath)) {
       const data = await readFile(filePath);
-      const isPng = post.thumbnail.toLowerCase().endsWith(".png");
       return new Response(data, {
         headers: {
-          "Content-Type": isPng ? "image/png" : "image/jpeg",
+          "Content-Type": thumbnailContentType(post.thumbnail, data),
           "Cache-Control": "public, max-age=31536000, immutable",
         },
       });

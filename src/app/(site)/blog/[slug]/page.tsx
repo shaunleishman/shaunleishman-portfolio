@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
-import { getBlogShareImageUrl } from "@/lib/blog-images";
+import { getBlogShareImageUrl, getBlogShareImageMeta } from "@/lib/blog-images";
 import { getBlogEngagementForSlug } from "@/lib/blog-engagement";
 import { siteConfig } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: "Post not found" };
 
   const imageUrl = getBlogShareImageUrl(post, siteConfig.siteUrl);
+  const imageMeta = getBlogShareImageMeta(post);
 
   return {
     title: post.title,
@@ -40,11 +41,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "article",
       publishedTime: post.date,
       url: `${siteConfig.siteUrl}/blog/${post.slug}`,
+      siteName: siteConfig.name,
       images: [
         {
           url: imageUrl,
-          width: 1200,
-          height: 630,
+          width: imageMeta.width,
+          height: imageMeta.height,
+          type: imageMeta.type,
           alt: post.title,
         },
       ],
@@ -54,6 +57,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: post.title,
       description: post.description,
       images: [imageUrl],
+    },
+    other: {
+      "og:image:secure_url": imageUrl,
+      "og:image:type": imageMeta.type,
     },
   };
 }
