@@ -5,9 +5,16 @@ export default function robots(): MetadataRoute.Robots {
   const metricsPath = getMetricsPath();
 
   return {
-    rules: {
-      userAgent: "*",
-      disallow: ["/admin", "/admin/", "/metrics", "/metrics/", metricsPath, `${metricsPath}/`],
-    },
+    rules: [
+      {
+        userAgent: "*",
+        disallow: ["/admin", "/admin/", "/metrics", "/metrics/", metricsPath, `${metricsPath}/`],
+      },
+      {
+        userAgent: "LinkedInBot",
+        allow: "/",
+        disallow: ["/admin", "/admin/", "/metrics", "/metrics/", metricsPath, `${metricsPath}/`],
+      },
+    ],
   };
 }
