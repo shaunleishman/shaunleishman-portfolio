@@ -8,7 +8,7 @@ export function dwellColor(intensity: number): string {
 }
 
 export function formatDwell(ms: number): string {
-  if (ms <= 0) return "—";
+  if (ms <= 0) return "N/A";
   if (ms < 1000) return `${ms}ms`;
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
   return `${Math.floor(ms / 60000)}m ${Math.round((ms % 60000) / 1000)}s`;

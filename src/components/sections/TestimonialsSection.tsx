@@ -22,7 +22,7 @@ export function TestimonialsSection() {
           }
           description={
             <p className="text-body text-[var(--color-text-secondary)] max-w-2xl mb-12">
-              The highlights from my{" "}
+              Recommendations from my{" "}
               <Link
                 href={testimonialsSourceUrl}
                 target="_blank"

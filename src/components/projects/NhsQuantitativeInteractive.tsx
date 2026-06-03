@@ -633,7 +633,7 @@ export function NhsQuantitativeInteractive({ className }: NhsQuantitativeInterac
       >
         <div className="rounded-t-xl border-b border-[var(--color-border)] px-4 py-3 md:px-5">
           <p className="text-body-sm text-[var(--color-text-muted)] mb-3">
-            Survey data captured April 2023 — select a chart to explore demographics, outcomes, satisfaction, or weekday patterns.
+            Survey data captured April 2023, select a chart to explore demographics, outcomes, satisfaction, or weekday patterns.
           </p>
           <p className="text-label text-[var(--color-text-muted)] mb-2">Chart view</p>
           <div

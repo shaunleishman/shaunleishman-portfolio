@@ -30,7 +30,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       section: "problem",
       heading: "Medication titration risk",
       supportText:
-        "The failed assessment centred on human error when assigning titration plans — getting the wrong medication plan to the wrong patient.",
+        "The failed assessment centred on human error when assigning titration plans, getting the wrong medication plan to the wrong patient.",
       images: [
         {
           src: "/projects/omron-patient-monitoring/problem-illustration.png",
@@ -44,7 +44,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       afterIndex: 1,
       heading: "Co-design with five user groups",
       supportText:
-        "Workshops surfaced how GPs, nurses, pharmacists, and admin staff each approach patient assignment differently — feeding directly into the prototype.",
+        "Workshops surfaced how GPs, nurses, pharmacists, and admin staff each approach patient assignment differently, feeding directly into the prototype.",
       images: [
         {
           src: "/projects/omron-patient-monitoring/general-practitioner-user-group.png",
@@ -83,7 +83,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
         {
           src: "/projects/omron-patient-monitoring/patient-existing-tabs.png",
           alt: "Existing patient profile with Summary, Review, Graphs, and other tabs",
-          caption: "Existing patient profile — tab structure before redesign",
+          caption: "Existing patient profile, tab structure before redesign",
         },
         {
           src: "/projects/omron-patient-monitoring/monitoring-all-my-patients.png",
@@ -102,12 +102,12 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       afterIndex: 3,
       heading: "Usability testing on the prototype",
       supportText:
-        "Moderated sessions tested critical flows — including assigning patients between practitioners — to catch errors before handoff.",
+        "Moderated sessions tested critical flows, including assigning patients between practitioners, to catch errors before handoff.",
       images: [
         {
           src: "/projects/omron-patient-monitoring/group-122.png",
           alt: "Prototype screen for assigning a patient to another practitioner with a required reason field",
-          caption: "Assign patient flow — reason for transfer required",
+          caption: "Assign patient flow, reason for transfer required",
           featured: true,
         },
         {
@@ -136,7 +136,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       afterIndex: 1,
       heading: "Role-specific workflows",
       supportText:
-        "Each practitioner group worked differently — a one-size assignment flow couldn't fit every role.",
+        "Each practitioner group worked differently, a one-size assignment flow couldn't fit every role.",
       images: [
         {
           src: "/projects/omron-patient-monitoring/admin-staff-user-group.png",
@@ -164,7 +164,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       afterIndex: 3,
       heading: "Inflexible communication",
       supportText:
-        "Transferring patients between practitioners needed clearer handover notes — we added a mandatory reason field to reduce error risk.",
+        "Transferring patients between practitioners needed clearer handover notes, we added a mandatory reason field to reduce error risk.",
       images: [
         {
           src: "/projects/omron-patient-monitoring/group-122.png",
@@ -186,7 +186,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       section: "overview",
       heading: "Understanding caller behaviour",
       supportText:
-        "Mixed-method research mapped how people use NHS 111 — and where reassurance, guidance, and faster routing were needed most.",
+        "Mixed-method research mapped how people use NHS 111, and where reassurance, guidance, and faster routing were needed most.",
       images: [
         {
           src: "/projects/nhs-111-waiting-times/overview-illustration.png",
@@ -199,7 +199,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       section: "problem",
       heading: "Callers unsure of the right support",
       supportText:
-        "Many people reached 111 without knowing whether it was the right service — or what to expect once they were in the queue.",
+        "Many people reached 111 without knowing whether it was the right service, or what to expect once they were in the queue.",
       images: [
         {
           src: "/projects/nhs-111-waiting-times/problem-illustration.png",
@@ -232,7 +232,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       afterIndex: 1,
       heading: "Survey to triangulate qualitative data",
       supportText:
-        "A follow-up survey quantified patterns from interviews — giving the NHS team measurable evidence alongside the stories.",
+        "A follow-up survey quantified patterns from interviews, giving the NHS team measurable evidence alongside the stories.",
       images: [
         {
           src: "/projects/nhs-111-waiting-times/survey-respondents.png",
@@ -247,7 +247,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       afterIndex: 0,
       heading: "People try other services first",
       supportText:
-        "Many callers — especially senior citizens — waited for their GP before turning to 111, often when symptoms had already worsened.",
+        "Many callers, especially senior citizens, waited for their GP before turning to 111, often when symptoms had already worsened.",
       images: [
         {
           src: "/projects/nhs-111-waiting-times/trying-other-resources.png",

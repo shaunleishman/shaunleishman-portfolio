@@ -2,44 +2,57 @@ import { siteConfig } from "@/content/projects";
 
 export type Testimonial = {
   id: string;
-  /** Best single line — shown large in the carousel */
+  /** Hero quote shown in the carousel */
   headline: string;
-  /** Short, scannable highlights from the full recommendation */
-  highlights: string[];
   author: string;
   role: string;
   linkedInUrl?: string;
 };
 
-/** Sourced from LinkedIn recommendations — update when new ones are added on profile. */
+/** Sourced from LinkedIn recommendations, update when new ones are added on profile. */
 export const testimonials: Testimonial[] = [
   {
     id: "augusto-domingos",
     headline:
-      "An incredible eye for seamless user experiences — consistently prioritises delivering meaningful value.",
-    highlights: [
-      "Truly talented Product Designer focused on products that make a real difference",
-      "Doesn't settle for the easiest solution — focuses on what makes sense long term",
-      "Isn't afraid of tough conversations that drive the team and company forward",
-      "Invaluable asset with a user-centric, creative mindset",
-    ],
+      "An incredible eye for seamless user experiences, consistently prioritises delivering meaningful value.",
     author: "Augusto Domingos",
-    role: "Software Engineering Coordinator, arbnco",
+    role: "Engineering Operations & Team Enablement, arbnco",
     linkedInUrl: "https://www.linkedin.com/in/augusto-domingos",
   },
   {
-    id: "design-system-colleague",
+    id: "duncan-stephen",
     headline:
-      "A completely functional design system in just six months — highly important to the company.",
-    highlights: [
-      "Incredibly skilled designer and very collaborative — up to speed in no time",
-      "Open-minded, prioritises learning and sharing perspective",
-      "Working with him taught me how UX methods affect actual code",
-      "Undoubtedly someone who creates value wherever he works",
-    ],
-    author: "LinkedIn colleague",
-    role: "LinkedIn recommendation · Design systems",
-    linkedInUrl: siteConfig.linkedIn,
+      "An incredible creative thinker with an uncanny ability to sense the big picture of users' experience on any project.",
+    author: "Duncan Stephen",
+    role: "Principal User Experience Consultant, User Vision",
+  },
+  {
+    id: "stephen-denning",
+    headline:
+      "A rare blend of technical capability and artistic flair, with a focus on making evidence-based design decisions.",
+    author: "Stephen Denning",
+    role: "UX Director, User Vision",
+  },
+  {
+    id: "francesco-blasi",
+    headline:
+      "We developed a completely functional design system in just six months, an amazing accomplishment for the team.",
+    author: "Francesco Blasi",
+    role: "Senior Software Engineer",
+  },
+  {
+    id: "garima-kamra",
+    headline:
+      "He asks the right questions to get to the core of complex problems, with real depth on requirements before designing a solution.",
+    author: "Garima Kamra",
+    role: "Product Manager · arbnco",
+  },
+  {
+    id: "gwen-inarejos",
+    headline:
+      "Extremely knowledgeable and forthcoming with great ideas around design and research. His positivity makes him a great asset every team needs.",
+    author: "Gwen Inarejos",
+    role: "Executive Search Consultant",
   },
 ];
 

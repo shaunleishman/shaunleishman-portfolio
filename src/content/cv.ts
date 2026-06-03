@@ -19,7 +19,7 @@ export const cvContent = {
     {
       role: "Product Designer",
       company: "Arbnco",
-      period: "Mar 2024 — Present",
+      period: "Mar 2024 to Present",
       highlights: [
         "Designed product experiences for a decarbonisation platform used in commercial real estate, with a focus on complex data, carbon reporting, consent workflows, and design system structure.",
         "Helped shape UX strategy and product planning for a platform supporting energy, carbon, and net-zero reporting.",
@@ -32,7 +32,7 @@ export const cvContent = {
     {
       role: "UX Designer",
       company: "User Vision",
-      period: "Mar 2022 — Mar 2024",
+      period: "Mar 2022 to Mar 2024",
       highlights: [
         "Delivered UX research and design projects for clients across healthcare, SaaS, government, and public-facing services.",
         "Planned and ran interviews, usability tests, surveys, workshops, and occasional focus groups with hundreds of participants.",
@@ -44,7 +44,7 @@ export const cvContent = {
     {
       role: "Digital Designer",
       company: "The&Partnership",
-      period: "Oct 2019 — Sept 2021",
+      period: "Oct 2019 to Sept 2021",
       highlights: [
         "Designed digital content across email, web, social, and advertising campaigns for major financial services clients.",
         "Created work for major banking clients including RBS, NatWest, and Ulster Bank.",
@@ -57,7 +57,7 @@ export const cvContent = {
     "I'm comfortable stepping into a lead role when a project needs clarity, structure, or momentum. I've facilitated workshops, guided stakeholders through UX decisions, supported junior designers, and helped teams stay aligned when the direction is still uncertain. I also use AI-assisted prototyping to explore ideas quickly, while still owning the design thinking, decision-making, and quality of the final outcome.",
   education: [
     {
-      title: "BDes (Hons) Graphic Design — Edinburgh Napier University",
+      title: "BDes (Hons) Graphic Design, Edinburgh Napier University",
       detail: "First Class Honours, 2019",
     },
     {

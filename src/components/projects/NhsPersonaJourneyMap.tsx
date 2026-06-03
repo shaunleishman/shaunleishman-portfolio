@@ -196,7 +196,7 @@ export function NhsPersonaJourneyMap({ personaId, personaName, className }: NhsP
           </p>
         </div>
         <p className="text-[0.65rem] text-[var(--color-text-muted)]">
-          {activeIndex + 1} / {journey.stages.length} — scroll or tap a stage
+          {activeIndex + 1} / {journey.stages.length}, scroll or tap a stage
         </p>
       </div>
 

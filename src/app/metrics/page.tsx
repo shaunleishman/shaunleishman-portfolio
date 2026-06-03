@@ -8,6 +8,7 @@ import { MetricsPageFilter } from "@/components/metrics/MetricsPageFilter";
 export default function MetricsPage() {
   const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
+  const [configured, setConfigured] = useState<boolean | null>(null);
   const [data, setData] = useState<AnalyticsSummary | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,8 @@ export default function MetricsPage() {
     void (async () => {
       setLoading(true);
       const authRes = await fetch("/api/metrics/auth", { credentials: "include" });
-      const authJson = (await authRes.json()) as { authenticated?: boolean };
+      const authJson = (await authRes.json()) as { authenticated?: boolean; configured?: boolean };
+      setConfigured(authJson.configured ?? false);
       if (authJson.authenticated) {
         await loadSummary();
       } else {
@@ -60,7 +62,21 @@ export default function MetricsPage() {
     });
 
     if (!res.ok) {
-      setError("Invalid password");
+      let message = "Incorrect password.";
+      try {
+        const json = (await res.json()) as { error?: string };
+        if (res.status === 503) {
+          message =
+            "Metrics login is not configured on this deployment. The site owner needs to set METRICS_PASSWORD in Vercel environment variables and redeploy.";
+        } else if (json.error === "Invalid password") {
+          message = "Incorrect password.";
+        } else if (json.error) {
+          message = json.error;
+        }
+      } catch {
+        /* keep default */
+      }
+      setError(message);
       setAuthenticated(false);
       setLoading(false);
       return;
@@ -97,7 +113,7 @@ export default function MetricsPage() {
           <p className="text-body text-[var(--color-text-secondary)] max-w-2xl">
             {authenticated
               ? "Visitor behaviour, mouse dwell heatmaps, section attention, scroll depth, and case study feedback."
-              : "Password required. This page is not linked from the public site."}
+              : "Password required. Use the private metrics URL you were given. /metrics alone will not work."}
           </p>
         </div>
         {authenticated && (
@@ -122,6 +138,13 @@ export default function MetricsPage() {
 
       {!authenticated ? (
         <form onSubmit={handleLogin} className="space-y-4 rounded-2xl border border-[var(--color-border)] bg-white p-6">
+          {configured === false && (
+            <p role="alert" className="rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-body-sm p-3">
+              Login is not configured on this deployment yet. Add <strong>METRICS_PASSWORD</strong> in Vercel
+              environment variables, then redeploy. Local <code className="text-xs">.env.local</code> only works on
+              your machine.
+            </p>
+          )}
           <label htmlFor="metrics-password" className="block text-body-sm font-medium">
             Password
           </label>
@@ -164,7 +187,7 @@ export default function MetricsPage() {
             <StatCard label="Feedback submissions" value={String(data.feedback.total)} />
             <StatCard
               label="Average case study score"
-              value={data.feedback.averageScore > 0 ? `${data.feedback.averageScore} / 7` : "—"}
+              value={data.feedback.averageScore > 0 ? `${data.feedback.averageScore} / 7` : "N/A"}
             />
           </div>
 
@@ -277,7 +300,7 @@ function formatHourlyLabel(hour: string): string {
 }
 
 function formatDwell(ms: number): string {
-  if (ms <= 0) return "—";
+  if (ms <= 0) return "N/A";
   if (ms < 1000) return `${ms}ms`;
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
   return `${Math.floor(ms / 60000)}m ${Math.round((ms % 60000) / 1000)}s`;

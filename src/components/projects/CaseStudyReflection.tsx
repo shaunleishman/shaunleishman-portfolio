@@ -17,7 +17,7 @@ export function CaseStudyReflection({
   limitationsVisual,
   limitations,
   takeaways,
-  takeawaysLead = "What I'd take forward from this project — lessons that apply beyond this one engagement.",
+  takeawaysLead = "What I'd take forward from this project, lessons that apply beyond this one engagement.",
   feedbackPath,
 }: CaseStudyReflectionProps) {
   return (

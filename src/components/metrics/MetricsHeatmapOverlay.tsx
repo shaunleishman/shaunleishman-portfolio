@@ -201,7 +201,7 @@ export function MetricsHeatmapOverlay() {
         </label>
 
         <p className="mt-3 text-[0.65rem] leading-relaxed text-neutral-500">
-          Only visible to you while signed in to metrics. Scroll the page normally — the overlay tracks with content.
+          Only visible to you while signed in to metrics. Scroll the page normally; the overlay tracks with content.
         </p>
       </div>
     </>,

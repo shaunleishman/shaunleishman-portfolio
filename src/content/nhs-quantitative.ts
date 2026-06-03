@@ -32,7 +32,7 @@ export const nhsSurveyRespondents: SurveyRespondentRow[] = [
     ageGroup: "25-39",
     surveyRespondents: 43,
     onBehalfOfChild: 18,
-    insight: "Largest share of survey respondents — many calling on behalf of young children.",
+    insight: "Largest share of survey respondents, many calling on behalf of young children.",
   },
   { ageGroup: "40-49", surveyRespondents: 22, onBehalfOfChild: 9 },
   { ageGroup: "50-59", surveyRespondents: 13, onBehalfOfChild: 2 },
@@ -207,7 +207,7 @@ export const nhsTypicalCallerProfile = {
       id: "time",
       percentage: 17,
       label: "6 pm – 12 midnight",
-      detail: "Evening calls when GP access is limited — a pattern seen across several personas.",
+      detail: "Evening calls when GP access is limited, a pattern seen across several personas.",
     },
     {
       id: "outcome",
@@ -247,7 +247,7 @@ export const nhsQuantitativeViews: NhsQuantitativeView[] = [
     name: "999 outcomes",
     title: "Told to call 999 after 111",
     description:
-      "Share of callers told to call 999 — comparing those who tried other resources first vs those who did not.",
+      "Share of callers told to call 999, comparing those who tried other resources first vs those who did not.",
   },
   {
     id: "satisfaction",
@@ -260,12 +260,12 @@ export const nhsQuantitativeViews: NhsQuantitativeView[] = [
     name: "Weekday outcomes",
     title: "Outcome of calls for weekdays",
     description:
-      "How call outcomes varied Monday to Friday — A&E referrals peaked mid-week and on Thursday.",
+      "How call outcomes varied Monday to Friday, A&E referrals peaked mid-week and on Thursday.",
   },
   {
     id: "typical-caller",
     name: "Typical caller",
-    title: "Most typical 111 caller — ages 25–39",
+    title: "Most typical 111 caller, ages 25–39",
     description:
       "How urgency, time of call, and outcome layer for the largest survey age group. Select a step to explore.",
   },

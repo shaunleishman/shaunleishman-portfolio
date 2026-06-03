@@ -246,7 +246,7 @@ function JobBlock({
     <View style={styles.jobBlock}>
       <View style={styles.jobHeader}>
         <Text style={styles.jobTitle}>
-          {role} — {company}
+          {role} · {company}
         </Text>
         <Text style={styles.jobPeriod}>{period}</Text>
       </View>
@@ -311,7 +311,7 @@ export function CvPdfDocument() {
   const [firstJob, ...remainingJobs] = cvContent.experience;
 
   return (
-    <Document title={`${siteConfig.name} — CV`} author={siteConfig.name}>
+    <Document title={`${siteConfig.name} CV`} author={siteConfig.name}>
       <Page size="A4" style={styles.page}>
         <CvHeader />
         <Text style={styles.quote}>{siteConfig.quote}</Text>

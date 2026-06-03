@@ -7,7 +7,7 @@ export const omronCaseStudyMeta = {
   outcomeLine:
     "Co-designed a safer action-card and monitoring workflow after the platform failed its initial risk assessment for medication titration.",
   problemStatement:
-    "The hypertension monitoring platform failed a risk assessment because practitioners could assign the wrong medication plan to the wrong patient. Small UI gaps — missing records, stale data, unclear handovers — created outsized clinical risk.",
+    "The hypertension monitoring platform failed a risk assessment because practitioners could assign the wrong medication plan to the wrong patient. Small UI gaps (missing records, stale data, unclear handovers) created outsized clinical risk.",
 };
 
 export const omronAtAGlance = {
@@ -68,7 +68,7 @@ export const omronTestingFindings = [
   },
   {
     title: "Role-specific workflows",
-    text: "Each practitioner group worked differently — a single assignment flow could not fit every role.",
+    text: "Each practitioner group worked differently, so a single assignment flow could not fit every role.",
   },
   {
     title: "Stale monitoring data",
@@ -76,12 +76,12 @@ export const omronTestingFindings = [
   },
   {
     title: "Inflexible handover",
-    text: "Transferring patients between practitioners needed clearer notes — we added a mandatory reason field to reduce error risk.",
+    text: "Transferring patients between practitioners needed clearer notes, so we added a mandatory reason field to reduce error risk.",
   },
 ];
 
 export const omronReflectionItems = [
   "Healthcare workflows cannot be designed from assumptions. Roles, responsibilities, and escalation paths vary more than generic SaaS patterns allow for.",
-  "Small usability issues create large clinical risk — extra clicks, hidden validation, or missing context directly affect patient safety.",
+  "Small usability issues create large clinical risk: extra clicks, hidden validation, or missing context directly affect patient safety.",
   "Bringing design system thinking in earlier would have reduced rework when scaling the action-card patterns across the platform.",
 ];

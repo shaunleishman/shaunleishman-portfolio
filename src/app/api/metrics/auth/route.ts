@@ -58,5 +58,8 @@ export async function DELETE() {
 
 export async function GET(request: NextRequest) {
   const token = request.cookies.get(METRICS_COOKIE_NAME)?.value;
-  return NextResponse.json({ authenticated: verifyMetricsSessionToken(token) });
+  return NextResponse.json({
+    authenticated: verifyMetricsSessionToken(token),
+    configured: Boolean(getMetricsPassword()),
+  });
 }

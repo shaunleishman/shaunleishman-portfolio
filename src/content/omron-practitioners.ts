@@ -54,7 +54,7 @@ export const omronPractitioners: OmronPractitioner[] = [
       { label: "Patients", description: "Blood pressure monitoring and follow-ups." },
     ],
     visoUsage: [
-      "Uses in-practice monitors for initial checks. If readings are high, patients are advised to undergo home monitoring — given either paper forms or guided to use apps.",
+      "Uses in-practice monitors for initial checks. If readings are high, patients are advised to undergo home monitoring, given either paper forms or guided to use apps.",
       "Based on results, issues treatment plans following NICE guidelines.",
       "Actions alerted cards when appropriate to their role.",
     ],
@@ -73,7 +73,7 @@ export const omronPractitioners: OmronPractitioner[] = [
     illustrationAlt: "Nurse practitioner illustration",
     boardSrc: "/projects/omron-patient-monitoring/nurse-practitioner-user-group.png",
     boardAlt: "Nurse practitioner persona board",
-    role: "Acts like a GP registrar — assesses, diagnoses, treats conditions, and refers patients to secondary or specialist care.",
+    role: "Acts like a GP registrar, assesses, diagnoses, treats conditions, and refers patients to secondary or specialist care.",
     keyTasks: [
       "Engages in remote monitoring of long-term diseases, especially for blood pressure, with decisions based on patient situations.",
       "Uses guidelines and templates for diagnosis and structured patient care.",

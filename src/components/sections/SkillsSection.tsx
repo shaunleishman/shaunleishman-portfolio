@@ -22,7 +22,7 @@ export function SkillsSection() {
           }
           description={
             <p className="text-body-lg text-[var(--color-text-secondary)] mb-12 max-w-2xl">
-              Research-led design across discovery, prototyping, and validation — tailored
+              Research-led design across discovery, prototyping, and validation, tailored
               to complex domains where trust and clarity matter most.
             </p>
           }

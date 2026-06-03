@@ -12,7 +12,7 @@ import type { LucideIcon } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Get in touch with ${siteConfig.name} — open to UX/UI design opportunities.`,
+  description: `Get in touch with ${siteConfig.name}. Open to UX/UI design opportunities.`,
 };
 
 const contactMethods: Array<{

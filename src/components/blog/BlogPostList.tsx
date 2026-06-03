@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/blog";
+import { getBlogThumbnailSrc } from "@/lib/blog-images";
 import type { BlogEngagementStats } from "@/lib/blog-engagement-shared";
 import { BlogEngagementStatsDisplay } from "@/components/blog/BlogEngagementStats";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -77,8 +78,25 @@ export function BlogPostList({ posts, engagement }: BlogPostListProps) {
           {filtered.map((post, index) => (
             <li key={post.slug} className="py-8 first:pt-0">
               <Reveal delay={index * 60}>
-                <article>
-                  <SectionLabel>
+                <article className="grid grid-cols-1 gap-5 sm:grid-cols-[14rem_1fr] sm:items-stretch sm:gap-8">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="relative block aspect-[16/9] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] sm:aspect-auto sm:h-full sm:min-h-[10.5rem]"
+                    aria-hidden
+                    tabIndex={-1}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={getBlogThumbnailSrc(post)}
+                      alt=""
+                      width={1024}
+                      height={576}
+                      className="absolute inset-0 size-full object-cover"
+                      loading="lazy"
+                    />
+                  </Link>
+                  <div className="min-w-0 flex flex-col justify-center">
+                    <SectionLabel>
                     <time dateTime={post.date}>
                       {new Date(post.date).toLocaleDateString("en-GB", {
                         day: "numeric",
@@ -117,6 +135,7 @@ export function BlogPostList({ posts, engagement }: BlogPostListProps) {
                       </li>
                     ))}
                   </ul>
+                  </div>
                 </article>
               </Reveal>
             </li>

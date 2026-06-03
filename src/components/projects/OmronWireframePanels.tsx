@@ -250,13 +250,13 @@ function ActionsPermissionsPanel({ className }: PanelProps) {
   );
 }
 
-/** Task 1 — action card flow */
+/** Task 1, action card flow */
 function TaskFlowPanel({ className }: PanelProps) {
   return (
     <WfSvg className={className}>
       <PaperFrame refined title="Action card flow">
         <Label x={20} y={32} size={8} fill={INK}>
-          Task 1 — hypertension alert
+          Task 1, hypertension alert
         </Label>
         <Pill x={268} y={24} text="Step 2 of 3" active />
 
@@ -458,7 +458,7 @@ function PatientActionPanel({ className }: PanelProps) {
 
         <Box x={20} y={76} w={320} h={44} fill="#fef2f2" stroke="#fca5a5" sw={0.75} />
         <Label x={28} y={90} size={7} fill="#b91c1c">
-          Blood pressure reading — out of range
+          Blood pressure reading, out of range
         </Label>
         <Label x={28} y={104} size={9} fill="#b91c1c">
           162 / 95 mmHg

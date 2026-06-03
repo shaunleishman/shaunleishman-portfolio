@@ -51,7 +51,7 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
       }),
       stage("trigger", {
         emotion: 32,
-        description: "A range of circumstances can trigger a call — often in the middle of the night.",
+        description: "A range of circumstances can trigger a call, often in the middle of the night.",
       }),
       stage("online", {
         emotion: 48,
@@ -81,7 +81,7 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
       }),
       stage("handler", {
         emotion: 24,
-        description: "Glad to hear a voice — but experiences vary; some feel they are not taken seriously.",
+        description: "Glad to hear a voice, but experiences vary; some feel they are not taken seriously.",
         frustration:
           "Perception that handlers are not trained in mental health, and frustration when not connected to a more advanced practitioner.",
         frustrationHighlight: true,
@@ -97,13 +97,13 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
       }),
       stage("outcome", {
         emotion: 72,
-        description: "May receive specialised help for a short time — or feel misunderstood if not.",
+        description: "May receive specialised help for a short time, or feel misunderstood if not.",
         quote: "My GP is not there 24/7. I can't call my GP at 8pm at night.",
       }),
       stage("after", {
         emotion: 40,
         description: "Lack of resolution leads some connection seekers to call repeatedly.",
-        quote: "You will get return callers — a lot more of them are mental health things.",
+        quote: "You will get return callers, a lot more of them are mental health things.",
       }),
     ],
   },
@@ -112,18 +112,18 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
     stages: [
       stage("heard", {
         emotion: 50,
-        description: "Heard through word of mouth — friends, family, or GP.",
+        description: "Heard through word of mouth, friends, family, or GP.",
         frustration: "Lack of clarity on when to call 111 vs GP vs A&E.",
         quote: "Make the split between GP, A&E, minor injuries, and 111 a lot clearer.",
       }),
       stage("expectations", {
         emotion: 52,
-        description: "No time to set expectations — focused on an immediate solution.",
+        description: "No time to set expectations, focused on an immediate solution.",
         quote: "I wasn't in the frame of mind to properly read through and understand what I was reading online.",
       }),
       stage("trigger", {
         emotion: 18,
-        description: "An acute, urgent need — chest pain, breathing difficulty, or sudden deterioration.",
+        description: "An acute, urgent need, chest pain, breathing difficulty, or sudden deterioration.",
       }),
       stage("online", {
         emotion: 12,
@@ -151,7 +151,7 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
       }),
       stage("handler", {
         emotion: 38,
-        description: "Relief at getting through — but still anxious about perceived lack of medical expertise.",
+        description: "Relief at getting through, but still anxious about perceived lack of medical expertise.",
         frustration: "Time feels lost speaking to a non-specialist instead of medical staff.",
         frustrationHighlight: true,
         quote: "When getting to the information gathering point, it's quite laborious and takes a long time.",
@@ -167,7 +167,7 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
         emotion: 55,
         frustration: "Too many contact points and repetitive questioning through the chain of command.",
         frustrationHighlight: true,
-        quote: "Unsure — can be difficult to convey the issue without being physically seen.",
+        quote: "Unsure, can be difficult to convey the issue without being physically seen.",
       }),
       stage("outcome", {
         emotion: 78,
@@ -188,7 +188,7 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
       }),
       stage("expectations", {
         emotion: 60,
-        description: "Moderate expectations — thankful for any advice; some are first-time callers.",
+        description: "Moderate expectations, thankful for any advice; some are first-time callers.",
       }),
       stage("trigger", {
         emotion: 48,
@@ -201,7 +201,7 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
       stage("channels", {
         emotion: 62,
         description: "Calls 111 as the matter is typically less serious or critical.",
-        quote: "My son wasn't well after his injections — I just wanted to confirm everything was OK.",
+        quote: "My son wasn't well after his injections, I just wanted to confirm everything was OK.",
       }),
       stage("call", {
         emotion: 65,
@@ -211,12 +211,12 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
       stage("ivr", {
         emotion: 50,
         frustration: "Wishes there was higher priority for callers phoning on behalf of children.",
-        quote: "We called about my daughter (aged 3) — it felt like a long time waiting for her.",
+        quote: "We called about my daughter (aged 3), it felt like a long time waiting for her.",
       }),
       stage("queue", {
         emotion: 30,
         frustration:
-          "Long wait times and no feedback while in the queue — unsure they are still connected.",
+          "Long wait times and no feedback while in the queue, unsure they are still connected.",
         frustrationHighlight: true,
         quote: "Shorten wait times, have an online live chat option.",
       }),
@@ -253,7 +253,7 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
       }),
       stage("expectations", {
         emotion: 48,
-        description: "Low expectations of getting through quickly — knows 111 is busy out of hours.",
+        description: "Low expectations of getting through quickly, knows 111 is busy out of hours.",
       }),
       stage("trigger", {
         emotion: 35,
@@ -301,7 +301,7 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
       }),
       stage("after", {
         emotion: 50,
-        quote: "I use 111 as a last resort — long wait times and I feel guilty not knowing if it's the correct route.",
+        quote: "I use 111 as a last resort, long wait times and I feel guilty not knowing if it's the correct route.",
       }),
     ],
   },
@@ -343,7 +343,7 @@ export const nhsJourneyMaps: Record<string, NhsJourneyMap> = {
       stage("queue", {
         emotion: 42,
         frustration:
-          "Long queue times only to be directed back to the GP practice — enquiry deemed non-urgent or outside 111 remit.",
+          "Long queue times only to be directed back to the GP practice, enquiry deemed non-urgent or outside 111 remit.",
         frustrationHighlight: true,
       }),
       stage("handler", {

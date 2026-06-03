@@ -119,7 +119,7 @@ function SiteFeedbackForm() {
 
   if (submitted) {
     return (
-      <FeedbackSubmittedNotice description="Thanks — your feedback helps shape what I share next." />
+      <FeedbackSubmittedNotice description="Thanks, your feedback helps shape what I share next." />
     );
   }
 
@@ -236,7 +236,7 @@ export function SiteFeedbackSection({ dark = true }: SiteFeedbackSectionProps) {
             dark ? "text-neutral-300" : "text-[var(--color-text-secondary)]",
           )}
         >
-          A quick rating helps me understand what&apos;s working — and what to improve.
+          A quick rating helps me understand what&apos;s working, and what to improve.
         </p>
         <SiteFeedbackForm />
       </Reveal>

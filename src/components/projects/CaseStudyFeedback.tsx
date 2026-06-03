@@ -104,9 +104,9 @@ function FeedbackSectionShell({
 export function CaseStudyFeedback({
   feedbackPath,
   question = "How strong does this project come across?",
-  submittedDescription = "Thanks — it helps me understand what's working on this case study.",
+  submittedDescription = "Thanks, it helps me understand what's working on this case study.",
   sectionTitle = "Your feedback",
-  sectionLead = "An optional rating helps me understand how relevant this case study is — whether you're hiring, collaborating, or just browsing.",
+  sectionLead = "An optional rating helps me understand how relevant this case study is, whether you're hiring, collaborating, or just browsing.",
 }: CaseStudyFeedbackProps) {
   const sliderId = useId();
   const sliderTrackRef = useRef<HTMLDivElement>(null);
@@ -210,10 +210,10 @@ export function CaseStudyFeedback({
           {hasInteracted || score === NEUTRAL_SCORE ? (
             <>
               <span className="tabular-nums">{score}</span>
-              <span className="text-[var(--color-text-muted)]"> / 7 — </span>
+              <span className="text-[var(--color-text-muted)]"> / 7: </span>
               {getScoreLabel(score)}
               {!hasInteracted && score === NEUTRAL_SCORE && (
-                <span className="text-[var(--color-text-muted)]"> — confirm or adjust</span>
+                <span className="text-[var(--color-text-muted)]">, confirm or adjust</span>
               )}
             </>
           ) : (

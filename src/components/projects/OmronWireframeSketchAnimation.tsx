@@ -383,7 +383,7 @@ export function OmronWireframeSketchAnimation({
           </figcaption>
         )}
 
-        {/* Enlarged wireframe — contained within this figure */}
+        {/* Enlarged wireframe, contained within this figure */}
         {expandedId && expandedPanel && (
           <div
             id={wireframeDialogId}
@@ -411,7 +411,7 @@ export function OmronWireframeSketchAnimation({
               <div className="px-4 py-3">
                 <p className="text-body-sm font-semibold text-[var(--color-text-primary)]">{expandedPanel.label}</p>
                 <p className="mt-0.5 text-body-sm text-[var(--color-text-muted)]">
-                  Refined wireframe from the workshop sketch — click outside or press Escape to close.
+                  Refined wireframe from the workshop sketch, click outside or press Escape to close.
                 </p>
               </div>
             </div>

@@ -29,7 +29,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "omron-patient-monitoring",
-    title: "OMRON — Patient monitoring",
+    title: "OMRON: Patient monitoring",
     tags: ["UI design", "Co-design", "Usability testing", "Interviews"],
     duration: "6 weeks",
     overview:
@@ -89,7 +89,7 @@ export const projects: Project[] = [
   },
   {
     slug: "nhs-111-waiting-times",
-    title: "NHS 111 — Waiting times",
+    title: "NHS 111: Waiting times",
     tags: ["Interviews", "UX", "Surveys"],
     duration: "4 weeks",
     overview:
@@ -254,7 +254,7 @@ export const skills = [
   {
     title: "User research",
     description:
-      "Interviews, surveys, and affinity mapping to uncover what users need and why — turning findings into personas, journey maps, and actionable reports.",
+      "Interviews, surveys, and affinity mapping to uncover what users need and why, turning findings into personas, journey maps, and actionable reports.",
     items: ["Interviews", "Surveys", "Affinity mapping", "Personas & journey maps"],
   },
   {
@@ -281,7 +281,7 @@ export const valueProps = [
   {
     title: "Research-led, not assumption-led",
     description:
-      "I don't design from guesses. Every decision is grounded in user evidence — interviews, testing, and real workflow context — especially in complex domains like healthcare.",
+      "I don't design from guesses. Every decision is grounded in user evidence: interviews, testing, and real workflow context, especially in complex domains like healthcare.",
   },
   {
     title: "Collaborative by default",
@@ -296,7 +296,7 @@ export const valueProps = [
   {
     title: "Clear handoffs that reduce rework",
     description:
-      "I document what developers and product teams need to know — states, flows, and rationale — so implementation moves faster with fewer surprises.",
+      "I document what developers and product teams need to know: states, flows, and rationale, so implementation moves faster with fewer surprises.",
   },
 ];
 
@@ -304,7 +304,7 @@ export const faqs = [
   {
     question: "What kind of roles are you looking for?",
     answer:
-      "I'm looking for UX/UI design roles where I can contribute across research, interaction design, and prototyping — ideally in product teams working on meaningful problems in health, sustainability, or public services.",
+      "I'm looking for UX/UI design roles where I can contribute across research, interaction design, and prototyping, ideally in product teams working on meaningful problems in health, sustainability, or public services.",
   },
   {
     question: "What's your typical project involvement?",

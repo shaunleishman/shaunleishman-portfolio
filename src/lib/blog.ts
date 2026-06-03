@@ -12,6 +12,8 @@ export type BlogPost = {
   date: string;
   published: boolean;
   tags: string[];
+  /** Optional share/card image under /public, e.g. /images/blog/my-post.jpg (1200×630 recommended). */
+  thumbnail?: string;
   content: string;
   readingTime: string;
 };
@@ -45,6 +47,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     date: data.date,
     published: data.published ?? true,
     tags: data.tags ?? [],
+    thumbnail: data.thumbnail,
     content,
     readingTime: stats.text,
   };

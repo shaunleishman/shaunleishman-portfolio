@@ -263,7 +263,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
         }
         limitations={project.limitations}
         takeaways={arbncoReflectionItems}
-        takeawaysLead="What making complex data legible reinforced — and what I'd apply to the next technical product surface."
+        takeawaysLead="What making complex data legible reinforced, and what I'd apply to the next technical product surface."
         feedbackPath="/work/arbnco-synthetic-ai-data"
       />
 

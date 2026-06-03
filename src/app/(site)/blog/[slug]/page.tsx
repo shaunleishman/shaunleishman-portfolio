@@ -2,14 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { getBlogShareImageUrl } from "@/lib/blog-images";
 import { getBlogEngagementForSlug } from "@/lib/blog-engagement";
 import { siteConfig } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CaseStudyFeedback } from "@/components/projects/CaseStudyFeedback";
 import { BlogContent } from "@/components/blog/BlogContent";
-import { LinkedInShare } from "@/components/blog/LinkedInShare";
-import { BlogEngagementActions } from "@/components/blog/BlogEngagementActions";
-import { BlogEngagementStatsDisplay } from "@/components/blog/BlogEngagementStats";
+import {
+  BlogPostEngagement,
+  BlogPostEngagementStats,
+  BlogPostEngagementToolbar,
+} from "@/components/blog/BlogPostEngagement";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 
@@ -25,6 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) return { title: "Post not found" };
+
+  const imageUrl = getBlogShareImageUrl(post, siteConfig.siteUrl);
+
   return {
     title: post.title,
     description: post.description,
@@ -33,6 +39,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.description,
       type: "article",
       publishedTime: post.date,
+      url: `${siteConfig.siteUrl}/blog/${post.slug}`,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [imageUrl],
     },
   };
 }
@@ -47,7 +68,13 @@ export default async function BlogPostPage({ params }: Props) {
   const engagement = getBlogEngagementForSlug(post.slug);
 
   return (
-    <>
+    <BlogPostEngagement
+      slug={post.slug}
+      title={post.title}
+      shareUrl={shareUrl}
+      initialStats={engagement}
+    >
+      <>
       <section className="grid-bg text-white section-padding pb-12">
         <PageHero>
           <nav aria-label="Breadcrumb" className="mb-8">
@@ -82,8 +109,9 @@ export default async function BlogPostPage({ params }: Props) {
             {post.readingTime}
           </SectionLabel>
           <h1 className="text-h1 font-semibold mb-4">{post.title}</h1>
-          <p className="text-body-lg text-neutral-300">{post.description}</p>
-          <BlogEngagementStatsDisplay stats={engagement} dark className="mt-6" />
+          <p className="text-body-lg text-neutral-300 mb-6">{post.description}</p>
+          <BlogPostEngagementStats variant="dark" className="mb-5" />
+          <BlogPostEngagementToolbar variant="dark" />
         </PageHero>
       </section>
 
@@ -92,25 +120,20 @@ export default async function BlogPostPage({ params }: Props) {
           <BlogContent content={post.content} />
         </div>
 
-        <Reveal delay={80} className="container-site max-w-3xl mt-12 pt-8 border-t border-[var(--color-border)] space-y-6">
-          <BlogEngagementActions slug={post.slug} initialStats={engagement} />
-          <LinkedInShare
-            url={shareUrl}
-            title={post.title}
-            slug={post.slug}
-            initialShareCount={engagement.shares}
-          />
+        <Reveal delay={80} className="container-site max-w-3xl mt-12 pt-8 border-t border-[var(--color-border)]">
+          <BlogPostEngagementToolbar />
         </Reveal>
 
         <Reveal delay={100} className="container-site max-w-3xl mt-10">
           <CaseStudyFeedback
             feedbackPath={`/blog/${post.slug}`}
             question="How strong does this article come across?"
-            submittedDescription="Thanks — it helps me understand what's working in my writing."
+            submittedDescription="Thanks. It helps me understand what's working in my writing."
             sectionLead="An optional rating helps me understand whether this article is useful, clear, and worth sharing."
           />
         </Reveal>
       </article>
-    </>
+      </>
+    </BlogPostEngagement>
   );
 }

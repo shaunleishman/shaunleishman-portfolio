@@ -13,13 +13,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.siteUrl),
   title: {
-    default: `${siteConfig.name} — UX/UI Designer`,
-    template: `%s — ${siteConfig.name}`,
+    default: `${siteConfig.name} | UX/UI Designer`,
+    template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.tagline,
   openGraph: {
-    title: `${siteConfig.name} — UX/UI Designer`,
+    title: `${siteConfig.name} | UX/UI Designer`,
     description: siteConfig.tagline,
     type: "website",
   },

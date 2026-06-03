@@ -9,7 +9,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "CV",
-  description: `${siteConfig.name} — UX/UI Designer CV`,
+  description: `${siteConfig.name} UX/UI Designer CV`,
 };
 
 export default function CvPage() {
@@ -86,7 +86,7 @@ export default function CvPage() {
               <article key={`${job.company}-${job.period}`}>
                 <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-3">
                   <h3 className="text-h4 font-semibold">
-                    {job.role} — {job.company}
+                    {job.role} · {job.company}
                   </h3>
                   <p className="text-body-sm text-[#737373] shrink-0">{job.period}</p>
                 </div>

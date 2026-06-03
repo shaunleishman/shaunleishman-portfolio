@@ -16,7 +16,7 @@ export type NhsPersona = {
   heardAbout: string;
   motivations: string;
   whenTheyCall: string;
-  /** Persona illustration — board image cropped in UI or standalone character art */
+  /** Persona illustration, board image cropped in UI or standalone character art */
   illustrationSrc: string;
   illustrationAlt: string;
   /** Trimmed source dimensions for layout and Next/Image */
@@ -26,7 +26,7 @@ export type NhsPersona = {
   illustrationCropBoard?: boolean;
   /** End-to-end journey map image for this persona */
   journeyMapSrc: string;
-  /** Call frequency through the day — 8 buckets from midnight → midnight */
+  /** Call frequency through the day, 8 buckets from midnight → midnight */
   keyTimes: number[];
   positives: string;
   frustrations: string[];
@@ -42,16 +42,16 @@ export const nhsPersonas: NhsPersona[] = [
   {
     id: "connection-seeker",
     name: "Connection seeker",
-    tagline: "Calls to be heard — often for mental health support",
+    tagline: "Calls to be heard, often for mental health support",
     spectrumPosition: 0,
     quote: "I think she seemed more interested in drinking her coffee than actually listening to me.",
     callerSituation:
-      "Hearing a human voice is at the centre of this person's needs. Dealing with mental health can be tough and may require the need to just have a chat. Connection seekers may call about ongoing long-term treatments, depression, bereavement, loneliness, and substance abuse — and may call repeatedly if the first call does not resolve how they feel.",
+      "Hearing a human voice is at the centre of this person's needs. Dealing with mental health can be tough and may require the need to just have a chat. Connection seekers may call about ongoing long-term treatments, depression, bereavement, loneliness, and substance abuse, and may call repeatedly if the first call does not resolve how they feel.",
     traits: { emotional: 90, thankful: 65, aggravated: 20 },
     expectations: [
       "To feel listened to and heard.",
       "Some expect a call back to check in on them.",
-      "Long wait times for the mental health IVR option — some deliberately press another option hoping to get through faster.",
+      "Long wait times for the mental health IVR option, some deliberately press another option hoping to get through faster.",
     ],
     heardAbout: "Word of mouth or through the GP IVR system.",
     motivations:
@@ -59,7 +59,7 @@ export const nhsPersonas: NhsPersona[] = [
     whenTheyCall:
       "Most frequently during out-of-hours periods (from 10pm/midnight onwards) when loneliness sets in and other support feels unavailable. Often repeat callers.",
     illustrationSrc: "/projects/nhs-111-waiting-times/persona-illustration-connection-seeker.png",
-    illustrationAlt: "Connection seeker illustration — Are they listening to me?",
+    illustrationAlt: "Connection seeker illustration, Are they listening to me?",
     illustrationWidth: 449,
     illustrationHeight: 325,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-connection-seeker.png",
@@ -67,7 +67,7 @@ export const nhsPersonas: NhsPersona[] = [
     positives:
       "Callers often feel supported when connected to a member of the call handling team. Glad to hear someone's voice once connected.",
     frustrations: [
-      "High demand for mental health concerns leads to perceived long wait times — some manipulate the IVR to get answered faster.",
+      "High demand for mental health concerns leads to perceived long wait times, some manipulate the IVR to get answered faster.",
       "Perception that call handlers are not trained in mental health.",
       "Frustration when not connected directly to a more advanced practitioner for complex histories.",
     ],
@@ -80,11 +80,11 @@ export const nhsPersonas: NhsPersona[] = [
   {
     id: "distressed-caller",
     name: "Distressed caller",
-    tagline: "Acute symptoms — high anxiety, needs help fast",
+    tagline: "Acute symptoms, high anxiety, needs help fast",
     spectrumPosition: 1,
     quote: "So when he is not himself, I go straight to oh my God he's gonna die.",
     callerSituation:
-      "Often a third-party caller for a loved one with acute symptoms — chest pain, breathing difficulty, or sudden deterioration. Highly emotional, anxious, and time-sensitive; every minute in the queue feels critical.",
+      "Often a third-party caller for a loved one with acute symptoms, chest pain, breathing difficulty, or sudden deterioration. Highly emotional, anxious, and time-sensitive; every minute in the queue feels critical.",
     traits: { emotional: 90, thankful: 50, aggravated: 85 },
     expectations: [
       "To reach a medically trained person as soon as possible.",
@@ -96,7 +96,7 @@ export const nhsPersonas: NhsPersona[] = [
     whenTheyCall:
       "More likely out of hours when GP access is limited and symptoms feel urgent.",
     illustrationSrc: "/projects/nhs-111-waiting-times/persona-illustration-distressed-caller.png",
-    illustrationAlt: "Distressed caller illustration — worried about a loved one's symptoms",
+    illustrationAlt: "Distressed caller illustration, worried about a loved one's symptoms",
     illustrationWidth: 343,
     illustrationHeight: 346,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-distressed-caller.png",
@@ -105,8 +105,8 @@ export const nhsPersonas: NhsPersona[] = [
       "Intense anxiety eases once a clinical professional is on the line and takes the situation seriously.",
     frustrations: [
       "Long wait times with no indication of queue position or progress.",
-      "Too many contact points — repeating details to handler, then nurse, then supervisor.",
-      "The repetitive nature of questions at each stage — \"It's like groundhog day.\"",
+      "Too many contact points, repeating details to handler, then nurse, then supervisor.",
+      "The repetitive nature of questions at each stage, \"It's like groundhog day.\"",
       "Not being connected directly to specialist departments such as mental health.",
     ],
     pullQuotes: [
@@ -122,7 +122,7 @@ export const nhsPersonas: NhsPersona[] = [
     spectrumPosition: 2,
     quote: "If I had a covid test at hand, I probably wouldn't have bothered ringing them.",
     callerSituation:
-      "Calls for less serious situations out of caution — often when symptoms are first noticed. Common among first-time parents or people encouraged by family to \"just check.\" They want validation, not emergency care.",
+      "Calls for less serious situations out of caution, often when symptoms are first noticed. Common among first-time parents or people encouraged by family to \"just check.\" They want validation, not emergency care.",
     traits: { emotional: 75, thankful: 90, aggravated: 10 },
     expectations: [
       "Confirmation that everything is OK.",
@@ -131,11 +131,11 @@ export const nhsPersonas: NhsPersona[] = [
     heardAbout:
       "Word of mouth, TV or newspaper ads, or GP surgery answerphone messages.",
     motivations:
-      "To hear a qualified voice confirming what they already suspect — that there is nothing to worry about.",
+      "To hear a qualified voice confirming what they already suspect, that there is nothing to worry about.",
     whenTheyCall:
       "Usually between 8am and midnight, often after work or before bedtime.",
     illustrationSrc: "/projects/nhs-111-waiting-times/persona-illustration-confirmation-seeker.png",
-    illustrationAlt: "Confirmation seeker illustration — would have self-tested if possible",
+    illustrationAlt: "Confirmation seeker illustration, would have self-tested if possible",
     illustrationWidth: 643,
     illustrationHeight: 354,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-confirmation-seeker.png",
@@ -144,7 +144,7 @@ export const nhsPersonas: NhsPersona[] = [
       "The call handler's questions help them feel thoroughly checked. Thankful for any advice received.",
     frustrations: [
       "Long call wait times.",
-      "No feedback while waiting — unsure they are still connected to the queue.",
+      "No feedback while waiting, unsure they are still connected to the queue.",
       "Wishes there was higher priority for those calling about children.",
     ],
     pullQuotes: [
@@ -160,10 +160,10 @@ export const nhsPersonas: NhsPersona[] = [
     spectrumPosition: 3,
     quote: "It was a worsening situation and I had to wait too long for a response.",
     callerSituation:
-      "Typically calling on behalf of a loved one with a persistent or deteriorating condition. Reaches a breaking point where they can no longer manage alone — medium urgency, worsening but not yet critical. Often experienced parents or carers.",
+      "Typically calling on behalf of a loved one with a persistent or deteriorating condition. Reaches a breaking point where they can no longer manage alone, medium urgency, worsening but not yet critical. Often experienced parents or carers.",
     traits: { emotional: 25, thankful: 85, aggravated: 75 },
     expectations: [
-      "Low expectations of getting through quickly — they know 111 is busy out of hours.",
+      "Low expectations of getting through quickly, they know 111 is busy out of hours.",
       "Higher expectations around what the call should provide when monitoring an ongoing health concern.",
     ],
     heardAbout: "Word of mouth, TV, newspaper ads, or their doctor.",
@@ -172,7 +172,7 @@ export const nhsPersonas: NhsPersona[] = [
     whenTheyCall:
       "111 is a last resort during out-of-hours periods, usually after trying their GP during the day.",
     illustrationSrc: "/projects/nhs-111-waiting-times/persona-illustration-breaking-point.png",
-    illustrationAlt: "Breaking point caller illustration — worsening situation and long wait",
+    illustrationAlt: "Breaking point caller illustration, worsening situation and long wait",
     illustrationWidth: 561,
     illustrationHeight: 342,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-breaking-point.png",
@@ -180,8 +180,8 @@ export const nhsPersonas: NhsPersona[] = [
     positives:
       "Values having a service available when the GP is closed. Appreciates thorough, diligent call handlers even when the process involves many questions.",
     frustrations: [
-      "Wait times, being put on hold, and waiting for callbacks — feeling there are not enough nurses on shift.",
-      "No progress indicator in the queue — not knowing their position.",
+      "Wait times, being put on hold, and waiting for callbacks, feeling there are not enough nurses on shift.",
+      "No progress indicator in the queue, not knowing their position.",
       "Repetitive questions at each stage in the chain of command.",
       "Unclear what is classed as \"an emergency\" versus \"urgent.\"",
     ],
@@ -198,7 +198,7 @@ export const nhsPersonas: NhsPersona[] = [
     spectrumPosition: 4,
     quote: "Trying to get an appointment with GP is pretty impossible these days so I'll call 111.",
     callerSituation:
-      "Unable to get a GP appointment and referred by receptionists or pharmacists. Treats 111 as a faster route to the care they would have asked their GP for — not always understanding 111's remit.",
+      "Unable to get a GP appointment and referred by receptionists or pharmacists. Treats 111 as a faster route to the care they would have asked their GP for, not always understanding 111's remit.",
     traits: { emotional: 40, thankful: 60, aggravated: 65 },
     expectations: [
       "To get GP-level advice or an appointment pathway without waiting days.",
@@ -220,7 +220,7 @@ export const nhsPersonas: NhsPersona[] = [
       "When helpful, 111 can validate the decision to seek care and suggest a sensible next step.",
     frustrations: [
       "Long queue times only to be directed back to the GP practice.",
-      "Feeling passed in circles — GP sends to pharmacy, pharmacy sends to 111, 111 sends back to GP.",
+      "Feeling passed in circles, GP sends to pharmacy, pharmacy sends to 111, 111 sends back to GP.",
       "Very difficult to get a GP appointment and long waiting times.",
       "Difficulty booking GP appointments online in the first place.",
     ],

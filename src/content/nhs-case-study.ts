@@ -4,14 +4,14 @@ export const nhsCaseStudyMeta = {
   outcomeLine:
     "Mapped five caller personas and journey pain points to help NHS 111 improve reassurance, routing, and wait-time communication.",
   problemStatement:
-    "Many people reached NHS 111 without knowing whether it was the right service — or what to expect once they were in the queue. Long waits, repeated questions, and unclear routing added pressure on callers and on A&E.",
+    "Many people reached NHS 111 without knowing whether it was the right service, or what to expect once they were in the queue. Long waits, repeated questions, and unclear routing added pressure on callers and on A&E.",
 };
 
 export const nhsAtAGlance = {
   summary:
     "A quick overview of the problem, my contribution, and how the research was delivered. The sections below go into more detail.",
   problem:
-    "Callers often used 111 for the wrong type of support, waited without updates, and struggled to reach the right pathway — especially out of hours when GP access was limited.",
+    "Callers often used 111 for the wrong type of support, waited without updates, and struggled to reach the right pathway, especially out of hours when GP access was limited.",
   contribution:
     "End-to-end mixed-method research: recruitment, interviews, survey design, thematic analysis, personas, journey maps, and presentation to the NHS product team.",
   highlights: [
@@ -72,7 +72,7 @@ export const nhsQuantitativeItems = [
 export const nhsFindingHighlights = [
   {
     title: "People try other services first",
-    text: "Many callers — especially senior citizens — waited for their GP before turning to 111, often when symptoms had already worsened.",
+    text: "Many callers, especially senior citizens, waited for their GP before turning to 111, often when symptoms had already worsened.",
   },
   {
     title: "Helpful staff, frustrating waits",
@@ -85,7 +85,7 @@ export const nhsFindingHighlights = [
 ];
 
 export const nhsReflectionItems = [
-  "Mixing quantitative and qualitative data made the findings harder to dismiss — numbers showed what was happening, interviews explained why.",
+  "Mixing quantitative and qualitative data made the findings harder to dismiss, numbers showed what was happening, interviews explained why.",
   "Personas and journey maps gave the NHS team practical artefacts they could reuse in product decisions, not just a one-off report.",
   "Phone interviews were efficient for recruitment, but face-to-face sessions would have captured emotion and trust more richly.",
 ];

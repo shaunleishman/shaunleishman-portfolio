@@ -29,11 +29,11 @@ const findingHighlightIcons = [Building2, Headset, Route] as const;
 const deliverableHighlights = [
   {
     icon: Users,
-    text: "Five interactive personas — explore traits, call patterns, frustrations, and journey maps.",
+    text: "Five interactive personas, explore traits, call patterns, frustrations, and journey maps.",
   },
   {
     icon: Map,
-    text: "Five matching journey maps — frustrations, quotes, and emotional peaks mapped end-to-end for each persona.",
+    text: "Five matching journey maps, frustrations, quotes, and emotional peaks mapped end-to-end for each persona.",
   },
   {
     icon: ClipboardList,
@@ -113,7 +113,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
       <CaseStudySplitSection
         id="qualitative-research"
         title={nhsSectionTitle("qualitative-research")}
-        lead="Interviews and affinity mapping surfaced why callers behaved the way they did — not just what they did."
+        lead="Interviews and affinity mapping surfaced why callers behaved the way they did, not just what they did."
         visual={
           <CaseStudyIllustration
             src="/projects/nhs-111-waiting-times/research-discovery.png"
@@ -202,7 +202,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         }
         limitations={project.limitations}
         takeaways={nhsReflectionItems}
-        takeawaysLead="What mixed-methods research on NHS 111 reinforced — and how it shaped my approach to public-service discovery."
+        takeawaysLead="What mixed-methods research on NHS 111 reinforced, and how it shaped my approach to public-service discovery."
         feedbackPath="/work/nhs-111-waiting-times"
       />
 

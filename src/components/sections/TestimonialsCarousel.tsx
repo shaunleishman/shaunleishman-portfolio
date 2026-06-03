@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { testimonials, type Testimonial } from "@/content/testimonials";
 import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
@@ -17,8 +17,8 @@ function TestimonialSlide({
   return (
     <figure
       className={cn(
-        "w-full shrink-0 transition-opacity duration-300 motion-safe:ease-out",
-        isActive ? "opacity-100" : "opacity-0 pointer-events-none absolute inset-0",
+        "col-start-1 row-start-1 w-full transition-opacity duration-300 motion-safe:ease-out",
+        isActive ? "z-10 opacity-100" : "z-0 opacity-0 pointer-events-none",
       )}
       aria-hidden={!isActive}
     >
@@ -29,25 +29,11 @@ function TestimonialSlide({
         aria-hidden
       />
       <blockquote>
-        <p className="text-h3 md:text-[1.75rem] md:leading-snug font-semibold text-[var(--color-text-primary)] mb-8 max-w-3xl">
-          {item.headline}
+        <p className="text-h3 md:text-h2 md:leading-snug font-semibold text-[var(--color-text-primary)] max-w-3xl text-pretty">
+          &ldquo;{item.headline}&rdquo;
         </p>
-        <ul className="grid gap-3 sm:grid-cols-2 mb-8">
-          {item.highlights.map((highlight) => (
-            <li
-              key={highlight}
-              className="flex gap-3 rounded-xl border border-[var(--color-border)] bg-white/70 px-4 py-3 text-body-sm text-[var(--color-text-secondary)] leading-snug"
-            >
-              <span
-                className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--color-accent)]"
-                aria-hidden
-              />
-              <span>{highlight}</span>
-            </li>
-          ))}
-        </ul>
       </blockquote>
-      <figcaption className="flex items-start justify-between gap-4 border-t border-[var(--color-border)] pt-5">
+      <figcaption className="mt-10 flex items-start justify-between gap-4 border-t border-[var(--color-border)] pt-5">
         <div>
           <p className="text-body font-semibold text-[var(--color-text-primary)]">
             {item.author}
@@ -72,7 +58,6 @@ function TestimonialSlide({
 }
 
 export function TestimonialsCarousel() {
-  const baseId = useId();
   const [active, setActive] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const count = testimonials.length;
@@ -113,53 +98,20 @@ export function TestimonialsCarousel() {
   return (
     <div className="relative">
       <div
-        role="tablist"
-        aria-label="Recommendation authors"
-        className="mb-6 flex flex-wrap gap-2"
-      >
-        {testimonials.map((item, index) => {
-          const isSelected = active === index;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              role="tab"
-              id={`${baseId}-tab-${index}`}
-              aria-selected={isSelected}
-              aria-controls={`${baseId}-panel-${index}`}
-              tabIndex={isSelected ? 0 : -1}
-              onClick={() => goTo(index)}
-              className={cn(
-                "rounded-full border px-4 py-2 text-body-sm font-medium transition-colors min-h-[44px]",
-                isSelected
-                  ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]"
-                  : "border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]",
-              )}
-            >
-              {item.author}
-            </button>
-          );
-        })}
-      </div>
-
-      <div
-        className="surface-card relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-8 md:p-10 min-h-[420px]"
+        className="surface-card relative flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-8 md:p-10"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Colleague recommendations"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <div
-          role="tabpanel"
-          id={`${baseId}-panel-${active}`}
-          aria-labelledby={`${baseId}-tab-${active}`}
-          aria-live="polite"
-          className="relative"
-        >
+        <div aria-live="polite" className="grid flex-1">
           {testimonials.map((item, index) => (
             <TestimonialSlide key={item.id} item={item} isActive={active === index} />
           ))}
         </div>
 
-        <div className="mt-8 flex items-center justify-between gap-4 border-t border-[var(--color-border)] pt-6">
+        <div className="mt-8 flex shrink-0 items-center justify-between gap-4 border-t border-[var(--color-border)] pt-6">
           <div className="flex items-center gap-2">
             {testimonials.map((item, index) => (
               <button

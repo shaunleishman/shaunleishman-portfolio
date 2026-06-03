@@ -1,11 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type ProcessIllustrationProps = {
   step: number;
   className?: string;
 };
+
+const PROCESS_ENTER_MS = {
+  pop: 550,
+  rise: 500,
+  slide: 450,
+  "grow-y": 450,
+  sweep: 650,
+} as const;
 
 function AnimG({
   anim,
@@ -14,12 +23,42 @@ function AnimG({
   style,
   children,
 }: {
-  anim: "pop" | "rise" | "slide" | "grow-y" | "sweep";
+  anim: keyof typeof PROCESS_ENTER_MS;
   delay?: number;
   className?: string;
   style?: React.CSSProperties;
   children: React.ReactNode;
 }) {
+  const [floating, setFloating] = useState(false);
+
+  useEffect(() => {
+    setFloating(false);
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) {
+      setFloating(true);
+      return;
+    }
+
+    const enterMs = delay + PROCESS_ENTER_MS[anim];
+    const timer = window.setTimeout(() => setFloating(true), enterMs);
+    return () => window.clearTimeout(timer);
+  }, [anim, delay]);
+
+  if (floating) {
+    return (
+      <g
+        className={cn("process-anim-settled process-anim-float", className)}
+        style={{
+          animationDelay: `${(delay % 500) / 1000}s`,
+          ...style,
+        }}
+      >
+        {children}
+      </g>
+    );
+  }
+
   return (
     <g
       className={cn(`process-anim-${anim}`, className)}

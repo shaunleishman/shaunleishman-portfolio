@@ -44,7 +44,7 @@ export function MetricsHeatmapViewer({ path }: { path: string }) {
           <h2 className="text-h4 font-semibold mb-1">Mouse dwell heatmap</h2>
           <p className="text-body-sm text-[var(--color-text-muted)] max-w-2xl">
             Open the live page with an 8×8px dwell grid overlaid on top. Only you can see it while signed in to
-            metrics — scroll and inspect the real layout instead of a static capture.
+            metrics. Scroll and inspect the real layout instead of a static capture.
           </p>
         </div>
         <a

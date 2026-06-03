@@ -215,7 +215,7 @@ export function FigmaPrototypeEmbed({
           id={dialogId}
           role="dialog"
           aria-modal="true"
-          aria-label={`${title} — full screen`}
+          aria-label={`${title}, full screen`}
           className="fixed inset-0 z-50 flex flex-col bg-neutral-900 motion-safe:animate-[fade-in_0.2s_ease-out]"
         >
           <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-4 py-3">

@@ -8,7 +8,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "Work",
-  description: "UX/UI design case studies — research, co-design, and usability testing.",
+  description: "UX/UI design case studies: research, co-design, and usability testing.",
 };
 
 export default function WorkPage() {
@@ -31,7 +31,7 @@ export default function WorkPage() {
           </nav>
           <h1 className="text-h1 font-semibold mb-4">Selected work</h1>
           <p className="text-body-lg text-neutral-300">
-            Case studies from healthcare, public services, and sustainability — each
+            Case studies from healthcare, public services, and sustainability. Each
             grounded in user research and tested with real users.
           </p>
         </PageHero>
