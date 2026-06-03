@@ -98,17 +98,17 @@ type CaseStudyScreenshotProps = {
 
 export function CaseStudyScreenshot({ src, alt, caption, className }: CaseStudyScreenshotProps) {
   return (
-    <figure className={cn("overflow-hidden rounded-xl border border-[var(--color-border)] bg-white", className)}>
+    <figure className={cn("flex flex-col gap-0 overflow-hidden rounded-xl border border-[var(--color-border)] bg-white", className)}>
       <Image
         src={src}
         alt={alt}
         width={2048}
         height={1280}
-        className="h-auto w-full"
+        className="block h-auto w-full"
         sizes="(max-width: 768px) 100vw, 960px"
       />
       {caption && (
-        <figcaption className="px-4 py-3 text-body-sm text-[var(--color-text-muted)] border-t border-[var(--color-border)]">
+        <figcaption className="m-0 border-t border-[var(--color-border)] bg-white px-4 py-2 text-body-sm leading-snug text-[var(--color-text-muted)]">
           {caption}
         </figcaption>
       )}

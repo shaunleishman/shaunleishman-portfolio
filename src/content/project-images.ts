@@ -42,9 +42,9 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
     {
       section: "approach",
       afterIndex: 1,
-      heading: "Co-design with four practitioner groups",
+      heading: "Co-design with five user groups",
       supportText:
-        "Workshops surfaced how GPs, nurses, pharmacists, and senior nurses each approach patient assignment differently — feeding directly into the prototype.",
+        "Workshops surfaced how GPs, nurses, pharmacists, and admin staff each approach patient assignment differently — feeding directly into the prototype.",
       images: [
         {
           src: "/projects/omron-patient-monitoring/general-practitioner-user-group.png",
@@ -62,9 +62,14 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
           caption: "Clinical pharmacists group",
         },
         {
-          src: "/projects/omron-patient-monitoring/senior-nurse-user-group.png",
-          alt: "Co-design notes from the senior nurse user group",
-          caption: "Senior nurse group",
+          src: "/projects/omron-patient-monitoring/practice-nurse-user-group.png",
+          alt: "Co-design notes from the practice nurse user group",
+          caption: "Practice nurse group",
+        },
+        {
+          src: "/projects/omron-patient-monitoring/admin-staff-user-group.png",
+          alt: "Co-design notes from the admin staff user group",
+          caption: "Admin staff group",
         },
       ],
     },
@@ -77,8 +82,8 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       images: [
         {
           src: "/projects/omron-patient-monitoring/patient-existing-tabs.png",
-          alt: "Patient profile showing redesigned tab structure",
-          caption: "Patient profile tabs",
+          alt: "Existing patient profile with Summary, Review, Graphs, and other tabs",
+          caption: "Existing patient profile — tab structure before redesign",
         },
         {
           src: "/projects/omron-patient-monitoring/monitoring-all-my-patients.png",
@@ -134,9 +139,9 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
         "Each practitioner group worked differently — a one-size assignment flow couldn't fit every role.",
       images: [
         {
-          src: "/projects/omron-patient-monitoring/general-practitioner-user-group-alt.png",
-          alt: "General practitioner co-design output highlighting role-specific needs",
-          caption: "GP workflow differences",
+          src: "/projects/omron-patient-monitoring/admin-staff-user-group.png",
+          alt: "Admin staff co-design output highlighting role-specific needs",
+          caption: "Admin workflow differences",
         },
       ],
     },

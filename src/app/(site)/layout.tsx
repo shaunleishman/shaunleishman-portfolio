@@ -2,6 +2,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { PageEnter } from "@/components/layout/PageEnter";
+import { MetricsSecretAccess } from "@/components/metrics/MetricsSecretAccess";
 
 export default function SiteLayout({
   children,
@@ -10,6 +11,7 @@ export default function SiteLayout({
 }>) {
   return (
     <>
+      <MetricsSecretAccess />
       <Header />
       <ScrollProgress />
       <main id="main-content" className="flex-1">

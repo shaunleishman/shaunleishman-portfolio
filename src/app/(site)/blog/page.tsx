@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
+import { getBlogEngagementMap } from "@/lib/blog-engagement";
 import { BlogPostList } from "@/components/blog/BlogPostList";
 import { PageHero } from "@/components/layout/PageHero";
 
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 
 export default function BlogPage() {
   const posts = getAllPosts();
+  const engagement = getBlogEngagementMap();
 
   return (
     <>
@@ -39,7 +41,7 @@ export default function BlogPage() {
 
       <section className="section-padding bg-white">
         <div className="container-site max-w-3xl">
-          <BlogPostList posts={posts} />
+          <BlogPostList posts={posts} engagement={engagement} />
         </div>
       </section>
     </>

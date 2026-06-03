@@ -6,14 +6,17 @@ import { companies } from "@/content/companies";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/Reveal";
 
-/** Base footprint — individual `scale` multiplies width and height */
+/** Fixed slot size — gap is even because every item occupies the same width */
 const LOGO_SLOT = {
-  width: 168,
-  height: 60,
+  width: 176,
+  height: 64,
 } as const;
 
-/** Even gap between slots — not tied to logo width */
-const LOGO_GAP = 64;
+const MAX_LOGO_SCALE = Math.max(...companies.map((company) => company.scale ?? 1));
+const LOGO_ROW_HEIGHT = LOGO_SLOT.height * MAX_LOGO_SCALE;
+
+/** Even gap between logo slots */
+const LOGO_GAP = 96;
 
 const AUTO_SCROLL_PX_PER_SEC = 40;
 const MAX_VELOCITY_PX_PER_SEC = 1200;
@@ -43,27 +46,34 @@ function clampVelocity(velocity: number) {
 type CompanyLogoImageProps = {
   name: string;
   logo: string;
+  width: number;
+  height: number;
   scale?: number;
 };
 
-function CompanyLogoImage({ name, logo, scale = 1 }: CompanyLogoImageProps) {
+function CompanyLogoImage({ name, logo, width, height, scale = 1 }: CompanyLogoImageProps) {
   const slotWidth = LOGO_SLOT.width * scale;
   const slotHeight = LOGO_SLOT.height * scale;
 
   return (
     <div
-      className="flex items-center justify-center"
-      style={{ width: slotWidth, height: slotHeight }}
+      className="flex shrink-0 items-center justify-center overflow-visible"
+      style={{ width: slotWidth, height: LOGO_ROW_HEIGHT }}
     >
       <Image
         src={logo}
         alt={`${name} logo`}
-        width={Math.round(slotWidth)}
-        height={Math.round(slotHeight)}
+        width={width}
+        height={height}
         unoptimized
         draggable={false}
         className="select-none object-contain"
-        style={{ maxWidth: slotWidth, maxHeight: slotHeight, width: "auto", height: "auto" }}
+        style={{
+          maxWidth: slotWidth,
+          maxHeight: slotHeight,
+          width: "auto",
+          height: "auto",
+        }}
       />
     </div>
   );
@@ -196,26 +206,27 @@ export function LogoMarquee() {
     <section
       aria-label="Companies worked with"
       data-analytics-section="companies"
-      className="py-14 bg-[var(--color-bg-dark)] overflow-hidden border-y border-white/10"
+      className="py-16 bg-[var(--color-bg-dark)] overflow-x-clip border-y border-white/10"
     >
       <Reveal variant="fade">
-        <p className="text-label text-neutral-500 text-center mb-8 px-4">
+        <p className="text-label text-neutral-500 text-center mb-10 px-4">
           Companies worked with
         </p>
       </Reveal>
 
       <div
-        className="overflow-hidden touch-none select-none"
+        className="overflow-x-clip touch-none select-none"
         aria-roledescription="carousel"
+        style={{ minHeight: LOGO_ROW_HEIGHT + 8 }}
       >
         <div
           ref={trackRef}
           role="list"
           className={cn(
-            "flex w-max items-center px-8",
+            "flex w-max items-center px-12 md:px-16",
             isDragging ? "cursor-grabbing" : "cursor-grab",
           )}
-          style={{ gap: LOGO_GAP, transform: `translateX(${offset}px)` }}
+          style={{ gap: LOGO_GAP, minHeight: LOGO_ROW_HEIGHT, transform: `translateX(${offset}px)` }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
@@ -227,6 +238,8 @@ export function LogoMarquee() {
               <CompanyLogoImage
                 name={company.name}
                 logo={company.logo}
+                width={company.width}
+                height={company.height}
                 scale={company.scale}
               />
             </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { projects } from "@/content/projects";
-import { Tag } from "@/components/ui/Tag";
+import { TagList } from "@/components/ui/Tag";
 import { ProjectThumbnail } from "@/components/projects/ProjectThumbnail";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
@@ -42,7 +42,7 @@ export default function WorkPage() {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project, index) => (
               <Reveal key={project.slug} delay={index * 80}>
-                <article className="group flex h-full flex-col">
+                <article className="group flex flex-col">
                   <Link
                     href={`/work/${project.slug}`}
                     className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-[var(--color-border)] bg-neutral-100 mb-5 focus-visible:outline-offset-4 group block motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:scale-[1.02]"
@@ -59,16 +59,10 @@ export default function WorkPage() {
                       {project.title}
                     </Link>
                   </h2>
-                  <p className="text-body-sm text-[var(--color-text-secondary)] mb-4 flex-1">
+                  <p className="mb-4 text-body-sm text-[var(--color-text-secondary)]">
                     {project.overview.slice(0, 120)}…
                   </p>
-                  <ul className="flex flex-wrap gap-2" aria-label="Project tags">
-                    {project.tags.map((tag) => (
-                      <li key={tag}>
-                        <Tag>{tag}</Tag>
-                      </li>
-                    ))}
-                  </ul>
+                  <TagList tags={project.tags} aria-label="Project tags" />
                 </article>
               </Reveal>
             ))}

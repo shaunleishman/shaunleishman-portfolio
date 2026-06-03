@@ -5,6 +5,8 @@ import Image from "next/image";
 import { X, ZoomIn } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/utils";
+import type { ScreenshotAnnotation } from "@/lib/screenshot-annotations";
+import { ScreenshotAnnotationLayer } from "@/components/projects/ScreenshotAnnotationLayer";
 
 type ZoomableScreenshotProps = {
   src: string;
@@ -13,9 +15,38 @@ type ZoomableScreenshotProps = {
   className?: string;
   /** Cap inline preview height — full size is still available on zoom. */
   previewMaxHeight?: number;
+  /** `cover` fills the preview (default); `contain` letterboxes the whole image. */
+  previewFit?: "contain" | "cover";
+  /** Intrinsic dimensions for `contain` previews (avoids wrong aspect-ratio cropping). */
+  width?: number;
+  height?: number;
+  /** Percentage-based callouts drawn above the image — scale with the screenshot, not the frame. */
+  annotations?: ScreenshotAnnotation[];
 };
 
 const DEFAULT_PREVIEW_MAX_HEIGHT = 480;
+
+function AnnotatedMedia({
+  annotations,
+  children,
+  className,
+}: {
+  annotations?: ScreenshotAnnotation[];
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("relative w-full", className)}>
+      {children}
+      {annotations && annotations.length > 0 && (
+        <ScreenshotAnnotationLayer
+          annotations={annotations}
+          className="pointer-events-none absolute inset-0 h-full w-full"
+        />
+      )}
+    </div>
+  );
+}
 
 export function ZoomableScreenshot({
   src,
@@ -23,6 +54,10 @@ export function ZoomableScreenshot({
   caption,
   className,
   previewMaxHeight = DEFAULT_PREVIEW_MAX_HEIGHT,
+  previewFit = "cover",
+  width = 2048,
+  height = 1280,
+  annotations,
 }: ZoomableScreenshotProps) {
   const dialogId = useId();
   const [open, setOpen] = useState(false);
@@ -46,53 +81,79 @@ export function ZoomableScreenshot({
     };
   }, [open]);
 
+  const previewHeight = `min(${previewMaxHeight}px, 55vh)`;
+  const isCover = previewFit === "cover";
+
   const previewClassName = cn(
-    "h-auto w-full object-contain object-center transition-opacity duration-300",
+    "transition-opacity duration-300",
+    isCover
+      ? "absolute inset-0 h-full w-full object-cover object-center"
+      : "h-auto w-full object-contain object-center",
     loaded ? "opacity-100" : "opacity-0",
   );
 
-  const previewStyle = { maxHeight: `min(${previewMaxHeight}px, 55vh)` } as const;
+  const previewStyle = isCover ? undefined : ({ maxHeight: previewHeight } as const);
+  const buttonStyle = isCover ? ({ height: previewHeight } as const) : undefined;
 
   return (
     <>
-      <figure className={cn("surface-card overflow-hidden", className)}>
+      <figure className={cn("surface-card flex flex-col gap-0 overflow-hidden", className)}>
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="group relative flex w-full min-h-[8rem] cursor-zoom-in items-center justify-center bg-neutral-100/70 text-left"
+          style={buttonStyle}
+          className={cn(
+            "group relative m-0 block w-full shrink-0 cursor-zoom-in overflow-hidden border-0 p-0 leading-none bg-neutral-900 text-left",
+            isCover ? undefined : "flex min-h-[8rem] items-center justify-center bg-neutral-100/70",
+          )}
           aria-haspopup="dialog"
           aria-expanded={open}
           aria-controls={dialogId}
         >
           {!loaded && <Skeleton className="absolute inset-0 rounded-none" aria-hidden />}
           {isAnimated ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={src}
-              alt={alt}
-              onLoad={() => setLoaded(true)}
-              style={previewStyle}
-              className={previewClassName}
-            />
+            <AnnotatedMedia annotations={annotations}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={src}
+                alt={alt}
+                onLoad={() => setLoaded(true)}
+                style={previewStyle}
+                className={cn(previewClassName, "block")}
+              />
+            </AnnotatedMedia>
+          ) : isCover ? (
+            <AnnotatedMedia annotations={annotations} className="absolute inset-0">
+              <Image
+                src={src}
+                alt={alt}
+                fill
+                onLoad={() => setLoaded(true)}
+                className={previewClassName}
+                sizes="(max-width: 768px) 100vw, 960px"
+              />
+            </AnnotatedMedia>
           ) : (
-            <Image
-              src={src}
-              alt={alt}
-              width={2048}
-              height={1280}
-              onLoad={() => setLoaded(true)}
-              style={previewStyle}
-              className={previewClassName}
-              sizes="(max-width: 768px) 100vw, 960px"
-            />
+            <AnnotatedMedia annotations={annotations}>
+              <Image
+                src={src}
+                alt={alt}
+                width={width}
+                height={height}
+                onLoad={() => setLoaded(true)}
+                style={previewStyle}
+                className={previewClassName}
+                sizes="(max-width: 768px) 100vw, 960px"
+              />
+            </AnnotatedMedia>
           )}
-          <span className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[0.75rem] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+          <span className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[0.75rem] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
             <ZoomIn className="size-3.5" aria-hidden />
             {isAnimated ? "Enlarge" : "Zoom"}
           </span>
         </button>
         {caption && (
-          <figcaption className="px-4 py-3 text-body-sm text-[var(--color-text-muted)] border-t border-[var(--color-border)]">
+          <figcaption className="m-0 border-t border-[var(--color-border)] bg-white px-4 py-2 text-body-sm leading-snug text-[var(--color-text-muted)]">
             {caption}
           </figcaption>
         )}
@@ -116,8 +177,10 @@ export function ZoomableScreenshot({
             <X className="size-5" />
           </button>
           <div className="max-h-full max-w-5xl overflow-auto" onClick={(e) => e.stopPropagation()}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt={alt} className="h-auto max-h-[85vh] w-full rounded-lg object-contain" />
+            <AnnotatedMedia annotations={annotations} className="inline-block max-w-full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt={alt} className="h-auto max-h-[85vh] w-full rounded-lg object-contain" />
+            </AnnotatedMedia>
           </div>
         </div>
       )}

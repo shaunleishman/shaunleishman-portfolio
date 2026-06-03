@@ -3,19 +3,37 @@
 import { useCallback, useId, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
+  CHART_ENTER_MS,
+  displayPercent,
+  lerpByProgress,
+  useChartEnterProgress,
+} from "@/lib/useChartEnterProgress";
+import {
+  CHART_ACCENTS,
+  ChartInsightCard,
+  ChoiceOutlinePill,
+  FilterOutlinePill,
+} from "@/components/projects/CaseStudyChartControls";
+import { FilterChip } from "@/components/ui/FilterChip";
+import { NhsTypicalCallerFunnel } from "@/components/projects/NhsTypicalCallerFunnel";
+import {
   NHS_AGE_GROUPS,
   NHS_QUANT_COLORS,
+  NHS_WEEKDAYS,
   nhs999OutcomeBlocks,
   nhs999OutcomeSeries,
   nhsPriorResourceUse,
   nhsQuantitativeViews,
+  nhsSatisfactionLevels,
   nhsSurveyRespondents,
+  nhsWeekdayOutcomes,
   type NhsAgeGroup,
+  type NhsWeekday,
   type OutcomeTimeBlock,
 } from "@/content/nhs-quantitative";
 
 const MOTION_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
-const MOTION_MS = 650;
+const MOTION_MS = CHART_ENTER_MS;
 
 type NhsQuantitativeInteractiveProps = {
   className?: string;
@@ -39,32 +57,18 @@ function AgePills({
   onSelect: (age: NhsAgeGroup) => void;
 }) {
   return (
-    <div
-      role="tablist"
-      aria-label="Age group"
-      className="flex flex-wrap gap-1.5"
-    >
-      {NHS_AGE_GROUPS.map((age) => {
-        const isActive = age === activeAge;
-        return (
-          <button
-            key={age}
-            type="button"
-            role="tab"
-            id={`${baseId}-age-${age}`}
-            aria-selected={isActive}
-            onClick={() => onSelect(age)}
-            className={cn(
-              "rounded-full px-3 py-1.5 text-body-sm font-medium min-h-[36px] motion-safe:transition-all motion-safe:duration-300",
-              isActive
-                ? "bg-[#005eb8] text-white shadow-sm"
-                : "bg-white/80 text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:border-[#005eb8]/40 hover:text-[#005eb8]",
-            )}
-          >
-            {age}
-          </button>
-        );
-      })}
+    <div role="tablist" aria-label="Age group" className="flex flex-wrap gap-1.5">
+      {NHS_AGE_GROUPS.map((age) => (
+        <ChoiceOutlinePill
+          key={age}
+          id={`${baseId}-age-${age}`}
+          role="tab"
+          label={age}
+          selected={age === activeAge}
+          ariaSelected={age === activeAge}
+          onSelect={() => onSelect(age)}
+        />
+      ))}
     </div>
   );
 }
@@ -74,25 +78,27 @@ function MetricBar({
   value,
   max,
   color,
+  progress = 1,
 }: {
   label: string;
   value: number;
   max: number;
   color: string;
+  progress?: number;
 }) {
-  const width = max > 0 ? Math.min(100, (value / max) * 100) : 0;
+  const width = max > 0 ? Math.min(100, (value / max) * 100 * progress) : 0;
 
   return (
     <div>
       <div className="mb-1 flex items-center justify-between gap-2 text-body-sm">
         <span className="text-[var(--color-text-secondary)]">{label}</span>
         <span className="shrink-0 font-medium tabular-nums text-[var(--color-text-primary)]">
-          {value % 1 === 0 ? value : value.toFixed(1)}%
+          {displayPercent(value, progress)}%
         </span>
       </div>
-      <div className="relative h-2.5 rounded-full bg-[#dbeafe]">
+      <div className="relative h-2.5 rounded-full" style={{ backgroundColor: CHART_ACCENTS.nhs.trackBg }}>
         <div
-          className="absolute inset-y-0 left-0 rounded-full motion-safe:transition-[width] motion-safe:duration-[650ms] motion-safe:ease-in-out"
+          className="absolute inset-y-0 left-0 rounded-full"
           style={{ width: `${width}%`, backgroundColor: color, ...motionStyle("width") }}
         />
       </div>
@@ -102,17 +108,15 @@ function MetricBar({
 
 function InsightBox({ text, accentColor }: { text: string; accentColor: string }) {
   return (
-    <div
-      className="mt-4 rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-body-sm text-[var(--color-text-secondary)]"
-      style={{ borderLeftWidth: 3, borderLeftColor: accentColor }}
-    >
-      {text}
+    <div className="mt-4">
+      <ChartInsightCard accentColor={accentColor}>{text}</ChartInsightCard>
     </div>
   );
 }
 
-function SurveyRespondentsPanel({ baseId }: { baseId: string }) {
+function SurveyRespondentsPanel({ baseId, animationKey }: { baseId: string; animationKey: string }) {
   const [activeAge, setActiveAge] = useState<NhsAgeGroup>("25-39");
+  const progress = useChartEnterProgress(`${animationKey}-${activeAge}`);
   const row = nhsSurveyRespondents.find((item) => item.ageGroup === activeAge)!;
   const max = 45;
 
@@ -125,31 +129,24 @@ function SurveyRespondentsPanel({ baseId }: { baseId: string }) {
           value={row.surveyRespondents}
           max={max}
           color={NHS_QUANT_COLORS.teal}
+          progress={progress}
         />
         <MetricBar
           label="On behalf of a child"
           value={row.onBehalfOfChild}
           max={max}
           color={NHS_QUANT_COLORS.coral}
+          progress={progress}
         />
         {row.insight && <InsightBox text={row.insight} accentColor={NHS_QUANT_COLORS.teal} />}
-      </div>
-      <div className="mt-4 flex flex-wrap gap-4 text-body-sm text-[var(--color-text-muted)]">
-        <span className="flex items-center gap-2">
-          <span className="size-2.5 rounded-full" style={{ backgroundColor: NHS_QUANT_COLORS.teal }} />
-          Survey respondents
-        </span>
-        <span className="flex items-center gap-2">
-          <span className="size-2.5 rounded-full" style={{ backgroundColor: NHS_QUANT_COLORS.coral }} />
-          On behalf of a child
-        </span>
       </div>
     </div>
   );
 }
 
-function PriorResourcesPanel({ baseId }: { baseId: string }) {
+function PriorResourcesPanel({ baseId, animationKey }: { baseId: string; animationKey: string }) {
   const [activeAge, setActiveAge] = useState<NhsAgeGroup>("25-39");
+  const progress = useChartEnterProgress(`${animationKey}-${activeAge}`);
   const row = nhsPriorResourceUse.find((item) => item.ageGroup === activeAge)!;
   const max = 45;
 
@@ -162,34 +159,23 @@ function PriorResourcesPanel({ baseId }: { baseId: string }) {
           value={row.surveyRespondents}
           max={max}
           color={NHS_QUANT_COLORS.teal}
+          progress={progress}
         />
         <MetricBar
           label="Used NHS Inform before calling"
           value={row.usedNhsInform}
           max={max}
           color={NHS_QUANT_COLORS.purple}
+          progress={progress}
         />
         <MetricBar
           label="Went to GP / pharmacy before calling"
           value={row.wentToGpPharmacy}
           max={max}
           color={NHS_QUANT_COLORS.orange}
+          progress={progress}
         />
         {row.insight && <InsightBox text={row.insight} accentColor={NHS_QUANT_COLORS.purple} />}
-      </div>
-      <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-body-sm text-[var(--color-text-muted)]">
-        <span className="flex items-center gap-2">
-          <span className="size-2.5 rounded-full" style={{ backgroundColor: NHS_QUANT_COLORS.teal }} />
-          Survey respondents
-        </span>
-        <span className="flex items-center gap-2">
-          <span className="size-2.5 rounded-full" style={{ backgroundColor: NHS_QUANT_COLORS.purple }} />
-          NHS Inform
-        </span>
-        <span className="flex items-center gap-2">
-          <span className="size-2.5 rounded-full" style={{ backgroundColor: NHS_QUANT_COLORS.orange }} />
-          GP / pharmacy
-        </span>
       </div>
     </div>
   );
@@ -199,10 +185,12 @@ function OutcomeLineChart({
   activeBlockId,
   showDidNotTry,
   showTried,
+  progress,
 }: {
   activeBlockId: string;
   showDidNotTry: boolean;
   showTried: boolean;
+  progress: number;
 }) {
   const yMax = 24;
   const width = 400;
@@ -211,10 +199,12 @@ function OutcomeLineChart({
   const padY = 12;
   const chartW = width - padX * 2;
   const chartH = height - padY * 2;
+  const baselineY = padY + chartH;
 
   const toPoint = (index: number, value: number) => {
     const x = padX + (index / (nhs999OutcomeSeries.didNotTry.length - 1)) * chartW;
-    const y = padY + chartH - (value / yMax) * chartH;
+    const animatedValue = lerpByProgress(value, progress);
+    const y = baselineY - (animatedValue / yMax) * chartH;
     return { x, y };
   };
 
@@ -253,7 +243,7 @@ function OutcomeLineChart({
         y={padY}
         width={highlightWidth}
         height={chartH}
-        fill="#005eb8"
+        fill="var(--case-study-accent)"
         opacity={0.06}
         className="motion-safe:transition-[x,width] motion-safe:duration-[650ms] motion-safe:ease-in-out"
       />
@@ -280,13 +270,24 @@ function OutcomeLineChart({
             d={linePath(nhs999OutcomeSeries.didNotTry)}
             fill="none"
             stroke={NHS_QUANT_COLORS.coral}
-            strokeWidth={2.5}
+            strokeWidth={1}
+            strokeLinecap="round"
             strokeLinejoin="round"
             className="motion-safe:transition-opacity motion-safe:duration-300"
           />
           {nhs999OutcomeSeries.didNotTry.map((value, index) => {
             const { x, y } = toPoint(index, value);
-            return <circle key={index} cx={x} cy={y} r={3.5} fill={NHS_QUANT_COLORS.coral} />;
+            return (
+              <circle
+                key={index}
+                cx={x}
+                cy={y}
+                r={2}
+                fill="white"
+                stroke={NHS_QUANT_COLORS.coral}
+                strokeWidth={1}
+              />
+            );
           })}
         </>
       )}
@@ -297,13 +298,24 @@ function OutcomeLineChart({
             d={linePath(nhs999OutcomeSeries.tried)}
             fill="none"
             stroke={NHS_QUANT_COLORS.teal}
-            strokeWidth={2.5}
+            strokeWidth={1}
+            strokeLinecap="round"
             strokeLinejoin="round"
             className="motion-safe:transition-opacity motion-safe:duration-300"
           />
           {nhs999OutcomeSeries.tried.map((value, index) => {
             const { x, y } = toPoint(index, value);
-            return <circle key={index} cx={x} cy={y} r={3.5} fill={NHS_QUANT_COLORS.teal} />;
+            return (
+              <circle
+                key={index}
+                cx={x}
+                cy={y}
+                r={2}
+                fill="white"
+                stroke={NHS_QUANT_COLORS.teal}
+                strokeWidth={1}
+              />
+            );
           })}
         </>
       )}
@@ -311,50 +323,219 @@ function OutcomeLineChart({
   );
 }
 
-function Outcome999Panel({ baseId }: { baseId: string }) {
+function SatisfactionPanel({ animationKey }: { animationKey: string }) {
+  const max = 60;
+  const progress = useChartEnterProgress(animationKey);
+
+  return (
+    <div>
+      <div className="space-y-3">
+        {nhsSatisfactionLevels.map((row) => (
+          <MetricBar
+            key={row.label}
+            label={row.label}
+            value={row.value}
+            max={max}
+            color={NHS_QUANT_COLORS.coral}
+            progress={progress}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function WeekdayGroupedBarChart({
+  visibleWeekdays,
+  progress,
+}: {
+  visibleWeekdays: Record<NhsWeekday, boolean>;
+  progress: number;
+}) {
+  const yMax = 10;
+  const width = 654;
+  const height = 132;
+  const pad = { top: 6, right: 4, bottom: 28, left: 22 };
+  const plotW = width - pad.left - pad.right;
+  const plotH = height - pad.top - pad.bottom;
+  const visibleDays = NHS_WEEKDAYS.filter((day) => visibleWeekdays[day.id]);
+  const groupCount = nhsWeekdayOutcomes.length;
+  const groupW = plotW / groupCount;
+
+  const barGeometry = (groupIndex: number, barIndex: number, barCount: number) => {
+    const innerPad = 3;
+    const usable = groupW - innerPad * 2;
+    const gap = barCount > 1 ? 1.5 : 0;
+    const barW = barCount > 0 ? (usable - gap * (barCount - 1)) / barCount : 0;
+    const x = pad.left + groupIndex * groupW + innerPad + barIndex * (barW + gap);
+    return { x, barW };
+  };
+
+  const barHeight = (value: number) => lerpByProgress((value / yMax) * plotH, progress);
+  const baselineY = pad.top + plotH;
+
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="block h-auto w-full max-h-[13.5rem]"
+      preserveAspectRatio="xMidYMid meet"
+      role="img"
+      aria-label="Grouped bar chart of call outcomes by weekday"
+    >
+      {[2.5, 5, 7.5, 10].map((tick) => {
+        const y = baselineY - (tick / yMax) * plotH;
+        return (
+          <g key={tick}>
+            <line
+              x1={pad.left}
+              y1={y}
+              x2={width - pad.right}
+              y2={y}
+              stroke="#cbd5e1"
+              strokeWidth={0.5}
+              strokeDasharray="2 3"
+            />
+            <text
+              x={pad.left - 4}
+              y={y + 2.5}
+              textAnchor="end"
+              className="fill-[var(--color-text-muted)] text-[6px]"
+            >
+              {tick}%
+            </text>
+          </g>
+        );
+      })}
+
+      {nhsWeekdayOutcomes.map((outcome, groupIndex) => {
+        const dividerX = pad.left + groupIndex * groupW;
+        return groupIndex > 0 ? (
+          <line
+            key={`divider-${outcome.id}`}
+            x1={dividerX}
+            y1={pad.top}
+            x2={dividerX}
+            y2={baselineY}
+            stroke="#e2e8f0"
+            strokeWidth={0.5}
+          />
+        ) : null;
+      })}
+
+      {nhsWeekdayOutcomes.map((outcome, groupIndex) =>
+        visibleDays.map((day, barIndex) => {
+          const value = outcome.byWeekday[day.id];
+          const { x, barW } = barGeometry(groupIndex, barIndex, visibleDays.length);
+          const h = barHeight(value);
+          if (h <= 0) return null;
+
+          return (
+            <rect
+              key={`${outcome.id}-${day.id}`}
+              x={x}
+              y={baselineY - h}
+              width={barW}
+              height={h}
+              rx={1}
+              fill={day.color}
+              className="motion-safe:transition-[height,y] motion-safe:duration-[650ms] motion-safe:ease-in-out"
+            />
+          );
+        }),
+      )}
+
+      {nhsWeekdayOutcomes.map((outcome, groupIndex) => {
+        const x = pad.left + groupIndex * groupW + groupW / 2;
+        return (
+          <text
+            key={`label-${outcome.id}`}
+            x={x}
+            y={height - 8}
+            textAnchor="middle"
+            className="fill-[var(--color-text-secondary)] text-[7px]"
+          >
+            {outcome.label}
+          </text>
+        );
+      })}
+    </svg>
+  );
+}
+
+function WeekdayOutcomesPanel({ animationKey }: { animationKey: string }) {
+  const progress = useChartEnterProgress(animationKey);
+  const [visibleWeekdays, setVisibleWeekdays] = useState<Record<NhsWeekday, boolean>>(() =>
+    Object.fromEntries(NHS_WEEKDAYS.map((day) => [day.id, true])) as Record<NhsWeekday, boolean>,
+  );
+
+  const toggleWeekday = (id: NhsWeekday) => {
+    setVisibleWeekdays((current) => {
+      const activeCount = Object.values(current).filter(Boolean).length;
+      if (current[id] && activeCount <= 1) return current;
+      return { ...current, [id]: !current[id] };
+    });
+  };
+
+  return (
+    <div>
+      <div
+        role="group"
+        aria-label="Filter by weekday"
+        className="mb-3 flex flex-wrap gap-1.5"
+      >
+        {NHS_WEEKDAYS.map((day) => (
+          <FilterOutlinePill
+            key={day.id}
+            label={day.shortLabel}
+            ariaLabel={day.label}
+            color={day.color}
+            pressed={visibleWeekdays[day.id]}
+            onToggle={() => toggleWeekday(day.id)}
+          />
+        ))}
+      </div>
+
+      <WeekdayGroupedBarChart visibleWeekdays={visibleWeekdays} progress={progress} />
+
+      <p className="mt-1.5 text-body-sm text-[var(--color-text-muted)]">Overall percentage by outcome</p>
+    </div>
+  );
+}
+
+function Outcome999Panel({ baseId, animationKey }: { baseId: string; animationKey: string }) {
   const [activeBlockId, setActiveBlockId] = useState(nhs999OutcomeBlocks[0].id);
   const [showDidNotTry, setShowDidNotTry] = useState(true);
   const [showTried, setShowTried] = useState(true);
+  const progress = useChartEnterProgress(`${animationKey}-${activeBlockId}`);
 
   const activeBlock = nhs999OutcomeBlocks.find((block) => block.id === activeBlockId) as OutcomeTimeBlock;
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap gap-3">
-        <button
-          type="button"
-          onClick={() => setShowDidNotTry((value) => !value)}
-          aria-pressed={showDidNotTry}
-          className={cn(
-            "flex items-center gap-2 rounded-full border px-3 py-1.5 text-body-sm motion-safe:transition-all motion-safe:duration-300",
-            showDidNotTry
-              ? "border-[#d4553a]/40 bg-[#d4553a]/10 text-[var(--color-text-primary)]"
-              : "border-[var(--color-border)] bg-white/70 text-[var(--color-text-muted)] opacity-60",
-          )}
-        >
-          <span className="size-2.5 rounded-full" style={{ backgroundColor: NHS_QUANT_COLORS.coral }} />
-          Didn&apos;t try other resources
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowTried((value) => !value)}
-          aria-pressed={showTried}
-          className={cn(
-            "flex items-center gap-2 rounded-full border px-3 py-1.5 text-body-sm motion-safe:transition-all motion-safe:duration-300",
-            showTried
-              ? "border-[#26a69a]/40 bg-[#26a69a]/10 text-[var(--color-text-primary)]"
-              : "border-[var(--color-border)] bg-white/70 text-[var(--color-text-muted)] opacity-60",
-          )}
-        >
-          <span className="size-2.5 rounded-full" style={{ backgroundColor: NHS_QUANT_COLORS.teal }} />
-          Tried other resources first
-        </button>
+      <div
+        role="group"
+        aria-label="Chart series"
+        className="mb-3 flex flex-wrap gap-1.5"
+      >
+        <FilterOutlinePill
+          label="Didn't try other resources"
+          color={NHS_QUANT_COLORS.coral}
+          pressed={showDidNotTry}
+          onToggle={() => setShowDidNotTry((value) => !value)}
+        />
+        <FilterOutlinePill
+          label="Tried other resources first"
+          color={NHS_QUANT_COLORS.teal}
+          pressed={showTried}
+          onToggle={() => setShowTried((value) => !value)}
+        />
       </div>
 
       <OutcomeLineChart
         activeBlockId={activeBlockId}
         showDidNotTry={showDidNotTry}
         showTried={showTried}
+        progress={progress}
       />
 
       <div
@@ -362,27 +543,18 @@ function Outcome999Panel({ baseId }: { baseId: string }) {
         aria-label="Time of call"
         className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-4"
       >
-        {nhs999OutcomeBlocks.map((block) => {
-          const isActive = block.id === activeBlockId;
-          return (
-            <button
-              key={block.id}
-              type="button"
-              role="tab"
-              id={`${baseId}-time-${block.id}`}
-              aria-selected={isActive}
-              onClick={() => setActiveBlockId(block.id)}
-              className={cn(
-                "rounded-lg px-2 py-2 text-center text-[0.7rem] leading-tight font-medium min-h-[44px] motion-safe:transition-all motion-safe:duration-300 sm:text-body-sm",
-                isActive
-                  ? "bg-[#005eb8] text-white shadow-sm"
-                  : "bg-white/80 text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:border-[#005eb8]/40 hover:text-[#005eb8]",
-              )}
-            >
-              {block.shortLabel}
-            </button>
-          );
-        })}
+        {nhs999OutcomeBlocks.map((block) => (
+          <ChoiceOutlinePill
+            key={block.id}
+            id={`${baseId}-time-${block.id}`}
+            role="tab"
+            label={block.shortLabel}
+            selected={block.id === activeBlockId}
+            ariaSelected={block.id === activeBlockId}
+            onSelect={() => setActiveBlockId(block.id)}
+            variant="tile"
+          />
+        ))}
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2" role="tabpanel">
@@ -390,10 +562,10 @@ function Outcome999Panel({ baseId }: { baseId: string }) {
           <div className="rounded-xl border border-[var(--color-border)] bg-white px-4 py-3">
             <p className="text-body-sm text-[var(--color-text-muted)] mb-1">Didn&apos;t try other resources</p>
             <p
-              className="text-h3 font-semibold tabular-nums motion-safe:transition-opacity motion-safe:duration-[650ms]"
+              className="text-h3 font-semibold tabular-nums"
               style={{ color: NHS_QUANT_COLORS.coral }}
             >
-              {activeBlock.didNotTryResources}%
+              {displayPercent(activeBlock.didNotTryResources, progress)}%
             </p>
             <p className="mt-1 text-body-sm text-[var(--color-text-secondary)]">{activeBlock.label}</p>
           </div>
@@ -402,10 +574,10 @@ function Outcome999Panel({ baseId }: { baseId: string }) {
           <div className="rounded-xl border border-[var(--color-border)] bg-white px-4 py-3">
             <p className="text-body-sm text-[var(--color-text-muted)] mb-1">Tried other resources first</p>
             <p
-              className="text-h3 font-semibold tabular-nums motion-safe:transition-opacity motion-safe:duration-[650ms]"
+              className="text-h3 font-semibold tabular-nums"
               style={{ color: NHS_QUANT_COLORS.teal }}
             >
-              {activeBlock.triedResources}%
+              {displayPercent(activeBlock.triedResources, progress)}%
             </p>
             <p className="mt-1 text-body-sm text-[var(--color-text-secondary)]">{activeBlock.label}</p>
           </div>
@@ -439,58 +611,52 @@ export function NhsQuantitativeInteractive({ className }: NhsQuantitativeInterac
   const panel = useMemo(() => {
     switch (activeView.id) {
       case "prior-resources":
-        return <PriorResourcesPanel baseId={baseId} />;
+        return <PriorResourcesPanel baseId={baseId} animationKey={activeView.id} />;
       case "999-outcomes":
-        return <Outcome999Panel baseId={baseId} />;
+        return <Outcome999Panel baseId={baseId} animationKey={activeView.id} />;
+      case "satisfaction":
+        return <SatisfactionPanel animationKey={activeView.id} />;
+      case "weekday-outcomes":
+        return <WeekdayOutcomesPanel animationKey={activeView.id} />;
+      case "typical-caller":
+        return <NhsTypicalCallerFunnel animationKey={activeView.id} />;
       default:
-        return <SurveyRespondentsPanel baseId={baseId} />;
+        return <SurveyRespondentsPanel baseId={baseId} animationKey={activeView.id} />;
     }
   }, [activeView.id, baseId]);
 
   return (
     <div className={cn("not-prose", className)}>
-      <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[#f5f8fa] shadow-sm">
-        <div className="border-b border-[#005eb8]/15 bg-[#eef4f9] px-4 py-5 md:px-6">
-          <p className="mb-4 text-body-sm text-[var(--color-text-muted)]">
-            Survey data captured April 2023 — select a chart to explore patterns by age group or time of call.
+      <div
+        id={`${baseId}-explorer`}
+        className="rounded-xl border border-[var(--color-border)] bg-neutral-50"
+      >
+        <div className="rounded-t-xl border-b border-[var(--color-border)] px-4 py-3 md:px-5">
+          <p className="text-body-sm text-[var(--color-text-muted)] mb-3">
+            Survey data captured April 2023 — select a chart to explore demographics, outcomes, satisfaction, or weekday patterns.
           </p>
-
+          <p className="text-label text-[var(--color-text-muted)] mb-2">Chart view</p>
           <div
             role="tablist"
             aria-label="Quantitative survey charts"
-            className="flex flex-wrap gap-1.5 sm:gap-2"
+            className="-mx-4 flex gap-2 overflow-x-auto overscroll-x-contain px-4 pb-1 scrollbar-none md:-mx-5 md:px-5"
           >
             {nhsQuantitativeViews.map((view) => {
-              const isActive = view.id === activeViewId;
-              const tabId = `${baseId}-view-${view.id}`;
+              const selected = view.id === activeViewId;
 
               return (
-                <button
+                <FilterChip
                   key={view.id}
-                  type="button"
-                  role="tab"
-                  id={tabId}
-                  aria-selected={isActive}
-                  aria-controls={`${baseId}-quant-panel`}
+                  id={`${baseId}-view-${view.id}`}
+                  label={view.name}
+                  selected={selected}
                   onClick={() => handleSelect(view.id)}
-                  className={cn(
-                    "relative px-4 py-2.5 text-body-sm font-medium min-h-[44px] motion-safe:transition-all motion-safe:duration-300",
-                    isActive
-                      ? [
-                          "rounded-full bg-[#005eb8] text-white shadow-sm",
-                          "sm:rounded-b-none sm:rounded-t-xl sm:bg-[#f5f8fa] sm:text-[#005eb8] sm:shadow-[0_-1px_0_0_rgba(0,94,184,0.08)]",
-                          "sm:z-10 sm:-mb-px sm:border sm:border-[var(--color-border)] sm:border-b-[#f5f8fa]",
-                          "sm:after:absolute sm:after:inset-x-3 sm:after:bottom-0 sm:after:h-0.5 sm:after:rounded-full sm:after:bg-[#005eb8]",
-                        ]
-                      : [
-                          "rounded-full border border-transparent bg-white/70 text-[var(--color-text-secondary)]",
-                          "hover:border-[#005eb8]/25 hover:bg-white hover:text-[#005eb8]",
-                          "sm:rounded-xl",
-                        ],
-                  )}
-                >
-                  {view.name}
-                </button>
+                  accentColor="var(--case-study-accent)"
+                  aria-pressed={selected}
+                  role="tab"
+                  aria-selected={selected}
+                  aria-controls={`${baseId}-quant-panel`}
+                />
               );
             })}
           </div>
@@ -500,9 +666,9 @@ export function NhsQuantitativeInteractive({ className }: NhsQuantitativeInterac
           role="tabpanel"
           id={`${baseId}-quant-panel`}
           aria-labelledby={`${baseId}-view-${activeView.id}`}
-          className="p-5 md:p-6"
+          className="rounded-b-xl bg-white p-4 md:p-5"
         >
-          <div className="mb-5">
+          <div className="mb-4">
             <h3 className="text-h4 font-semibold text-[var(--color-text-primary)]">{activeView.title}</h3>
             <p className="mt-1 text-body-sm text-[var(--color-text-muted)]">{activeView.description}</p>
           </div>
@@ -511,11 +677,11 @@ export function NhsQuantitativeInteractive({ className }: NhsQuantitativeInterac
             {panel}
           </div>
         </div>
-      </div>
 
-      <p className="mt-3 text-body-sm text-[var(--color-text-muted)]">
-        Toggle series, age groups, or time blocks to compare survey patterns from the NHS 111 follow-up study.
-      </p>
+        <p className="m-0 border-t border-[var(--color-border)] bg-neutral-50 px-4 py-2 text-body-sm leading-snug text-[var(--color-text-muted)] md:px-5">
+          Toggle age groups, time blocks, weekdays, or chart series to compare survey patterns from the NHS 111 follow-up study.
+        </p>
+      </div>
     </div>
   );
 }

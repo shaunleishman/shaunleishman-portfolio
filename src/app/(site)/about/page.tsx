@@ -52,10 +52,11 @@ export default function AboutPage() {
               <Image
                 src="/images/profile.jpg"
                 alt={`${siteConfig.name}, UX/UI designer`}
-                width={794}
+                width={1024}
                 height={1024}
                 className="h-full w-full object-cover object-center"
                 priority
+                sizes="280px"
               />
             </div>
           </Reveal>
@@ -63,7 +64,7 @@ export default function AboutPage() {
           <Reveal delay={120}>
             <div>
               <SectionLabel>Background</SectionLabel>
-              <h2 className="text-h2 font-semibold mb-6">Your product design partner</h2>
+              <h2 className="text-h2 font-semibold mb-6">Design informed by user research</h2>
               <div className="prose prose-neutral max-w-none text-body-lg text-[var(--color-text-secondary)] space-y-4">
                 <p>
                   Research-led UX/UI design across discovery interviews, co-design workshops,

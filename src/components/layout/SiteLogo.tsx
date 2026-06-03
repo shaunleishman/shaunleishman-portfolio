@@ -45,6 +45,7 @@ export function SiteLogoLink({
   return (
     <Link
       href={href}
+      data-metrics-gate="logo"
       className={cn("inline-flex items-center min-h-[44px] focus-visible:outline-offset-4", className)}
       aria-current={ariaCurrent ? "page" : undefined}
       aria-label={`${siteConfig.brand} home`}

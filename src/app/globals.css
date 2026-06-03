@@ -11,6 +11,9 @@
   --color-text-inverse: #ffffff;
   --color-accent: #3b66f5;
   --color-accent-hover: #2d52d4;
+  --color-primary: var(--color-accent);
+  /** Overridden per case study via CaseStudyAccentProvider */
+  --case-study-accent: var(--color-accent);
   --color-border: #e5e5e5;
   --color-border-dark: #262626;
 
@@ -147,6 +150,30 @@
     background-size: 64px 64px;
   }
 
+  .grid-bg.grid-bg-animate {
+    position: relative;
+    isolation: isolate;
+    background-image: none;
+  }
+
+  .grid-bg.grid-bg-animate::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .grid-bg.grid-bg-animate::before {
+      animation: grid-bg-drift 100s ease-in-out infinite alternate;
+    }
+  }
+
   .skip-link {
     position: absolute;
     top: -100%;
@@ -199,6 +226,17 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 24px rgb(0 0 0 / 0.06);
     }
+  }
+}
+
+@keyframes grid-bg-drift {
+  0% {
+    background-position: 0 0;
+    opacity: 0.92;
+  }
+  100% {
+    background-position: 20px 14px;
+    opacity: 1;
   }
 }
 
@@ -275,6 +313,149 @@
 
 .figma-caret-blink {
   animation: figma-caret-blink 1s step-end infinite;
+}
+
+/* Process section — step illustration enter animations */
+@keyframes process-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  65% {
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes process-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes process-slide {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes process-grow-y {
+  0% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes process-sweep {
+  0% {
+    opacity: 0;
+    transform: rotate(-115deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+}
+
+
+.process-illustration .process-anim-pop,
+.process-illustration .process-anim-rise,
+.process-illustration .process-anim-slide,
+.process-illustration .process-anim-grow-y,
+.process-illustration .process-anim-sweep {
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.process-illustration .process-anim-pop {
+  animation: process-pop 0.55s cubic-bezier(0.34, 1.35, 0.64, 1);
+}
+
+.process-illustration .process-anim-rise {
+  animation: process-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-illustration .process-anim-slide {
+  animation: process-slide 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-illustration .process-anim-grow-y {
+  animation: process-grow-y 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-illustration .process-anim-sweep {
+  animation: process-sweep 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .process-illustration .process-anim-pop,
+  .process-illustration .process-anim-rise,
+  .process-illustration .process-anim-slide,
+  .process-illustration .process-anim-grow-y,
+  .process-illustration .process-anim-sweep {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.chip-accent-idle {
+  border: 1px solid var(--color-border);
+}
+
+.chip-accent-idle:hover {
+  border-color: color-mix(in srgb, var(--chip-accent) 40%, transparent);
+}
+
+.feedback-accent-scope {
+  --feedback-accent: var(--case-study-accent, var(--color-accent));
+  --feedback-accent-hover: color-mix(in srgb, var(--feedback-accent) 88%, black);
+}
+
+.feedback-accent-scope input[type="range"]::-webkit-slider-thumb {
+  background: var(--feedback-accent);
+}
+
+.feedback-accent-scope input[type="range"]::-moz-range-thumb {
+  background: var(--feedback-accent);
+}
+
+.feedback-accent-scope .feedback-accent-text {
+  color: var(--feedback-accent);
+}
+
+.feedback-accent-scope .feedback-accent-dot-active {
+  background: var(--feedback-accent);
+}
+
+.feedback-accent-scope .feedback-accent-button {
+  background: var(--feedback-accent);
+  color: #fff;
+}
+
+.feedback-accent-scope .feedback-accent-button:hover:not(:disabled) {
+  background: var(--feedback-accent-hover);
+}
+
+.feedback-accent-scope .feedback-accent-label {
+  color: color-mix(in srgb, var(--feedback-accent) 75%, transparent);
 }
 
 /* Branded CV — browser print from /cv */

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
+import { MetricsHeatmapOverlay } from "@/components/metrics/MetricsHeatmapOverlay";
 import { siteConfig } from "@/content/projects";
 
 const inter = Inter({
@@ -34,7 +36,10 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <AnalyticsProvider>{children}</AnalyticsProvider>
+        <Suspense fallback={null}>
+          <AnalyticsProvider>{children}</AnalyticsProvider>
+          <MetricsHeatmapOverlay />
+        </Suspense>
       </body>
     </html>
   );

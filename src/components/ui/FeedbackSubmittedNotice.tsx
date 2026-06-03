@@ -16,11 +16,12 @@ export function FeedbackSubmittedNotice({
     <div
       role="status"
       className={cn(
-        "not-prose flex w-full items-center gap-3 rounded-xl border border-[#0d7377]/25 bg-[#0d7377]/5 p-4 text-left motion-safe:animate-[fade-in_0.3s_ease-out]",
+        "feedback-accent-scope not-prose flex w-full items-center gap-3 rounded-xl border p-4 text-left motion-safe:animate-[fade-in_0.3s_ease-out]",
+        "border-[color-mix(in_srgb,var(--feedback-accent)_25%,transparent)] bg-[color-mix(in_srgb,var(--feedback-accent)_5%,transparent)]",
         className,
       )}
     >
-      <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-[#0d7377] text-white shadow-sm">
+      <span className="feedback-accent-button inline-flex size-8 shrink-0 items-center justify-center rounded-full shadow-sm">
         <Check className="size-4" strokeWidth={2.5} aria-hidden />
       </span>
       <div className="min-w-0">

@@ -24,7 +24,7 @@ export function CaseStudyAtAGlance({
   contribution,
   highlights,
   methods,
-  accentColor = "#0d7377",
+  accentColor = "var(--color-accent)",
 }: CaseStudyAtAGlanceProps) {
   return (
     <Reveal variant="up">
@@ -84,11 +84,11 @@ export function CaseStudyAtAGlance({
           <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-3">
             Methods &amp; skills
           </h3>
-          <ul className="flex flex-wrap gap-2" aria-label="Methods and skills demonstrated">
+          <ul className="m-0 flex list-none flex-wrap items-center gap-2 p-0" aria-label="Methods and skills demonstrated">
             {methods.map((method) => (
               <li
                 key={method}
-                className="rounded-full px-3 py-1 text-body-sm font-medium text-white"
+                className="inline-flex items-center justify-center rounded-full px-3 py-1.5 text-body-sm font-medium leading-none min-h-8 whitespace-nowrap text-white"
                 style={{ backgroundColor: accentColor }}
               >
                 {method}

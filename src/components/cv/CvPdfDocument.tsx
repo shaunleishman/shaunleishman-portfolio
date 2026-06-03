@@ -34,37 +34,37 @@ const colors = {
 
 const styles = StyleSheet.create({
   page: {
-    paddingTop: 28,
-    paddingBottom: 28,
-    paddingHorizontal: 28,
+    paddingTop: 40,
+    paddingBottom: 40,
+    paddingHorizontal: 40,
     fontFamily: "Helvetica",
     fontSize: type.body,
     color: colors.text,
-    lineHeight: 1.45,
+    lineHeight: 1.5,
   },
   label: {
     fontSize: type.label,
     letterSpacing: 1.4,
     textTransform: "uppercase",
     color: colors.muted,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   name: {
     fontSize: type.name,
     fontFamily: "Helvetica-Bold",
     color: colors.dark,
-    marginBottom: 4,
+    marginBottom: 6,
   },
   headline: {
     fontSize: type.headline,
     color: colors.text,
-    marginBottom: 10,
+    marginBottom: 14,
   },
   contactRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
-    marginBottom: 16,
+    gap: 14,
+    marginBottom: 22,
   },
   contactItem: {
     fontSize: type.contact,
@@ -77,21 +77,22 @@ const styles = StyleSheet.create({
   quote: {
     borderLeftWidth: 3,
     borderLeftColor: colors.accent,
-    paddingLeft: 12,
-    marginBottom: 14,
+    paddingLeft: 14,
+    paddingVertical: 2,
+    marginBottom: 20,
     fontSize: type.quote,
     fontFamily: "Helvetica-Oblique",
     color: colors.text,
-    lineHeight: 1.5,
+    lineHeight: 1.55,
   },
   paragraph: {
-    marginBottom: 8,
+    marginBottom: 10,
     fontSize: type.body,
     color: colors.text,
-    lineHeight: 1.45,
+    lineHeight: 1.5,
   },
   section: {
-    marginBottom: 12,
+    marginBottom: 20,
   },
   sectionTitle: {
     fontSize: type.section,
@@ -99,87 +100,90 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     color: colors.accent,
     fontFamily: "Helvetica-Bold",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   strengthsGrid: {
     flexDirection: "row",
-    gap: 18,
+    gap: 28,
   },
   strengthsCol: {
     flex: 1,
-    gap: 4,
+    gap: 6,
   },
   bulletRow: {
     flexDirection: "row",
-    gap: 7,
-    marginBottom: 4,
+    gap: 8,
+    marginBottom: 6,
   },
   bulletAccent: {
     width: 4.5,
     height: 4.5,
     borderRadius: 2.25,
     backgroundColor: colors.accent,
-    marginTop: 5,
+    marginTop: 6,
   },
   bulletMuted: {
     width: 4.5,
     height: 4.5,
     borderRadius: 2.25,
     backgroundColor: colors.muted,
-    marginTop: 5,
+    marginTop: 6,
   },
   bulletText: {
     flex: 1,
     fontSize: type.bodySm,
-    lineHeight: 1.35,
+    lineHeight: 1.45,
     color: colors.text,
   },
   jobHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    gap: 10,
-    marginBottom: 6,
+    gap: 16,
+    marginBottom: 8,
   },
   jobTitle: {
     flex: 1,
     fontSize: type.jobTitle,
     fontFamily: "Helvetica-Bold",
     color: colors.dark,
+    lineHeight: 1.35,
   },
   jobPeriod: {
     fontSize: type.jobPeriod,
     color: colors.muted,
+    flexShrink: 0,
   },
   jobBlock: {
-    marginBottom: 10,
+    marginBottom: 16,
   },
   educationTitle: {
     fontSize: type.body,
     fontFamily: "Helvetica-Bold",
     color: colors.dark,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   educationDetail: {
     fontSize: type.bodySm,
     color: colors.muted,
-    marginBottom: 6,
+    marginBottom: 10,
+    lineHeight: 1.45,
   },
   skillLabel: {
     fontSize: type.bodySm,
     fontFamily: "Helvetica-Bold",
     color: colors.dark,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   skillItems: {
     fontSize: type.bodySm,
     color: colors.text,
-    lineHeight: 1.35,
-    marginBottom: 6,
+    lineHeight: 1.45,
+    marginBottom: 10,
   },
   footer: {
-    marginTop: 12,
-    paddingTop: 10,
+    marginTop: 20,
+    paddingTop: 14,
     borderTopWidth: 1,
     borderTopColor: colors.border,
     flexDirection: "row",
@@ -304,7 +308,7 @@ function CvFooter() {
 }
 
 export function CvPdfDocument() {
-  const [firstJob, secondJob, ...remainingJobs] = cvContent.experience;
+  const [firstJob, ...remainingJobs] = cvContent.experience;
 
   return (
     <Document title={`${siteConfig.name} — CV`} author={siteConfig.name}>
@@ -312,7 +316,7 @@ export function CvPdfDocument() {
         <CvHeader />
         <Text style={styles.quote}>{siteConfig.quote}</Text>
 
-        <View style={{ marginBottom: 12 }}>
+        <View style={{ marginBottom: 16 }}>
           {cvContent.summary.map((paragraph) => (
             <Text key={paragraph.slice(0, 24)} style={styles.paragraph}>
               {paragraph}
@@ -329,14 +333,6 @@ export function CvPdfDocument() {
               company={firstJob.company}
               period={firstJob.period}
               highlights={firstJob.highlights}
-            />
-          ) : null}
-          {secondJob ? (
-            <JobBlock
-              role={secondJob.role}
-              company={secondJob.company}
-              period={secondJob.period}
-              highlights={secondJob.highlights}
             />
           ) : null}
         </Section>

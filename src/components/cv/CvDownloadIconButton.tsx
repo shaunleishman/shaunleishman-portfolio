@@ -42,7 +42,7 @@ export function CvDownloadIconButton({ className }: CvDownloadIconButtonProps) {
         "inline-flex size-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] transition-colors",
         "hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]",
         status === "loading" && "cursor-wait opacity-70",
-        status === "done" && "border-[#0d7377]/30 text-[#0d7377]",
+        status === "done" && "border-[var(--color-accent)]/30 text-[var(--color-accent)]",
         className,
       )}
     >

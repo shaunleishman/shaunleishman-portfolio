@@ -75,11 +75,12 @@ export function ProcessTabs() {
         aria-labelledby={`process-tab-${active}`}
         className="rounded-2xl bg-white border border-[var(--color-border)] p-6 lg:p-8 min-h-[280px] hidden lg:block"
       >
-        <div
-          key={active}
-          className="motion-safe:animate-[fade-in_0.35s_ease-out]"
-        >
-          <ProcessIllustration step={active} className="w-full mb-6 rounded-xl" />
+        <div className="motion-safe:animate-[fade-in_0.35s_ease-out]">
+          <ProcessIllustration
+            key={active}
+            step={active}
+            className="w-full mb-6 rounded-xl overflow-hidden"
+          />
           <p className="text-label text-[var(--color-text-muted)] mb-3">
             Step {processSteps[active].number}
           </p>

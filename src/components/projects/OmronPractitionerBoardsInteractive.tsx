@@ -1,130 +1,235 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useId, useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import {
+  caseStudyContentFadeClass,
+  useCaseStudyTransition,
+} from "@/lib/useCaseStudyTransition";
 import { type OmronPractitioner, omronPractitioners } from "@/content/omron-practitioners";
 
-const MOTION_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
-const MOTION_MS = 650;
+const PRACTITIONER_ILLUSTRATION_FRAME =
+  "h-[6.5rem] w-[4.5rem] shrink-0 sm:h-[7rem] sm:w-[4.875rem] md:h-[7.25rem] md:w-[5rem]";
+const UNIFORM_ILLUSTRATION_WIDTH = 400;
+const UNIFORM_ILLUSTRATION_HEIGHT = 480;
+const PROFILE_DUO_CARD_CLASS = "flex h-full flex-col lg:col-span-6 lg:min-h-[12rem]";
 
 type OmronPractitionerBoardsInteractiveProps = {
   className?: string;
 };
 
-function motionStyle(property: string) {
-  return {
-    transitionProperty: property,
-    transitionDuration: `${MOTION_MS}ms`,
-    transitionTimingFunction: MOTION_EASE,
-  } as const;
-}
-
-function CrossfadeLayer({
-  active,
+function PractitionerSection({
+  title,
   children,
   className,
+  fill = false,
 }: {
-  active: boolean;
+  title: string;
   children: ReactNode;
   className?: string;
+  fill?: boolean;
+}) {
+  return (
+    <section
+      className={cn(
+        "rounded-xl border border-[var(--case-study-accent)]/10 bg-white px-3 py-2.5",
+        fill && "flex h-full min-h-0 flex-col",
+        className,
+      )}
+    >
+      <h4 className="mb-1.5 shrink-0 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+        {title}
+      </h4>
+      {fill ? <div className="flex min-h-0 flex-1 flex-col">{children}</div> : children}
+    </section>
+  );
+}
+
+function PractitionerNavItem({
+  practitioner,
+  active,
+  onSelect,
+}: {
+  practitioner: OmronPractitioner;
+  active: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-current={active ? "true" : undefined}
+      className={cn(
+        "flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left motion-safe:transition-[border-color,background-color,box-shadow,color] motion-safe:duration-300 motion-safe:ease-out",
+        active
+          ? "border-[var(--case-study-accent)]/30 bg-white shadow-sm"
+          : "border-transparent hover:border-[var(--color-border)] hover:bg-white/80",
+      )}
+    >
+      <span className="min-w-0 text-body-sm">
+        <span
+          className={cn(
+            "font-medium motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out",
+            active ? "text-[var(--case-study-accent)]" : "text-[var(--color-text-primary)]",
+          )}
+        >
+          {practitioner.name}
+        </span>
+        <span className="mt-0.5 block text-[0.75rem] leading-snug text-[var(--color-text-muted)]">
+          {practitioner.tagline}
+        </span>
+      </span>
+    </button>
+  );
+}
+
+function PractitionerSwitcher({
+  activeId,
+  onSelect,
+}: {
+  activeId: string;
+  onSelect: (id: string) => void;
 }) {
   return (
     <div
-      className={cn(
-        "motion-safe:transition-opacity motion-safe:duration-[650ms] motion-safe:ease-in-out",
-        active ? "relative z-10 opacity-100" : "pointer-events-none absolute inset-0 z-0 opacity-0",
-        className,
-      )}
-      style={motionStyle("opacity")}
-      aria-hidden={!active}
+      className="flex gap-1.5 overflow-x-auto overscroll-x-contain pb-0.5"
+      role="tablist"
+      aria-label="Switch user group"
     >
-      {children}
+      {omronPractitioners.map((practitioner) => {
+        const selected = practitioner.id === activeId;
+        return (
+          <button
+            key={practitioner.id}
+            type="button"
+            role="tab"
+            aria-selected={selected}
+            onClick={() => onSelect(practitioner.id)}
+            className={cn(
+              "shrink-0 rounded-full border px-3 py-1.5 text-[0.75rem] font-medium whitespace-nowrap motion-safe:transition-[border-color,background-color,color,box-shadow] motion-safe:duration-300 motion-safe:ease-out",
+              selected
+                ? "border-[var(--case-study-accent)]/35 bg-white text-[var(--case-study-accent)] shadow-sm"
+                : "border-[var(--color-border)] bg-white/70 text-[var(--color-text-secondary)] hover:border-[var(--case-study-accent)]/20 hover:text-[var(--color-text-primary)]",
+            )}
+          >
+            {practitioner.shortLabel}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
-function PractitionerIdentity({ practitioner }: { practitioner: OmronPractitioner }) {
+function PractitionerIllustration({ practitioner }: { practitioner: OmronPractitioner }) {
+  return (
+    <div className="flex h-full w-full items-end justify-center">
+      <Image
+        src={practitioner.illustrationSrc}
+        alt={practitioner.illustrationAlt}
+        width={UNIFORM_ILLUSTRATION_WIDTH}
+        height={UNIFORM_ILLUSTRATION_HEIGHT}
+        className="max-h-full w-auto max-w-full object-contain object-bottom"
+        sizes="(max-width: 768px) 72px, 80px"
+      />
+    </div>
+  );
+}
+
+function PractitionerIllustrationStack({ activeId }: { activeId: string }) {
   return (
     <div
-      className="flex shrink-0 flex-col items-center justify-center rounded-xl px-4 py-6 text-center sm:w-44 md:w-48"
-      style={{ backgroundColor: practitioner.accentBg }}
+      className={cn(
+        "grid [&>*]:col-start-1 [&>*]:row-start-1 [&>*]:h-full",
+        PRACTITIONER_ILLUSTRATION_FRAME,
+      )}
     >
-      <div className="relative mb-4 h-28 w-full overflow-hidden rounded-lg">
-        <Image
-          src={practitioner.boardSrc}
-          alt={practitioner.boardAlt}
-          fill
-          className="object-cover object-left"
-          sizes="192px"
-        />
-      </div>
-      <p className="text-body font-semibold leading-snug" style={{ color: practitioner.accentColor }}>
-        {practitioner.name}
-      </p>
+      {omronPractitioners.map((practitioner) => (
+        <div
+          key={practitioner.id}
+          className={cn(
+            "w-full motion-safe:transition-opacity motion-safe:duration-[650ms] motion-safe:ease-in-out",
+            practitioner.id === activeId ? "z-10 opacity-100" : "z-0 opacity-0",
+          )}
+          aria-hidden={practitioner.id !== activeId}
+        >
+          <PractitionerIllustration practitioner={practitioner} />
+        </div>
+      ))}
     </div>
   );
 }
 
-function PractitionerBoard({ practitioner }: { practitioner: OmronPractitioner }) {
+function PractitionerHeader({
+  displayPractitioner,
+  contentVisible,
+  illustrationId,
+}: {
+  displayPractitioner: OmronPractitioner;
+  contentVisible: boolean;
+  illustrationId: string;
+}) {
   return (
-    <div className="min-w-0 flex-1 space-y-5">
-      <div>
-        <h4
-          className="mb-2 text-body-sm font-semibold uppercase tracking-wide"
-          style={{ color: practitioner.headingColor }}
-        >
-          Role
-        </h4>
-        <p className="text-body-sm leading-relaxed text-[var(--color-text-secondary)]">
-          {practitioner.role}
+    <header className="mb-3 flex flex-col gap-2.5 border-b border-[var(--color-border)] pb-3 sm:flex-row sm:items-end sm:justify-between">
+      <div className={cn("min-w-0 flex-1", caseStudyContentFadeClass(contentVisible))}>
+        <p className="mb-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--case-study-accent)]">
+          OMRON user group
+        </p>
+        <h3 className="text-h4 font-semibold text-[var(--color-text-primary)]">
+          {displayPractitioner.name}
+        </h3>
+        <p className="mt-0.5 text-[0.8125rem] text-[var(--color-text-muted)]">
+          {displayPractitioner.tagline}
         </p>
       </div>
+      <PractitionerIllustrationStack activeId={illustrationId} />
+    </header>
+  );
+}
 
-      <div>
-        <h4
-          className="mb-2 text-body-sm font-semibold uppercase tracking-wide"
-          style={{ color: practitioner.headingColor }}
-        >
-          Key tasks
-        </h4>
-        <ul className="list-disc space-y-1.5 pl-4 text-body-sm text-[var(--color-text-secondary)]">
-          {practitioner.keyTasks.map((item) => (
+function PractitionerProfile({
+  displayPractitioner,
+  contentVisible,
+}: {
+  displayPractitioner: OmronPractitioner;
+  contentVisible: boolean;
+}) {
+  const textFade = caseStudyContentFadeClass(contentVisible);
+
+  return (
+    <div className="grid items-stretch gap-2 sm:gap-2.5 lg:grid-cols-12">
+      <PractitionerSection title="Role" fill className={cn("lg:col-span-8", textFade)}>
+        <p className="text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
+          {displayPractitioner.role}
+        </p>
+      </PractitionerSection>
+
+      <PractitionerSection title="Key tasks" fill className={cn("lg:col-span-4", textFade)}>
+        <ul className="list-disc space-y-1 pl-4 text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
+          {displayPractitioner.keyTasks.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
-      </div>
+      </PractitionerSection>
 
-      <div>
-        <h4
-          className="mb-2 text-body-sm font-semibold uppercase tracking-wide"
-          style={{ color: practitioner.headingColor }}
-        >
-          Interaction with others
-        </h4>
-        <ul className="space-y-2 text-body-sm text-[var(--color-text-secondary)]">
-          {practitioner.interactions.map(({ label, description }) => (
+      <PractitionerSection title="Interaction with others" fill className={cn(PROFILE_DUO_CARD_CLASS, textFade)}>
+        <ul className="space-y-2 text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
+          {displayPractitioner.interactions.map(({ label, description }) => (
             <li key={label}>
               <span className="font-medium text-[var(--color-text-primary)]">{label}:</span>{" "}
               {description}
             </li>
           ))}
         </ul>
-      </div>
+      </PractitionerSection>
 
-      <div className="rounded-xl bg-white/80 px-4 py-3 border border-[var(--color-border)]">
-        <h4
-          className="mb-2 text-body-sm font-semibold"
-          style={{ color: practitioner.headingColor }}
-        >
-          Usage of OMRON system
-        </h4>
-        <ul className="list-disc space-y-1.5 pl-4 text-body-sm text-[var(--color-text-secondary)]">
-          {practitioner.visoUsage.map((item) => (
+      <PractitionerSection title="Usage of OMRON VISO" fill className={cn(PROFILE_DUO_CARD_CLASS, textFade)}>
+        <ul className="list-disc space-y-1 pl-4 text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
+          {displayPractitioner.visoUsage.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
-      </div>
+      </PractitionerSection>
     </div>
   );
 }
@@ -134,107 +239,47 @@ export function OmronPractitionerBoardsInteractive({
 }: OmronPractitionerBoardsInteractiveProps) {
   const baseId = useId();
   const [activeId, setActiveId] = useState(omronPractitioners[0]?.id ?? "general-practitioner");
-
-  const activePractitioner =
-    omronPractitioners.find((practitioner) => practitioner.id === activeId) ?? omronPractitioners[0];
-
-  const handleSelect = useCallback((id: string) => {
-    setActiveId(id);
-  }, []);
+  const { displayItem, contentVisible } = useCaseStudyTransition(activeId, omronPractitioners);
 
   return (
     <div className={cn("not-prose", className)}>
-      <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[#f5f8fa] shadow-sm">
-        <div className="border-b border-[#003da5]/15 bg-[#eef2f9] px-4 py-5 md:px-6">
-          <p className="mb-4 text-body-sm text-[var(--color-text-muted)]">
-            Four practitioner groups from co-design workshops — select a role to explore tasks,
-            interactions, and how they use OMRON VISO.
-          </p>
-
-          <div
-            role="tablist"
-            aria-label="OMRON practitioner personas"
-            className="flex flex-wrap gap-1.5 sm:gap-2"
-          >
-            {omronPractitioners.map((practitioner) => {
-              const isActive = practitioner.id === activeId;
-              const tabId = `${baseId}-tab-${practitioner.id}`;
-
-              return (
-                <button
-                  key={practitioner.id}
-                  type="button"
-                  role="tab"
-                  id={tabId}
-                  aria-selected={isActive}
-                  aria-controls={`${baseId}-panel`}
-                  onClick={() => handleSelect(practitioner.id)}
-                  className={cn(
-                    "relative px-4 py-2.5 text-body-sm font-medium min-h-[44px] motion-safe:transition-all motion-safe:duration-300",
-                    isActive
-                      ? [
-                          "rounded-full bg-[#003da5] text-white",
-                          "sm:rounded-b-none sm:rounded-t-xl sm:bg-[#f5f8fa] sm:text-[#003da5]",
-                          "sm:z-10 sm:-mb-px sm:border sm:border-[var(--color-border)] sm:border-b-[#f5f8fa]",
-                          "sm:after:absolute sm:after:inset-x-3 sm:after:bottom-0 sm:after:h-0.5 sm:after:rounded-full sm:after:bg-[#003da5]",
-                        ]
-                      : [
-                          "rounded-full border border-transparent bg-white/70 text-[var(--color-text-secondary)]",
-                          "hover:border-[#003da5]/25 hover:bg-white hover:text-[#003da5]",
-                          "sm:rounded-xl",
-                        ],
-                  )}
-                >
-                  {practitioner.shortLabel}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div
-          role="tabpanel"
-          id={`${baseId}-panel`}
-          aria-labelledby={`${baseId}-tab-${activePractitioner.id}`}
-          className="p-5 md:p-8"
-        >
-          <div className="relative mb-6 min-h-[4rem]">
-            {omronPractitioners.map((practitioner) => (
-              <CrossfadeLayer key={practitioner.id} active={practitioner.id === activeId}>
-                <p className="text-label uppercase tracking-widest text-[#003da5] mb-1">
-                  OMRON practitioner persona
-                </p>
-                <h3 className="text-h4 font-semibold text-[var(--color-text-primary)]">
-                  {practitioner.name}
-                </h3>
-                <p className="mt-1 text-body-sm text-[var(--color-text-muted)]">
-                  {practitioner.tagline}
-                </p>
-              </CrossfadeLayer>
-            ))}
-          </div>
-
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-            <div className="relative mx-auto w-full max-w-[12rem] shrink-0 sm:mx-0">
+      <div
+        id={`${baseId}-explorer`}
+        className="overflow-hidden rounded-xl border border-[var(--color-border)] bg-neutral-50"
+      >
+        <div className="flex flex-col md:flex-row">
+          <aside className="hidden shrink-0 border-b border-[var(--color-border)] bg-neutral-50 md:flex md:w-56 md:flex-col md:border-b-0 md:border-r">
+            <nav className="flex-1 space-y-1 overflow-y-auto p-3" aria-label="User groups">
               {omronPractitioners.map((practitioner) => (
-                <CrossfadeLayer
+                <PractitionerNavItem
                   key={practitioner.id}
+                  practitioner={practitioner}
                   active={practitioner.id === activeId}
-                  className="w-full"
-                >
-                  <PractitionerIdentity practitioner={practitioner} />
-                </CrossfadeLayer>
+                  onSelect={() => setActiveId(practitioner.id)}
+                />
               ))}
+            </nav>
+          </aside>
+
+          <div className="min-w-0 flex-1">
+            <div className="border-b border-[var(--color-border)] bg-neutral-50 px-4 py-2.5 md:hidden">
+              <PractitionerSwitcher activeId={activeId} onSelect={setActiveId} />
             </div>
 
-            <PractitionerBoard practitioner={activePractitioner} />
+            <div id={`${baseId}-panel`} className="bg-white p-4 md:p-5">
+              <PractitionerHeader
+                displayPractitioner={displayItem}
+                contentVisible={contentVisible}
+                illustrationId={activeId}
+              />
+              <PractitionerProfile
+                displayPractitioner={displayItem}
+                contentVisible={contentVisible}
+              />
+            </div>
           </div>
         </div>
       </div>
-
-      <p className="mt-3 text-body-sm text-[var(--color-text-muted)]">
-        Select a practitioner role above to explore how each group uses VISO in practice.
-      </p>
     </div>
   );
 }

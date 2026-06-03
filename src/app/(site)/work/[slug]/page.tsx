@@ -6,7 +6,7 @@ import { arbncoCaseStudyMeta } from "@/content/arbnco-case-study";
 import { nhsCaseStudyMeta } from "@/content/nhs-case-study";
 import { omronCaseStudyMeta } from "@/content/omron-case-study";
 import { getIntroVisualBlocks } from "@/content/project-images";
-import { Tag } from "@/components/ui/Tag";
+import { TagList } from "@/components/ui/Tag";
 import { Button } from "@/components/ui/Button";
 import { ProjectThumbnail } from "@/components/projects/ProjectThumbnail";
 import { CaseStudyVisualBlocks } from "@/components/projects/CaseStudyVisualBlock";
@@ -89,13 +89,7 @@ export default async function CaseStudyPage({ params }: Props) {
             </p>
           )}
           <p className="text-body-lg text-neutral-300 mb-6">{project.overview}</p>
-          <ul className="flex flex-wrap gap-2" aria-label="Project tags">
-            {project.tags.map((tag) => (
-              <li key={tag}>
-                <Tag>{tag}</Tag>
-              </li>
-            ))}
-          </ul>
+          <TagList tags={project.tags} aria-label="Project tags" />
           {!isRichCaseStudy && (
             <CaseStudyVisualBlocks
               blocks={getIntroVisualBlocks(slug, "overview")}

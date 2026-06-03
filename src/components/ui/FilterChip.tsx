@@ -1,11 +1,18 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 type FilterChipBase = {
   label: string;
   selected?: boolean;
   className?: string;
-  accent?: "accent" | "teal" | "neutral";
+  /** Site accent preset, neutral, or a custom hex (e.g. case study brand colour). */
+  accent?: "accent" | "neutral";
+  accentColor?: string;
+  id?: string;
+  role?: string;
+  "aria-selected"?: boolean;
+  "aria-controls"?: string;
 };
 
 type FilterChipButton = FilterChipBase & {
@@ -25,14 +32,10 @@ type FilterChipLink = FilterChipBase & {
 
 export type FilterChipProps = FilterChipButton | FilterChipLink;
 
-const accentStyles = {
+const presetStyles = {
   accent: {
     selected: "bg-[var(--color-accent)] text-white border-transparent shadow-sm",
-    idle: "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text-primary)] bg-white",
-  },
-  teal: {
-    selected: "bg-[#0d7377] text-white border-transparent shadow-sm",
-    idle: "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[#0d7377]/40 bg-white",
+    idle: "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/40 bg-white",
   },
   neutral: {
     selected: "bg-[var(--color-text-primary)] text-white border-transparent",
@@ -40,22 +43,41 @@ const accentStyles = {
   },
 } as const;
 
+function customAccentClasses(selected: boolean) {
+  return cn(
+    selected
+      ? "border-transparent text-white shadow-sm bg-[var(--chip-accent)]"
+      : "text-[var(--color-text-secondary)] bg-white chip-accent-idle",
+  );
+}
+
 export function FilterChip(props: FilterChipProps) {
-  const { label, selected, className, accent = "accent" } = props;
-  const styles = accentStyles[accent];
+  const {
+    label,
+    selected,
+    className,
+    accent = "accent",
+    accentColor,
+    id,
+    role,
+    "aria-selected": ariaSelected,
+    "aria-controls": ariaControls,
+  } = props;
+
+  const usesCustomAccent = Boolean(accentColor);
+  const styles = usesCustomAccent ? null : presetStyles[accent];
+
   const classes = cn(
-    "inline-flex min-h-[36px] shrink-0 items-center rounded-full border px-3 py-1.5 text-body-sm font-medium transition-colors whitespace-nowrap",
-    selected ? styles.selected : styles.idle,
+    "inline-flex min-h-[36px] shrink-0 items-center rounded-full border px-3 py-1.5 text-body-sm font-medium transition-[background-color,color,box-shadow] whitespace-nowrap",
+    usesCustomAccent ? customAccentClasses(Boolean(selected)) : selected ? styles!.selected : styles!.idle,
     className,
   );
 
+  const style = accentColor ? ({ "--chip-accent": accentColor } as CSSProperties) : undefined;
+
   if ("href" in props && props.href) {
     return (
-      <Link
-        href={props.href}
-        className={classes}
-        aria-current={props["aria-current"]}
-      >
+      <Link href={props.href} className={classes} style={style} aria-current={props["aria-current"]}>
         {label}
       </Link>
     );
@@ -64,8 +86,13 @@ export function FilterChip(props: FilterChipProps) {
   return (
     <button
       type="button"
+      id={id}
+      role={role}
+      aria-selected={ariaSelected}
+      aria-controls={ariaControls}
       onClick={props.onClick}
       className={classes}
+      style={style}
       aria-pressed={props["aria-pressed"] ?? selected}
     >
       {label}

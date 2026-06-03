@@ -3,6 +3,8 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/blog";
+import type { BlogEngagementStats } from "@/lib/blog-engagement-shared";
+import { BlogEngagementStatsDisplay } from "@/components/blog/BlogEngagementStats";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
@@ -12,13 +14,14 @@ const FILTERS = ["All", "UX", "UI", "Research", "AI", "Product Design"] as const
 
 type BlogPostListProps = {
   posts: BlogPost[];
+  engagement: Record<string, BlogEngagementStats>;
 };
 
 function formatReadingTime(text: string) {
   return text.replace(/^less than a minute read$/i, "1 min read");
 }
 
-export function BlogPostList({ posts }: BlogPostListProps) {
+export function BlogPostList({ posts, engagement }: BlogPostListProps) {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
   const [pending, startTransition] = useTransition();
 
@@ -86,6 +89,18 @@ export function BlogPostList({ posts }: BlogPostListProps) {
                     {" · "}
                     {formatReadingTime(post.readingTime)}
                   </SectionLabel>
+                  <BlogEngagementStatsDisplay
+                    stats={
+                      engagement[post.slug] ?? {
+                        slug: post.slug,
+                        views: 0,
+                        likes: 0,
+                        shares: 0,
+                      }
+                    }
+                    compact
+                    className="mb-3"
+                  />
                   <h2 className="text-h3 font-semibold mb-3">
                     <Link
                       href={`/blog/${post.slug}`}

@@ -12,9 +12,9 @@ export function HomeHero() {
     <section
       aria-labelledby="hero-heading"
       data-analytics-section="hero"
-      className="grid-bg text-white section-padding pb-16 lg:pb-24 overflow-hidden"
+      className="grid-bg grid-bg-animate relative text-white section-padding pb-16 lg:pb-24 overflow-hidden"
     >
-      <div className="container-site grid gap-8 md:grid-cols-2 md:gap-12 lg:gap-16 items-center">
+      <div className="container-site relative z-10 grid gap-8 md:grid-cols-2 md:gap-12 lg:gap-16 items-center">
         {/* Animation first on mobile so it's visible without scrolling */}
         <div className="relative order-1 md:order-2 w-full min-h-[220px] sm:min-h-[260px] lg:min-h-[320px] ring-1 ring-white/10 rounded-2xl bg-white/[0.02] p-2">
           <FigmaHeroAnimation className="drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)]" />

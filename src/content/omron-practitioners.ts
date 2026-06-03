@@ -11,6 +11,13 @@ export type OmronPractitioner = {
   accentColor: string;
   accentBg: string;
   headingColor: string;
+  /** Character illustration for the explorer header */
+  illustrationSrc: string;
+  illustrationWidth: number;
+  illustrationHeight: number;
+  /** Character illustration alt text for the explorer header */
+  illustrationAlt: string;
+  /** Full workshop persona board */
   boardSrc: string;
   boardAlt: string;
   role: string;
@@ -28,8 +35,12 @@ export const omronPractitioners: OmronPractitioner[] = [
     accentColor: "#c4786a",
     accentBg: "#ebb9ad",
     headingColor: "#c4786a",
+    illustrationSrc: "/projects/omron-patient-monitoring/illustrations/general-practitioner.png",
+    illustrationWidth: 400,
+    illustrationHeight: 480,
+    illustrationAlt: "General practitioner illustration",
     boardSrc: "/projects/omron-patient-monitoring/general-practitioner-user-group.png",
-    boardAlt: "General practitioner persona board illustration",
+    boardAlt: "General practitioner persona board",
     role: "Responsible for triaging, supervising the entire clinical staff and handling diverse medical cases.",
     keyTasks: [
       "Triages daily patient flow and designates health professionals accordingly.",
@@ -56,8 +67,12 @@ export const omronPractitioners: OmronPractitioner[] = [
     accentColor: "#7d6b9e",
     accentBg: "#d4c8e8",
     headingColor: "#7d6b9e",
+    illustrationSrc: "/projects/omron-patient-monitoring/illustrations/nurse-practitioner.png",
+    illustrationWidth: 400,
+    illustrationHeight: 480,
+    illustrationAlt: "Nurse practitioner illustration",
     boardSrc: "/projects/omron-patient-monitoring/nurse-practitioner-user-group.png",
-    boardAlt: "Nurse practitioner persona board illustration",
+    boardAlt: "Nurse practitioner persona board",
     role: "Acts like a GP registrar — assesses, diagnoses, treats conditions, and refers patients to secondary or specialist care.",
     keyTasks: [
       "Engages in remote monitoring of long-term diseases, especially for blood pressure, with decisions based on patient situations.",
@@ -87,8 +102,12 @@ export const omronPractitioners: OmronPractitioner[] = [
     accentColor: "#a0894f",
     accentBg: "#f2e4bc",
     headingColor: "#a0894f",
+    illustrationSrc: "/projects/omron-patient-monitoring/illustrations/clinical-pharmacist.png",
+    illustrationWidth: 400,
+    illustrationHeight: 480,
+    illustrationAlt: "Clinical pharmacist illustration",
     boardSrc: "/projects/omron-patient-monitoring/clinical-pharmacists-user-group.png",
-    boardAlt: "Clinical pharmacist persona board illustration",
+    boardAlt: "Clinical pharmacist persona board",
     role: "Oversee patient medication management in primary care settings.",
     keyTasks: [
       "Manages and reviews long-term conditions like hypertension, ensuring appropriate monitoring and treatment measures.",
@@ -114,8 +133,12 @@ export const omronPractitioners: OmronPractitioner[] = [
     accentColor: "#003da5",
     accentBg: "#b8d4eb",
     headingColor: "#003da5",
-    boardSrc: "/projects/omron-patient-monitoring/senior-nurse-user-group.png",
-    boardAlt: "Practice nurse persona board illustration",
+    illustrationSrc: "/projects/omron-patient-monitoring/illustrations/practice-nurse.png",
+    illustrationWidth: 400,
+    illustrationHeight: 480,
+    illustrationAlt: "Practice nurse illustration",
+    boardSrc: "/projects/omron-patient-monitoring/practice-nurse-user-group.png",
+    boardAlt: "Practice nurse persona board",
     role: "Working as part of the primary healthcare team, practice nurses provide and support patient care.",
     keyTasks: [
       "Contributes to patient diagnostics, monitoring and treatment.",
@@ -131,6 +154,41 @@ export const omronPractitioners: OmronPractitioner[] = [
     visoUsage: [
       "The VISO platform plays a role in remotely reviewing patients' blood pressure and other relevant data. Instead of traditional methods around readings, tests and symptom questionnaires, they can now rely on digital records from VISO.",
       "VISO supports record handling and review, reviewing and prioritising readings, assigning tests and appointment scheduling, messaging patients through the platform, and ensuring they respond to app prompts.",
+    ],
+  },
+  {
+    id: "admin-staff",
+    name: "Admin staff",
+    shortLabel: "Admin",
+    tagline: "Registration, scheduling, and platform support",
+    accentColor: "#5a8f6b",
+    accentBg: "#c8e8d4",
+    headingColor: "#5a8f6b",
+    illustrationSrc: "/projects/omron-patient-monitoring/illustrations/admin-staff.png",
+    illustrationWidth: 400,
+    illustrationHeight: 480,
+    illustrationAlt: "Admin staff illustration",
+    boardSrc: "/projects/omron-patient-monitoring/admin-staff-user-group.png",
+    boardAlt: "Admin staff persona board",
+    role: "Admin staff ensure the seamless operation of the primary care practice by managing patient documentation, facilitating communication, and overseeing digital records in systems like OMRON VISO.",
+    keyTasks: [
+      "Responsible for registration of patients.",
+      "Handle appointment scheduling, document sorting, patient data entry and communications.",
+      "Offer basic tech support related to systems, including the OMRON VISO system.",
+    ],
+    interactions: [
+      { label: "GPs", description: "Collaborate on documentation and review." },
+      { label: "Clinical pharmacists", description: "Assist with appointment setups." },
+      {
+        label: "Nurse practitioners and practice nurses",
+        description: "Support remote monitoring setups.",
+      },
+      { label: "Patients", description: "Primary administrative point of contact." },
+    ],
+    visoUsage: [
+      "Play one of the key roles in recruitment and signing-up patients with the system.",
+      "Involved in data management, patient communication, extracting reports, and maintaining the platform's functionality and user access.",
+      "Responsible for patient communications around recall for tests, reviews, and consultations.",
     ],
   },
 ];

@@ -19,6 +19,9 @@ export type NhsPersona = {
   /** Persona illustration — board image cropped in UI or standalone character art */
   illustrationSrc: string;
   illustrationAlt: string;
+  /** Trimmed source dimensions for layout and Next/Image */
+  illustrationWidth: number;
+  illustrationHeight: number;
   /** When true, crop the top of a full persona-board image */
   illustrationCropBoard?: boolean;
   /** End-to-end journey map image for this persona */
@@ -56,7 +59,9 @@ export const nhsPersonas: NhsPersona[] = [
     whenTheyCall:
       "Most frequently during out-of-hours periods (from 10pm/midnight onwards) when loneliness sets in and other support feels unavailable. Often repeat callers.",
     illustrationSrc: "/projects/nhs-111-waiting-times/persona-illustration-connection-seeker.png",
-    illustrationAlt: "Illustration of a caller wondering if they are being listened to",
+    illustrationAlt: "Connection seeker illustration — Are they listening to me?",
+    illustrationWidth: 449,
+    illustrationHeight: 325,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-connection-seeker.png",
     keyTimes: [92, 85, 75, 28, 22, 35, 60, 90],
     positives:
@@ -90,9 +95,10 @@ export const nhsPersonas: NhsPersona[] = [
       "To get help quickly for a loved one or be pointed in the right direction before the situation worsens.",
     whenTheyCall:
       "More likely out of hours when GP access is limited and symptoms feel urgent.",
-    illustrationSrc: "/projects/nhs-111-waiting-times/persona-distressed-caller.png",
-    illustrationAlt: "Illustration of a distressed caller on the phone",
-    illustrationCropBoard: true,
+    illustrationSrc: "/projects/nhs-111-waiting-times/persona-illustration-distressed-caller.png",
+    illustrationAlt: "Distressed caller illustration — worried about a loved one's symptoms",
+    illustrationWidth: 343,
+    illustrationHeight: 346,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-distressed-caller.png",
     keyTimes: [85, 80, 65, 30, 25, 35, 60, 82],
     positives:
@@ -128,9 +134,10 @@ export const nhsPersonas: NhsPersona[] = [
       "To hear a qualified voice confirming what they already suspect — that there is nothing to worry about.",
     whenTheyCall:
       "Usually between 8am and midnight, often after work or before bedtime.",
-    illustrationSrc: "/projects/nhs-111-waiting-times/persona-confirmation-seeker.png",
-    illustrationAlt: "Illustration of a confirmation seeker checking their phone while walking",
-    illustrationCropBoard: true,
+    illustrationSrc: "/projects/nhs-111-waiting-times/persona-illustration-confirmation-seeker.png",
+    illustrationAlt: "Confirmation seeker illustration — would have self-tested if possible",
+    illustrationWidth: 643,
+    illustrationHeight: 354,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-confirmation-seeker.png",
     keyTimes: [8, 10, 18, 72, 95, 78, 88, 52],
     positives:
@@ -164,9 +171,10 @@ export const nhsPersonas: NhsPersona[] = [
       "Tries online resources first, but calls 111 when symptoms worsen or online information increases anxiety. Some distrust online sources and prefer speaking to a human.",
     whenTheyCall:
       "111 is a last resort during out-of-hours periods, usually after trying their GP during the day.",
-    illustrationSrc: "/projects/nhs-111-waiting-times/persona-breaking-point.png",
-    illustrationAlt: "Illustration of a breaking point caller in a wheelchair",
-    illustrationCropBoard: true,
+    illustrationSrc: "/projects/nhs-111-waiting-times/persona-illustration-breaking-point.png",
+    illustrationAlt: "Breaking point caller illustration — worsening situation and long wait",
+    illustrationWidth: 561,
+    illustrationHeight: 342,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-breaking-point.png",
     keyTimes: [88, 75, 45, 22, 18, 28, 55, 80],
     positives:
@@ -203,7 +211,9 @@ export const nhsPersonas: NhsPersona[] = [
     whenTheyCall:
       "Weekday daytime and early evening when GP access has already been attempted.",
     illustrationSrc: "/projects/nhs-111-waiting-times/persona-illustration-gp-substitute.png",
-    illustrationAlt: "Illustration of a caller uncertain about which service to use",
+    illustrationAlt: "Illustration of a caller using 111 when GP access is blocked",
+    illustrationWidth: 456,
+    illustrationHeight: 290,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-gp-substitute.png",
     keyTimes: [12, 10, 22, 72, 95, 82, 48, 18],
     positives:

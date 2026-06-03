@@ -42,7 +42,7 @@ export function EmailCopyAction({ email = siteConfig.email, className }: EmailCo
         className={cn(
           "inline-flex size-10 shrink-0 items-center justify-center self-start rounded-full border transition-colors",
           copied
-            ? "border-[#0d7377]/30 bg-[#0d7377]/5 text-[#0d7377]"
+            ? "border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 text-[var(--color-accent)]"
             : "border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]",
         )}
         aria-label={copied ? "Email copied to clipboard" : `Copy ${email} to clipboard`}

@@ -16,18 +16,29 @@ const tagColors: Record<string, string> = {
   "Product Design": "bg-indigo-100 text-indigo-800",
 };
 
+const tagPillClass =
+  "inline-flex items-center justify-center rounded-full px-3 py-1.5 text-body-sm font-medium leading-none min-h-8 whitespace-nowrap";
+
 export function Tag({ children, className }: TagProps) {
   const colorClass = tagColors[children as string] ?? "bg-neutral-100 text-neutral-700";
 
+  return <span className={cn(tagPillClass, colorClass, className)}>{children}</span>;
+}
+
+type TagListProps = {
+  tags: readonly string[];
+  className?: string;
+  "aria-label"?: string;
+};
+
+export function TagList({ tags, className, "aria-label": ariaLabel = "Tags" }: TagListProps) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full px-3 py-1 text-body-sm font-medium",
-        colorClass,
-        className,
-      )}
-    >
-      {children}
-    </span>
+    <ul className={cn("m-0 flex list-none flex-wrap items-center gap-2 p-0", className)} aria-label={ariaLabel}>
+      {tags.map((tag) => (
+        <li key={tag} className="flex items-center">
+          <Tag>{tag}</Tag>
+        </li>
+      ))}
+    </ul>
   );
 }

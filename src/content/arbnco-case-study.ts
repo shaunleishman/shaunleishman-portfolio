@@ -30,7 +30,8 @@ export const arbncoSectionNav = [
   { id: "iteration", label: "Iteration" },
   { id: "design-review", label: "Design review" },
   { id: "refined-solution", label: "Refined solution" },
-  { id: "reflection", label: "Reflection" },
+  { id: "limitations", label: "Limitations" },
+  { id: "key-takeaways", label: "Takeaways" },
 ] as const;
 
 export type ArbncoSectionId = (typeof arbncoSectionNav)[number]["id"];

@@ -20,16 +20,16 @@ import {
   CaseStudyIllustration,
   CaseStudySplitSection,
 } from "@/components/projects/CaseStudyIllustration";
-import { ZoomableScreenshot } from "@/components/projects/ZoomableScreenshot";
 import { NhsPersonasInteractive } from "@/components/projects/NhsPersonasInteractive";
 import { NhsQuantitativeInteractive } from "@/components/projects/NhsQuantitativeInteractive";
+import { CaseStudyAccentProvider } from "@/components/projects/CaseStudyAccentProvider";
 
 const findingHighlightIcons = [Building2, Headset, Route] as const;
 
 const deliverableHighlights = [
   {
     icon: Users,
-    text: "Five interactive personas on a certainty spectrum — from unsure callers to those who know what they need.",
+    text: "Five interactive personas — explore traits, call patterns, frustrations, and journey maps.",
   },
   {
     icon: Map,
@@ -47,8 +47,8 @@ type NhsCaseStudyContentProps = {
 
 export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
   return (
-    <>
-      <CaseStudySectionNav items={nhsSectionNav} />
+    <CaseStudyAccentProvider accentColor={project.accentColor}>
+      <CaseStudySectionNav items={nhsSectionNav} accentColor={project.accentColor} />
 
       <CaseStudyAtAGlance
         title={nhsSectionTitle("at-a-glance")}
@@ -137,7 +137,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         <ul className="space-y-3 not-prose mb-8">
           {deliverableHighlights.map(({ icon: Icon, text }) => (
             <li key={text} className="flex gap-3 text-body text-[var(--color-text-secondary)]">
-              <Icon className="size-5 shrink-0 mt-0.5 text-[#005eb8]" aria-hidden />
+              <Icon className="size-5 shrink-0 mt-0.5 text-[var(--case-study-accent)]" aria-hidden />
               {text}
             </li>
           ))}
@@ -175,7 +175,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
                 className="flex gap-4 rounded-xl border border-[var(--color-border)] bg-neutral-50 px-5 py-4"
               >
                 <span
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#005eb8] text-white shadow-sm"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--case-study-accent)] text-white shadow-sm"
                   aria-hidden
                 >
                   <Icon size={20} strokeWidth={1.75} />
@@ -190,24 +190,6 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
             );
           })}
         </div>
-
-        <div className="space-y-10 not-prose">
-          <ZoomableScreenshot
-            src="/projects/nhs-111-waiting-times/satisfaction-trying-resources.png"
-            alt="Breakdown of satisfaction levels with the 111 service"
-            caption="Overall satisfaction with 111"
-          />
-          <ZoomableScreenshot
-            src="/projects/nhs-111-waiting-times/outcome-week-days.png"
-            alt="Chart of call outcomes by day of week"
-            caption="Call outcomes by weekday"
-          />
-          <ZoomableScreenshot
-            src="/projects/nhs-111-waiting-times/urgency-time-outcome.png"
-            alt="Chart relating urgency, time spent waiting, and call outcome"
-            caption="Urgency, wait time, and outcome"
-          />
-        </div>
       </CaseStudySection>
 
       <CaseStudyReflection
@@ -220,6 +202,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         }
         limitations={project.limitations}
         takeaways={nhsReflectionItems}
+        takeawaysLead="What mixed-methods research on NHS 111 reinforced — and how it shaped my approach to public-service discovery."
         feedbackPath="/work/nhs-111-waiting-times"
       />
 
@@ -229,6 +212,6 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
           Get in touch
         </Button>
       </div>
-    </>
+    </CaseStudyAccentProvider>
   );
 }

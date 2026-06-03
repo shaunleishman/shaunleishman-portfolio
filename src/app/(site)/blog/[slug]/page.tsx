@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { getBlogEngagementForSlug } from "@/lib/blog-engagement";
 import { siteConfig } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CaseStudyFeedback } from "@/components/projects/CaseStudyFeedback";
 import { BlogContent } from "@/components/blog/BlogContent";
 import { LinkedInShare } from "@/components/blog/LinkedInShare";
+import { BlogEngagementActions } from "@/components/blog/BlogEngagementActions";
+import { BlogEngagementStatsDisplay } from "@/components/blog/BlogEngagementStats";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 
@@ -41,6 +44,7 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post || !post.published) notFound();
 
   const shareUrl = `${siteConfig.siteUrl}/blog/${post.slug}`;
+  const engagement = getBlogEngagementForSlug(post.slug);
 
   return (
     <>
@@ -79,6 +83,7 @@ export default async function BlogPostPage({ params }: Props) {
           </SectionLabel>
           <h1 className="text-h1 font-semibold mb-4">{post.title}</h1>
           <p className="text-body-lg text-neutral-300">{post.description}</p>
+          <BlogEngagementStatsDisplay stats={engagement} dark className="mt-6" />
         </PageHero>
       </section>
 
@@ -87,8 +92,14 @@ export default async function BlogPostPage({ params }: Props) {
           <BlogContent content={post.content} />
         </div>
 
-        <Reveal delay={80} className="container-site max-w-3xl mt-12 pt-8 border-t border-[var(--color-border)]">
-          <LinkedInShare url={shareUrl} title={post.title} />
+        <Reveal delay={80} className="container-site max-w-3xl mt-12 pt-8 border-t border-[var(--color-border)] space-y-6">
+          <BlogEngagementActions slug={post.slug} initialStats={engagement} />
+          <LinkedInShare
+            url={shareUrl}
+            title={post.title}
+            slug={post.slug}
+            initialShareCount={engagement.shares}
+          />
         </Reveal>
 
         <Reveal delay={100} className="container-site max-w-3xl mt-10">

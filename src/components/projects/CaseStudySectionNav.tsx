@@ -8,10 +8,11 @@ type NavItem = { id: string; label: string };
 
 type CaseStudySectionNavProps = {
   items: readonly NavItem[];
+  accentColor: string;
   className?: string;
 };
 
-export function CaseStudySectionNav({ items, className }: CaseStudySectionNavProps) {
+export function CaseStudySectionNav({ items, accentColor, className }: CaseStudySectionNavProps) {
   const [activeId, setActiveId] = useState(items[0]?.id ?? "");
 
   useEffect(() => {
@@ -53,7 +54,7 @@ export function CaseStudySectionNav({ items, className }: CaseStudySectionNavPro
               href={`#${item.id}`}
               label={item.label}
               selected={activeId === item.id}
-              accent="teal"
+              accentColor={accentColor}
               aria-current={activeId === item.id ? "location" : undefined}
             />
           </li>

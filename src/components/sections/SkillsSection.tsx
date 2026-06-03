@@ -42,11 +42,11 @@ export function SkillsSection() {
                     <p className="text-body text-[var(--color-text-secondary)] md:col-start-2 lg:col-start-3">
                       {skill.description}
                     </p>
-                    <ul className="flex flex-wrap gap-2 lg:col-start-4 lg:justify-end">
+                    <ul className="m-0 flex list-none flex-wrap items-center gap-2 p-0 lg:col-start-4 lg:justify-end">
                       {skill.items.map((item) => (
                         <li
                           key={item}
-                          className="rounded-full border border-[var(--color-border)] px-3 py-1 text-body-sm text-[var(--color-text-secondary)]"
+                          className="inline-flex items-center justify-center rounded-full border border-[var(--color-border)] px-3 py-1.5 text-body-sm leading-none min-h-8 whitespace-nowrap text-[var(--color-text-secondary)]"
                         >
                           {item}
                         </li>

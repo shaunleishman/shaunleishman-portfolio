@@ -20,6 +20,7 @@ import {
   CaseStudySplitSection,
 } from "@/components/projects/CaseStudyIllustration";
 import { ZoomableScreenshot } from "@/components/projects/ZoomableScreenshot";
+import { CaseStudyAccentProvider } from "@/components/projects/CaseStudyAccentProvider";
 
 const FIGMA_PROTOTYPE_URL =
   "https://www.figma.com/make/MAun3hdKIKb6vTuWxbwDGN/Prototype-for-Half-Hourly-Project?t=YTFyfYijTGsXetcB-20&fullscreen=1";
@@ -71,8 +72,8 @@ type ArbncoCaseStudyContentProps = {
 
 export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps) {
   return (
-    <>
-      <CaseStudySectionNav items={arbncoSectionNav} />
+    <CaseStudyAccentProvider accentColor={project.accentColor}>
+      <CaseStudySectionNav items={arbncoSectionNav} accentColor={project.accentColor} />
 
       <CaseStudyAtAGlance
         title={arbncoSectionTitle("at-a-glance")}
@@ -155,15 +156,15 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Prototype for Half Hourly Project (opens in a new tab)"
-          className="group flex items-center justify-between gap-4 rounded-xl border border-[var(--color-border)] bg-neutral-50 px-5 py-4 hover:border-[#0d7377] transition-colors not-prose"
+          className="group flex items-center justify-between gap-4 rounded-xl border border-[var(--color-border)] bg-neutral-50 px-5 py-4 hover:border-[var(--case-study-accent)] transition-colors not-prose"
         >
           <div>
-            <p className="text-body font-semibold mb-1 group-hover:text-[#0d7377]">
+            <p className="text-body font-semibold mb-1 group-hover:text-[var(--case-study-accent)]">
               Prototype for Half Hourly Project
             </p>
             <p className="text-body-sm text-[var(--color-text-muted)]">View prototype in Figma Make</p>
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white px-3 py-1.5 text-body-sm font-medium text-[var(--color-text-secondary)] group-hover:border-[#0d7377]/40 group-hover:text-[#0d7377] transition-colors">
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white px-3 py-1.5 text-body-sm font-medium text-[var(--color-text-secondary)] group-hover:border-[var(--case-study-accent)]/40 group-hover:text-[var(--case-study-accent)] transition-colors">
             <ExternalLink className="size-4" aria-hidden />
             New tab
           </span>
@@ -178,7 +179,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
         <ul className="space-y-3 not-prose">
           {designReviewFeedback.map(({ icon: Icon, text }) => (
             <li key={text} className="flex gap-3 text-body text-[var(--color-text-secondary)]">
-              <Icon className="size-5 shrink-0 mt-0.5 text-[#0d7377]" aria-hidden />
+              <Icon className="size-5 shrink-0 mt-0.5 text-[var(--case-study-accent)]" aria-hidden />
               {text}
             </li>
           ))}
@@ -228,8 +229,11 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           >
             <ZoomableScreenshot
               src="/projects/arbnco-synthetic-ai-data/flow-example-synthetic-data.png"
-              alt="Example flow for turning on generated hourly data across multiple projects"
+              alt="Three-step flow for bulk synthesising and reverting synthetic data across the projects list"
               caption="Example: bulk synthesise and revert flow across the projects list"
+              previewFit="contain"
+              width={1024}
+              height={339}
             />
           </CaseStudySubsection>
 
@@ -239,8 +243,11 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           >
             <ZoomableScreenshot
               src="/projects/arbnco-synthetic-ai-data/enabling-half-hourly-data.png"
-              alt="Example Edit Project screen showing generated hourly data controls"
+              alt="Edit Project screen with synthetic data badge and enable synthetic hourly data toggle"
               caption="Example: enabling generated hourly data from project settings"
+              previewFit="contain"
+              width={1024}
+              height={643}
             />
           </CaseStudySubsection>
         </div>
@@ -256,6 +263,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
         }
         limitations={project.limitations}
         takeaways={arbncoReflectionItems}
+        takeawaysLead="What making complex data legible reinforced — and what I'd apply to the next technical product surface."
         feedbackPath="/work/arbnco-synthetic-ai-data"
       />
 
@@ -265,6 +273,6 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           Get in touch
         </Button>
       </div>
-    </>
+    </CaseStudyAccentProvider>
   );
 }

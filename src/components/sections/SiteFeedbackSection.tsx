@@ -149,8 +149,8 @@ function SiteFeedbackForm() {
               className={cn(
                 "inline-flex min-h-11 w-full items-center justify-center rounded-lg border text-body-sm font-semibold tabular-nums transition-colors",
                 score === value
-                  ? "border-[#0d7377] bg-[#0d7377] text-white shadow-sm"
-                  : "border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] hover:border-[#0d7377]/40 hover:text-[#0d7377]",
+                  ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-white shadow-sm"
+                  : "border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/40 hover:text-[var(--color-accent)]",
               )}
             >
               {value}
@@ -166,7 +166,7 @@ function SiteFeedbackForm() {
       </div>
 
       {score !== null && (
-        <p className="mt-3 text-body-sm font-medium text-[#0d7377]" aria-live="polite">
+        <p className="mt-3 text-body-sm font-medium text-[var(--color-accent)]" aria-live="polite">
           {SCORE_LABELS[score]}
         </p>
       )}
@@ -186,7 +186,7 @@ function SiteFeedbackForm() {
                 label={option}
                 selected={reason === option}
                 onClick={() => setReason(option)}
-                accent="teal"
+                accent="accent"
               />
             ))}
           </div>
@@ -202,8 +202,7 @@ function SiteFeedbackForm() {
           onClick={() => void sendFeedback()}
           disabled={!canSubmit}
           className={cn(
-            "inline-flex min-h-[44px] items-center justify-center rounded-full px-6 py-2.5 text-body-sm font-medium transition-colors",
-            "bg-[#0d7377] text-white hover:bg-[#0a5c5f] disabled:cursor-not-allowed disabled:opacity-45",
+            "inline-flex min-h-[44px] items-center justify-center rounded-full bg-[var(--color-accent)] px-6 py-2.5 text-body-sm font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-45",
             (score === null || reason !== null) && "sm:ml-auto",
           )}
         >

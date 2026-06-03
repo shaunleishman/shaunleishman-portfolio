@@ -1,7 +1,7 @@
 /** Recruiter-optimised content for the OMRON case study */
 
 export const OMRON_PROTOTYPE_URL =
-  "https://www.figma.com/proto/WVbonH3ZKEGt09wqA428JP/OMRON-Action-card-prototype?page-id=279%3A2203&node-id=573-12324&viewport=1068%2C1040%2C0.27&t=OZkkCi4E8sG7gt6a-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=573%3A12324";
+  "https://www.figma.com/proto/WVbonH3ZKEGt09wqA428JP/OMRON-Action-card-prototype?page-id=279%3A2203&node-id=573-12324&scaling=scale-down&content-scaling=fixed&starting-point-node-id=573%3A12324";
 
 export const omronCaseStudyMeta = {
   outcomeLine:
@@ -39,7 +39,8 @@ export const omronSectionNav = [
   { id: "iteration", label: "Iteration" },
   { id: "usability-testing", label: "Testing" },
   { id: "refined-solution", label: "Solution" },
-  { id: "reflection", label: "Reflection" },
+  { id: "limitations", label: "Limitations" },
+  { id: "key-takeaways", label: "Takeaways" },
 ] as const;
 
 export type OmronSectionId = (typeof omronSectionNav)[number]["id"];
@@ -57,7 +58,7 @@ export const omronRoleItems = [
 export const omronCoDesignItems = [
   "Interviewed existing and prospective OMRON VISO users across primary care roles",
   "Ran workshops to report interview findings and sketch solutions together",
-  "Mapped how GPs, nurse practitioners, pharmacists, and senior nurses assign and monitor patients differently",
+  "Mapped how GPs, nurse practitioners, pharmacists, practice nurses, and admin staff assign and monitor patients differently",
 ];
 
 export const omronTestingFindings = [

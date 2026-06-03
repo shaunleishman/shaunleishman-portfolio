@@ -32,17 +32,17 @@ export function CaseStudyVisualBlockView({ block, className }: CaseStudyVisualBl
 
       <div className="space-y-4">
         {featured.map((img) => (
-          <figure key={img.src} className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-white">
+          <figure key={img.src} className="flex flex-col gap-0 overflow-hidden rounded-lg border border-[var(--color-border)] bg-white">
             <Image
               src={img.src}
               alt={img.alt}
               width={1600}
               height={900}
-              className="h-auto w-full"
+              className="block h-auto w-full"
               sizes="(max-width: 768px) 100vw, 720px"
             />
             {img.caption && (
-              <figcaption className="px-3 py-2 text-body-sm text-[var(--color-text-muted)] border-t border-[var(--color-border)]">
+              <figcaption className="m-0 border-t border-[var(--color-border)] px-3 py-2 text-body-sm leading-snug text-[var(--color-text-muted)]">
                 {img.caption}
               </figcaption>
             )}
@@ -59,18 +59,18 @@ export function CaseStudyVisualBlockView({ block, className }: CaseStudyVisualBl
             {grid.map((img) => (
               <figure
                 key={img.src}
-                className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-white"
+                className="flex flex-col gap-0 overflow-hidden rounded-lg border border-[var(--color-border)] bg-white"
               >
                 <Image
                   src={img.src}
                   alt={img.alt}
                   width={1200}
                   height={800}
-                  className="h-auto w-full"
+                  className="block h-auto w-full"
                   sizes="(max-width: 768px) 100vw, 360px"
                 />
                 {img.caption && (
-                  <figcaption className="px-3 py-2 text-body-sm text-[var(--color-text-muted)] border-t border-[var(--color-border)]">
+                  <figcaption className="m-0 border-t border-[var(--color-border)] px-3 py-2 text-body-sm leading-snug text-[var(--color-text-muted)]">
                     {img.caption}
                   </figcaption>
                 )}

@@ -38,7 +38,8 @@ export const nhsSectionNav = [
   { id: "personas-journeys", label: "Personas & journeys" },
   { id: "quantitative-research", label: "Quantitative" },
   { id: "key-findings", label: "Findings" },
-  { id: "reflection", label: "Reflection" },
+  { id: "limitations", label: "Limitations" },
+  { id: "key-takeaways", label: "Takeaways" },
 ] as const;
 
 export type NhsSectionId = (typeof nhsSectionNav)[number]["id"];
