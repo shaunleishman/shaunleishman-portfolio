@@ -128,7 +128,7 @@ export default async function BlogPostPage({ params }: Props) {
           <BlogPostEngagementToolbar />
         </Reveal>
 
-        <Reveal delay={100} className="container-site max-w-3xl mt-10">
+        <Reveal delay={100} className="container-site max-w-3xl">
           <CaseStudyFeedback
             feedbackPath={`/blog/${post.slug}`}
             question="How strong does this article come across?"

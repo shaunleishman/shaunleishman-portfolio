@@ -5,7 +5,6 @@ import { useCallback, useId, useState } from "react";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FeedbackSubmittedNotice } from "@/components/ui/FeedbackSubmittedNotice";
 import { FeedbackProximityPopover } from "@/components/feedback/FeedbackProximityPopover";
-import { Reveal } from "@/components/ui/Reveal";
 import { isAnalyticsAllowed } from "@/lib/consent";
 import { cn } from "@/lib/utils";
 
@@ -222,40 +221,12 @@ function SiteFeedbackForm() {
 }
 
 export function SiteFeedbackSection({ dark = true }: SiteFeedbackSectionProps) {
-  const headingId = useId();
-
   return (
     <FeedbackProximityPopover
       title="Was this useful?"
       lead="A quick rating helps me understand what's working, and what to improve."
       eyebrow="Feedback"
       variant={dark ? "site-dark" : "site-light"}
-      renderInline={(content) => (
-        <section
-          aria-labelledby={headingId}
-          data-analytics-section="feedback"
-          className={
-            dark
-              ? "section-padding grid-bg text-white relative overflow-hidden border-t border-[var(--color-border-dark)]"
-              : "section-padding bg-white border-t border-[var(--color-border)] relative overflow-hidden"
-          }
-        >
-          <Reveal className="container-site max-w-2xl mx-auto text-center">
-            <h2 id={headingId} className="text-h2 font-semibold mb-3">
-              Was this useful?
-            </h2>
-            <p
-              className={cn(
-                "text-body-lg mb-8 max-w-xl mx-auto",
-                dark ? "text-neutral-300" : "text-[var(--color-text-secondary)]",
-              )}
-            >
-              A quick rating helps me understand what&apos;s working, and what to improve.
-            </p>
-            {content}
-          </Reveal>
-        </section>
-      )}
     >
       <SiteFeedbackForm />
     </FeedbackProximityPopover>
