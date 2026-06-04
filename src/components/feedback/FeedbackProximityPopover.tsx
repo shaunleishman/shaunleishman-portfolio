@@ -124,7 +124,7 @@ export function FeedbackProximityPopover({
           aria-labelledby={titleId}
           className={cn(
             "fixed z-[70] bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md",
-            "rounded-2xl border p-4 sm:p-5 max-h-[min(70vh,32rem)] overflow-y-auto",
+            "rounded-2xl border p-4 sm:p-5 overflow-visible",
             "motion-safe:animate-[fade-in_0.25s_ease-out]",
             variant === "case-study" && "feedback-accent-scope",
             floatingCardClass,
@@ -157,7 +157,7 @@ export function FeedbackProximityPopover({
             </button>
           </div>
 
-          <div className="max-h-[50vh] overflow-y-auto pr-0.5">{children}</div>
+          <div>{children}</div>
         </div>
       )}
     </>
