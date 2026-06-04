@@ -2,34 +2,21 @@
 
 import { useCallback, useEffect, useId, useState } from "react";
 import { FeedbackProximityPopover } from "@/components/feedback/FeedbackProximityPopover";
+import {
+  FEEDBACK_VARIANT_CONFIG,
+  type FeedbackVariant,
+} from "@/lib/feedback-config";
 import { isAnalyticsAllowed } from "@/lib/consent";
 import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FeedbackSubmittedNotice } from "@/components/ui/FeedbackSubmittedNotice";
-
-const RATING_OPTIONS = [
-  { score: 1, label: "Weak or unconvincing" },
-  { score: 2, label: "Weak in places" },
-  { score: 4, label: "Neutral" },
-  { score: 6, label: "Strong and credible" },
-  { score: 7, label: "Very impressive" },
-] as const;
-
-const REASONS = [
-  "Wrong industry",
-  "Wrong skills or focus area",
-  "Too technical",
-  "Not enough detail",
-  "Hard to follow the story",
-  "Doesn't show enough impact",
-  "Not the kind of project I hire for",
-] as const;
 
 type FeedbackBucket = "weak" | "decent" | "strong";
 type FeedbackStep = "rating" | "followup" | "done";
 
 type CaseStudyFeedbackProps = {
   feedbackPath: string;
+  variant?: FeedbackVariant;
   question?: string;
   submittedDescription?: string;
   sectionTitle?: string;
@@ -48,11 +35,18 @@ function needsFollowUp(score: number | null) {
 
 export function CaseStudyFeedback({
   feedbackPath,
-  question = "How strong does this project come across?",
-  submittedDescription = "Thanks, it helps me understand what's working on this case study.",
-  sectionTitle = "Your feedback",
-  sectionLead = "An optional rating helps me understand how relevant this case study is, whether you're hiring, collaborating, or just browsing.",
+  variant = "case-study",
+  question,
+  submittedDescription,
+  sectionTitle,
+  sectionLead,
 }: CaseStudyFeedbackProps) {
+  const config = FEEDBACK_VARIANT_CONFIG[variant];
+  const resolvedQuestion = question ?? config.question;
+  const resolvedSubmittedDescription = submittedDescription ?? config.submittedDescription;
+  const resolvedSectionTitle = sectionTitle ?? config.sectionTitle;
+  const resolvedSectionLead = sectionLead ?? config.sectionLead;
+
   const groupId = useId();
   const [step, setStep] = useState<FeedbackStep>("rating");
   const [score, setScore] = useState<number | null>(null);
@@ -99,6 +93,7 @@ export function CaseStudyFeedback({
               feedback,
               score: strengthScore,
               reason: nextReason ?? null,
+              contentType: variant,
             },
           }),
         });
@@ -111,7 +106,7 @@ export function CaseStudyFeedback({
       setSubmitted(true);
       setStep("done");
     },
-    [feedbackPath],
+    [feedbackPath, variant],
   );
 
   function handlePrimaryOnRating() {
@@ -128,12 +123,12 @@ export function CaseStudyFeedback({
     void sendFeedback(getFeedbackBucket(score), score, reason);
   }
 
-  const popoverTitle = step === "followup" ? "What held it back?" : sectionTitle;
-  const popoverLead = step === "followup" ? "Pick the closest reason so I can improve this case study." : sectionLead;
+  const popoverTitle = step === "followup" ? config.followUpTitle : resolvedSectionTitle;
+  const popoverLead = step === "followup" ? config.followUpLead : resolvedSectionLead;
 
   const formContent =
     submitted || step === "done" ? (
-      <FeedbackSubmittedNotice description={submittedDescription} />
+      <FeedbackSubmittedNotice description={resolvedSubmittedDescription} />
     ) : step === "followup" ? (
       <>
         <button
@@ -146,7 +141,7 @@ export function CaseStudyFeedback({
 
         <fieldset disabled={submitting} className="border-0 p-0 m-0 min-w-0">
           <div className="flex flex-wrap gap-2">
-            {REASONS.map((option) => (
+            {config.reasons.map((option) => (
               <FilterChip
                 key={option}
                 label={option}
@@ -171,7 +166,7 @@ export function CaseStudyFeedback({
       </>
     ) : (
       <>
-        <p className="text-body-sm font-medium text-[var(--color-text-primary)]">{question}</p>
+        <p className="text-body-sm font-medium text-[var(--color-text-primary)]">{resolvedQuestion}</p>
 
         <div
           role="radiogroup"
@@ -179,9 +174,9 @@ export function CaseStudyFeedback({
           className="mt-3 flex flex-col gap-2"
         >
           <span id={`${groupId}-label`} className="sr-only">
-            {question}
+            {resolvedQuestion}
           </span>
-          {RATING_OPTIONS.map((option) => {
+          {config.ratingOptions.map((option) => {
             const selected = score === option.score;
             return (
               <button
@@ -228,7 +223,7 @@ export function CaseStudyFeedback({
     <FeedbackProximityPopover
       title={popoverTitle}
       lead={popoverLead}
-      eyebrow="Portfolio feedback"
+      eyebrow={config.eyebrow}
       variant="case-study"
     >
       {formContent}

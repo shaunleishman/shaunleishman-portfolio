@@ -128,14 +128,9 @@ export default async function BlogPostPage({ params }: Props) {
           <BlogPostEngagementToolbar />
         </Reveal>
 
-        <Reveal delay={100} className="container-site max-w-3xl">
-          <CaseStudyFeedback
-            feedbackPath={`/blog/${post.slug}`}
-            question="How strong does this article come across?"
-            submittedDescription="Thanks. It helps me understand what's working in my writing."
-            sectionLead="An optional rating helps me understand whether this article is useful, clear, and worth sharing."
-          />
-        </Reveal>
+        <div className="container-site max-w-3xl">
+          <CaseStudyFeedback variant="article" feedbackPath={`/blog/${post.slug}`} />
+        </div>
       </article>
       </>
     </BlogPostEngagement>

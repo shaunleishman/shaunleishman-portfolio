@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
 type FeedbackProximityPopoverProps = {
@@ -91,7 +92,12 @@ export function FeedbackProximityPopover({
 }: FeedbackProximityPopoverProps) {
   const anchorRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  const [portalReady, setPortalReady] = useState(false);
   const { showFloating, dismissFloating } = useFeedbackProximity(anchorRef);
+
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
 
   const floatingCardClass =
     variant === "site-dark"
@@ -108,6 +114,50 @@ export function FeedbackProximityPopover({
       ? "text-neutral-500"
       : "text-[color-mix(in_srgb,var(--case-study-accent,var(--color-accent))_75%,transparent)]";
 
+  const floatingCard = showFloating ? (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      className={cn(
+        "fixed z-[70] bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md",
+        "rounded-2xl border p-4 sm:p-5 overflow-visible",
+        "motion-safe:animate-[fade-in_0.25s_ease-out]",
+        variant === "case-study" && "feedback-accent-scope",
+        floatingCardClass,
+      )}
+    >
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className={cn("mb-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em]", headerAccent)}>
+            {eyebrow}
+          </p>
+          <h3 id={titleId} className="text-h4 font-semibold leading-snug">
+            {title}
+          </h3>
+          {lead && (
+            <p className={cn("mt-1.5 text-body-sm leading-relaxed", headerMuted)}>{lead}</p>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={dismissFloating}
+          className={cn(
+            "shrink-0 rounded-lg border px-2.5 py-1.5 text-body-sm font-medium min-h-[44px] min-w-[44px]",
+            variant === "site-dark"
+              ? "border-white/20 text-neutral-300 hover:bg-white/10"
+              : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/40",
+          )}
+          aria-label="Dismiss feedback prompt"
+        >
+          ×
+        </button>
+      </div>
+
+      <div>{children}</div>
+    </div>
+  ) : null;
+
   return (
     <>
       <div
@@ -117,49 +167,7 @@ export function FeedbackProximityPopover({
         data-feedback-anchor
       />
 
-      {showFloating && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          className={cn(
-            "fixed z-[70] bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md",
-            "rounded-2xl border p-4 sm:p-5 overflow-visible",
-            "motion-safe:animate-[fade-in_0.25s_ease-out]",
-            variant === "case-study" && "feedback-accent-scope",
-            floatingCardClass,
-          )}
-        >
-          <div className="mb-4 flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className={cn("mb-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em]", headerAccent)}>
-                {eyebrow}
-              </p>
-              <h3 id={titleId} className="text-h4 font-semibold leading-snug">
-                {title}
-              </h3>
-              {lead && (
-                <p className={cn("mt-1.5 text-body-sm leading-relaxed", headerMuted)}>{lead}</p>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={dismissFloating}
-              className={cn(
-                "shrink-0 rounded-lg border px-2.5 py-1.5 text-body-sm font-medium min-h-[44px] min-w-[44px]",
-                variant === "site-dark"
-                  ? "border-white/20 text-neutral-300 hover:bg-white/10"
-                  : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/40",
-              )}
-              aria-label="Dismiss feedback prompt"
-            >
-              ×
-            </button>
-          </div>
-
-          <div>{children}</div>
-        </div>
-      )}
+      {portalReady && floatingCard ? createPortal(floatingCard, document.body) : null}
     </>
   );
 }
