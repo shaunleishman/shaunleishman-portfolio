@@ -51,7 +51,7 @@ export default function CvPage() {
             </li>
             <li>
               <a href={cvContent.contact.portfolio} className="text-[#3b66f5] hover:underline">
-                {siteConfig.brand}
+                {cvContent.contact.portfolioLabel}
               </a>
             </li>
           </ul>
@@ -136,7 +136,7 @@ export default function CvPage() {
         <Reveal delay={60}>
           <footer className="mt-12 pt-6 border-t border-[#e5e5e5] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 print:mt-8">
             <SiteLogo className="text-body" />
-            <p className="text-body-sm text-[#737373]">{siteConfig.brand}</p>
+            <p className="text-body-sm text-[#737373]">{cvContent.contact.portfolioLabel}</p>
           </footer>
         </Reveal>
       </main>

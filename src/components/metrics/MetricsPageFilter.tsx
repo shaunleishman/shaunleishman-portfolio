@@ -8,7 +8,7 @@ type MetricsPageFilterProps = {
 
 export function MetricsPageFilter({ paths, value, onChange }: MetricsPageFilterProps) {
   return (
-    <div className="mb-8 rounded-2xl border border-[var(--color-border)] bg-white p-5">
+    <div>
       <label htmlFor="metrics-page-filter" className="mb-1.5 block text-label text-[var(--color-text-muted)]">
         Filter all data by page
       </label>
@@ -26,7 +26,7 @@ export function MetricsPageFilter({ paths, value, onChange }: MetricsPageFilterP
         ))}
       </select>
       <p className="mt-2 text-body-sm text-[var(--color-text-muted)]">
-        Stats, charts, tables, and the heatmap all update when you change this filter.
+        Stats, charts, tables, and the heatmap update when you change page or time range.
       </p>
     </div>
   );

@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+import type { AnalyticsPeriod } from "@/lib/analytics-period";
+import { eventInPeriod, getPeriodLabel } from "@/lib/analytics-period";
 import {
   getEventTypeBreakdown,
   getHeatmapPagePaths,
@@ -28,6 +30,8 @@ export type AnalyticsEvent = {
 
 export type AnalyticsSummary = {
   filterPath: string | null;
+  filterPeriod: AnalyticsPeriod;
+  filterPeriodLabel: string;
   paths: string[];
   totalPageviews: number;
   uniqueSessions: number;
@@ -86,20 +90,34 @@ export function writeEvents(batch: AnalyticsEvent[]) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(trimmed, null, 2));
 }
 
-function filterEvents(events: AnalyticsEvent[], filterPath?: string | null) {
-  if (!filterPath) return events;
-  return events.filter((event) => event.path === filterPath);
+function filterEvents(
+  events: AnalyticsEvent[],
+  filterPath?: string | null,
+  filterPeriod: AnalyticsPeriod = "all",
+) {
+  let filtered = events;
+  if (filterPeriod !== "all") {
+    filtered = filtered.filter((event) => eventInPeriod(event.timestamp, filterPeriod));
+  }
+  if (filterPath) {
+    filtered = filtered.filter((event) => event.path === filterPath);
+  }
+  return filtered;
 }
 
-export function getAnalyticsSummary(filterPath?: string | null): AnalyticsSummary {
+export function getAnalyticsSummary(
+  filterPath?: string | null,
+  filterPeriod: AnalyticsPeriod = "all",
+): AnalyticsSummary {
   const allEvents = readEvents();
-  const events = filterEvents(allEvents, filterPath);
+  const events = filterEvents(allEvents, filterPath, filterPeriod);
+  const periodEvents = filterEvents(allEvents, null, filterPeriod);
   const pageviews = events.filter((e) => e.type === "pageview");
   const sessions = new Set(events.map((e) => e.sessionId));
-  const totalDwellMs = getTotalDwellMs(filterPath);
+  const totalDwellMs = getTotalDwellMs(filterPath, filterPeriod);
 
   const pageCounts = new Map<string, number>();
-  (filterPath ? pageviews : allEvents.filter((e) => e.type === "pageview")).forEach((e) => {
+  (filterPath ? pageviews : periodEvents.filter((e) => e.type === "pageview")).forEach((e) => {
     pageCounts.set(e.path, (pageCounts.get(e.path) ?? 0) + 1);
   });
 
@@ -162,13 +180,29 @@ export function getAnalyticsSummary(filterPath?: string | null): AnalyticsSummar
     dailyCounts.set(date, (dailyCounts.get(date) ?? 0) + 1);
   });
 
-  const dailyPageviews = [...dailyCounts.entries()]
+  let dailyPageviews = [...dailyCounts.entries()]
     .sort((a, b) => a[0].localeCompare(b[0]))
-    .slice(-14)
     .map(([date, count]) => ({ date, count }));
+
+  if (filterPeriod === "12m") {
+    const monthly = new Map<string, number>();
+    dailyPageviews.forEach(({ date, count }) => {
+      const key = date.slice(0, 7);
+      monthly.set(key, (monthly.get(key) ?? 0) + count);
+    });
+    dailyPageviews = [...monthly.entries()]
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([date, count]) => ({ date, count }));
+  } else if (filterPeriod === "all") {
+    dailyPageviews = dailyPageviews.slice(-14);
+  } else if (filterPeriod === "24h") {
+    dailyPageviews = dailyPageviews.slice(-1);
+  }
 
   return {
     filterPath: filterPath ?? null,
+    filterPeriod,
+    filterPeriodLabel: getPeriodLabel(filterPeriod),
     paths: getHeatmapPagePaths(),
     totalPageviews: pageviews.length,
     uniqueSessions: sessions.size,
@@ -189,8 +223,8 @@ export function getAnalyticsSummary(filterPath?: string | null): AnalyticsSummar
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
       .map(([pathKey, count]) => ({ path: pathKey, count })),
-    hourlyActivity: getHourlyActivity(filterPath),
-    eventTypes: getEventTypeBreakdown(filterPath),
+    hourlyActivity: getHourlyActivity(filterPath, filterPeriod),
+    eventTypes: getEventTypeBreakdown(filterPath, filterPeriod),
     feedback: {
       total: feedbackEvents.length,
       averageScore: scoreCount > 0 ? Math.round((scoreSum / scoreCount) * 10) / 10 : 0,

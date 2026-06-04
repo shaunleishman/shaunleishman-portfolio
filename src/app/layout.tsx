@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
+import { CookieConsent } from "@/components/consent/CookieConsent";
+import { ConsentProvider } from "@/components/consent/ConsentProvider";
 import { MetricsHeatmapOverlay } from "@/components/metrics/MetricsHeatmapOverlay";
 import { siteConfig } from "@/content/projects";
 
@@ -37,10 +39,13 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <Suspense fallback={null}>
-          <AnalyticsProvider>{children}</AnalyticsProvider>
-          <MetricsHeatmapOverlay />
-        </Suspense>
+        <ConsentProvider>
+          <Suspense fallback={null}>
+            <AnalyticsProvider>{children}</AnalyticsProvider>
+            <MetricsHeatmapOverlay />
+            <CookieConsent />
+          </Suspense>
+        </ConsentProvider>
       </body>
     </html>
   );

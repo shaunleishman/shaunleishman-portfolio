@@ -270,7 +270,7 @@ function CvHeader() {
           <Text>LinkedIn</Text>
         </Link>
         <Link src={cvContent.contact.portfolio} style={[styles.contactItem, styles.link]}>
-          <Text>{siteConfig.brand}</Text>
+          <Text>{cvContent.contact.portfolioLabel}</Text>
         </Link>
       </View>
     </View>
@@ -301,7 +301,7 @@ function CvFooter() {
     <View style={styles.footer} wrap={false}>
       <Text style={styles.footerBrand}>{siteConfig.brand}</Text>
       <Link src={cvContent.contact.portfolio} style={styles.footerUrl}>
-        <Text>{siteConfig.brand}</Text>
+        <Text>{cvContent.contact.portfolioLabel}</Text>
       </Link>
     </View>
   );

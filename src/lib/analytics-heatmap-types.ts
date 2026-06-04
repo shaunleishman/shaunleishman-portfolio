@@ -1,3 +1,5 @@
+import { METRICS_HEATMAP_RETURN_PARAM } from "@/lib/metrics-heatmap-session";
+
 export const HEATMAP_CELL_SIZE = 8;
 export const SCROLL_BAND_COUNT = 20;
 export const METRICS_PREVIEW_PARAM = "metrics_preview";
@@ -42,10 +44,13 @@ export type EventTypeBreakdown = {
   count: number;
 };
 
-export function buildHeatmapOverlayUrl(path: string): string {
+export function buildHeatmapOverlayUrl(path: string, returnPath?: string): string {
   const [base, query = ""] = path.split("?");
   const params = new URLSearchParams(query);
   params.set(METRICS_HEATMAP_OVERLAY_PARAM, "1");
+  if (returnPath) {
+    params.set(METRICS_HEATMAP_RETURN_PARAM, returnPath);
+  }
   const qs = params.toString();
   return qs ? `${base}?${qs}` : `${base}?${METRICS_HEATMAP_OVERLAY_PARAM}=1`;
 }

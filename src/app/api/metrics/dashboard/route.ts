@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAnalyticsDashboard } from "@/lib/site-metrics";
+import { parseAudienceMetric, parseContentSort } from "@/lib/analytics-metrics-types";
 import { parseAnalyticsPeriod } from "@/lib/analytics-period";
-import { getHeatmapPagePaths, getPageHeatmapData } from "@/lib/analytics-heatmap";
 import { METRICS_COOKIE_NAME } from "@/lib/metrics-config";
 import { verifyMetricsSessionToken } from "@/lib/metrics-auth";
 
@@ -10,17 +11,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const path = request.nextUrl.searchParams.get("path");
   const period = parseAnalyticsPeriod(request.nextUrl.searchParams.get("period"));
-  const paths = getHeatmapPagePaths();
+  const contentSort = parseContentSort(request.nextUrl.searchParams.get("sort"));
+  const audienceMetric = parseAudienceMetric(request.nextUrl.searchParams.get("metric"));
 
-  if (!path) {
-    return NextResponse.json({ paths, heatmap: null });
-  }
-
-  if (!paths.includes(path)) {
-    return NextResponse.json({ paths, heatmap: getPageHeatmapData(path, period) });
-  }
-
-  return NextResponse.json({ paths, heatmap: getPageHeatmapData(path, period) });
+  return NextResponse.json(
+    getAnalyticsDashboard({ period, contentSort, audienceMetric }),
+  );
 }

@@ -92,7 +92,8 @@ export const cvContent = {
     email: siteConfig.email,
     phone: siteConfig.phone,
     linkedIn: siteConfig.linkedIn,
-    portfolio: siteConfig.siteUrl,
+    portfolio: `https://www.${siteConfig.domain}`,
+    portfolioLabel: `www.${siteConfig.domain}`,
   },
 };
 

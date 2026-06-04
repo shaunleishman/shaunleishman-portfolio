@@ -8,11 +8,15 @@ export function getAnalyticsSessionId(): string {
   return id;
 }
 
+import { isAnalyticsAllowed } from "@/lib/consent";
+
 export async function trackAnalyticsEvent(
   type: "blog_like" | "blog_share",
   path: string,
   metadata?: Record<string, string | number>,
 ) {
+  if (!isAnalyticsAllowed()) return false;
+
   const sessionId = getAnalyticsSessionId();
   if (!sessionId) return false;
 

@@ -5,21 +5,26 @@ import {
   buildHeatmapOverlayUrl,
   type PageHeatmapData,
 } from "@/lib/analytics-heatmap-types";
+import type { AnalyticsPeriod } from "@/lib/analytics-period";
 import { dwellColor, formatDwell } from "@/lib/heatmap-visual";
+import { startHeatmapOverlaySession } from "@/lib/metrics-heatmap-session";
 
 type HeatmapResponse = {
   paths: string[];
   heatmap: PageHeatmapData | null;
 };
 
-export function MetricsHeatmapViewer({ path }: { path: string }) {
+export function MetricsHeatmapViewer({ path, period = "all" }: { path: string; period?: AnalyticsPeriod }) {
   const [heatmap, setHeatmap] = useState<PageHeatmapData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadHeatmap = useCallback(async (pagePath: string) => {
+  const loadHeatmap = useCallback(async (pagePath: string, periodFilter: AnalyticsPeriod) => {
     setLoading(true);
 
-    const res = await fetch(`/api/metrics/heatmap?path=${encodeURIComponent(pagePath)}`, {
+    const params = new URLSearchParams({ path: pagePath });
+    if (periodFilter !== "all") params.set("period", periodFilter);
+
+    const res = await fetch(`/api/metrics/heatmap?${params.toString()}`, {
       credentials: "include",
     });
     if (!res.ok) {
@@ -32,10 +37,12 @@ export function MetricsHeatmapViewer({ path }: { path: string }) {
   }, []);
 
   useEffect(() => {
-    void loadHeatmap(path);
-  }, [loadHeatmap, path]);
+    void loadHeatmap(path, period);
+  }, [loadHeatmap, path, period]);
 
-  const overlayUrl = buildHeatmapOverlayUrl(path);
+  const metricsReturnPath =
+    typeof window !== "undefined" ? `${window.location.pathname}${window.location.search}` : "";
+  const overlayUrl = buildHeatmapOverlayUrl(path, metricsReturnPath || undefined);
 
   return (
     <section className="mb-10 rounded-2xl border border-[var(--color-border)] bg-white p-6">
@@ -43,14 +50,17 @@ export function MetricsHeatmapViewer({ path }: { path: string }) {
         <div>
           <h2 className="text-h4 font-semibold mb-1">Mouse dwell heatmap</h2>
           <p className="text-body-sm text-[var(--color-text-muted)] max-w-2xl">
-            Open the live page with an 8×8px dwell grid overlaid on top. Only you can see it while signed in to
-            metrics. Scroll and inspect the real layout instead of a static capture.
+            Open the live page with an 8×8px dwell grid overlaid on top. Browse other pages while the overlay stays on;
+            exit when you are done to return to metrics.
           </p>
         </div>
         <a
           href={overlayUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              startHeatmapOverlaySession(`${window.location.pathname}${window.location.search}`);
+            }
+          }}
           className="inline-flex shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)] px-5 py-2.5 text-body-sm font-medium text-white min-h-[44px] hover:bg-[var(--color-accent-hover)] transition-colors"
         >
           Open live overlay

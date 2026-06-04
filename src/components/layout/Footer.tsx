@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FileText, Mail } from "lucide-react";
 import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
+import { CookieSettingsButton } from "@/components/consent/CookieSettingsButton";
 import { siteConfig } from "@/content/projects";
 import { SiteLogoLink } from "@/components/layout/SiteLogo";
 
@@ -11,6 +12,7 @@ const footerLinks = {
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
     { href: "/blog", label: "Blog" },
+    { href: "/privacy", label: "Privacy" },
   ],
   social: [
     { href: siteConfig.linkedIn, label: "LinkedIn", linkedIn: true, external: true as const },
@@ -95,7 +97,10 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between gap-4 text-body-sm text-neutral-500">
           <p>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
-          <p>Built for accessibility and performance.</p>
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span>Built for accessibility and performance.</span>
+            <CookieSettingsButton />
+          </p>
         </div>
       </div>
     </footer>

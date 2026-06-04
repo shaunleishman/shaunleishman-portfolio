@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { FeedbackProximityPopover } from "@/components/feedback/FeedbackProximityPopover";
+import { isAnalyticsAllowed } from "@/lib/consent";
 import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FeedbackSubmittedNotice } from "@/components/ui/FeedbackSubmittedNotice";
@@ -142,6 +144,12 @@ export function CaseStudyFeedback({
     async (feedback: FeedbackBucket, strengthScore: number, nextReason?: string) => {
       setSubmitting(true);
 
+      if (!isAnalyticsAllowed()) {
+        setSubmitted(true);
+        setSubmitting(false);
+        return;
+      }
+
       try {
         const sessionId =
           sessionStorage.getItem("analytics_session") ??
@@ -187,16 +195,10 @@ export function CaseStudyFeedback({
     void sendFeedback(getFeedbackBucket(score), score, reason ?? undefined);
   }
 
-  if (submitted) {
-    return (
-      <FeedbackSectionShell sectionTitle={sectionTitle} sectionLead={sectionLead}>
-        <FeedbackSubmittedNotice description={submittedDescription} />
-      </FeedbackSectionShell>
-    );
-  }
-
-  return (
-    <FeedbackSectionShell sectionTitle={sectionTitle} sectionLead={sectionLead}>
+  const formContent = submitted ? (
+    <FeedbackSubmittedNotice description={submittedDescription} />
+  ) : (
+    <>
       <label htmlFor={sliderId} className="text-body-sm font-medium text-[var(--color-text-primary)]">
         {question}
       </label>
@@ -318,6 +320,22 @@ export function CaseStudyFeedback({
           {submitting ? "Submitting…" : "Confirm rating"}
         </button>
       </div>
-    </FeedbackSectionShell>
+    </>
+  );
+
+  return (
+    <FeedbackProximityPopover
+      title={sectionTitle}
+      lead={sectionLead}
+      eyebrow="Portfolio feedback"
+      variant="case-study"
+      renderInline={(content) => (
+        <FeedbackSectionShell sectionTitle={sectionTitle} sectionLead={sectionLead}>
+          {content}
+        </FeedbackSectionShell>
+      )}
+    >
+      {formContent}
+    </FeedbackProximityPopover>
   );
 }

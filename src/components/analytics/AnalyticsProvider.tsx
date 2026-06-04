@@ -2,9 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useConsent } from "@/components/consent/ConsentProvider";
+import { useHeatmapOverlayActive } from "@/hooks/useHeatmapOverlayActive";
 import {
   HEATMAP_CELL_SIZE,
-  METRICS_HEATMAP_OVERLAY_PARAM,
   METRICS_PREVIEW_PARAM,
   SCROLL_BAND_COUNT,
 } from "@/lib/analytics-heatmap-types";
@@ -76,9 +77,10 @@ const DWELL_FLUSH_MS = 4000;
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { ready: consentReady, analytics: analyticsAllowed } = useConsent();
   const isPreview = searchParams.get(METRICS_PREVIEW_PARAM) === "1";
-  const isHeatmapOverlay = searchParams.get(METRICS_HEATMAP_OVERLAY_PARAM) === "1";
-  const skipTracking = isPreview || isHeatmapOverlay;
+  const isHeatmapOverlay = useHeatmapOverlayActive();
+  const skipTracking = !consentReady || !analyticsAllowed || isPreview || isHeatmapOverlay;
 
   const scrollTracked = useRef(new Set<number>());
   const scrollBandsTracked = useRef(new Set<number>());

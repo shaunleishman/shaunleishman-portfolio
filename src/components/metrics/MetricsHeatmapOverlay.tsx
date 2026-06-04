@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useHeatmapOverlayActive } from "@/hooks/useHeatmapOverlayActive";
 import {
   HEATMAP_CELL_SIZE,
   METRICS_HEATMAP_OVERLAY_PARAM,
@@ -10,6 +11,13 @@ import {
   type PageHeatmapData,
 } from "@/lib/analytics-heatmap-types";
 import { dwellColor, formatDwell } from "@/lib/heatmap-visual";
+import {
+  endHeatmapOverlaySession,
+  getHeatmapOverlayReturnPath,
+  METRICS_HEATMAP_RETURN_PARAM,
+  resolveHeatmapReturnPath,
+  startHeatmapOverlaySession,
+} from "@/lib/metrics-heatmap-session";
 
 type HeatmapResponse = {
   heatmap: PageHeatmapData | null;
@@ -19,7 +27,8 @@ export function MetricsHeatmapOverlay() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const overlayRequested = searchParams.get(METRICS_HEATMAP_OVERLAY_PARAM) === "1";
+  const overlayActive = useHeatmapOverlayActive();
+  const urlStartsOverlay = searchParams.get(METRICS_HEATMAP_OVERLAY_PARAM) === "1";
 
   const [mounted, setMounted] = useState(false);
   const [authorized, setAuthorized] = useState(false);
@@ -33,7 +42,20 @@ export function MetricsHeatmapOverlay() {
   }, []);
 
   useEffect(() => {
-    if (!overlayRequested) {
+    if (!urlStartsOverlay) return;
+
+    const returnPath = resolveHeatmapReturnPath(
+      searchParams.get(METRICS_HEATMAP_RETURN_PARAM),
+      document.referrer,
+    );
+    startHeatmapOverlaySession(returnPath);
+
+    const qs = removeHeatmapOverlayParam(searchParams);
+    router.replace(`${pathname}${qs}`, { scroll: false });
+  }, [urlStartsOverlay, pathname, router, searchParams]);
+
+  useEffect(() => {
+    if (!overlayActive) {
       setAuthorized(false);
       setHeatmap(null);
       return;
@@ -51,6 +73,7 @@ export function MetricsHeatmapOverlay() {
       if (!res.ok) {
         setAuthorized(false);
         setHeatmap(null);
+        endHeatmapOverlaySession();
         return;
       }
 
@@ -62,7 +85,7 @@ export function MetricsHeatmapOverlay() {
     return () => {
       cancelled = true;
     };
-  }, [overlayRequested, pathname]);
+  }, [overlayActive, pathname]);
 
   const syncLayout = useCallback(() => {
     setScrollY(window.scrollY);
@@ -73,7 +96,7 @@ export function MetricsHeatmapOverlay() {
   }, []);
 
   useEffect(() => {
-    if (!overlayRequested || !authorized) return;
+    if (!overlayActive || !authorized) return;
 
     syncLayout();
 
@@ -88,14 +111,15 @@ export function MetricsHeatmapOverlay() {
       window.removeEventListener("resize", syncLayout);
       observer.disconnect();
     };
-  }, [authorized, overlayRequested, syncLayout, pathname]);
+  }, [authorized, overlayActive, syncLayout, pathname]);
 
   const exitOverlay = useCallback(() => {
-    const qs = removeHeatmapOverlayParam(searchParams);
-    router.replace(`${pathname}${qs}`);
-  }, [pathname, router, searchParams]);
+    const returnPath = getHeatmapOverlayReturnPath();
+    endHeatmapOverlaySession();
+    router.push(returnPath);
+  }, [router]);
 
-  if (!mounted || !overlayRequested || !authorized) {
+  if (!mounted || !overlayActive || !authorized) {
     return null;
   }
 
@@ -201,7 +225,7 @@ export function MetricsHeatmapOverlay() {
         </label>
 
         <p className="mt-3 text-[0.65rem] leading-relaxed text-neutral-500">
-          Only visible to you while signed in to metrics. Scroll the page normally; the overlay tracks with content.
+          Browse the site normally; the overlay stays on until you exit and returns you to metrics.
         </p>
       </div>
     </>,

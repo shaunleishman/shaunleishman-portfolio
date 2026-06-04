@@ -1,4 +1,5 @@
 import { readEvents, type AnalyticsEvent } from "@/lib/analytics";
+import { type AnalyticsPeriod, eventInPeriod } from "@/lib/analytics-period";
 import {
   HEATMAP_CELL_SIZE,
   SCROLL_BAND_COUNT,
@@ -30,13 +31,19 @@ export function getHeatmapPagePaths(): string[] {
   return [...paths].sort((a, b) => a.localeCompare(b));
 }
 
-function filterByPath(events: AnalyticsEvent[], path?: string | null) {
-  if (!path) return events;
-  return events.filter((event) => event.path === path);
+function filterEvents(events: AnalyticsEvent[], path?: string | null, period: AnalyticsPeriod = "all") {
+  let filtered = events;
+  if (period !== "all") {
+    filtered = filtered.filter((event) => eventInPeriod(event.timestamp, period));
+  }
+  if (path) {
+    filtered = filtered.filter((event) => event.path === path);
+  }
+  return filtered;
 }
 
-export function getPageHeatmapData(path: string): PageHeatmapData {
-  const events = readEvents().filter((event) => event.path === path);
+export function getPageHeatmapData(path: string, period: AnalyticsPeriod = "all"): PageHeatmapData {
+  const events = filterEvents(readEvents(), path, period);
 
   const dwellMap = new Map<string, number>();
   const sessions = new Set<string>();
@@ -131,8 +138,11 @@ export function getPageHeatmapData(path: string): PageHeatmapData {
   };
 }
 
-export function getHourlyActivity(path?: string | null): HourlyActivity[] {
-  const events = filterByPath(readEvents(), path);
+export function getHourlyActivity(
+  path?: string | null,
+  period: AnalyticsPeriod = "all",
+): HourlyActivity[] {
+  const events = filterEvents(readEvents(), path, period);
   const counts = new Map<string, number>();
 
   events.forEach((event) => {
@@ -140,14 +150,17 @@ export function getHourlyActivity(path?: string | null): HourlyActivity[] {
     counts.set(hour, (counts.get(hour) ?? 0) + 1);
   });
 
-  return [...counts.entries()]
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .slice(-48)
-    .map(([hour, count]) => ({ hour: `${hour}:00`, count }));
+  const sorted = [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  const limited = period === "all" ? sorted.slice(-48) : sorted;
+
+  return limited.map(([hour, count]) => ({ hour: `${hour}:00`, count }));
 }
 
-export function getEventTypeBreakdown(path?: string | null): EventTypeBreakdown[] {
-  const events = filterByPath(readEvents(), path);
+export function getEventTypeBreakdown(
+  path?: string | null,
+  period: AnalyticsPeriod = "all",
+): EventTypeBreakdown[] {
+  const events = filterEvents(readEvents(), path, period);
   const counts = new Map<string, number>();
 
   events.forEach((event) => {
@@ -159,8 +172,8 @@ export function getEventTypeBreakdown(path?: string | null): EventTypeBreakdown[
     .map(([type, count]) => ({ type, count }));
 }
 
-export function getTotalDwellMs(path?: string | null): number {
-  return filterByPath(readEvents(), path)
+export function getTotalDwellMs(path?: string | null, period: AnalyticsPeriod = "all"): number {
+  return filterEvents(readEvents(), path, period)
     .filter((event) => event.type === "heatmap_dwell")
     .reduce((sum, event) => sum + Number(event.metadata?.dwellMs ?? 0), 0);
 }
