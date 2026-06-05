@@ -10,8 +10,9 @@ import {
 import {
   hasLikedBlogPost,
   markBlogPostLiked,
-  trackAnalyticsEvent,
+  trackBlogEngagement,
 } from "@/lib/analytics-client";
+import { useBlogEngagementStats } from "@/hooks/useBlogEngagementStats";
 import { cn } from "@/lib/utils";
 
 type BlogEngagementActionsProps = {
@@ -25,7 +26,7 @@ export function BlogEngagementActions({
   initialStats,
   className,
 }: BlogEngagementActionsProps) {
-  const [stats, setStats] = useState(initialStats);
+  const { stats, refreshStats } = useBlogEngagementStats(slug, initialStats);
   const [liked, setLiked] = useState(false);
   const [liking, setLiking] = useState(false);
 
@@ -37,11 +38,11 @@ export function BlogEngagementActions({
     if (liked || liking) return;
 
     setLiking(true);
-    const ok = await trackAnalyticsEvent("blog_like", blogPostPath(slug), { slug });
+    const ok = await trackBlogEngagement("blog_like", blogPostPath(slug), { slug });
     if (ok) {
       markBlogPostLiked(slug);
       setLiked(true);
-      setStats((current) => ({ ...current, likes: current.likes + 1 }));
+      await refreshStats();
     }
     setLiking(false);
   }

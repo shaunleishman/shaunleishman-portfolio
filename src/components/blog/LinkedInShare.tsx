@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
 import { blogPostPath, formatEngagementCount } from "@/lib/blog-engagement-shared";
-import { trackAnalyticsEvent } from "@/lib/analytics-client";
+import { trackBlogEngagement } from "@/lib/analytics-client";
+import { useBlogEngagementStats } from "@/hooks/useBlogEngagementStats";
 import { cn } from "@/lib/utils";
 
 type LinkedInShareProps = {
@@ -21,7 +22,12 @@ export function LinkedInShare({
   initialShareCount = 0,
   className,
 }: LinkedInShareProps) {
-  const [shareCount, setShareCount] = useState(initialShareCount);
+  const { stats, refreshStats } = useBlogEngagementStats(slug, {
+    slug,
+    views: 0,
+    likes: 0,
+    shares: initialShareCount,
+  });
 
   const linkedInHref = useMemo(
     () => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
@@ -29,12 +35,12 @@ export function LinkedInShare({
   );
 
   async function handleShare() {
-    const ok = await trackAnalyticsEvent("blog_share", blogPostPath(slug), {
+    const ok = await trackBlogEngagement("blog_share", blogPostPath(slug), {
       slug,
       channel: "linkedin",
     });
     if (ok) {
-      setShareCount((count) => count + 1);
+      await refreshStats();
     }
   }
 
@@ -52,7 +58,7 @@ export function LinkedInShare({
         Share on LinkedIn
       </a>
       <span className="text-body-sm text-[var(--color-text-muted)] tabular-nums">
-        {formatEngagementCount(shareCount)} shares
+        {formatEngagementCount(stats.shares)} shares
       </span>
     </div>
   );

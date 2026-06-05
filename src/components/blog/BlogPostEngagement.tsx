@@ -18,8 +18,9 @@ import {
 import {
   hasLikedBlogPost,
   markBlogPostLiked,
-  trackAnalyticsEvent,
+  trackBlogEngagement,
 } from "@/lib/analytics-client";
+import { useBlogEngagementStats } from "@/hooks/useBlogEngagementStats";
 import { cn } from "@/lib/utils";
 import { BlogEngagementStatsDisplay } from "@/components/blog/BlogEngagementStats";
 
@@ -62,7 +63,7 @@ export function BlogPostEngagement({
   initialStats,
   children,
 }: BlogPostEngagementProps) {
-  const [stats, setStats] = useState(initialStats);
+  const { stats, refreshStats } = useBlogEngagementStats(slug, initialStats);
   const [liked, setLiked] = useState(false);
   const [liking, setLiking] = useState(false);
 
@@ -79,24 +80,24 @@ export function BlogPostEngagement({
     if (liked || liking) return;
 
     setLiking(true);
-    const ok = await trackAnalyticsEvent("blog_like", blogPostPath(slug), { slug });
+    const ok = await trackBlogEngagement("blog_like", blogPostPath(slug), { slug });
     if (ok) {
       markBlogPostLiked(slug);
       setLiked(true);
-      setStats((current) => ({ ...current, likes: current.likes + 1 }));
+      await refreshStats();
     }
     setLiking(false);
-  }, [liked, liking, slug]);
+  }, [liked, liking, refreshStats, slug]);
 
   const handleShare = useCallback(async () => {
-    const ok = await trackAnalyticsEvent("blog_share", blogPostPath(slug), {
+    const ok = await trackBlogEngagement("blog_share", blogPostPath(slug), {
       slug,
       channel: "linkedin",
     });
     if (ok) {
-      setStats((current) => ({ ...current, shares: current.shares + 1 }));
+      await refreshStats();
     }
-  }, [slug]);
+  }, [refreshStats, slug]);
 
   const value = useMemo(
     () => ({

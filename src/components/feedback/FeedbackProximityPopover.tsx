@@ -1,12 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { MessageSquare } from "lucide-react";
 import {
   useCallback,
   useEffect,
   useId,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
@@ -23,16 +25,34 @@ type FeedbackProximityPopoverProps = {
   className?: string;
 };
 
-/** Show the floating card when the sentinel is this far below the viewport fold */
+/** Show the floating prompt when the sentinel is this far below the viewport fold */
 const TRIGGER_BEFORE_BOTTOM_PX = 520;
+const MOBILE_MEDIA_QUERY = "(max-width: 639px)";
 
 function getDismissKey(pathname: string) {
   return `feedback_floating_dismiss_${pathname}`;
 }
 
+function subscribeToMobileQuery(onChange: () => void) {
+  const media = window.matchMedia(MOBILE_MEDIA_QUERY);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
+
+function getMobileSnapshot() {
+  return window.matchMedia(MOBILE_MEDIA_QUERY).matches;
+}
+
+function getMobileServerSnapshot() {
+  return false;
+}
+
+function useIsMobileViewport() {
+  return useSyncExternalStore(subscribeToMobileQuery, getMobileSnapshot, getMobileServerSnapshot);
+}
+
 function useFeedbackProximity(anchorRef: React.RefObject<HTMLElement | null>) {
   const pathname = usePathname();
-  /** Stays true once the user scrolls into range; only reset on navigation */
   const [hasTriggered, setHasTriggered] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -92,12 +112,27 @@ export function FeedbackProximityPopover({
 }: FeedbackProximityPopoverProps) {
   const anchorRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  const fabId = useId();
   const [portalReady, setPortalReady] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const isMobile = useIsMobileViewport();
   const { showFloating, dismissFloating } = useFeedbackProximity(anchorRef);
 
   useEffect(() => {
     setPortalReady(true);
   }, []);
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [showFloating]);
+
+  const handleDismiss = useCallback(() => {
+    dismissFloating();
+    setExpanded(false);
+  }, [dismissFloating]);
+
+  const showFab = showFloating && isMobile && !expanded;
+  const showPanel = showFloating && (!isMobile || expanded);
 
   const floatingCardClass =
     variant === "site-dark"
@@ -114,13 +149,55 @@ export function FeedbackProximityPopover({
       ? "text-neutral-500"
       : "text-[color-mix(in_srgb,var(--case-study-accent,var(--color-accent))_75%,transparent)]";
 
-  const floatingCard = showFloating ? (
+  const fabDismissClass =
+    variant === "site-dark"
+      ? "border-white/20 bg-[#0a0a0a] text-neutral-300 hover:bg-white/10"
+      : "border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/40";
+
+  const fabButtonClass =
+    variant === "site-dark"
+      ? "border-white/15 bg-[#0a0a0a] text-white shadow-[0_12px_40px_rgba(0,0,0,0.45)] hover:bg-[#141414]"
+      : variant === "case-study"
+        ? "feedback-accent-scope feedback-accent-button border-transparent text-white shadow-[0_12px_40px_rgba(15,23,42,0.18)]"
+        : "border-[var(--color-border)] bg-white text-[var(--color-text-primary)] shadow-[0_12px_40px_rgba(15,23,42,0.14)] hover:border-[var(--color-accent)]/40";
+
+  const floatingFab = showFab ? (
+    <div className="fixed z-[70] bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 flex flex-col items-end gap-2 sm:hidden">
+      <button
+        type="button"
+        onClick={handleDismiss}
+        className={cn(
+          "inline-flex size-9 items-center justify-center rounded-full border text-body-sm font-medium shadow-sm",
+          fabDismissClass,
+        )}
+        aria-label="Dismiss feedback prompt"
+      >
+        ×
+      </button>
+      <button
+        type="button"
+        id={fabId}
+        aria-label="Give feedback"
+        aria-expanded={expanded}
+        aria-controls={titleId}
+        onClick={() => setExpanded(true)}
+        className={cn(
+          "inline-flex size-14 items-center justify-center rounded-full border motion-safe:animate-[fade-in_0.25s_ease-out]",
+          fabButtonClass,
+        )}
+      >
+        <MessageSquare className="size-6" aria-hidden />
+      </button>
+    </div>
+  ) : null;
+
+  const floatingPanel = showPanel ? (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
       className={cn(
-        "fixed z-[70] bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md",
+        "fixed z-[70] bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 right-4 sm:bottom-4 sm:left-auto sm:right-6 sm:max-w-md",
         "rounded-2xl border p-4 sm:p-5 overflow-visible",
         "motion-safe:animate-[fade-in_0.25s_ease-out]",
         variant === "case-study" && "feedback-accent-scope",
@@ -141,12 +218,10 @@ export function FeedbackProximityPopover({
         </div>
         <button
           type="button"
-          onClick={dismissFloating}
+          onClick={handleDismiss}
           className={cn(
             "shrink-0 rounded-lg border px-2.5 py-1.5 text-body-sm font-medium min-h-[44px] min-w-[44px]",
-            variant === "site-dark"
-              ? "border-white/20 text-neutral-300 hover:bg-white/10"
-              : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/40",
+            fabDismissClass,
           )}
           aria-label="Dismiss feedback prompt"
         >
@@ -158,6 +233,8 @@ export function FeedbackProximityPopover({
     </div>
   ) : null;
 
+  const portalContent = floatingFab ?? floatingPanel;
+
   return (
     <>
       <div
@@ -167,7 +244,7 @@ export function FeedbackProximityPopover({
         data-feedback-anchor
       />
 
-      {portalReady && floatingCard ? createPortal(floatingCard, document.body) : null}
+      {portalReady && portalContent ? createPortal(portalContent, document.body) : null}
     </>
   );
 }

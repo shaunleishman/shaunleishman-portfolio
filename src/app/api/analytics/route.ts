@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeEvent, writeEvents, getAnalyticsSummary } from "@/lib/analytics";
+import { writeEvent, writeEvents, getAnalyticsSummary, readEvents } from "@/lib/analytics";
 import { METRICS_COOKIE_NAME } from "@/lib/metrics-config";
 import { verifyMetricsPassword, verifyMetricsSessionToken } from "@/lib/metrics-auth";
 import crypto from "crypto";
@@ -63,6 +63,19 @@ export async function POST(request: NextRequest) {
     const event = normalizeEvent(body);
     if (!event) {
       return NextResponse.json({ error: "Missing or invalid fields" }, { status: 400 });
+    }
+
+    if (event.type === "blog_like") {
+      const events = readEvents();
+      const alreadyLiked = events.some(
+        (existing) =>
+          existing.type === "blog_like" &&
+          existing.path === event.path &&
+          existing.sessionId === event.sessionId,
+      );
+      if (alreadyLiked) {
+        return NextResponse.json({ ok: true, duplicate: true });
+      }
     }
 
     writeEvent(event);

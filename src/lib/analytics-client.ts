@@ -15,19 +15,34 @@ export async function trackAnalyticsEvent(
   path: string,
   metadata?: Record<string, string | number>,
 ) {
-  if (!isAnalyticsAllowed()) return false;
+  return trackBlogEngagement(type, path, metadata);
+}
 
+/** Explicit like/share actions — not gated on analytics consent. */
+export async function trackBlogEngagement(
+  type: "blog_like" | "blog_share",
+  path: string,
+  metadata?: Record<string, string | number>,
+) {
   const sessionId = getAnalyticsSessionId();
   if (!sessionId) return false;
 
-  const res = await fetch("/api/analytics", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId, type, path, metadata }),
-    keepalive: true,
-  });
+  try {
+    const res = await fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId, type, path, metadata }),
+      keepalive: true,
+    });
 
-  return res.ok;
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export function isPassiveAnalyticsAllowed(): boolean {
+  return isAnalyticsAllowed();
 }
 
 export function hasLikedBlogPost(slug: string): boolean {
