@@ -8,6 +8,11 @@ import {
   getHourlyActivity,
   getTotalDwellMs,
 } from "@/lib/analytics-heatmap";
+import {
+  getImprovementAreaDisplayLabel,
+  getQualityLabel,
+} from "@/lib/feedback-config";
+import { isArticlePath } from "@/lib/analytics-paths";
 
 export type AnalyticsEvent = {
   id: string;
@@ -47,7 +52,14 @@ export type AnalyticsSummary = {
     total: number;
     averageScore: number;
     byBucket: { bucket: string; count: number }[];
+    byQuality: { quality: string; label: string; count: number }[];
+    byImprovementArea: { area: string; label: string; count: number }[];
+    byContentType: { contentType: string; count: number }[];
+    byPage: { path: string; count: number; averageScore: number; contentType: string }[];
+    otherComments: { path: string; comment: string; timestamp: string }[];
+    /** @deprecated Use byPage and byImprovementArea */
     byCaseStudy: { path: string; count: number; averageScore: number }[];
+    /** @deprecated Use byImprovementArea and otherComments */
     topReasons: { reason: string; count: number }[];
   };
   dailyPageviews: { date: string; count: number }[];
@@ -148,8 +160,12 @@ export function getAnalyticsSummary(
 
   const feedbackEvents = events.filter((e) => e.type === "click" && e.metadata?.feedback);
   const bucketCounts = new Map<string, number>();
+  const qualityCounts = new Map<string, number>();
+  const improvementCounts = new Map<string, { count: number; contentType: string | null }>();
+  const contentTypeCounts = new Map<string, number>();
   const reasonCounts = new Map<string, number>();
-  const caseStudyScores = new Map<string, { total: number; count: number }>();
+  const pageScores = new Map<string, { total: number; count: number; contentType: string }>();
+  const otherComments: { path: string; comment: string; timestamp: string }[] = [];
   let scoreSum = 0;
   let scoreCount = 0;
 
@@ -163,18 +179,84 @@ export function getAnalyticsSummary(
       scoreCount += 1;
     }
 
+    const quality = e.metadata?.quality;
+    if (quality && typeof quality === "string") {
+      qualityCounts.set(quality, (qualityCounts.get(quality) ?? 0) + 1);
+    }
+
+    const contentType =
+      typeof e.metadata?.contentType === "string"
+        ? e.metadata.contentType
+        : isArticlePath(e.path)
+          ? "article"
+          : "case-study";
+    contentTypeCounts.set(contentType, (contentTypeCounts.get(contentType) ?? 0) + 1);
+
+    const improvementArea = e.metadata?.improvementArea;
+    if (improvementArea && typeof improvementArea === "string") {
+      const existing = improvementCounts.get(improvementArea) ?? { count: 0, contentType: null };
+      improvementCounts.set(improvementArea, {
+        count: existing.count + 1,
+        contentType: existing.contentType ?? contentType,
+      });
+    }
+
+    const improvementOther = e.metadata?.improvementOther;
+    if (improvementOther && typeof improvementOther === "string" && improvementOther.trim()) {
+      otherComments.push({
+        path: e.path,
+        comment: improvementOther.trim(),
+        timestamp: e.timestamp,
+      });
+    }
+
     const reason = e.metadata?.reason;
     if (reason && typeof reason === "string" && reason !== "null") {
       reasonCounts.set(reason, (reasonCounts.get(reason) ?? 0) + 1);
     }
 
-    const existing = caseStudyScores.get(e.path) ?? { total: 0, count: 0 };
+    const existingPage = pageScores.get(e.path) ?? {
+      total: 0,
+      count: 0,
+      contentType,
+    };
     if (Number.isFinite(score)) {
-      existing.total += score;
-      existing.count += 1;
+      existingPage.total += score;
+      existingPage.count += 1;
     }
-    caseStudyScores.set(e.path, existing);
+    pageScores.set(e.path, existingPage);
   });
+
+  const qualityOrder = ["excellent", "strong", "solid", "needs_work", "poor"];
+  const byQuality = [...qualityCounts.entries()]
+    .sort(
+      (a, b) =>
+        (qualityOrder.indexOf(a[0]) === -1 ? 99 : qualityOrder.indexOf(a[0])) -
+        (qualityOrder.indexOf(b[0]) === -1 ? 99 : qualityOrder.indexOf(b[0])),
+    )
+    .map(([quality, count]) => ({
+      quality,
+      label: getQualityLabel(quality),
+      count,
+    }));
+
+  const byImprovementArea = [...improvementCounts.entries()]
+    .sort((a, b) => b[1].count - a[1].count)
+    .map(([area, value]) => ({
+      area,
+      label: getImprovementAreaDisplayLabel(area, value.contentType),
+      count: value.count,
+    }));
+
+  const byPage = [...pageScores.entries()]
+    .filter(([, value]) => value.count > 0)
+    .sort((a, b) => b[1].count - a[1].count)
+    .map(([pathKey, value]) => ({
+      path: pathKey,
+      count: value.count,
+      averageScore: Math.round((value.total / value.count) * 10) / 10,
+      contentType: value.contentType,
+    }));
 
   const dailyCounts = new Map<string, number>();
   pageviews.forEach((e) => {
@@ -233,14 +315,16 @@ export function getAnalyticsSummary(
       byBucket: [...bucketCounts.entries()]
         .sort((a, b) => b[1] - a[1])
         .map(([bucket, count]) => ({ bucket, count })),
-      byCaseStudy: [...caseStudyScores.entries()]
-        .filter(([, value]) => value.count > 0)
-        .sort((a, b) => b[1].count - a[1].count)
-        .map(([pathKey, value]) => ({
-          path: pathKey,
-          count: value.count,
-          averageScore: Math.round((value.total / value.count) * 10) / 10,
-        })),
+      byQuality,
+      byImprovementArea,
+      byContentType: [...contentTypeCounts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .map(([contentType, count]) => ({ contentType, count })),
+      byPage,
+      otherComments: otherComments.sort((a, b) => b.timestamp.localeCompare(a.timestamp)).slice(0, 20),
+      byCaseStudy: byPage
+        .filter((row) => row.contentType === "case-study")
+        .map(({ path, count, averageScore }) => ({ path, count, averageScore })),
       topReasons: [...reasonCounts.entries()]
         .sort((a, b) => b[1] - a[1])
         .slice(0, 8)

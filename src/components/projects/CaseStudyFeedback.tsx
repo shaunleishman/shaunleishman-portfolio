@@ -4,6 +4,9 @@ import { useCallback, useEffect, useId, useState } from "react";
 import { FeedbackProximityPopover } from "@/components/feedback/FeedbackProximityPopover";
 import {
   FEEDBACK_VARIANT_CONFIG,
+  getImprovementLabel,
+  getQualityKey,
+  isOtherImprovement,
   type FeedbackVariant,
 } from "@/lib/feedback-config";
 import { isAnalyticsAllowed } from "@/lib/consent";
@@ -11,7 +14,6 @@ import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FeedbackSubmittedNotice } from "@/components/ui/FeedbackSubmittedNotice";
 
-type FeedbackBucket = "weak" | "decent" | "strong";
 type FeedbackStep = "rating" | "followup" | "done";
 
 type CaseStudyFeedbackProps = {
@@ -22,16 +24,6 @@ type CaseStudyFeedbackProps = {
   sectionTitle?: string;
   sectionLead?: string;
 };
-
-function getFeedbackBucket(score: number): FeedbackBucket {
-  if (score <= 2) return "weak";
-  if (score <= 5) return "decent";
-  return "strong";
-}
-
-function needsFollowUp(score: number | null) {
-  return score !== null && score <= 3;
-}
 
 export function CaseStudyFeedback({
   feedbackPath,
@@ -48,23 +40,44 @@ export function CaseStudyFeedback({
   const resolvedSectionLead = sectionLead ?? config.sectionLead;
 
   const groupId = useId();
+  const otherFieldId = useId();
   const [step, setStep] = useState<FeedbackStep>("rating");
   const [score, setScore] = useState<number | null>(null);
-  const [reason, setReason] = useState<string | null>(null);
+  const [improvementId, setImprovementId] = useState<string | null>(null);
+  const [otherText, setOtherText] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     setStep("rating");
     setScore(null);
-    setReason(null);
+    setImprovementId(null);
+    setOtherText("");
     setSubmitted(false);
     setSubmitting(false);
   }, [feedbackPath]);
 
+  const canSubmitFollowUp =
+    improvementId !== null &&
+    (!isOtherImprovement(improvementId) || otherText.trim().length > 0);
+
   const sendFeedback = useCallback(
-    async (feedback: FeedbackBucket, strengthScore: number, nextReason?: string) => {
+    async (
+      qualityScore: number,
+      nextImprovementId?: string | null,
+      nextOtherText?: string,
+    ) => {
       setSubmitting(true);
+      const feedback = config.getFeedbackBucket(qualityScore);
+      const quality = getQualityKey(variant, qualityScore);
+      const improvementLabel = nextImprovementId
+        ? getImprovementLabel(variant, nextImprovementId)
+        : undefined;
+      const trimmedOther = nextOtherText?.trim() ?? "";
+      const reason =
+        nextImprovementId && isOtherImprovement(nextImprovementId)
+          ? `Other: ${trimmedOther}`
+          : improvementLabel ?? null;
 
       if (!isAnalyticsAllowed()) {
         setSubmitted(true);
@@ -91,8 +104,11 @@ export function CaseStudyFeedback({
             path: feedbackPath,
             metadata: {
               feedback,
-              score: strengthScore,
-              reason: nextReason ?? null,
+              score: qualityScore,
+              quality: quality ?? null,
+              improvementArea: nextImprovementId ?? null,
+              improvementOther: isOtherImprovement(nextImprovementId ?? null) ? trimmedOther : null,
+              reason,
               contentType: variant,
             },
           }),
@@ -106,21 +122,21 @@ export function CaseStudyFeedback({
       setSubmitted(true);
       setStep("done");
     },
-    [feedbackPath, variant],
+    [feedbackPath, variant, config],
   );
 
   function handlePrimaryOnRating() {
     if (score === null) return;
-    if (needsFollowUp(score)) {
+    if (config.needsFollowUp(score)) {
       setStep("followup");
       return;
     }
-    void sendFeedback(getFeedbackBucket(score), score);
+    void sendFeedback(score);
   }
 
   function handleSubmitFollowUp() {
-    if (score === null || !reason) return;
-    void sendFeedback(getFeedbackBucket(score), score, reason);
+    if (score === null || !canSubmitFollowUp) return;
+    void sendFeedback(score, improvementId, otherText);
   }
 
   const popoverTitle = step === "followup" ? config.followUpTitle : resolvedSectionTitle;
@@ -133,7 +149,11 @@ export function CaseStudyFeedback({
       <>
         <button
           type="button"
-          onClick={() => setStep("rating")}
+          onClick={() => {
+            setStep("rating");
+            setImprovementId(null);
+            setOtherText("");
+          }}
           className="mb-4 text-body-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
         >
           ← Back to rating
@@ -141,23 +161,43 @@ export function CaseStudyFeedback({
 
         <fieldset disabled={submitting} className="border-0 p-0 m-0 min-w-0">
           <div className="flex flex-wrap gap-2">
-            {config.reasons.map((option) => (
+            {config.improvementOptions.map((option) => (
               <FilterChip
-                key={option}
-                label={option}
-                selected={reason === option}
-                onClick={() => setReason(option)}
+                key={option.id}
+                label={option.label}
+                selected={improvementId === option.id}
+                onClick={() => {
+                  setImprovementId(option.id);
+                  if (!option.other) setOtherText("");
+                }}
                 accent="neutral"
               />
             ))}
           </div>
         </fieldset>
 
+        {isOtherImprovement(improvementId) && (
+          <div className="mt-4">
+            <label htmlFor={otherFieldId} className="text-body-sm font-medium text-[var(--color-text-primary)]">
+              {config.otherImprovementLabel}
+            </label>
+            <textarea
+              id={otherFieldId}
+              value={otherText}
+              onChange={(event) => setOtherText(event.target.value)}
+              placeholder={config.otherImprovementPlaceholder}
+              rows={3}
+              disabled={submitting}
+              className="mt-2 w-full resize-y rounded-xl border border-[var(--color-border)] bg-white px-3 py-2.5 text-body-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20"
+            />
+          </div>
+        )}
+
         <div className="mt-5 flex justify-end">
           <button
             type="button"
             onClick={handleSubmitFollowUp}
-            disabled={!reason || submitting}
+            disabled={!canSubmitFollowUp || submitting}
             className="feedback-accent-button inline-flex min-h-[44px] items-center justify-center rounded-full px-6 py-2.5 text-body-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45"
           >
             {submitting ? "Submitting…" : "Send feedback"}
@@ -187,7 +227,8 @@ export function CaseStudyFeedback({
                 disabled={submitting}
                 onClick={() => {
                   setScore(option.score);
-                  setReason(null);
+                  setImprovementId(null);
+                  setOtherText("");
                 }}
                 className={cn(
                   "w-full rounded-xl border px-4 py-3 text-left text-body-sm font-medium transition-colors min-h-[44px]",
@@ -211,9 +252,9 @@ export function CaseStudyFeedback({
           >
             {submitting
               ? "Submitting…"
-              : score !== null && needsFollowUp(score)
+              : score !== null && config.needsFollowUp(score)
                 ? "Continue"
-                : "Confirm rating"}
+                : "Submit rating"}
           </button>
         </div>
       </>

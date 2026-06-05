@@ -30,6 +30,7 @@ export default function MetricsHomePage() {
             <MetricsKpiCard label="Shares" value={String(data.overview.blogShares)} />
             <MetricsKpiCard label="CV views" value={String(data.overview.cvViews)} />
             <MetricsKpiCard label="Contact views" value={String(data.overview.contactViews)} />
+            <MetricsKpiCard label="Feedback" value={String(data.overview.feedbackSubmissions)} />
           </div>
 
           <div className="mb-10 grid gap-8 lg:grid-cols-2">
