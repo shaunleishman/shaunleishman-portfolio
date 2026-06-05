@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { MessageSquare } from "lucide-react";
+import { Star } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -21,6 +21,8 @@ type FeedbackProximityPopoverProps = {
   /** Visual style for the floating card */
   variant?: "case-study" | "site-dark" | "site-light";
   children: ReactNode;
+  /** Short label on the mobile prompt button */
+  fabLabel?: string;
   /** Optional class on the scroll sentinel (zero-height anchor at page end) */
   className?: string;
 };
@@ -107,6 +109,7 @@ export function FeedbackProximityPopover({
   lead,
   eyebrow = "Feedback",
   variant = "case-study",
+  fabLabel,
   children,
   className,
 }: FeedbackProximityPopoverProps) {
@@ -161,6 +164,8 @@ export function FeedbackProximityPopover({
         ? "feedback-accent-scope feedback-accent-button border-transparent text-white shadow-[0_12px_40px_rgba(15,23,42,0.18)]"
         : "border-[var(--color-border)] bg-white text-[var(--color-text-primary)] shadow-[0_12px_40px_rgba(15,23,42,0.14)] hover:border-[var(--color-accent)]/40";
 
+  const mobilePromptLabel = fabLabel ?? eyebrow;
+
   const floatingFab = showFab ? (
     <div className="fixed z-[70] bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 flex flex-col items-end gap-2 sm:hidden">
       <button
@@ -177,16 +182,17 @@ export function FeedbackProximityPopover({
       <button
         type="button"
         id={fabId}
-        aria-label="Give feedback"
+        aria-label={`Open ${mobilePromptLabel.toLowerCase()} form`}
         aria-expanded={expanded}
         aria-controls={titleId}
         onClick={() => setExpanded(true)}
         className={cn(
-          "inline-flex size-14 items-center justify-center rounded-full border motion-safe:animate-[fade-in_0.25s_ease-out]",
+          "inline-flex min-h-11 max-w-[calc(100vw-2rem)] items-center gap-2 rounded-full border px-4 py-2.5 motion-safe:animate-[fade-in_0.25s_ease-out]",
           fabButtonClass,
         )}
       >
-        <MessageSquare className="size-6" aria-hidden />
+        <Star className="size-4 shrink-0" aria-hidden />
+        <span className="text-body-sm font-semibold leading-none">{mobilePromptLabel}</span>
       </button>
     </div>
   ) : null;
