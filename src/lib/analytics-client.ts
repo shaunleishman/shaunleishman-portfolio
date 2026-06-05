@@ -9,6 +9,7 @@ export function getAnalyticsSessionId(): string {
 }
 
 import { isAnalyticsAllowed } from "@/lib/consent";
+import type { BlogEngagementStats } from "@/lib/blog-engagement-shared";
 
 export async function trackAnalyticsEvent(
   type: "blog_like" | "blog_share",
@@ -23,21 +24,62 @@ export async function trackBlogEngagement(
   type: "blog_like" | "blog_share",
   path: string,
   metadata?: Record<string, string | number>,
-) {
+): Promise<{ ok: boolean; stats?: BlogEngagementStats }> {
   const sessionId = getAnalyticsSessionId();
-  if (!sessionId) return false;
+  if (!sessionId) return { ok: false };
+
+  const slug =
+    typeof metadata?.slug === "string"
+      ? metadata.slug
+      : path.startsWith("/blog/")
+        ? path.slice("/blog/".length)
+        : null;
+
+  if (!slug) return { ok: false };
 
   try {
-    const res = await fetch("/api/analytics", {
+    const res = await fetch("/api/blog/engagement", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId, type, path, metadata }),
+      body: JSON.stringify({
+        slug,
+        action: type === "blog_like" ? "like" : "share",
+        sessionId,
+      }),
       keepalive: true,
     });
 
-    return res.ok;
+    if (!res.ok) return { ok: false };
+
+    const data = (await res.json()) as { stats?: BlogEngagementStats };
+    return { ok: true, stats: data.stats };
   } catch {
-    return false;
+    return { ok: false };
+  }
+}
+
+export async function recordBlogArticleView(slug: string): Promise<BlogEngagementStats | null> {
+  if (typeof window === "undefined") return null;
+  if (sessionStorage.getItem(`blog_view_${slug}`) === "1") return null;
+
+  const sessionId = getAnalyticsSessionId();
+  if (!sessionId) return null;
+
+  try {
+    const res = await fetch("/api/blog/engagement", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, action: "view", sessionId }),
+      keepalive: true,
+    });
+
+    if (!res.ok) return null;
+
+    sessionStorage.setItem(`blog_view_${slug}`, "1");
+    const data = (await res.json()) as { stats?: BlogEngagementStats };
+    return data.stats ?? null;
+  } catch {
+    return null;
   }
 }
 

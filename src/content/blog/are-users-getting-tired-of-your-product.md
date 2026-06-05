@@ -7,8 +7,6 @@ tags: ["UX", "Product Design", "Research"]
 thumbnail: "/images/blog/are-users-getting-tired-of-your-product.png"
 ---
 
-![Illustration of a cluttered signpost with one clear green arrow among confusing signs](/images/blog/are-users-getting-tired-of-your-product.png)
-
 Cognitive load sounds like one of those terms that belongs in a psychology textbook.
 
 A bit stiff. A bit academic. A bit like something someone says in a meeting just before opening a slide with too many arrows on it.

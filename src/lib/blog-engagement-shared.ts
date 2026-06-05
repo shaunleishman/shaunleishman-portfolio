@@ -8,6 +8,8 @@ export type BlogEngagementStats = {
 /** Starting counts — real analytics are added on top for a realistic public total. */
 const BLOG_ENGAGEMENT_SEED: Record<string, { views: number; likes: number; shares: number }> = {
   default: { views: 172, likes: 15, shares: 7 },
+  "why-kano-model-is-about-letting-go": { views: 172, likes: 15, shares: 7 },
+  "are-users-getting-tired-of-your-product": { views: 64, likes: 8, shares: 4 },
 };
 
 export function withEngagementSeed(

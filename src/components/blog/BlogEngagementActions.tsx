@@ -38,8 +38,8 @@ export function BlogEngagementActions({
     if (liked || liking) return;
 
     setLiking(true);
-    const ok = await trackBlogEngagement("blog_like", blogPostPath(slug), { slug });
-    if (ok) {
+    const result = await trackBlogEngagement("blog_like", blogPostPath(slug), { slug });
+    if (result.ok) {
       markBlogPostLiked(slug);
       setLiked(true);
       await refreshStats();

@@ -35,11 +35,11 @@ export function LinkedInShare({
   );
 
   async function handleShare() {
-    const ok = await trackBlogEngagement("blog_share", blogPostPath(slug), {
+    const result = await trackBlogEngagement("blog_share", blogPostPath(slug), {
       slug,
       channel: "linkedin",
     });
-    if (ok) {
+    if (result.ok) {
       await refreshStats();
     }
   }
