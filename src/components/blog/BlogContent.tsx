@@ -5,12 +5,14 @@ import Image from "next/image";
 import { KanoCategoryOverview } from "./kano/KanoCategoryOverview";
 import { KanoCurveExplorer } from "./kano/KanoCurveExplorer";
 import { KanoExpectationShift } from "./kano/KanoExpectationShift";
+import { RouteCheckCalculator } from "./route-check/RouteCheckCalculator";
 import { Reveal } from "@/components/ui/Reveal";
 
 const VIZ_MARKERS: Record<string, ReactNode> = {
   "kano-overview": <KanoCategoryOverview />,
   "kano-curve": <KanoCurveExplorer />,
   "kano-shift": <KanoExpectationShift />,
+  "route-check": <RouteCheckCalculator />,
 };
 
 function renderMarkdownBlock(block: string, key: number) {

@@ -97,6 +97,8 @@ If the user is trying to get somewhere, what kind of journey are we giving them?
 
 I think of this as a Route Check.
 
+<!-- viz:route-check -->
+
 The first question is: what is the destination?
 
 What is the user actually trying to do here? Not what does the business want to show them. Not what features exist in this section. What is the user trying to get done?
