@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Image from "next/image";
 import { KanoCategoryOverview } from "./kano/KanoCategoryOverview";
 import { KanoCurveExplorer } from "./kano/KanoCurveExplorer";
 import { KanoExpectationShift } from "./kano/KanoExpectationShift";
@@ -13,6 +14,25 @@ const VIZ_MARKERS: Record<string, ReactNode> = {
 };
 
 function renderMarkdownBlock(block: string, key: number) {
+  const imageMatch = block.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+  if (imageMatch) {
+    const [, alt, src] = imageMatch;
+    return (
+      <Reveal key={key} variant="fade">
+        <figure className="my-8 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)]">
+          <Image
+            src={src}
+            alt={alt}
+            width={1200}
+            height={675}
+            className="h-auto w-full"
+            sizes="(max-width: 768px) 100vw, 768px"
+          />
+        </figure>
+      </Reveal>
+    );
+  }
+
   if (block.startsWith("## ")) {
     return (
       <Reveal key={key} variant="up">
