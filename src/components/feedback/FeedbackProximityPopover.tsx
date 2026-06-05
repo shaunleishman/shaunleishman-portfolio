@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Star } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -154,17 +154,15 @@ export function FeedbackProximityPopover({
 
   const fabDismissClass =
     variant === "site-dark"
-      ? "border-white/20 bg-[#0a0a0a] text-neutral-300 hover:bg-white/10"
-      : "border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/40";
+      ? "border-white/20 bg-[#0a0a0a] text-neutral-300 shadow-[0_4px_16px_rgba(0,0,0,0.35)] hover:bg-white/10"
+      : "border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] shadow-[0_4px_16px_rgba(15,23,42,0.12)] hover:border-[var(--color-accent)]/40";
 
   const fabButtonClass =
     variant === "site-dark"
-      ? "border-white/15 bg-[#0a0a0a] text-white shadow-[0_12px_40px_rgba(0,0,0,0.45)] hover:bg-[#141414]"
-      : variant === "case-study"
-        ? "feedback-accent-scope feedback-accent-button border-transparent text-white shadow-[0_12px_40px_rgba(15,23,42,0.18)]"
-        : "border-[var(--color-border)] bg-white text-[var(--color-text-primary)] shadow-[0_12px_40px_rgba(15,23,42,0.14)] hover:border-[var(--color-accent)]/40";
+      ? "border-white/20 bg-[#0a0a0a] text-white shadow-[0_12px_40px_rgba(0,0,0,0.45)] hover:bg-[#141414]"
+      : "border-[var(--color-accent)] bg-[var(--color-accent)] text-white shadow-[0_8px_28px_rgba(15,23,42,0.24)] hover:bg-[var(--color-accent-hover)]";
 
-  const mobilePromptLabel = fabLabel ?? eyebrow;
+  const mobilePromptLabel = fabLabel ?? "Give feedback?";
 
   const floatingFab = showFab ? (
     <div className="fixed z-[70] bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 flex flex-col items-end gap-2 sm:hidden">
@@ -182,7 +180,7 @@ export function FeedbackProximityPopover({
       <button
         type="button"
         id={fabId}
-        aria-label={`Open ${mobilePromptLabel.toLowerCase()} form`}
+        aria-label="Open give feedback form"
         aria-expanded={expanded}
         aria-controls={titleId}
         onClick={() => setExpanded(true)}
@@ -191,7 +189,7 @@ export function FeedbackProximityPopover({
           fabButtonClass,
         )}
       >
-        <Star className="size-4 shrink-0" aria-hidden />
+        <MessageSquare className="size-4 shrink-0" aria-hidden />
         <span className="text-body-sm font-semibold leading-none">{mobilePromptLabel}</span>
       </button>
     </div>
