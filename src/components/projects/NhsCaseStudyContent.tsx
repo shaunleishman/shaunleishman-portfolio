@@ -20,9 +20,9 @@ import {
   CaseStudyIllustration,
   CaseStudySplitSection,
 } from "@/components/projects/CaseStudyIllustration";
-import { NhsPersonasInteractive } from "@/components/projects/NhsPersonasInteractive";
-import { NhsQuantitativeInteractive } from "@/components/projects/NhsQuantitativeInteractive";
 import { CaseStudyAccentProvider } from "@/components/projects/CaseStudyAccentProvider";
+import { NhsPersonasInteractiveDeferred } from "@/components/projects/NhsPersonasInteractiveDeferred";
+import { NhsQuantitativeInteractiveDeferred } from "@/components/projects/NhsQuantitativeInteractiveDeferred";
 
 const findingHighlightIcons = [Building2, Headset, Route] as const;
 
@@ -74,7 +74,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         <p className="text-h4 font-medium text-[var(--color-text-primary)] leading-snug">
           {nhsCaseStudyMeta.problemStatement}
         </p>
-        <p className="mt-4 text-body text-[var(--color-text-muted)]">{project.problem}</p>
+        <p className="mt-5 text-body text-[var(--color-text-muted)]">{project.problem}</p>
       </CaseStudySplitSection>
 
       <CaseStudySection
@@ -100,7 +100,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
           />
         }
       >
-        <ul className="list-disc pl-5 space-y-2 mb-4">
+        <ul className="list-disc pl-5 space-y-2 mb-6">
           {project.approach.map((item) => (
             <li key={item}>{item}</li>
           ))}
@@ -134,7 +134,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         title={nhsSectionTitle("personas-journeys")}
         lead="Personas and journey maps turned interview themes into artefacts the NHS team could reuse in product decisions."
       >
-        <ul className="space-y-3 not-prose mb-8">
+        <ul className="space-y-3 not-prose mb-10">
           {deliverableHighlights.map(({ icon: Icon, text }) => (
             <li key={text} className="flex gap-3 text-body text-[var(--color-text-secondary)]">
               <Icon className="size-5 shrink-0 mt-0.5 text-[var(--case-study-accent)]" aria-hidden />
@@ -143,7 +143,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
           ))}
         </ul>
 
-        <NhsPersonasInteractive />
+        <NhsPersonasInteractiveDeferred />
       </CaseStudySection>
 
       <CaseStudySection
@@ -151,13 +151,13 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         title={nhsSectionTitle("quantitative-research")}
         lead="Survey data strengthened qualitative themes with patterns across timing, urgency, and outcomes."
       >
-        <ul className="list-disc pl-5 space-y-2 mb-8">
+        <ul className="list-disc pl-5 space-y-2 mb-10">
           {nhsQuantitativeItems.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
 
-        <NhsQuantitativeInteractive />
+        <NhsQuantitativeInteractiveDeferred />
       </CaseStudySection>
 
       <CaseStudySection
@@ -165,7 +165,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         title={nhsSectionTitle("key-findings")}
         lead="What the combined research told the NHS team about caller behaviour and service improvements."
       >
-        <div className="space-y-4 mb-10 not-prose">
+        <div className="space-y-5 not-prose">
           {nhsFindingHighlights.map(({ title, text }, index) => {
             const Icon = findingHighlightIcons[index] ?? Building2;
 
@@ -206,7 +206,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         feedbackPath="/work/nhs-111-waiting-times"
       />
 
-      <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row gap-4 not-prose">
+      <div className="mt-16 flex flex-col gap-4 border-t border-[var(--color-border)] pt-12 not-prose sm:flex-row">
         <Button href="/work">← All projects</Button>
         <Button href="/contact" variant="secondary">
           Get in touch

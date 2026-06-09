@@ -13,7 +13,7 @@ export function CaseStudyBlock({ title, children, delay = 0 }: CaseStudyBlockPro
 
   return (
     <Reveal delay={delay} variant="up">
-      <section className="mb-12" aria-labelledby={id}>
+      <section className="mb-16 md:mb-20" aria-labelledby={id}>
         <h2 id={id} className="text-h3 font-semibold mb-4">
           {title}
         </h2>

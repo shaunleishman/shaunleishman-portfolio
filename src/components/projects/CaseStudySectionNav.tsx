@@ -42,7 +42,7 @@ export function CaseStudySectionNav({ items, accentColor, className }: CaseStudy
     <nav
       aria-label="Case study sections"
       className={cn(
-        "sticky top-16 z-40 -mx-4 mb-10 border-b border-[var(--color-border)] bg-white/95 px-4 py-3 backdrop-blur-sm supports-[backdrop-filter]:bg-white/80 lg:top-[4.5rem]",
+        "sticky top-16 z-40 -mx-4 mb-12 border-b border-[var(--color-border)] bg-white/95 px-4 py-4 backdrop-blur-sm supports-[backdrop-filter]:bg-white/80 md:mb-14 lg:top-[4.5rem]",
         className,
       )}
     >

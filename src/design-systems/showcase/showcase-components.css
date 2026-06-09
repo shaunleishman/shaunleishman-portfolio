@@ -1,0 +1,920 @@
+/* Showcase-specific fixes for Figma-exported components */
+
+/*
+ * Figma exports use text-box-trim + leading-[0]. In Chromium this can collapse
+ * button labels, headings, and table text to zero visible height.
+ */
+.arbnco-ds [class*="text-box-trim"],
+.arbnco-ds [class*="text-box-edge"],
+.showcase-panel__demo [class*="text-box-trim"],
+.showcase-panel__demo [class*="text-box-edge"] {
+  text-box-trim: unset !important;
+  -webkit-text-box-trim: unset !important;
+  text-box-edge: auto !important;
+}
+
+.arbnco-ds [class*="leading-[0]"],
+.showcase-panel__demo [class*="leading-[0]"],
+.showcase-component-preview [class*="leading-[0]"] {
+  line-height: 1.25 !important;
+}
+
+.arbnco-ds [class*="leading-[0]"] > p,
+.arbnco-ds [class*="leading-[0]"] > span,
+.showcase-panel__demo [class*="leading-[0]"] > p,
+.showcase-panel__demo [class*="leading-[0]"] > span,
+.showcase-component-preview [class*="leading-[0]"] > p,
+.showcase-component-preview [class*="leading-[0]"] > span {
+  display: block;
+  min-height: 1em;
+  line-height: 1.25 !important;
+}
+
+.showcase-component-preview [class*="text-box-trim"],
+.showcase-component-preview [class*="text-box-edge"] {
+  line-height: 1.25 !important;
+}
+
+/* Section chrome — always paint (not Figma exports) */
+.showcase-section-title {
+  color: #4a5453 !important;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  -webkit-text-fill-color: currentColor;
+}
+
+@media (min-width: 640px) {
+  .showcase-section-title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+}
+
+.showcase-section-desc {
+  color: #aab6b4 !important;
+  -webkit-text-fill-color: currentColor;
+}
+
+.showcase-panel {
+  border: 1px solid #aab6b4;
+  background-color: #ffffff;
+}
+
+.showcase-panel__demo {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+.gallery-section-skeleton {
+  min-height: 28rem;
+  contain-intrinsic-size: auto 28rem;
+  content-visibility: auto;
+}
+
+.gallery-section-skeleton__shimmer {
+  background: linear-gradient(
+    90deg,
+    #e5e8e7 0%,
+    #f5f6f6 40%,
+    #e5e8e7 80%
+  );
+  background-size: 200% 100%;
+  animation: gallery-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes gallery-skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.gallery-section-enter {
+  animation: gallery-section-enter 0.35s ease-out both;
+}
+
+@keyframes gallery-section-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-section-skeleton__shimmer {
+    animation: none;
+    background: #e5e8e7;
+  }
+
+  .gallery-section-enter {
+    animation: none;
+  }
+}
+
+.showcase-variant-toolbar {
+  border: 1px solid #aab6b4;
+  background-color: #ffffff;
+}
+
+/* Full-bleed toolbar to showcase-panel inner edges */
+.showcase-panel__demo .showcase-variant-toolbar {
+  box-sizing: border-box;
+  width: calc(100% + 2rem);
+  max-width: none;
+  margin: -1rem -1rem 1rem;
+  /* Offset panel padding pull so content is not clipped by overflow-x on demo */
+  padding-left: calc(1rem + 0.75rem);
+  padding-right: calc(1rem + 0.75rem);
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+@media (min-width: 640px) {
+  .showcase-panel__demo .showcase-variant-toolbar {
+    width: calc(100% + 3rem);
+    margin: -1.5rem -1.5rem 1.5rem;
+    padding-left: calc(1.5rem + 1rem);
+    padding-right: calc(1.5rem + 1rem);
+  }
+}
+
+.showcase-accordion-demo-shell {
+  width: 100%;
+  min-width: 0;
+}
+
+.showcase-accordion-demo {
+  width: 100%;
+  max-width: 24rem;
+}
+
+.showcase-preview-frame {
+  border: 1px solid #aab6b4;
+  background-color: #ffffff;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.showcase-preview-label {
+  color: #aab6b4 !important;
+}
+
+/*
+ * Demo root: stack toolbar + preview vertically. Prevent flex-1 / height:100%
+ * chains from ballooning section height inside the long gallery page.
+ */
+.showcase-panel__demo > div {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: auto !important;
+  max-height: none;
+}
+
+/* Wide Figma artboard widths must not expand the admin layout. */
+.showcase-panel__demo [class*="w-[1618px]"],
+.showcase-panel__demo [class*="w-[1324px]"],
+.showcase-panel__demo [class*="w-[1124px]"] {
+  width: 100% !important;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.showcase-panel__demo [class*="size-full"] {
+  width: auto !important;
+  max-width: 100%;
+}
+
+/* Connected input: restore full-width flex chains broken by the size-full override above. */
+.showcase-panel__demo .connected-input-field [class*="size-full"] {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.showcase-panel__demo .connected-input-field {
+  width: 100%;
+  max-width: none;
+}
+
+.showcase-panel__demo .connected-input-field [data-name="Field-all-icons"] > div,
+.showcase-panel__demo .connected-input-field [data-name="Field-all-icons"] label {
+  width: 100% !important;
+  min-width: 0;
+}
+
+.showcase-panel__demo .connected-input-field [data-name="Field-all-icons"] label > div {
+  flex: 1 1 0%;
+  min-width: 0;
+  width: 100%;
+}
+
+/* Figma artboards export fixed viewport heights that balloon the gallery page. */
+.showcase-panel__demo [class*="h-[807px]"] {
+  height: auto !important;
+  max-height: 42rem;
+}
+
+/* Keep the embedded page-with-table shell layout intact inside the gallery. */
+.showcase-page-with-table__shell {
+  isolation: isolate;
+}
+
+.showcase-page-with-table__shell .showcase-page-with-table__sidebar,
+.showcase-page-with-table__shell .showcase-page-with-table__sidebar > div,
+.showcase-page-with-table__shell [class*="h-[807px]"] {
+  height: 100% !important;
+  max-height: none !important;
+}
+
+.showcase-component-preview .showcase-page-with-table__shell {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.showcase-panel__demo [data-name] p,
+.showcase-panel__demo [data-name] span,
+.arbnco-ds [data-name] p,
+.arbnco-ds [data-name] span {
+  text-box-trim: unset !important;
+  -webkit-text-box-trim: unset !important;
+  text-box-edge: auto !important;
+  line-height: 1.25 !important;
+  min-height: 1em;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.showcase-component-preview {
+  display: block;
+  height: auto !important;
+  min-height: 5rem;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.showcase-component-preview > * {
+  max-width: 100%;
+}
+
+.showcase-component-preview [data-name] {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.showcase-panel__demo [data-name] {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.showcase-panel__demo p,
+.showcase-panel__demo span {
+  min-height: 0;
+  line-height: 1.25 !important;
+}
+
+.showcase-page-controls {
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.showcase-page-controls > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 720px;
+}
+
+.showcase-page-controls [data-name="Input field"] {
+  min-width: 12rem;
+}
+
+.showcase-data-table [data-name="Slot"] > div[class*="bg-[#e5e8e7]"] {
+  display: none;
+}
+
+.showcase-data-table .grid.grid-cols-3 > div {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.showcase-stacked-header > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 640px;
+}
+
+.showcase-page-with-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.showcase-page-with-table__shell {
+  display: flex;
+  min-width: 64rem;
+  height: 42rem;
+  max-height: min(80vh, 48rem);
+  overflow: hidden;
+  border-radius: var(--radius-large-radius);
+  border: 1px solid var(--colour-outlines-neutral);
+  background: white;
+}
+
+.showcase-page-with-table__shell--menu-only {
+  min-width: 48rem;
+}
+
+.showcase-page-with-table__sidebar,
+.showcase-page-with-table__sidebar > div {
+  height: 100% !important;
+  max-height: none !important;
+}
+
+.showcase-page-with-table__sidebar > div {
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+.showcase-page-with-table__main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.showcase-page-with-table__scroll {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--colour-surfaces-bg);
+}
+
+.showcase-page-with-table__tabs {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.showcase-connected-page-tabs {
+  width: 100%;
+}
+
+.showcase-page-with-table__tabs > div {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.showcase-page-table__header-row,
+.showcase-page-table__body-row {
+  display: grid;
+  grid-template-columns: 3rem repeat(7, minmax(7rem, 1fr)) minmax(6rem, 0.75fr);
+}
+
+.showcase-page-table__body-row--alt [data-name="Field-all-icons"],
+.showcase-page-table__body-row--alt > div > div {
+  background-color: #fafbfb;
+}
+
+/* Connected table: row borders only, outer corners rounded, no double lines. */
+.showcase-connected-table .showcase-page-table__header-row > *:not(.showcase-page-table__checkbox-cell) [aria-hidden],
+.showcase-connected-table .showcase-page-table__body-row > *:not(.showcase-page-table__checkbox-cell) [aria-hidden] {
+  display: none !important;
+}
+
+.showcase-connected-table .showcase-page-table__header-row,
+.showcase-connected-table .showcase-page-table__body-row {
+  border-bottom: 1px solid #e5e8e7;
+}
+
+.showcase-connected-table .showcase-page-table__header-row {
+  border-bottom-color: #aab6b4;
+}
+
+.showcase-connected-table .showcase-page-table__header-row > *:not(:last-child) {
+  border-right: 1px solid #aab6b4;
+}
+
+.showcase-connected-table .showcase-page-table__body-row:last-child {
+  border-bottom: none;
+}
+
+.showcase-connected-table .showcase-page-table__checkbox-cell {
+  border-bottom: none !important;
+}
+
+.showcase-connected-table .showcase-page-table__body-row > * {
+  background-color: #ffffff;
+}
+
+.showcase-connected-table .showcase-page-table__body-row--alt > * {
+  background-color: #fafbfb;
+}
+
+.showcase-connected-table .showcase-page-table__body-row--hover > * {
+  background-color: #f5f6f6 !important;
+}
+
+.showcase-connected-table .showcase-page-table__body-row--selected > * {
+  background-color: #e0f7fa !important;
+}
+
+.showcase-connected-table .showcase-page-table__header-row .showcase-page-table__checkbox-cell {
+  border-top-left-radius: 7px;
+}
+
+.showcase-connected-table .showcase-page-table__header-row > *:last-child {
+  border-top-right-radius: 7px;
+}
+
+.showcase-connected-table .showcase-page-table__body-row:last-child .showcase-page-table__checkbox-cell {
+  border-bottom-left-radius: 7px;
+}
+
+.showcase-connected-table .showcase-page-table__body-row:last-child > *:last-child {
+  border-bottom-right-radius: 7px;
+}
+
+.showcase-connected-table .showcase-page-table__header-row > *,
+.showcase-connected-table .showcase-page-table__body-row > * {
+  border-radius: 0 !important;
+}
+
+.showcase-page-table [data-name="Slot"] > div[class*="bg-[#e5e8e7]"] {
+  display: none;
+}
+
+.showcase-page-table .showcase-page-table__body-row > div[class*="TableField"],
+.showcase-page-table .showcase-page-table__body-row > div {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.showcase-page-table .showcase-page-table__header-row > div {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.connected-input-field [data-name="Field-all-icons"]:focus-within {
+  border-color: #00a7b5;
+  box-shadow: inset 0 0 0 1px #00a7b5;
+}
+
+.connected-input-field--demo-hover [data-name="Field-all-icons"] {
+  border-color: #aab6b4;
+  background-color: #e0f7fa;
+}
+
+.showcase-connected-step-nav {
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Connected chevrons: sm = 16px (inputs, dropdowns), md = 24px (accordions, tiles). */
+.showcase-panel__demo [data-name^="chevron-"] {
+  flex-shrink: 0;
+}
+
+.showcase-connected-step-nav [role="tab"]:focus-visible {
+  outline: 2px solid #00a7b5;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.showcase-nav-item-preview {
+  width: 17.5rem;
+  max-width: 100%;
+  border-radius: var(--radius-medium-radius);
+  border: 1px solid var(--colour-outlines-neutral);
+  background: var(--grey-n900);
+  padding: 12px;
+}
+
+.showcase-nav-item-preview [data-name="Menu-item"] {
+  width: 100% !important;
+}
+
+.showcase-sidebar-preview {
+  width: 17.5rem;
+  border-radius: var(--radius-medium-radius);
+  overflow: hidden;
+  border: 1px solid var(--colour-outlines-neutral);
+  background: var(--grey-n900);
+}
+
+.showcase-sidebar-preview [data-name="Menu-item"] {
+  width: 100% !important;
+}
+
+.showcase-side-menu {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+}
+
+.showcase-side-menu > div {
+  width: 17.5rem !important;
+  min-width: 17.5rem;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0;
+}
+
+.showcase-side-menu img,
+.showcase-side-menu svg {
+  flex-shrink: 0;
+}
+
+.showcase-side-menu [data-name="Menu-item"] {
+  width: 100% !important;
+}
+
+.showcase-accordion-filter {
+  margin-inline: auto;
+  width: 100%;
+}
+
+.showcase-filtering-drawer {
+  margin-inline: auto;
+}
+
+.showcase-filtering-drawer-preview {
+  overflow: visible;
+  padding-bottom: 0.5rem;
+  width: 100%;
+}
+
+.showcase-filtering-drawer-preview > * {
+  width: 100%;
+  max-width: 443px;
+  margin-inline: auto;
+}
+
+.showcase-preview-frame:has(.showcase-filtering-drawer-preview) .showcase-component-preview {
+  overflow: visible;
+  padding-bottom: 1.5rem;
+}
+
+.showcase-filtering-drawer .showcase-accordion-filter {
+  margin-inline: 0;
+}
+
+.showcase-accordion-filter__header:focus-within {
+  outline: none;
+}
+
+.showcase-accordion-filter__header button:focus-visible {
+  outline: 2px solid #00a7b5;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.showcase-connected-accordion button:focus-visible {
+  outline: 2px solid #00a7b5;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.showcase-accordion-demo [data-name="Heading-three-caption-medium"] {
+  min-width: 0;
+}
+
+.showcase-card-preview {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.showcase-card-preview [data-name="Slot"],
+.showcase-card-preview [data-name="Button-large"] {
+  width: 100% !important;
+  max-width: none;
+  min-width: 0;
+}
+
+.showcase-card-preview button[data-name="Menu-item"],
+.showcase-card-preview [data-name="Button-large"] button {
+  pointer-events: auto;
+}
+
+/* Restore full-width tile/card row flex chains broken by the size-full override above. */
+.showcase-panel__demo .showcase-card-preview [data-name="Slot"] [class*="size-full"],
+.showcase-panel__demo .showcase-card-preview [data-name="Button-large"] [class*="size-full"],
+.showcase-panel__demo .showcase-card-preview [data-name="Button-large"] > div {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none;
+}
+
+.showcase-interactive-slider input[type="range"] {
+  width: 100%;
+  accent-color: var(--colour-surfaces-primary);
+  cursor: pointer;
+}
+
+.showcase-component-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--grey-n300) transparent;
+}
+
+.showcase-component-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.showcase-component-scroll::-webkit-scrollbar-track {
+  background: var(--grey-n100);
+  border-radius: 999px;
+}
+
+.showcase-component-scroll::-webkit-scrollbar-thumb {
+  background: var(--grey-n300);
+  border-radius: 999px;
+  border: 2px solid var(--grey-n100);
+}
+
+.showcase-component-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--grey-n400);
+  cursor: grab;
+}
+
+.showcase-component-scroll::-webkit-scrollbar-thumb:active {
+  cursor: grabbing;
+  background: var(--grey-n500);
+}
+
+.showcase-table-header-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(10rem, 1fr));
+  width: 100%;
+  min-width: 36rem;
+}
+
+.connected-dropdown-options::-webkit-scrollbar {
+  width: 8px;
+}
+
+.connected-dropdown-options::-webkit-scrollbar-thumb {
+  background: #cdd4d3;
+  border-radius: 8px;
+}
+
+.dropdown-selection-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cdd4d3 transparent;
+}
+
+.dropdown-selection-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dropdown-selection-scroll::-webkit-scrollbar-thumb {
+  background: #cdd4d3;
+  border-radius: 8px;
+}
+
+.dropdown-selection-scroll::-webkit-scrollbar-thumb:hover {
+  background: #aab6b4;
+  cursor: grab;
+}
+
+.connected-dropdown-selection {
+  z-index: 1;
+}
+
+/* In-flow panel in previews; absolute overlay in the variant toolbar. */
+.connected-dropdown-panel {
+  position: relative;
+  z-index: 30;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.showcase-variant-toolbar .connected-dropdown-panel {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 4px);
+  margin-top: 0;
+}
+
+.showcase-dropdown-preview {
+  width: 100%;
+  overflow: visible;
+}
+
+.connected-dropdown-measure {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.connected-dropdown-measure [data-measure-chip],
+.connected-dropdown-measure [data-measure-more] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.showcase-preview-frame:has(.showcase-dropdown-preview) .showcase-component-preview {
+  overflow: visible;
+  padding-bottom: 0.5rem;
+}
+
+.showcase-preview-frame:has(.showcase-table-preview) .showcase-component-preview {
+  overflow: visible;
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.showcase-table-preview {
+  width: 100%;
+  overflow: visible;
+}
+
+.showcase-table-preview .showcase-page-table {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.showcase-table-preview .showcase-page-table__grid {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.showcase-page-table:not(.showcase-page-table--preview) .showcase-page-table__grid {
+  min-width: 56rem;
+}
+
+.showcase-table-preview .showcase-page-table__header-row,
+.showcase-table-preview .showcase-page-table__body-row {
+  display: grid !important;
+  grid-template-columns: 3rem repeat(7, minmax(0, 1fr)) minmax(0, 0.85fr);
+}
+
+.showcase-table-preview .showcase-page-table__header-row > *,
+.showcase-table-preview .showcase-page-table__body-row > * {
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.showcase-table-preview [class*="size-full"] {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.showcase-table-preview p,
+.showcase-table-preview span {
+  min-height: 1em;
+  line-height: 1.25 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.showcase-table-preview .showcase-page-table .showcase-page-table__body-row > div[class*="TableField"],
+.showcase-table-preview .showcase-page-table .showcase-page-table__header-row > div {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+
+.connected-dropdown-selection button:focus-visible {
+  outline: 2px solid var(--dropdown-accent, #00a7b5);
+  outline-offset: 1px;
+}
+
+.connected-dropdown-options button {
+  box-sizing: border-box;
+}
+
+.connected-input-field input {
+  width: 100%;
+  min-width: 0;
+}
+
+.showcase-panel__demo .connected-input-field input {
+  width: 100% !important;
+  min-width: 0;
+  flex: 1 1 0%;
+}
+
+.showcase-drawer-preview .connected-input-field {
+  width: 100%;
+  max-width: none;
+}
+
+.showcase-drawer-preview {
+  overflow: visible;
+  padding-bottom: 0.5rem;
+  width: 100%;
+}
+
+.showcase-drawer-preview > * {
+  width: 100%;
+  max-width: 443px;
+}
+
+.showcase-modal-preview {
+  width: 100%;
+  overflow: visible;
+  padding-bottom: 0.5rem;
+}
+
+.showcase-preview-frame:has(.showcase-modal-preview) .showcase-component-preview {
+  overflow: visible;
+  padding-bottom: 1.5rem;
+}
+
+.showcase-preview-frame:has(.showcase-drawer-preview) .showcase-component-preview {
+  overflow: visible;
+  padding-bottom: 1.5rem;
+}
+
+.showcase-variant-toolbar .connected-dropdown-selection:focus-within,
+.showcase-variant-toolbar .connected-dropdown-selection:has([aria-expanded="true"]) {
+  z-index: 20;
+}
+
+.connected-input-field input:focus-visible {
+  outline: none;
+}
+
+.connected-input-field:focus-within [data-name="Field-all-icons"] {
+  z-index: 1;
+}
+
+.showcase-variant-toolbar .connected-input-field:focus-within {
+  z-index: 20;
+}
+
+.showcase-table-header-row > div {
+  width: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 0 !important;
+}
+
+/* Connected calendar — interactive date range picker */
+.connected-calendar__nav-btn,
+.connected-calendar__day-btn,
+.connected-calendar__month-btn {
+  transition: background-color 150ms ease, opacity 150ms ease;
+}
+
+.connected-calendar__nav-btn:hover {
+  opacity: 0.72;
+}
+
+.connected-calendar__nav-btn:focus-visible,
+.connected-calendar__day-btn:focus-visible,
+.connected-calendar__month-btn:focus-visible,
+.connected-calendar-large__clear:focus-visible,
+.connected-calendar-large__cancel:focus-visible,
+.connected-calendar-large__import:focus-visible {
+  outline: 2px solid #00a7b5;
+  outline-offset: 2px;
+}
+
+.connected-calendar__day-btn:hover:not(:disabled):not([aria-pressed="true"]) {
+  background-color: #f5f6f6;
+  border-radius: 4px;
+}
+
+.connected-calendar__month-btn:hover:not(:disabled):not([aria-pressed="true"]) {
+  background-color: #f5f6f6;
+  border-radius: 4px;
+}
+
+.connected-calendar--embedded {
+  box-shadow: none !important;
+}
+
+.connected-calendar-large__clear:hover,
+.connected-calendar-large__cancel:hover {
+  background-color: #f5f6f6;
+}
+
+.connected-calendar-large__import:hover {
+  background-color: #008a96;
+}
+
+.showcase-component-scroll .connected-calendar-large {
+  min-width: 684px;
+}

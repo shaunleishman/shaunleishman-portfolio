@@ -7,18 +7,22 @@ type SiteLogoProps = {
   className?: string;
   /** Use image asset instead of HTML wordmark */
   asImage?: boolean;
+  /** Dark wordmark for light backgrounds (e.g. admin header) */
+  variant?: "default" | "dark";
 };
 
-export function SiteLogo({ className, asImage = false }: SiteLogoProps) {
+export function SiteLogo({ className, asImage = false, variant = "default" }: SiteLogoProps) {
   if (asImage) {
+    const src = variant === "dark" ? siteConfig.logoDark : siteConfig.logo;
     return (
       <Image
-        src={siteConfig.logo}
+        src={src}
         alt={siteConfig.brand}
-        width={180}
-        height={32}
-        className={cn("h-7 w-auto object-contain", className)}
+        width={1024}
+        height={124}
+        className={cn("h-7 w-auto object-contain object-left", className)}
         priority
+        sizes="200px"
       />
     );
   }
@@ -39,6 +43,7 @@ type SiteLogoLinkProps = SiteLogoProps & {
 export function SiteLogoLink({
   className,
   asImage,
+  variant,
   href = "/",
   ariaCurrent,
 }: SiteLogoLinkProps) {
@@ -46,11 +51,11 @@ export function SiteLogoLink({
     <Link
       href={href}
       data-metrics-gate="logo"
-      className={cn("inline-flex items-center min-h-[44px] focus-visible:outline-offset-4", className)}
+      className={cn("inline-flex shrink-0 items-center min-h-[44px] focus-visible:outline-offset-4", className)}
       aria-current={ariaCurrent ? "page" : undefined}
       aria-label={`${siteConfig.brand} home`}
     >
-      <SiteLogo asImage={asImage} />
+      <SiteLogo asImage={asImage} variant={variant} />
     </Link>
   );
 }

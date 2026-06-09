@@ -16,14 +16,12 @@ export type NhsPersona = {
   heardAbout: string;
   motivations: string;
   whenTheyCall: string;
-  /** Persona illustration, board image cropped in UI or standalone character art */
+  /** Persona illustration at native aspect ratio */
   illustrationSrc: string;
   illustrationAlt: string;
   /** Trimmed source dimensions for layout and Next/Image */
   illustrationWidth: number;
   illustrationHeight: number;
-  /** When true, crop the top of a full persona-board image */
-  illustrationCropBoard?: boolean;
   /** End-to-end journey map image for this persona */
   journeyMapSrc: string;
   /** Call frequency through the day, 8 buckets from midnight → midnight */

@@ -47,7 +47,6 @@ function StaticThumbnail({ project, priority, className }: ProjectThumbnailProps
         alt=""
         fill
         priority={priority}
-        unoptimized
         onLoad={() => setLoaded(true)}
         className={cn(
           "object-cover object-center transition-opacity duration-300",

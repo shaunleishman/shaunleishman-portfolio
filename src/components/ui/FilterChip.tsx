@@ -71,6 +71,7 @@ export function FilterChip(props: FilterChipProps) {
     "inline-flex min-h-[36px] shrink-0 items-center rounded-full border px-3 py-1.5 text-body-sm font-medium transition-[background-color,color,box-shadow] whitespace-nowrap",
     usesCustomAccent ? customAccentClasses(Boolean(selected)) : selected ? styles!.selected : styles!.idle,
     className,
+    selected && "text-white",
   );
 
   const style = accentColor ? ({ "--chip-accent": accentColor } as CSSProperties) : undefined;

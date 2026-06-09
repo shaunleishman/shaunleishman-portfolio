@@ -1,0 +1,16 @@
+.connected-input-field {
+  width: 100%;
+}
+
+.connected-input-field input {
+  width: 100%;
+  min-width: 0;
+}
+
+.connected-input-field input:focus-visible {
+  outline: none;
+}
+
+.connected-input-field:focus-within [data-name="Field-all-icons"] {
+  z-index: 1;
+}

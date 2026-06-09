@@ -202,10 +202,18 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     document.documentElement.addEventListener("mouseleave", handleMouseLeave);
     window.addEventListener("beforeunload", handleExit);
     handleScroll();
+
+    const attachMouseMove = () => {
+      window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    };
+
+    const idleHandle =
+      typeof window.requestIdleCallback === "function"
+        ? window.requestIdleCallback(attachMouseMove, { timeout: 4000 })
+        : window.setTimeout(attachMouseMove, 2000);
 
     const flushInterval = window.setInterval(flushDwell, DWELL_FLUSH_MS);
 
@@ -235,6 +243,11 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("mousemove", handleMouseMove);
       document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
       window.removeEventListener("beforeunload", handleExit);
+      if (typeof window.cancelIdleCallback === "function") {
+        window.cancelIdleCallback(idleHandle as number);
+      } else {
+        window.clearTimeout(idleHandle as number);
+      }
       observerRef.current?.disconnect();
       window.clearInterval(flushInterval);
       window.clearTimeout(metaTimeout);

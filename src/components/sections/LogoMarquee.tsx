@@ -65,7 +65,7 @@ function CompanyLogoImage({ name, logo, width, height, scale = 1 }: CompanyLogoI
         alt={`${name} logo`}
         width={width}
         height={height}
-        unoptimized
+        sizes={`${slotWidth}px`}
         draggable={false}
         className="select-none object-contain"
         style={{

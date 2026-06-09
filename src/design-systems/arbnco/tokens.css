@@ -1,0 +1,150 @@
+/* Primitive tokens */
+.arbnco-ds {
+  --blue-p50: #ebfffd;
+  --blue-p100: #e0f7fa;
+  --blue-p200: #b2ebf2;
+  --blue-p300: #80deea;
+  --blue-p400: #26c6da;
+  --blue-p500: #00a7b5;
+  --blue-p600: #088391;
+  --blue-p700: #106c7a;
+  --blue-p800: #125a67;
+  --blue-p900: #053c47;
+
+  --colour-states-success: #4ca843;
+  --colour-states-warning: #f5a50d;
+  --colour-states-error: #d04a21;
+  --colour-states-success-bg: #ecffea;
+  --colour-states-warning-bg: #fff4e5;
+  --colour-states-error-bg: #ffe6e1;
+
+  --grey-n0: #ffffff;
+  --grey-n50: #f5f6f6;
+  --grey-n100: #e5e8e7;
+  --grey-n200: #cdd4d3;
+  --grey-n300: #aab6b4;
+  --grey-n400: #7f918f;
+  --grey-n500: #647674;
+  --grey-n600: #4a5453;
+  --grey-n700: #414949;
+  --grey-n800: #394040;
+  --grey-n900: #232828;
+
+  --accents-ribbon: #ff4671;
+  --accents-innovation: #9131a8;
+  --accents-hydro: #3697ff;
+  --accents-growth: #14a35c;
+  --accents-ribbon-2: #ffe1e8;
+  --accents-innovation-2: #fbebff;
+  --accents-hydro-2: #e9f3ff;
+  --accents-growth-2: #ebfff5;
+
+  --british-gas-blue: #004ecb;
+  --british-gas-black: #111518;
+  --british-gas-light-blue: #ebf7ff;
+  --british-gas-white: #ffffff;
+  --british-gas-grey: #445360;
+
+  --radius-small-radius: 4px;
+  --radius-medium-radius: 8px;
+  --radius-large-radius: 16px;
+
+  --pixels-0: 0px;
+  --pixels-1: 4px;
+  --pixels-2: 8px;
+  --pixels-3: 12px;
+  --pixels-4: 16px;
+  --pixels-5: 20px;
+  --pixels-6: 24px;
+  --pixels-7: 28px;
+  --pixels-8: 36px;
+  --pixels-9: 40px;
+  --pixels-10: 44px;
+  --pixels-11: 48px;
+  --pixels-12: 52px;
+  --pixels-13: 56px;
+  --pixels-14: 60px;
+  --pixels-15: 64px;
+
+  /* Semantic tokens */
+  --colour-surfaces-primary: var(--blue-p500);
+  --colour-labels-reverse: var(--grey-n0);
+  --colour-labels-neutral: var(--grey-n600);
+  --colour-surfaces-disabled: var(--grey-n100);
+  --measurement-spacing-none: var(--pixels-0);
+  --measurement-spacing-xxs: var(--pixels-1);
+  --measurement-spacing-xs: var(--pixels-2);
+  --measurement-spacing-sm: var(--pixels-3);
+  --measurement-spacing-md: var(--pixels-4);
+  --measurement-spacing-lg: var(--pixels-6);
+  --measurement-spacing-xl: var(--pixels-8);
+  --measurement-spacing-xxl: var(--pixels-11);
+  --colour-labels-disabled: var(--grey-n300);
+  --colour-outlines-neutral: var(--grey-n300);
+  --colour-surfaces-neutral: var(--grey-n0);
+  --colour-labels-primary: var(--blue-p500);
+  --colour-surfaces-primary-pushed: var(--blue-p700);
+  --measurement-height-md: var(--pixels-9);
+  --colour-outlines-selected: var(--blue-p500);
+  --colour-surfaces-secondary-hover: var(--blue-p100);
+  --colour-surfaces-primary-hover: var(--blue-p400);
+  --colour-surfaces-tertiary-hover: var(--grey-n50);
+  --colour-surfaces-secondary-pushed: var(--blue-p200);
+  --colour-surfaces-tertiary-pushed: var(--grey-n100);
+  --measurement-height-sm: var(--pixels-6);
+  --measurement-height-xxs: var(--pixels-3);
+  --measurement-height-lg: var(--pixels-12);
+  --measurement-height-xxl: var(--pixels-15);
+  --measurement-height-xs: var(--pixels-4);
+  --measurement-height-xl: var(--pixels-14);
+  --colour-surfaces-bg: var(--grey-n50);
+  --colour-labels-pushed: var(--blue-p700);
+  --colour-outlines-pushed: var(--blue-p700);
+  --measurement-icons-icon-sm: var(--pixels-4);
+  --measurement-icons-icon-md: var(--pixels-6);
+  --measurement-icons-icon-lg: var(--pixels-8);
+  --colour-outlines-hover: var(--blue-p400);
+  --typography-font-family-body: "Open Sans", sans-serif;
+  --typography-font-weight-regular: 400;
+  --typography-font-weight-semi-bold: 600;
+  --typography-font-weight-bold: 700;
+  --typography-font-family-headline: "Open Sans", sans-serif;
+  --typography-line-height-sm: var(--pixels-6);
+  --typography-line-height-md: var(--pixels-7);
+  --typography-line-height-lg: var(--pixels-8);
+  --typography-line-height-xl: var(--pixels-9);
+  --typography-font-size-xxs: 10px;
+  --typography-font-size-xs: 14px;
+  --typography-font-size-sm: var(--pixels-4);
+  --typography-font-size-md: 18px;
+  --typography-font-size-lg: var(--pixels-6);
+  --typography-font-size-xl: var(--pixels-7);
+  --typography-font-size-xxl: var(--pixels-8);
+  --typography-line-height-xxl: var(--pixels-10);
+  --typography-line-height-xs: var(--pixels-5);
+  --typography-line-height-xxs: var(--pixels-4);
+  --typography-letter-spacing-sm: -0.1px;
+  --typography-letter-spacing-md: -0.2px;
+  --typography-letter-spacing-lg: -0.3px;
+  --colour-outlines-focused: var(--grey-n600);
+
+  font-family: var(--typography-font-family-body);
+}
+
+/* Figma exports use font-['Open_Sans:semi-bold'] — enforce real Open Sans + weights */
+.arbnco-ds,
+.arbnco-ds * {
+  font-family: var(--typography-font-family-body);
+}
+
+.arbnco-ds [class*="semi-bold"] {
+  font-weight: var(--typography-font-weight-semi-bold);
+}
+
+.arbnco-ds [class*="regular"] {
+  font-weight: var(--typography-font-weight-regular);
+}
+
+.arbnco-ds [class*="bold"]:not([class*="semi-bold"]) {
+  font-weight: var(--typography-font-weight-bold);
+}

@@ -219,31 +219,15 @@ function PersonaSwitcher({
 }
 
 function PersonaIllustration({ persona }: { persona: NhsPersona }) {
-  if (persona.illustrationCropBoard) {
-    return (
-      <div className="relative h-full w-full overflow-hidden">
-        <Image
-          src={persona.illustrationSrc}
-          alt={persona.illustrationAlt}
-          width={1400}
-          height={900}
-          className="absolute left-0 top-0 h-auto w-[120%] max-w-none"
-          sizes="(min-width: 768px) 280px, 240px"
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="relative h-full w-full">
-      <Image
-        src={persona.illustrationSrc}
-        alt={persona.illustrationAlt}
-        fill
-        className="object-contain object-center"
-        sizes="(min-width: 768px) 280px, 240px"
-      />
-    </div>
+    <Image
+      src={persona.illustrationSrc}
+      alt={persona.illustrationAlt}
+      width={persona.illustrationWidth}
+      height={persona.illustrationHeight}
+      className="h-auto w-full"
+      sizes="(min-width: 768px) 280px, 240px"
+    />
   );
 }
 
@@ -251,7 +235,7 @@ function PersonaIllustrationStack({ activeId }: { activeId: string }) {
   return (
     <div
       className={cn(
-        "grid aspect-[3/2] shrink-0 [&>*]:col-start-1 [&>*]:row-start-1 [&>*]:h-full",
+        "grid shrink-0 [&>*]:col-start-1 [&>*]:row-start-1",
         PERSONA_ILLUSTRATION_WIDTH,
       )}
     >
@@ -260,7 +244,9 @@ function PersonaIllustrationStack({ activeId }: { activeId: string }) {
           key={persona.id}
           className={cn(
             "w-full motion-safe:transition-opacity motion-safe:duration-[650ms] motion-safe:ease-in-out",
-            persona.id === activeId ? "z-10 opacity-100" : "z-0 opacity-0",
+            persona.id === activeId
+              ? "z-10 opacity-100"
+              : "pointer-events-none z-0 opacity-0",
           )}
           aria-hidden={persona.id !== activeId}
         >

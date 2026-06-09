@@ -31,7 +31,7 @@ export function CaseStudyAtAGlance({
       <section
         id={id}
         aria-labelledby={`${id}-heading`}
-        className="mb-14 scroll-mt-36 surface-muted p-6 md:p-8"
+        className="mb-16 scroll-mt-36 surface-muted p-6 md:mb-20 md:p-8"
       >
         <h2 id={`${id}-heading`} className="text-h4 font-semibold mb-1">
           {title}

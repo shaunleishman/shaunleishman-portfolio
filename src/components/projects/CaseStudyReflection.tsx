@@ -39,7 +39,6 @@ export function CaseStudyReflection({
         id="key-takeaways"
         title="Key takeaways"
         lead={takeawaysLead}
-        className="border-t border-[var(--color-border)] pt-14"
       >
         <ul className="not-prose max-w-3xl space-y-6">
           {takeaways.map((item) => (

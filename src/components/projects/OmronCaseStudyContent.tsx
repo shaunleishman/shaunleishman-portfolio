@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import type { Project } from "@/content/projects";
 import {
-  OMRON_PROTOTYPE_URL,
   omronAtAGlance,
   omronCaseStudyMeta,
   omronReflectionItems,
@@ -19,7 +18,6 @@ import {
   omronSectionTitle,
   omronTestingFindings,
 } from "@/content/omron-case-study";
-import { omronActionCardAnnotations } from "@/content/omron-screenshot-annotations";
 import { Button } from "@/components/ui/Button";
 import { CaseStudyAtAGlance } from "@/components/projects/CaseStudyAtAGlance";
 import { CaseStudySectionNav } from "@/components/projects/CaseStudySectionNav";
@@ -30,11 +28,13 @@ import {
   CaseStudyIllustration,
   CaseStudySplitSection,
 } from "@/components/projects/CaseStudyIllustration";
-import { OmronWireframeSketchAnimation } from "@/components/projects/OmronWireframeSketchAnimation";
-import { FigmaPrototypeEmbed } from "@/components/projects/FigmaPrototypeEmbed";
+import { EnhancePrototypeEmbed } from "@/components/projects/EnhancePrototypeEmbed";
+import { OmronActionCardLiveDemo } from "@/components/projects/OmronActionCardLiveDemo";
+import { OmronAssignPatientLiveDemo } from "@/components/projects/OmronAssignPatientLiveDemo";
 import { ZoomableScreenshot } from "@/components/projects/ZoomableScreenshot";
-import { OmronPractitionerBoardsInteractive } from "@/components/projects/OmronPractitionerBoardsInteractive";
 import { CaseStudyAccentProvider } from "@/components/projects/CaseStudyAccentProvider";
+import { OmronPractitionerBoardsInteractiveDeferred } from "@/components/projects/OmronPractitionerBoardsInteractiveDeferred";
+import { OmronWireframeSketchAnimationDeferred } from "@/components/projects/OmronWireframeSketchAnimationDeferred";
 
 const actionCardFlow = [
   {
@@ -133,7 +133,7 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
         title={omronSectionTitle("co-design")}
         lead="Practitioners shaped the direction, workshops turned interview themes into sketches the whole team could react to."
       >
-        <ul className="space-y-3 not-prose mb-8">
+        <ul className="space-y-3 not-prose mb-10">
           {coDesignHighlights.map(({ icon: Icon, text }) => (
             <li key={text} className="flex gap-3 text-body text-[var(--color-text-secondary)]">
               <Icon className="size-5 shrink-0 mt-0.5 text-[var(--case-study-accent)]" aria-hidden />
@@ -142,17 +142,17 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
           ))}
         </ul>
 
-        <div className="space-y-6 not-prose">
+        <div className="space-y-8 not-prose">
           <ZoomableScreenshot
             src="/projects/omron-patient-monitoring/co-design-workshop.png"
             alt="Co-design workshop with practitioner persona boards and sticky-note feedback"
             caption="Co-design session, persona boards and workshop feedback"
-            previewFit="contain"
+            previewFit="cover"
             width={799}
             height={1024}
           />
 
-          <OmronPractitionerBoardsInteractive />
+          <OmronPractitionerBoardsInteractiveDeferred />
         </div>
       </CaseStudySection>
 
@@ -161,7 +161,7 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
         title={omronSectionTitle("iteration")}
         lead="From workshop sketches to a clickable prototype, iterating on action cards, dashboards, and assignment flows."
       >
-        <div className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 mb-6 text-body-sm text-amber-950 not-prose">
+        <div className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 mb-8 text-body-sm text-amber-950 not-prose">
           <AlertCircle className="size-5 shrink-0 mt-0.5" aria-hidden />
           <p>
             Wireframes explored permissions, subtasks, and dashboard counts before high-fidelity
@@ -169,14 +169,14 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
           </p>
         </div>
 
-        <ul className="list-disc pl-5 space-y-2 mb-8">
+        <ul className="list-disc pl-5 space-y-2 mb-10">
           {project.approach.slice(2).map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
 
-        <div className="space-y-6 not-prose mb-10">
-          <OmronWireframeSketchAnimation
+        <div className="not-prose">
+          <OmronWireframeSketchAnimationDeferred
             alt="Hand-drawn wireframes for action cards, dashboard, and patient assignment flows"
             caption="Early wireframes, action cards, dashboard, and assignment logic"
           />
@@ -184,14 +184,14 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
 
         <div className="not-prose">
           <CaseStudySubsection
+            spacingTop
+            className="mb-0"
             title="Interactive prototype"
-            lead="Built from the workshop wireframes into a clickable Figma flow, scroll inside the frame and click hotspots to move through monitoring, patient assignment, and action cards."
+            lead="Built from the workshop wireframes into a working prototype — filter patients, assign practitioners, review alerts, and open patient records without leaving this page."
           >
-            <FigmaPrototypeEmbed
-              url={OMRON_PROTOTYPE_URL}
-              title="OMRON Action card prototype"
-              caption="Interactive Figma prototype, assign patients, review alerts, and complete action cards"
-              priority
+            <EnhancePrototypeEmbed
+              title="OMRON patient monitoring prototype"
+              caption="Interactive prototype — assign patients, review alerts, resolve action cards, and explore patient detail"
               compactHeader
             />
           </CaseStudySubsection>
@@ -206,7 +206,7 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
         <p className="text-body text-[var(--color-text-secondary)] mb-4">
           {project.approachWhy.join(" · ")}
         </p>
-        <div className="space-y-4 not-prose">
+        <div className="space-y-5 not-prose">
           {omronTestingFindings.map(({ title, text }, index) => {
             const Icon = testingFindingIcons[index] ?? FileSearch;
 
@@ -271,32 +271,21 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
 
         <div className="not-prose">
           <CaseStudySubsection
+            spacingTop
+            className="mb-0"
             title="Assign patient with mandatory handover"
             lead="Reassigning a patient requires a reason, reducing silent transfers between practitioners."
           >
-            <ZoomableScreenshot
-              src="/projects/omron-patient-monitoring/group-122.png"
-              alt="Assign patient flow with required reason for transfer"
-              caption="Assign patient, reason for transfer required"
-              previewFit="contain"
-              width={1436}
-              height={896}
-            />
+            <OmronAssignPatientLiveDemo caption="Assign patient, reason for transfer required" />
           </CaseStudySubsection>
 
           <CaseStudySubsection
+            spacingTop
+            className="mb-0"
             title="Action card detail"
             lead="Action cards surface the task, status, and next steps for each patient alert."
           >
-            <ZoomableScreenshot
-              src="/projects/omron-patient-monitoring/group-123.png"
-              alt="Action card detail view in the OMRON prototype"
-              caption="Action card, task detail and completion states"
-              previewFit="contain"
-              width={1437}
-              height={896}
-              annotations={omronActionCardAnnotations}
-            />
+            <OmronActionCardLiveDemo caption="Action card, task detail and completion states" />
           </CaseStudySubsection>
         </div>
       </CaseStudySection>
@@ -315,7 +304,7 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
         feedbackPath="/work/omron-patient-monitoring"
       />
 
-      <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row gap-4 not-prose">
+      <div className="mt-16 flex flex-col gap-4 border-t border-[var(--color-border)] pt-12 not-prose sm:flex-row">
         <Button href="/work">← All projects</Button>
         <Button href="/contact" variant="secondary">
           Get in touch

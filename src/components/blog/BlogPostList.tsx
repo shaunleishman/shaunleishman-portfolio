@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/blog";
 import { getBlogThumbnailSrc } from "@/lib/blog-images";
@@ -85,13 +86,13 @@ export function BlogPostList({ posts, engagement }: BlogPostListProps) {
                     aria-hidden
                     tabIndex={-1}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    {/* Cover thumbnail — optimized via next/image */}
+                    <Image
                       src={getBlogThumbnailSrc(post)}
                       alt=""
-                      width={1024}
-                      height={576}
-                      className="absolute inset-0 size-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, 14rem"
                       loading="lazy"
                     />
                   </Link>

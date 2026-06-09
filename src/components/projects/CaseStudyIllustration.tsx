@@ -143,18 +143,18 @@ export function CaseStudySplitSection({
     <section
       id={id}
       aria-labelledby={headingId}
-      className={cn("mb-14 scroll-mt-36", className)}
+      className={cn("mb-16 scroll-mt-36 md:mb-20", className)}
     >
-      <h2 id={headingId} className="text-h3 font-semibold mb-2">
+      <h2 id={headingId} className="text-h3 font-semibold mb-3">
         {title}
       </h2>
       {lead && (
-        <p className="text-body text-[var(--color-text-muted)] mb-6 max-w-2xl">{lead}</p>
+        <p className="text-body text-[var(--color-text-muted)] mb-8 max-w-2xl">{lead}</p>
       )}
-      {!lead && <div className="mb-4" />}
+      {!lead && <div className="mb-6" />}
       <div
         className={cn(
-          "flex flex-col gap-6 md:flex-row md:items-start md:gap-8",
+          "flex flex-col gap-8 md:flex-row md:items-start md:gap-10",
           !visualFirst && "md:flex-row-reverse",
         )}
       >

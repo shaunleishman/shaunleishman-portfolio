@@ -11,9 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { ProjectThumbnail } from "@/components/projects/ProjectThumbnail";
 import { CaseStudyVisualBlocks } from "@/components/projects/CaseStudyVisualBlock";
 import { CaseStudyListWithVisuals } from "@/components/projects/CaseStudyListWithVisuals";
-import { ArbncoCaseStudyContent } from "@/components/projects/ArbncoCaseStudyContent";
-import { NhsCaseStudyContent } from "@/components/projects/NhsCaseStudyContent";
-import { OmronCaseStudyContent } from "@/components/projects/OmronCaseStudyContent";
+import { RichCaseStudyBody } from "@/components/projects/RichCaseStudyBody";
 import { CaseStudyBlock } from "@/components/projects/CaseStudyBlock";
 import { CaseStudyTextSection } from "@/components/projects/CaseStudyTextSection";
 import { CTASection } from "@/components/sections/CTASection";
@@ -132,12 +130,8 @@ export default async function CaseStudyPage({ params }: Props) {
             </Reveal>
           )}
 
-          {isArbnco ? (
-            <ArbncoCaseStudyContent project={project} />
-          ) : isNhs ? (
-            <NhsCaseStudyContent project={project} />
-          ) : isOmron ? (
-            <OmronCaseStudyContent project={project} />
+          {isRichCaseStudy ? (
+            <RichCaseStudyBody slug={slug} project={project} />
           ) : (
             <>
               <CaseStudyTextSection title="What was the problem?" slug={slug} section="problem">
@@ -189,7 +183,7 @@ export default async function CaseStudyPage({ params }: Props) {
               </CaseStudyBlock>
 
               <Reveal delay={60}>
-                <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row gap-4">
+                <div className="mt-16 flex flex-col gap-4 border-t border-[var(--color-border)] pt-12 sm:flex-row">
                   <Button href="/work">← All projects</Button>
                   <Button href="/contact" variant="secondary">
                     Discuss this project

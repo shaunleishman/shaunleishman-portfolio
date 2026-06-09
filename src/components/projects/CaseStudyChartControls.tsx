@@ -126,7 +126,7 @@ export function ChartLegendKey({ label, color }: { label: string; color: string 
   );
 }
 
-/** Shared insight / stat card shell. */
+/** Compact chart insight callout — left accent only, no full card shell. */
 export function ChartInsightCard({
   children,
   accentColor,
@@ -139,10 +139,10 @@ export function ChartInsightCard({
   return (
     <div
       className={cn(
-        "rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-body-sm text-[var(--color-text-secondary)]",
+        "border-l-[3px] pl-3 py-0.5 text-body-sm leading-snug text-[var(--color-text-muted)]",
         className,
       )}
-      style={accentColor ? { borderLeftWidth: 3, borderLeftColor: accentColor } : undefined}
+      style={accentColor ? { borderLeftColor: accentColor } : undefined}
     >
       {children}
     </div>

@@ -2,9 +2,9 @@
 
 export const arbncoCaseStudyMeta = {
   outcomeLine:
-    "Helped users understand, activate, and trust machine-generated energy data across the platform in under 4 weeks.",
+    "Clearer paths to trust and activate synthetic hourly energy data across the platform.",
   problemStatement:
-    "Energy platform users needed hourly carbon insights, but monthly meter readings limited how much detail they could see. Machine learning could generate hourly estimates when enough data existed, but only if people understood when and why those estimates were being used.",
+    "Teams needed hourly carbon data. Most meters only reported once a month.",
 };
 
 export const arbncoAtAGlance = {

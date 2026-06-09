@@ -29,11 +29,11 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "omron-patient-monitoring",
-    title: "OMRON: Patient monitoring",
+    title: "OMRON - Patient monitoring",
     tags: ["UI design", "Co-design", "Usability testing", "Interviews"],
     duration: "6 weeks",
     overview:
-      "OMRON needed a risk assessment for their hypertension monitoring platform to gauge patient and staff safety. After the platform failed the initial assessment, we worked with their team to conduct interviews and co-design workshops to develop a new direction. We then tested the prototype with users and provided implementation guidance for the new platform.",
+      "The hypertension platform failed a patient-safety assessment. We co-designed with practitioners, prototyped safer workflows, and usability-tested before handoff.",
     problem:
       "The platform failed a risk assessment due to a high risk of human error when assigning patients a medication plan (titration).",
     role: [
@@ -89,11 +89,11 @@ export const projects: Project[] = [
   },
   {
     slug: "nhs-111-waiting-times",
-    title: "NHS 111: Waiting times",
+    title: "NHS 111 - Waiting times",
     tags: ["Interviews", "UX", "Surveys"],
     duration: "4 weeks",
     overview:
-      "To improve NHS 111 and ease pressure on A&E, we spoke to recent users to understand their behaviour and needs. Using affinity mapping, we identified key touchpoints, highlighting a strong need for reassurance, clear guidance, and timely support.",
+      "Mixed-method research with recent 111 users surfaced a need for reassurance, clearer guidance, and better wait-time communication.",
     problem:
       "Many 111 callers were using the service for the wrong type of support. We needed to understand who was calling, why they were unsure about the service, and how the triage journey could guide people to the right help sooner.",
     role: [
@@ -152,7 +152,7 @@ export const projects: Project[] = [
     tags: ["UI design", "Service Design", "Product Design"],
     duration: "3–4 weeks",
     overview:
-      "Energy platform users often only had monthly meter readings, which limited how much detail they could see in their carbon reports. When enough data was available, machine learning could generate more detailed hourly estimates. The design challenge was helping people understand when those estimates were being used, turn the feature on with confidence, and trust what they were seeing.",
+      "Monthly readings limited carbon report detail. We designed UI so users could enable and trust ML-generated hourly estimates.",
     problem:
       "Users needed clearer carbon insights, but low-resolution energy data limited reporting. Generated hourly data could help, only if people understood when it was active and could trust it.",
     role: [
@@ -328,6 +328,7 @@ export const siteConfig = {
   brand: "sleishman.design",
   brandHandle: "sleishman",
   logo: "/brand/logo.png",
+  logoDark: "/brand/logo-dark.png",
   domain: "shaunleishmanportfolio.com",
   siteUrl: "https://www.shaunleishmanportfolio.com",
   tagline: "UX/UI designer helping teams build products users trust.",

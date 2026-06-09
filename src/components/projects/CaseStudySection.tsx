@@ -23,14 +23,14 @@ export function CaseStudySection({
 }: CaseStudySectionProps) {
   return (
     <Reveal delay={delay} variant="up">
-      <section id={id} aria-labelledby={`${id}-heading`} className={cn("mb-14 scroll-mt-36", className)}>
-        <h2 id={`${id}-heading`} className="text-h3 font-semibold mb-2">
+      <section id={id} aria-labelledby={`${id}-heading`} className={cn("mb-16 scroll-mt-36 md:mb-20", className)}>
+        <h2 id={`${id}-heading`} className="text-h3 font-semibold mb-3">
           {title}
         </h2>
         {lead && (
-          <p className="text-body text-[var(--color-text-muted)] mb-6 max-w-2xl">{lead}</p>
+          <p className="text-body text-[var(--color-text-muted)] mb-8 max-w-2xl">{lead}</p>
         )}
-        {!lead && <div className="mb-4" />}
+        {!lead && <div className="mb-6" />}
         <div className="text-body-lg text-[var(--color-text-secondary)]">{children}</div>
       </section>
     </Reveal>

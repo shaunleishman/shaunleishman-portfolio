@@ -1,11 +1,27 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { PenLine } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { FigmaHeroAnimation } from "@/components/illustrations/FigmaHeroAnimation";
 import { IconBadge } from "@/components/ui/IconBadge";
 import { Stagger } from "@/components/ui/Stagger";
 import { siteConfig } from "@/content/projects";
+
+const FigmaHeroAnimation = dynamic(
+  () =>
+    import("@/components/illustrations/FigmaHeroAnimation").then((mod) => ({
+      default: mod.FigmaHeroAnimation,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="min-h-[220px] w-full sm:min-h-[260px] lg:min-h-[320px]"
+        aria-hidden
+      />
+    ),
+  },
+);
 
 export function HomeHero() {
   return (

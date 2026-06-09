@@ -5,7 +5,7 @@ import "./globals.css";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { CookieConsent } from "@/components/consent/CookieConsent";
 import { ConsentProvider } from "@/components/consent/ConsentProvider";
-import { MetricsHeatmapOverlay } from "@/components/metrics/MetricsHeatmapOverlay";
+import { LazyMetricsHeatmapOverlay } from "@/components/metrics/LazyMetricsHeatmapOverlay";
 import { siteConfig } from "@/content/projects";
 
 const inter = Inter({
@@ -42,7 +42,7 @@ export default function RootLayout({
         <ConsentProvider>
           <Suspense fallback={null}>
             <AnalyticsProvider>{children}</AnalyticsProvider>
-            <MetricsHeatmapOverlay />
+            <LazyMetricsHeatmapOverlay />
             <CookieConsent />
           </Suspense>
         </ConsentProvider>

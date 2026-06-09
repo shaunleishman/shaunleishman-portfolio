@@ -1,11 +1,8 @@
 /** Recruiter-optimised content for the OMRON case study */
 
-export const OMRON_PROTOTYPE_URL =
-  "https://www.figma.com/proto/WVbonH3ZKEGt09wqA428JP/OMRON-Action-card-prototype?page-id=279%3A2203&node-id=573-12324&scaling=scale-down&content-scaling=fixed&starting-point-node-id=573%3A12324";
-
 export const omronCaseStudyMeta = {
   outcomeLine:
-    "Co-designed a safer action-card and monitoring workflow after the platform failed its initial risk assessment for medication titration.",
+    "Safer monitoring and handover flows after the platform failed its medication titration risk assessment.",
   problemStatement:
     "The hypertension monitoring platform failed a risk assessment because practitioners could assign the wrong medication plan to the wrong patient. Small UI gaps (missing records, stale data, unclear handovers) created outsized clinical risk.",
 };

@@ -2,7 +2,7 @@
 
 export const nhsCaseStudyMeta = {
   outcomeLine:
-    "Mapped five caller personas and journey pain points to help NHS 111 improve reassurance, routing, and wait-time communication.",
+    "Five caller personas and journey maps to improve NHS 111 routing and reassurance.",
   problemStatement:
     "Many people reached NHS 111 without knowing whether it was the right service, or what to expect once they were in the queue. Long waits, repeated questions, and unclear routing added pressure on callers and on A&E.",
 };

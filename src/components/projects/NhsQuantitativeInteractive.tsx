@@ -108,9 +108,9 @@ function MetricBar({
 
 function InsightBox({ text, accentColor }: { text: string; accentColor: string }) {
   return (
-    <div className="mt-4">
-      <ChartInsightCard accentColor={accentColor}>{text}</ChartInsightCard>
-    </div>
+    <ChartInsightCard accentColor={accentColor} className="mt-2">
+      {text}
+    </ChartInsightCard>
   );
 }
 
@@ -123,7 +123,7 @@ function SurveyRespondentsPanel({ baseId, animationKey }: { baseId: string; anim
   return (
     <div>
       <AgePills baseId={`${baseId}-survey`} activeAge={activeAge} onSelect={setActiveAge} />
-      <div className="mt-5 space-y-4" role="tabpanel" aria-labelledby={`${baseId}-age-${activeAge}`}>
+      <div className="mt-3 space-y-3" role="tabpanel" aria-labelledby={`${baseId}-age-${activeAge}`}>
         <MetricBar
           label="Survey respondents"
           value={row.surveyRespondents}
@@ -153,7 +153,7 @@ function PriorResourcesPanel({ baseId, animationKey }: { baseId: string; animati
   return (
     <div>
       <AgePills baseId={`${baseId}-resources`} activeAge={activeAge} onSelect={setActiveAge} />
-      <div className="mt-5 space-y-4" role="tabpanel">
+      <div className="mt-3 space-y-3" role="tabpanel">
         <MetricBar
           label="Survey respondents"
           value={row.surveyRespondents}
@@ -629,17 +629,13 @@ export function NhsQuantitativeInteractive({ className }: NhsQuantitativeInterac
     <div className={cn("not-prose", className)}>
       <div
         id={`${baseId}-explorer`}
-        className="rounded-xl border border-[var(--color-border)] bg-neutral-50"
+        className="overflow-hidden rounded-xl border border-[var(--color-border)] bg-white"
       >
-        <div className="rounded-t-xl border-b border-[var(--color-border)] px-4 py-3 md:px-5">
-          <p className="text-body-sm text-[var(--color-text-muted)] mb-3">
-            Survey data captured April 2023, select a chart to explore demographics, outcomes, satisfaction, or weekday patterns.
-          </p>
-          <p className="text-label text-[var(--color-text-muted)] mb-2">Chart view</p>
+        <div className="border-b border-[var(--color-border)] px-4 py-2.5 md:px-5">
           <div
             role="tablist"
             aria-label="Quantitative survey charts"
-            className="-mx-4 flex gap-2 overflow-x-auto overscroll-x-contain px-4 pb-1 scrollbar-none md:-mx-5 md:px-5"
+            className="-mx-4 flex gap-1.5 overflow-x-auto overscroll-x-contain px-4 pb-0.5 scrollbar-none md:-mx-5 md:px-5"
           >
             {nhsQuantitativeViews.map((view) => {
               const selected = view.id === activeViewId;
@@ -656,6 +652,7 @@ export function NhsQuantitativeInteractive({ className }: NhsQuantitativeInterac
                   role="tab"
                   aria-selected={selected}
                   aria-controls={`${baseId}-quant-panel`}
+                  className="min-h-[32px] px-2.5 py-1"
                 />
               );
             })}
@@ -666,21 +663,17 @@ export function NhsQuantitativeInteractive({ className }: NhsQuantitativeInterac
           role="tabpanel"
           id={`${baseId}-quant-panel`}
           aria-labelledby={`${baseId}-view-${activeView.id}`}
-          className="rounded-b-xl bg-white p-4 md:p-5"
+          className="p-4 md:p-5"
         >
-          <div className="mb-4">
-            <h3 className="text-h4 font-semibold text-[var(--color-text-primary)]">{activeView.title}</h3>
-            <p className="mt-1 text-body-sm text-[var(--color-text-muted)]">{activeView.description}</p>
+          <div className="mb-3">
+            <h3 className="text-body font-semibold text-[var(--color-text-primary)]">{activeView.title}</h3>
+            <p className="mt-0.5 text-body-sm text-[var(--color-text-muted)]">{activeView.description}</p>
           </div>
 
           <div className="motion-safe:animate-[fade-in_0.25s_ease-out]" key={activeView.id}>
             {panel}
           </div>
         </div>
-
-        <p className="m-0 border-t border-[var(--color-border)] bg-neutral-50 px-4 py-2 text-body-sm leading-snug text-[var(--color-text-muted)] md:px-5">
-          Toggle age groups, time blocks, weekdays, or chart series to compare survey patterns from the NHS 111 follow-up study.
-        </p>
       </div>
     </div>
   );

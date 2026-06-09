@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { AlertCircle, Bookmark, CheckSquare, ExternalLink, Library } from "lucide-react";
+import { AlertCircle, Bookmark, CheckSquare, Library } from "lucide-react";
 import type { Project } from "@/content/projects";
 import {
   arbncoAtAGlance,
@@ -20,10 +19,10 @@ import {
   CaseStudySplitSection,
 } from "@/components/projects/CaseStudyIllustration";
 import { ZoomableScreenshot } from "@/components/projects/ZoomableScreenshot";
+import { ArbncoEditProjectLiveDemo } from "@/components/projects/ArbncoEditProjectLiveDemo";
+import { ArbncoBulkSynthesiseLiveDemo } from "@/components/projects/ArbncoBulkSynthesiseLiveDemo";
+import { HalfHourlyPrototypeEmbed } from "@/components/projects/HalfHourlyPrototypeEmbed";
 import { CaseStudyAccentProvider } from "@/components/projects/CaseStudyAccentProvider";
-
-const FIGMA_PROTOTYPE_URL =
-  "https://www.figma.com/make/MAun3hdKIKb6vTuWxbwDGN/Prototype-for-Half-Hourly-Project?t=YTFyfYijTGsXetcB-20&fullscreen=1";
 
 const userFlowStages = [
   {
@@ -103,9 +102,9 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           {arbncoCaseStudyMeta.problemStatement}
         </p>
         <p className="mt-4 text-body text-[var(--color-text-muted)]">
-          The platform takes lower-resolution energy readings and uses machine learning to produce
-          more detailed hourly estimates when enough source data exists. The design job was to help
-          users activate that feature, understand when it was running, and trust the results.
+          The platform could estimate those missing hours when enough readings were available. I
+          designed flows so people could turn it on, see when estimates were running, and trust
+          what they saw.
         </p>
       </CaseStudySplitSection>
 
@@ -146,29 +145,24 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           <AlertCircle className="size-5 shrink-0 mt-0.5" aria-hidden />
           <p>Used AI tools to explore and motivate ideas, not to ship unreviewed output.</p>
         </div>
-        <ul className="list-disc pl-5 space-y-2 mb-8">
+        <ul className="list-disc pl-5 space-y-2 mb-10">
           {project.approach.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
-        <Link
-          href={FIGMA_PROTOTYPE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Prototype for Half Hourly Project (opens in a new tab)"
-          className="group flex items-center justify-between gap-4 rounded-xl border border-[var(--color-border)] bg-neutral-50 px-5 py-4 hover:border-[var(--case-study-accent)] transition-colors not-prose"
-        >
-          <div>
-            <p className="text-body font-semibold mb-1 group-hover:text-[var(--case-study-accent)]">
-              Prototype for Half Hourly Project
-            </p>
-            <p className="text-body-sm text-[var(--color-text-muted)]">View prototype in Figma Make</p>
-          </div>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white px-3 py-1.5 text-body-sm font-medium text-[var(--color-text-secondary)] group-hover:border-[var(--case-study-accent)]/40 group-hover:text-[var(--case-study-accent)] transition-colors">
-            <ExternalLink className="size-4" aria-hidden />
-            New tab
-          </span>
-        </Link>
+
+        <div className="not-prose">
+          <CaseStudySubsection
+            className="mb-0"
+            title="Interactive prototype"
+            lead="Explore the project list, open a building, enable synthetic hourly data, and review energy charts without leaving this page."
+          >
+            <HalfHourlyPrototypeEmbed
+              caption="Interactive prototype — compare data resolution, enable synthetic hourly data, and explore project settings"
+              compactHeader
+            />
+          </CaseStudySubsection>
+        </div>
       </CaseStudySection>
 
       <CaseStudySection
@@ -224,31 +218,21 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
 
         <div className="not-prose">
           <CaseStudySubsection
+            spacingTop
+            className="mb-0"
             title="Example: bulk enable across projects"
             lead="Checkbox selection and synthesise/revert actions for managing multiple projects at once."
           >
-            <ZoomableScreenshot
-              src="/projects/arbnco-synthetic-ai-data/flow-example-synthetic-data.png"
-              alt="Three-step flow for bulk synthesising and reverting synthetic data across the projects list"
-              caption="Example: bulk synthesise and revert flow across the projects list"
-              previewFit="contain"
-              width={1024}
-              height={339}
-            />
+            <ArbncoBulkSynthesiseLiveDemo />
           </CaseStudySubsection>
 
           <CaseStudySubsection
+            spacingTop
+            className="mb-0"
             title="Example: Edit Project settings"
             lead="Toggle, status badge, and checklist make eligibility and active state visible in context."
           >
-            <ZoomableScreenshot
-              src="/projects/arbnco-synthetic-ai-data/enabling-half-hourly-data.png"
-              alt="Edit Project screen with synthetic data badge and enable synthetic hourly data toggle"
-              caption="Example: enabling generated hourly data from project settings"
-              previewFit="contain"
-              width={1024}
-              height={643}
-            />
+            <ArbncoEditProjectLiveDemo />
           </CaseStudySubsection>
         </div>
       </CaseStudySection>
@@ -267,7 +251,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
         feedbackPath="/work/arbnco-synthetic-ai-data"
       />
 
-      <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row gap-4 not-prose">
+      <div className="mt-16 flex flex-col gap-4 border-t border-[var(--color-border)] pt-12 not-prose sm:flex-row">
         <Button href="/work">← All projects</Button>
         <Button href="/contact" variant="secondary">
           Get in touch
