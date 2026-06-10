@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
 import { getBlogShareImageUrl, getBlogShareImageMeta } from "@/lib/blog-images";
+import { getBlogCategory } from "@/lib/blog-categories";
 import { getBlogEngagementForSlug } from "@/lib/blog-engagement";
 import { siteConfig } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -70,6 +71,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const shareUrl = `${siteConfig.siteUrl}/blog/${post.slug}`;
   const engagement = getBlogEngagementForSlug(post.slug);
+  const category = getBlogCategory(post.category);
 
   return (
     <BlogPostEngagement
@@ -102,6 +104,13 @@ export default async function BlogPostPage({ params }: Props) {
           </nav>
 
           <SectionLabel dark>
+            <span
+              className="mr-2 inline-block size-2 rounded-full align-middle"
+              style={{ backgroundColor: category.thumbnailBg }}
+              aria-hidden
+            />
+            {category.label}
+            {" · "}
             <time dateTime={post.date}>
               {new Date(post.date).toLocaleDateString("en-GB", {
                 day: "numeric",

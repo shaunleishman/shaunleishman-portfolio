@@ -254,34 +254,49 @@ export function ProjectListPage({ demoMode = false }: { demoMode?: boolean }) {
     if (!demoMode) return;
 
     const ids = [...BULK_SYNTHESISE_DEMO_IDS];
+    let targetSelected: string[];
+    let syntheticEnabled: boolean;
 
     switch (playbackStep) {
       case "idle":
-        bulkSetSynthetic(ids, false);
-        setSelectedIds(new Set());
+        syntheticEnabled = false;
+        targetSelected = [];
         break;
       case "pick-2":
-        bulkSetSynthetic(ids, false);
-        setSelectedIds(new Set(["2"]));
+        syntheticEnabled = false;
+        targetSelected = ["2"];
         break;
       case "pick-3":
-        bulkSetSynthetic(ids, false);
-        setSelectedIds(new Set(["2", "3"]));
+        syntheticEnabled = false;
+        targetSelected = ["2", "3"];
         break;
       case "pick-4":
-        bulkSetSynthetic(ids, false);
-        setSelectedIds(new Set(["2", "3", "4"]));
+        syntheticEnabled = false;
+        targetSelected = ["2", "3", "4"];
         break;
       case "selected":
       case "synthesise":
-        bulkSetSynthetic(ids, false);
-        setSelectedIds(new Set(ids));
+        syntheticEnabled = false;
+        targetSelected = ids;
         break;
       case "synthesised":
-        bulkSetSynthetic(ids, true);
-        setSelectedIds(new Set(ids));
+        syntheticEnabled = true;
+        targetSelected = ids;
         break;
+      default:
+        return;
     }
+
+    bulkSetSynthetic(ids, syntheticEnabled);
+    setSelectedIds((prev) => {
+      if (
+        prev.size === targetSelected.length &&
+        targetSelected.every((id) => prev.has(id))
+      ) {
+        return prev;
+      }
+      return new Set(targetSelected);
+    });
   }, [bulkSetSynthetic, demoMode, playbackStep]);
 
   const projectList = Object.entries(projects).map(([id, data]) => ({

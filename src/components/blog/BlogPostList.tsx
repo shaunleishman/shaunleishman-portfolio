@@ -5,6 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/blog";
 import { getBlogThumbnailSrc } from "@/lib/blog-images";
+import {
+  BLOG_CATEGORY_FILTER_OPTIONS,
+  type BlogCategoryFilter,
+  getBlogCategory,
+  getBlogCategoryByLabel,
+} from "@/lib/blog-categories";
 import type { BlogEngagementStats } from "@/lib/blog-engagement-shared";
 import { BlogEngagementStatsDisplay } from "@/components/blog/BlogEngagementStats";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -12,7 +18,7 @@ import { FilterChip } from "@/components/ui/FilterChip";
 import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
 import { Reveal } from "@/components/ui/Reveal";
 
-const FILTERS = ["All", "UX", "UI", "Research", "AI", "Product Design"] as const;
+const FILTERS = BLOG_CATEGORY_FILTER_OPTIONS;
 
 type BlogPostListProps = {
   posts: BlogPost[];
@@ -24,17 +30,17 @@ function formatReadingTime(text: string) {
 }
 
 export function BlogPostList({ posts, engagement }: BlogPostListProps) {
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
+  const [filter, setFilter] = useState<BlogCategoryFilter>("All");
   const [pending, startTransition] = useTransition();
 
   const filtered = useMemo(() => {
     if (filter === "All") return posts;
-    return posts.filter((post) =>
-      post.tags.some((tag) => tag.toLowerCase() === filter.toLowerCase()),
-    );
+    const category = getBlogCategoryByLabel(filter);
+    if (!category) return posts;
+    return posts.filter((post) => post.category === category.id);
   }, [posts, filter]);
 
-  function selectFilter(topic: (typeof FILTERS)[number]) {
+  function selectFilter(topic: BlogCategoryFilter) {
     startTransition(() => setFilter(topic));
   }
 
@@ -47,16 +53,21 @@ export function BlogPostList({ posts, engagement }: BlogPostListProps) {
   return (
     <>
       <Reveal immediate>
-        <div className="mb-10 flex flex-wrap gap-2" role="group" aria-label="Filter articles by topic">
-          {FILTERS.map((topic) => (
-            <FilterChip
-              key={topic}
-              label={topic}
-              selected={filter === topic}
-              onClick={() => selectFilter(topic)}
-              aria-pressed={filter === topic}
-            />
-          ))}
+        <div className="mb-10 flex flex-wrap gap-2" role="group" aria-label="Filter articles by category">
+          {FILTERS.map((topic) => {
+            const category = topic === "All" ? null : getBlogCategoryByLabel(topic);
+
+            return (
+              <FilterChip
+                key={topic}
+                label={topic}
+                selected={filter === topic}
+                onClick={() => selectFilter(topic)}
+                aria-pressed={filter === topic}
+                accentColor={category?.accentColor}
+              />
+            );
+          })}
         </div>
       </Reveal>
 
@@ -76,17 +87,19 @@ export function BlogPostList({ posts, engagement }: BlogPostListProps) {
         </p>
       ) : (
         <ul className="divide-y divide-[var(--color-border)]">
-          {filtered.map((post, index) => (
+          {filtered.map((post, index) => {
+            const category = getBlogCategory(post.category);
+
+            return (
             <li key={post.slug} className="py-8 first:pt-0">
               <Reveal delay={index * 60}>
                 <article className="grid grid-cols-1 gap-5 sm:grid-cols-[14rem_1fr] sm:items-stretch sm:gap-8">
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="relative block aspect-[16/9] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] sm:aspect-auto sm:h-full sm:min-h-[10.5rem]"
+                    className="relative block aspect-[16/9] overflow-hidden rounded-xl border border-[var(--color-border)] sm:aspect-auto sm:h-full sm:min-h-[10.5rem]"
                     aria-hidden
                     tabIndex={-1}
                   >
-                    {/* Cover thumbnail — optimized via next/image */}
                     <Image
                       src={getBlogThumbnailSrc(post)}
                       alt=""
@@ -129,18 +142,20 @@ export function BlogPostList({ posts, engagement }: BlogPostListProps) {
                     </Link>
                   </h2>
                   <p className="text-body text-[var(--color-text-secondary)] mb-4">{post.description}</p>
-                  <ul className="flex flex-wrap gap-2" aria-label="Tags">
-                    {post.tags.map((tag) => (
-                      <li key={tag} className="text-body-sm text-[var(--color-text-muted)]">
-                        #{tag}
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="text-body-sm text-[var(--color-text-muted)]">
+                    <span
+                      className="mr-2 inline-block size-2.5 rounded-full align-middle"
+                      style={{ backgroundColor: category.thumbnailBg }}
+                      aria-hidden
+                    />
+                    {category.label}
+                  </p>
                   </div>
                 </article>
               </Reveal>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </>

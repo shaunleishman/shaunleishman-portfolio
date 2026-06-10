@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import readingTime from "reading-time";
+import { type BlogCategoryId, resolveBlogCategoryId } from "@/lib/blog-categories";
 
 const BLOG_DIR = path.join(process.cwd(), "src/content/blog");
 
@@ -11,6 +12,7 @@ export type BlogPost = {
   description: string;
   date: string;
   published: boolean;
+  category: BlogCategoryId;
   tags: string[];
   /** Optional share/card image under /public, e.g. /images/blog/my-post.jpg (1200×630 recommended). */
   thumbnail?: string;
@@ -46,6 +48,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     description: data.description,
     date: data.date,
     published: data.published ?? true,
+    category: resolveBlogCategoryId(data.category, data.tags ?? []),
     tags: data.tags ?? [],
     thumbnail: data.thumbnail,
     content,

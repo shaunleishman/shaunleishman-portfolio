@@ -76,7 +76,7 @@ export function ProjectProvider({
   const [tutorialProjectId, setTutorialProjectId] = useState<string | null>(null);
   const [forceSyntheticTooltip, setForceSyntheticTooltip] = useState(false);
 
-  const toggleSynthetic = (id: string) => {
+  const toggleSynthetic = useCallback((id: string) => {
     setProjects((prev) => ({
       ...prev,
       [id]: {
@@ -85,22 +85,32 @@ export function ProjectProvider({
         dataResolution: !prev[id].syntheticEnabled ? "Synthetic" : "Mixed",
       },
     }));
-  };
+  }, []);
 
-  const bulkSetSynthetic = (ids: string[], enabled: boolean) => {
+  const bulkSetSynthetic = useCallback((ids: string[], enabled: boolean) => {
     setProjects((prev) => {
+      let changed = false;
       const next = { ...prev };
+
       for (const id of ids) {
         if (!next[id]) continue;
+
+        const targetResolution = enabled ? BULK_SYNTHESISED_LABEL : "Mixed";
+        if (next[id].syntheticEnabled === enabled && next[id].dataResolution === targetResolution) {
+          continue;
+        }
+
+        changed = true;
         next[id] = {
           ...next[id],
           syntheticEnabled: enabled,
-          dataResolution: enabled ? BULK_SYNTHESISED_LABEL : "Mixed",
+          dataResolution: targetResolution,
         };
       }
-      return next;
+
+      return changed ? next : prev;
     });
-  };
+  }, []);
 
   const completeTutorial = useCallback(() => {
     setShowTutorial(false);

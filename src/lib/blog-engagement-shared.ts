@@ -10,6 +10,7 @@ const BLOG_ENGAGEMENT_SEED: Record<string, { views: number; likes: number; share
   default: { views: 172, likes: 15, shares: 7 },
   "why-kano-model-is-about-letting-go": { views: 172, likes: 15, shares: 7 },
   "are-users-getting-tired-of-your-product": { views: 64, likes: 8, shares: 4 },
+  "what-if-we-are-wrong-about-this": { views: 28, likes: 4, shares: 2 },
 };
 
 export function withEngagementSeed(

@@ -59,7 +59,7 @@ function renderMarkdownBlock(block: string, key: number) {
   const withLinks = block.replace(
     /\[([^\]]+)\]\(([^)]+)\)/g,
     '<a href="$2" class="text-[var(--color-accent)] hover:underline">$1</a>',
-  );
+  ).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   return (
     <Reveal key={key} variant="fade">
       <p

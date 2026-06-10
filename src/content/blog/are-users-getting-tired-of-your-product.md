@@ -3,7 +3,8 @@ title: "Are Users Getting Tired of Your Product?"
 description: "How cognitive load turns simple tasks into tiring journeys."
 date: "2026-06-05"
 published: true
-tags: ["UX", "Product Design", "Research"]
+category: user-behavior
+tags: ["Cognitive load", "Psychology", "Attention"]
 thumbnail: "/images/blog/are-users-getting-tired-of-your-product.png"
 ---
 
