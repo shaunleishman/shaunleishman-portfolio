@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 type ShowcasePageShellProps = {
   children: ReactNode;
-  /** Max content width — pages still grow/shrink with the viewport below this cap. */
+  /** Max content width: pages still grow/shrink with the viewport below this cap. */
   maxWidth?: "4xl" | "6xl" | "7xl";
   className?: string;
 };

@@ -307,7 +307,7 @@ import { LargeTileSlotList } from './LargeTileSlotList';
           {TILE_STATES.map((state) => (
             <div key={`large-${state}`}>
               <p className="mb-3 text-xs font-semibold uppercase text-[var(--colour-labels-disabled)]">
-                Large tile — {state}
+                Large tile: {state}
               </p>
               <CardPreviewShell>
                 <ConnectedLargeTile
@@ -323,7 +323,7 @@ import { LargeTileSlotList } from './LargeTileSlotList';
           {TILE_STATES.map((state) => (
             <div key={`medium-${state}`}>
               <p className="mb-3 text-xs font-semibold uppercase text-[var(--colour-labels-disabled)]">
-                Medium tile — {state}
+                Medium tile: {state}
               </p>
               <CardPreviewShell>
                 <ConnectedMediumTile
@@ -336,7 +336,7 @@ import { LargeTileSlotList } from './LargeTileSlotList';
           {LARGE_CARD_STATES.map((state) => (
             <div key={`card-${state}`}>
               <p className="mb-3 text-xs font-semibold uppercase text-[var(--colour-labels-disabled)]">
-                Large card — {state}
+                Large card: {state}
               </p>
               <CardPreviewShell>
                 <ConnectedLargeCard
@@ -356,7 +356,7 @@ import { LargeTileSlotList } from './LargeTileSlotList';
         </div>
       ) : (
         <>
-          <VariantPreviewFrame label={`${componentLabel} — ${stateLabel}`} align="center">
+          <VariantPreviewFrame label={`${componentLabel}: ${stateLabel}`} align="center">
             <CardPreviewShell>{preview}</CardPreviewShell>
           </VariantPreviewFrame>
           {status && (

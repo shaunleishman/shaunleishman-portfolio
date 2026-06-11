@@ -379,7 +379,7 @@ export function ProjectListPage({ demoMode = false }: { demoMode?: boolean }) {
                   demoMode ? "line-clamp-1 text-xs" : "text-sm",
                 )}
               >
-                All buildings in your portfolio — open a project to view energy data, run reports, or configure meters.
+                All buildings in your portfolio. Open a project to view energy data, run reports, or configure meters.
               </p>
             </div>
             <div className="flex w-full shrink-0 gap-2 lg:w-auto lg:gap-3">
@@ -817,9 +817,9 @@ const CHART_GAS_SYNTHETIC_VALUES = [240, 275, 305, 335, 360, 385, 410, 430, 455,
 
 const METER_OPTIONS = [
   { value: "all", label: "All meters" },
-  { value: "elec-main", label: "Electricity — Main" },
-  { value: "gas-main", label: "Gas — Main" },
-  { value: "elec-solar", label: "Electricity — Solar" },
+  { value: "elec-main", label: "Electricity (Main)" },
+  { value: "gas-main", label: "Gas (Main)" },
+  { value: "elec-solar", label: "Electricity (Solar)" },
 ];
 
 function buildEnergyChartData(syntheticEnabled: boolean, fuel: "electricity" | "gas") {

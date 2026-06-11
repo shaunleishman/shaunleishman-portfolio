@@ -55,7 +55,7 @@ export const arbncoBulkSynthesiseSteps: ArbncoBulkDemoStepConfig[] = [
   {
     step: "selected",
     title: "Bulk selection",
-    description: "Three mixed projects — synthesise appears in the toolbar.",
+    description: "Three mixed projects selected. Synthesise appears in the toolbar.",
     targetSelector: "#project-list-toolbar-actions",
     calloutSide: "right",
     maxWidth: "13rem",
@@ -79,7 +79,7 @@ export const arbncoBulkSynthesiseSteps: ArbncoBulkDemoStepConfig[] = [
   {
     step: "synthesised",
     title: "Synthesised",
-    description: "Chips turn green — Synthesise drops away, Revert stays.",
+    description: "Chips turn green. Synthesise goes away. Revert stays.",
     targetSelector: 'tr[data-selected="true"] td:nth-child(3)',
     calloutSide: "right",
     maxWidth: "13rem",

@@ -17,7 +17,7 @@ const VARIANT_CLASS = {
     "border border-transparent bg-transparent text-[#4a5453] hover:bg-[#f5f6f6] active:bg-[#e5e8e7]",
 } as const;
 
-/** Native button for showcase chrome — avoids invisible Figma export text-box-trim issues. */
+/** Native button for showcase chrome: avoids invisible Figma export text-box-trim issues. */
 export function ShowcaseChromeButton({
   children,
   variant = "ghost",

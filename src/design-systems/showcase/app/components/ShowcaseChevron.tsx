@@ -19,7 +19,7 @@ const CONTAINER_CLASS: Record<ShowcaseChevronSize, string> = {
   md: "size-6",
 };
 
-/** Visual glyph sizes — centred inside the hit-area container, matching Figma icon insets. */
+/** Visual glyph sizes: centred inside the hit-area container, matching Figma icon insets. */
 const UP_DOWN_GLYPH_CLASS: Record<ShowcaseChevronSize, string> = {
   sm: "h-[5px] w-[9px]",
   md: "h-2 w-3.5",

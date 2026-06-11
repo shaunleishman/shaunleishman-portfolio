@@ -12,8 +12,11 @@ import type { Project } from "@/content/projects";
 import {
   omronAtAGlance,
   omronCaseStudyMeta,
+  omronMyRole,
+  omronCoDesignItems,
   omronReflectionItems,
   omronRoleItems,
+  omronTeamTogetherItems,
   omronSectionNav,
   omronSectionTitle,
   omronTestingFindings,
@@ -66,15 +69,15 @@ const actionCardFlow = [
 const coDesignHighlights = [
   {
     icon: Users,
-    text: "Five user groups co-designed around how they recruit, monitor, and hand off hypertension patients.",
+    text: "I facilitated workshops with five user groups co-designing how they recruit, monitor, and hand off hypertension patients.",
   },
   {
     icon: Stethoscope,
-    text: "Persona boards captured role-specific tasks, interactions, and how each group uses OMRON VISO.",
+    text: "I built persona boards from role-specific tasks. They fed straight into wireframes, not a report that got shelved.",
   },
   {
     icon: ClipboardCheck,
-    text: "Workshop outputs fed directly into wireframes, not a separate research report shelved after delivery.",
+    text: "Practitioners sketched solutions in sessions; I translated those into wireframes and a clickable prototype for usability testing.",
   },
 ];
 
@@ -92,6 +95,8 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
       <CaseStudyAtAGlance
         title={omronSectionTitle("at-a-glance")}
         summary={omronAtAGlance.summary}
+        productGoal={omronAtAGlance.productGoal}
+        team={omronAtAGlance.team}
         problem={omronAtAGlance.problem}
         contribution={omronAtAGlance.contribution}
         highlights={omronAtAGlance.highlights}
@@ -119,19 +124,29 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
       <CaseStudySection
         id="my-role"
         title={omronSectionTitle("my-role")}
-        lead="Key responsibilities across workshops, prototyping, and usability testing."
+        lead={omronMyRole.lead}
       >
-        <ul className="list-disc pl-5 space-y-2">
-          {omronRoleItems.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        <CaseStudySubsection title="What we did together">
+          <ul className="list-disc pl-5 space-y-2">
+            {omronTeamTogetherItems.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </CaseStudySubsection>
+        <CaseStudySubsection title="What I owned">
+          <ul className="list-disc pl-5 space-y-2">
+            {omronRoleItems.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </CaseStudySubsection>
+        <p className="mt-6 text-body text-[var(--color-text-muted)]">{omronMyRole.impact}</p>
       </CaseStudySection>
 
       <CaseStudySection
         id="co-design"
         title={omronSectionTitle("co-design")}
-        lead="Practitioners shaped the direction, workshops turned interview themes into sketches the whole team could react to."
+        lead="Practitioners shaped the direction in workshops. I translated their sketches into wireframes and a prototype for moderated usability testing."
       >
         <ul className="space-y-3 not-prose mb-10">
           {coDesignHighlights.map(({ icon: Icon, text }) => (
@@ -187,11 +202,11 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
             spacingTop
             className="mb-0"
             title="Interactive prototype"
-            lead="Built from the workshop wireframes into a working prototype — filter patients, assign practitioners, review alerts, and open patient records without leaving this page."
+            lead="Built from workshop wireframes into a working prototype. Filter patients, assign practitioners, review alerts, and open records without leaving this page."
           >
             <EnhancePrototypeEmbed
               title="OMRON patient monitoring prototype"
-              caption="Interactive prototype — assign patients, review alerts, resolve action cards, and explore patient detail"
+              caption="Interactive prototype: assign patients, review alerts, resolve action cards, and explore patient detail"
               compactHeader
             />
           </CaseStudySubsection>

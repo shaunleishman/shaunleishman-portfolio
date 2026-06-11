@@ -15,7 +15,7 @@ export default function AdminOverviewPage() {
   return (
     <AdminShell
       title="Overview"
-      description="Your admin home — quick health checks and shortcuts to site metrics, prototypes, and design systems."
+      description="Your admin home. Quick health checks and shortcuts to site metrics, prototypes, and design systems."
     >
       {loading && !data ? (
         <p className="text-body-sm text-[var(--color-text-muted)]">Loading overview…</p>
@@ -60,7 +60,7 @@ export default function AdminOverviewPage() {
               </div>
               <h2 className="text-h4 font-semibold">Prototypes</h2>
               <p className="mt-2 text-body-sm text-[var(--color-text-secondary)]">
-                Interactive demos from past projects — embed in case studies without linking to Figma.
+                Interactive demos from past projects. Embed in case studies without linking to Figma.
               </p>
               <span className="mt-4 inline-flex items-center gap-1 text-body-sm font-medium text-[var(--color-accent)]">
                 Browse prototypes

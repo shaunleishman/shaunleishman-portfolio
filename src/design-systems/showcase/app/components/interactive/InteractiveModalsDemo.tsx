@@ -74,7 +74,7 @@ function ConnectedUploadModal({ onStatus }: { onStatus: (message: string) => voi
         onClose={() => onStatus("Modal closed")}
         onCancel={() => {
           reset();
-          onStatus("Upload cancelled — selection cleared");
+          onStatus("Upload cancelled: selection cleared");
         }}
         onImport={() => {
           if (!fileName) {
@@ -216,7 +216,7 @@ export function InteractiveModalsDemo() {
           {UPLOAD_STATES.map((state) => (
             <div key={state}>
               <p className="mb-3 text-xs font-semibold uppercase text-[var(--colour-labels-disabled)]">
-                Upload — {state === "Default" ? "Uploading" : state}
+                Upload: {state === "Default" ? "Uploading" : state}
               </p>
               <div className="showcase-modal-preview flex justify-center">
                 <StaticUploadModal uploadStatus={state} />
@@ -249,7 +249,7 @@ export function InteractiveModalsDemo() {
           )}
           <p className="mt-4 text-xs text-[var(--colour-labels-disabled)]">
             {view === "upload"
-              ? "UploadStatus and ModalDropZone are composed inside Modal — choose a file, then Import to complete the flow."
+              ? "UploadStatus and ModalDropZone are composed inside Modal: choose a file, then Import to complete the flow."
               : "Use the Type filter to preview each notification variant."}
           </p>
         </>

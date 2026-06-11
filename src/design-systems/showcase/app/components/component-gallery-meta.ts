@@ -13,7 +13,7 @@ export const GALLERY_SECTIONS: GallerySectionMeta[] = [
   {
     id: "buttons",
     title: "Buttons",
-    description: "Small, medium, and large buttons — pick size, type, and state, or view all variants.",
+    description: "Small, medium, and large buttons: pick size, type, and state, or view all variants.",
     category: "Actions",
     keywords: ["button", "primary", "secondary"],
     code: `import ButtonMedium from './imports/ButtonMedium';\n\n<ButtonMedium buttonMd="Primary" buttonText="Save changes" />`,
@@ -77,7 +77,7 @@ export const GALLERY_SECTIONS: GallerySectionMeta[] = [
   {
     id: "tables",
     title: "Tables & page controls",
-    description: "Full Insight page with sidebar, filters, toolbar, and wide data table — or inspect parts separately.",
+    description: "Full Insight page with sidebar, filters, toolbar, and wide data table: or inspect parts separately.",
     category: "Data",
     keywords: ["table", "column", "page controls", "sidebar", "page"],
     code: `import SideMenuFullNew from './imports/SideMenuFullNew';

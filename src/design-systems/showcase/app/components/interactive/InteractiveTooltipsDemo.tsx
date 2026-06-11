@@ -120,7 +120,7 @@ export function InteractiveTooltipsDemo() {
             </div>
           </VariantPreviewFrame>
           <p className="mt-4 text-xs text-[var(--colour-labels-disabled)]">
-            Move the pointer over the button — the tooltip opens on the opposite side (left edge → right, top →
+            Move the pointer over the button: the tooltip opens on the opposite side (left edge → right, top →
             bottom, and so on). Use the Type filter to preview tooltip styles.
           </p>
         </>

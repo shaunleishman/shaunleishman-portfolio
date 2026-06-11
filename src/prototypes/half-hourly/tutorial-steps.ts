@@ -22,7 +22,7 @@ export const PROJECT_TUTORIAL_STEPS: TutorialGuideStep[] = [
     id: "toggle",
     title: "Enable synthetic hourly data",
     description:
-      "Use this switch to activate AI-powered half-hourly aggregation. A tooltip explains what it does — try toggling it on.",
+      "Use this switch to turn on AI-powered half-hourly aggregation. A tooltip explains what it does. Try toggling it on.",
     mode: "spotlight",
     targetId: "synthetic-toggle",
     primaryLabel: "Next",

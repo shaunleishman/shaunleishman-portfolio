@@ -66,7 +66,7 @@ export default function MetricsInsightsPage() {
               <p className="mb-6 text-body-sm text-[var(--color-text-muted)]">
                 Quality ratings (1–5 scale, avg{" "}
                 <strong className="text-[var(--color-text-primary)]">
-                  {data.feedback.averageScore || "—"}
+                  {data.feedback.averageScore || "-"}
                 </strong>
                 ) and what people would improve.
               </p>

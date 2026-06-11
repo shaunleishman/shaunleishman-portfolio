@@ -157,7 +157,7 @@ import PageControls from './imports/PageControls';
           </VariantPreviewFrame>
           <p className="mt-4 text-xs text-[var(--colour-labels-disabled)]">
             {view === "full-page"
-              ? "Full Insight page layout — sidebar, sub-menu tabs, filters, toolbar, and wide data table."
+              ? "Full Insight page layout: sidebar, sub-menu tabs, filters, toolbar, and wide data table."
               : "Click row checkboxes to select rows (teal highlight). Hover a row for the grey hover state. Header checkbox selects all."}
           </p>
         </>

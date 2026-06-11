@@ -221,9 +221,9 @@ function EnergyConsumptionForm({ projectId }: { projectId: string }) {
             </TableHeader>
             <TableBody>
               {[
-                ["Electricity — Main", "Electricity", "MPAN 1234567890123", project.syntheticEnabled ? "Synthetic" : "Mixed"],
-                ["Gas — Main", "Natural gas", "MPRN 9876543210", "Low"],
-                ["Electricity — Solar", "Electricity", "MPAN 1234567890999", "High"],
+                ["Electricity (Main)", "Electricity", "MPAN 1234567890123", project.syntheticEnabled ? "Synthetic" : "Mixed"],
+                ["Gas (Main)", "Natural gas", "MPRN 9876543210", "Low"],
+                ["Electricity (Solar)", "Electricity", "MPAN 1234567890999", "High"],
               ].map(([meter, fuel, ref, resolution]) => (
                 <TableRow key={meter} className="cursor-default hover:bg-transparent">
                   <TableCell>{meter}</TableCell>
@@ -242,8 +242,8 @@ function EnergyConsumptionForm({ projectId }: { projectId: string }) {
             value={primaryMeter}
             onChange={setPrimaryMeter}
             options={[
-              { value: "elec-main", label: "Electricity — Main" },
-              { value: "elec-solar", label: "Electricity — Solar" },
+              { value: "elec-main", label: "Electricity (Main)" },
+              { value: "elec-solar", label: "Electricity (Solar)" },
             ]}
             className="!w-full"
           />

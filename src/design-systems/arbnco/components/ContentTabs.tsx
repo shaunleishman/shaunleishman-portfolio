@@ -12,7 +12,7 @@ export type ContentTabsProps = {
   value: string;
   tabs: ContentTab[];
   onChange: (value: string) => void;
-  /** Active tab accent — defaults to primary brand colour. */
+  /** Active tab accent: defaults to primary brand colour. */
   accentColor?: string;
   className?: string;
   fillRemaining?: boolean;

@@ -98,10 +98,10 @@ export function ProjectBenchmarkingPage({ projectId }: { projectId: string }) {
   if (!project) return null;
 
   const peers = [
-    { name: "Peer office — Manchester", eui: 168, percentile: 50 },
-    { name: "Peer office — Leeds", eui: 152, percentile: 62 },
+    { name: "Peer office, Manchester", eui: 168, percentile: 50 },
+    { name: "Peer office, Leeds", eui: 152, percentile: 62 },
     { name: project.name, eui: 145, percentile: 72, current: true },
-    { name: "Peer office — Birmingham", eui: 131, percentile: 84 },
+    { name: "Peer office, Birmingham", eui: 131, percentile: 84 },
   ].sort((a, b) => b.eui - a.eui);
 
   return (
@@ -227,10 +227,10 @@ export function ProjectCarbonPage({ projectId }: { projectId: string }) {
 }
 
 const ECM_ROWS = [
-  { measure: "LED lighting retrofit — floors 2–4", savings: "8%", status: "Complete", payback: "2.1 yrs" },
+  { measure: "LED lighting retrofit, floors 2–4", savings: "8%", status: "Complete", payback: "2.1 yrs" },
   { measure: "BMS schedule optimisation", savings: "5%", status: "In progress", payback: "0.5 yrs" },
-  { measure: "Variable speed drives — AHUs", savings: "12%", status: "Planned", payback: "3.4 yrs" },
-  { measure: "Solar PV — roof array (50 kWp)", savings: "15%", status: "Planned", payback: "6.2 yrs" },
+  { measure: "Variable speed drives, AHUs", savings: "12%", status: "Planned", payback: "3.4 yrs" },
+  { measure: "Solar PV, roof array (50 kWp)", savings: "15%", status: "Planned", payback: "6.2 yrs" },
 ];
 
 function ecmStatusTone(status: string) {
@@ -332,7 +332,7 @@ const PROJECT_ALERTS: AlertRow[] = [
   {
     id: "2",
     title: "Missing gas meter readings",
-    detail: "No data received for Gas — Main since 14 May. Reports may use estimated values.",
+    detail: "No data received for Gas (Main) since 14 May. Reports may use estimated values.",
     severity: "error",
     date: "5 days ago",
     resolveRoute: "integration",
@@ -341,7 +341,7 @@ const PROJECT_ALERTS: AlertRow[] = [
   {
     id: "3",
     title: "Benchmark threshold crossed",
-    detail: "Monthly EUI improved — now in the 72nd percentile vs peer offices.",
+    detail: "Monthly EUI improved. Now in the 72nd percentile vs peer offices.",
     severity: "info",
     date: "1 week ago",
     resolveRoute: "benchmarking",
@@ -449,7 +449,7 @@ export function ProjectAlertsPage({ projectId }: { projectId: string }) {
 
 const INTEGRATIONS = [
   {
-    name: "Smart meter API — Electricity",
+    name: "Smart meter API, Electricity",
     type: "Automated feed",
     status: "Connected",
     lastSync: "12 minutes ago",
@@ -463,10 +463,10 @@ const INTEGRATIONS = [
     icon: Cloud,
   },
   {
-    name: "BMS export — Trend logs",
+    name: "BMS export, Trend logs",
     type: "SFTP drop",
     status: "Pending setup",
-    lastSync: "—",
+    lastSync: "-",
     icon: Link2,
   },
 ];
@@ -559,7 +559,7 @@ export function MainOverviewPage() {
 
   const needsAttention = [
     { id: "2", name: "Building Beta", issue: "Missing gas meter data", severity: "error" as const },
-    { id: "3", name: "Building Gamma", issue: "Low resolution — synthetic not enabled", severity: "info" as const },
+    { id: "3", name: "Building Gamma", issue: "Low resolution. Synthetic not enabled.", severity: "info" as const },
   ];
 
   return (
@@ -568,7 +568,7 @@ export function MainOverviewPage() {
         <div className="mb-4 lg:mb-6">
           <h3 className="font-bold text-xl text-[#404040] lg:text-2xl">Portfolio overview</h3>
           <p className="mt-1 text-sm text-[#666]">
-            Your starting point for portfolio health — consumption trends, data coverage, and buildings that need action.
+            Your starting point for portfolio health: consumption trends, data coverage, and buildings that need action.
           </p>
         </div>
 
@@ -661,7 +661,7 @@ const PORTFOLIO_ALERTS: (AlertRow & { project: string; projectId: string })[] = 
     project: "Building Beta",
     projectId: "2",
     title: "Missing gas meter readings",
-    detail: "No data received for Gas — Main since 14 May. Carbon and ECM reports may use estimated values until restored.",
+    detail: "No data received for Gas (Main) since 14 May. Carbon and ECM reports may use estimated values until restored.",
     severity: "error",
     date: "5 days ago",
     resolveRoute: "integration",
@@ -720,7 +720,7 @@ export function MainAlertsPage() {
         <div className="mb-4 lg:mb-6">
           <h3 className="font-bold text-xl text-[#404040] lg:text-2xl">Alerts</h3>
           <p className="mt-1 text-sm text-[#666]">
-            Automated checks across every project — data gaps, consumption anomalies, and configuration issues.
+            Automated checks across every project: data gaps, odd consumption, and setup issues.
           </p>
         </div>
 
@@ -837,7 +837,7 @@ export function MainSettingsPage() {
 
         <PageIntro title="What this page is for">
           Settings apply across your entire portfolio. Changes here affect new projects, scheduled reports, and how
-          teammates are notified — not individual building configuration (use Edit project for that).
+          Teammates are notified. Use Edit project for individual building settings.
         </PageIntro>
 
         <div className="mb-6 rounded-lg border border-[#aab6b4] bg-white p-4 shadow-sm">
@@ -961,7 +961,7 @@ export function OperationalPatternsContent({
     <>
       <h4 className="mb-3 font-normal text-base text-[#313131] lg:mb-4 lg:text-lg">Operational Patterns</h4>
       <p className="mb-6 font-normal text-sm text-[#404040] lg:text-base">
-        Typical weekday profile for {projectName} — peak demand aligns with core occupancy hours (08:00–18:00).
+        Typical weekday profile for {projectName}. Peak demand matches core office hours (08:00–18:00).
         {syntheticEnabled
           ? " Profile derived from synthetic half-hourly data."
           : " Enable synthetic data for a full hourly breakdown."}
@@ -1045,7 +1045,7 @@ export function DisaggregationContent({
       <div className="rounded-lg border border-[#f5a50d]/40 bg-[#fff4e5] p-4">
         <p className="text-sm font-semibold text-[#404040]">Potential wastage</p>
         <p className="mt-1 text-sm text-[#666]">
-          Out-of-hours baseload is ~12% above the expected profile for an office of this size — worth investigating
+          Out-of-hours baseload is ~12% above the expected profile for an office this size. Worth investigating.
           overnight HVAC schedules and IT load.
         </p>
       </div>

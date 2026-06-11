@@ -46,10 +46,10 @@ export const FEEDBACK_VARIANT_CONFIG: Record<FeedbackVariant, FeedbackVariantCon
     eyebrow: "Portfolio feedback",
     sectionTitle: "Your feedback",
     sectionLead:
-      "Optional — helps me understand how this case study comes across and what to improve for hiring managers and collaborators.",
+      "Optional. Helps me understand how this case study comes across and what to improve.",
     question: "How would you rate the overall quality of this case study?",
     submittedDescription:
-      "Thanks — this helps me strengthen future case studies and focus on what matters most.",
+      "Thanks. This helps me strengthen future case studies and focus on what matters most.",
     followUpTitle: "What's the main thing that you would improve?",
     followUpLead:
       "Pick the area that would make the biggest difference. If it's something else, choose Other and tell me in your own words.",
@@ -77,10 +77,10 @@ export const FEEDBACK_VARIANT_CONFIG: Record<FeedbackVariant, FeedbackVariantCon
     eyebrow: "Article feedback",
     sectionTitle: "Your feedback",
     sectionLead:
-      "Optional — helps me understand what's working in my writing and what to improve for the next article.",
+      "Optional. Helps me understand what's working in my writing and what to improve next.",
     question: "How would you rate the overall quality of this article?",
     submittedDescription:
-      "Thanks — that helps me improve future articles and write about what readers actually need.",
+      "Thanks. That helps me improve future articles and write about what readers need.",
     followUpTitle: "What's the main thing that you would improve?",
     followUpLead:
       "Pick the area that would have helped most. If it's something else, choose Other and tell me in your own words.",

@@ -41,7 +41,7 @@ export function InteractiveAccordionDemo() {
           <>
             <ConnectedAccordion defaultOpen />
             <p className="mt-3 text-xs text-[var(--colour-labels-disabled)]">
-              Click the checkbox to select the row. Click the header or chevron to expand or collapse — the chevron points up
+              Click the checkbox to select the row. Click the header or chevron to expand or collapse: the chevron points up
               when open and down when closed.
             </p>
           </>

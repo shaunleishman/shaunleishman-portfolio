@@ -65,7 +65,7 @@ export const DESIGN_SYSTEM_ENTRIES: DesignSystemEntry[] = [
     title: "Design System Showcase",
     client: "Arbnco",
     description:
-      "Tokens, components, and usage patterns — including page controls with fund/asset selectors, meters table toolbar, and bulk actions.",
+      "Tokens, components, and usage patterns. Includes page controls, meters table toolbar, and bulk actions.",
     accent: "#00a7b5",
     tags: ["Design tokens", "Components", "Page controls"],
   },
@@ -77,7 +77,7 @@ export const PROTOTYPE_ENTRIES: PrototypeEntry[] = [
     title: "Half-hourly synthetic data",
     client: "Arbnco",
     description:
-      "Energy Insight prototype — project list, synthetic data toggle, and consumption charts.",
+      "Energy Insight prototype: project list, synthetic data toggle, and consumption charts.",
     accent: "#00a7b5",
     tags: ["Energy", "Dashboard", "Synthetic data"],
   },
@@ -86,7 +86,7 @@ export const PROTOTYPE_ENTRIES: PrototypeEntry[] = [
     title: "Patient monitoring & assignment",
     client: "Enhance",
     description:
-      "Healthcare monitoring dashboard — patient list, practitioner assignment flow, and patient detail view.",
+      "Healthcare monitoring dashboard: patient list, practitioner assignment flow, and patient detail view.",
     accent: "#003153",
     tags: ["Healthcare", "Monitoring", "Assignment flow"],
   },

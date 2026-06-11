@@ -9,6 +9,8 @@ type CaseStudyAtAGlanceProps = {
   id?: string;
   title?: string;
   summary?: string;
+  productGoal?: string;
+  team?: string;
   problem: string;
   contribution: string;
   highlights: string[];
@@ -20,6 +22,8 @@ export function CaseStudyAtAGlance({
   id = "at-a-glance",
   title = "Summary",
   summary,
+  productGoal,
+  team,
   problem,
   contribution,
   highlights,
@@ -66,18 +70,35 @@ export function CaseStudyAtAGlance({
         </ul>
 
         <div className="grid gap-6 md:grid-cols-2">
+          {productGoal && (
+            <div>
+              <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-2">
+                Product goal
+              </h3>
+              <p className="text-body text-[var(--color-text-secondary)]">{productGoal}</p>
+            </div>
+          )}
           <div>
             <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-2">
-              The challenge
+              User problem
             </h3>
             <p className="text-body text-[var(--color-text-secondary)]">{problem}</p>
           </div>
-          <div>
-            <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-2">
-              My contribution
-            </h3>
-            <p className="text-body text-[var(--color-text-secondary)]">{contribution}</p>
-          </div>
+          {team && (
+            <div className={productGoal ? "md:col-span-2" : undefined}>
+              <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-2">
+                Team
+              </h3>
+              <p className="text-body text-[var(--color-text-secondary)]">{team}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6">
+          <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-2">
+            What I owned
+          </h3>
+          <p className="text-body text-[var(--color-text-secondary)]">{contribution}</p>
         </div>
 
         <div className="mt-6 pt-6 border-t border-[var(--color-border)]">

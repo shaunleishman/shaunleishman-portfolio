@@ -25,7 +25,7 @@ function TokenRow({ token }: { token: TokenEntry }) {
         <TokenSwatch token={token} />
       ) : (
         <div className="flex size-12 shrink-0 items-center justify-center rounded-[var(--radius-medium-radius)] bg-[var(--colour-surfaces-bg)] text-[10px] font-semibold text-[var(--colour-labels-disabled)]">
-          —
+          -
         </div>
       )}
       <div className="min-w-0 flex-1">

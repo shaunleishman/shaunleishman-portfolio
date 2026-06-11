@@ -230,7 +230,7 @@ function findPractitionerProfile(assignment: PatientAssignment) {
   return {
     name: assignment.practitionerName,
     role: assignment.role,
-    patients: match?.patients ?? "—",
+    patients: match?.patients ?? "-",
     team: match?.team ?? "Patient monitoring",
     bio:
       match?.bio ??
@@ -1013,7 +1013,7 @@ function BloodPressureValue({
 }) {
   const parsed = parseBloodPressure(value);
   if (!parsed) {
-    return <span className="text-sm text-gray-500">—</span>;
+    return <span className="text-sm text-gray-500">-</span>;
   }
 
   const status = part === "systolic" ? systolicLevel(parsed.systolic) : diastolicLevel(parsed.diastolic);
@@ -1026,7 +1026,7 @@ function BloodPressureValue({
   return (
     <span
       className="inline-flex items-center gap-1"
-      title={`${label} — ${indicator.description}`}
+      title={`${label}: ${indicator.description}`}
       aria-label={`${label} ${reading}, ${indicator.description}`}
     >
       {Icon && <Icon className={`size-3.5 shrink-0 ${valueClass}`} aria-hidden />}
@@ -1209,20 +1209,20 @@ function BloodPressureSection({ patient }: { patient: Patient }) {
         <div className="rounded-md border border-[#00f0ff]/20 bg-[#f0f9ff] p-4">
           <p className="mb-1 text-xs text-gray-600">7-day average</p>
           <p className="text-2xl font-bold text-[#003153]">
-            {sevenDayAverage ? `${sevenDayAverage.systolic}/${sevenDayAverage.diastolic}` : "—"}
+            {sevenDayAverage ? `${sevenDayAverage.systolic}/${sevenDayAverage.diastolic}` : "-"}
           </p>
           <p className="mt-1 text-xs text-gray-500">mmHg</p>
         </div>
         <div className="rounded-md border border-[#00f0ff]/20 bg-[#f0f9ff] p-4">
           <p className="mb-1 text-xs text-gray-600">Cycle average</p>
           <p className="text-2xl font-bold text-[#003153]">
-            {cycleAverage ? `${cycleAverage.systolic}/${cycleAverage.diastolic}` : "—"}
+            {cycleAverage ? `${cycleAverage.systolic}/${cycleAverage.diastolic}` : "-"}
           </p>
           <p className="mt-1 text-xs text-gray-500">mmHg</p>
         </div>
         <div className="rounded-md border border-[#00f0ff]/20 bg-[#f0f9ff] p-4">
           <p className="mb-1 text-xs text-gray-600">Latest pulse</p>
-          <p className="text-2xl font-bold text-[#003153]">{latestReading?.pulse ?? "—"}</p>
+          <p className="text-2xl font-bold text-[#003153]">{latestReading?.pulse ?? "-"}</p>
           <p className="mt-1 text-xs text-gray-500">bpm</p>
         </div>
       </div>
@@ -2443,7 +2443,7 @@ function PatientListAlertsCell({
   const alerts = getVisibleDetailAlerts(patient, activeFilter, resolvedAlerts);
 
   if (alerts.length === 0) {
-    return <span className="text-sm text-gray-400">—</span>;
+    return <span className="text-sm text-gray-400">-</span>;
   }
 
   if (alerts.length === 1) {

@@ -78,7 +78,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       afterIndex: 2,
       heading: "Prototype based on workshop sketches",
       supportText:
-        "We redesigned patient tabs and the monitoring dashboard around the workflows practitioners described in co-design.",
+        "I redesigned patient tabs and the monitoring dashboard around workflows from co-design, not generic SaaS patterns.",
       images: [
         {
           src: "/projects/omron-patient-monitoring/patient-existing-tabs.png",
@@ -164,7 +164,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       afterIndex: 3,
       heading: "Inflexible communication",
       supportText:
-        "Transferring patients between practitioners needed clearer handover notes, we added a mandatory reason field to reduce error risk.",
+        "Testing showed silent handovers created error risk. I added a mandatory reason field so practitioners had to document transfers.",
       images: [
         {
           src: "/projects/omron-patient-monitoring/group-122.png",

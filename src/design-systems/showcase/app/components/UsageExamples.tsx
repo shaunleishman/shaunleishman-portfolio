@@ -2,7 +2,7 @@
 
 import { ShowcasePageShell } from "./ShowcasePageShell";
 
-/** Reserved slots for usage patterns — content to be added later. */
+/** Reserved slots for usage patterns: content to be added later. */
 export const USAGE_PATTERN_SLOTS = [
   {
     id: "forms",
@@ -37,7 +37,7 @@ export default function UsageExamples() {
         <h2 className="text-xl font-semibold text-[var(--colour-labels-neutral)] sm:text-2xl">Usage patterns</h2>
         <p className="mt-2 text-sm leading-relaxed text-[var(--colour-labels-neutral)]">
           Real-world compositions that combine tokens and components. Pattern content will be added here as it is
-          documented — each slot is reserved and ready to fill in.
+          documented: each slot is reserved and ready to fill in.
         </p>
       </div>
 

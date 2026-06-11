@@ -3,8 +3,10 @@ import type { Project } from "@/content/projects";
 import {
   arbncoAtAGlance,
   arbncoCaseStudyMeta,
+  arbncoMyRole,
   arbncoReflectionItems,
   arbncoRoleItems,
+  arbncoTeamTogetherItems,
   arbncoSectionNav,
   arbncoSectionTitle,
 } from "@/content/arbnco-case-study";
@@ -28,40 +30,41 @@ const userFlowStages = [
   {
     stage: "1. Projects list",
     action: "Start from the user's project list to compare buildings and data coverage.",
-    response: "Data resolution is shown in the table so users can compare projects quickly.",
+    response:
+      "I showed data resolution in the table. Users compared projects before turning on generated data.",
   },
   {
     stage: "2. Check eligibility",
     action: "See which projects have enough data for generated hourly estimates.",
     response:
-      "Eligible projects are clearly marked when they have enough mixed-frequency readings.",
+      "I added eligibility markers early. Users needed to know if activation was possible before opening settings.",
   },
   {
     stage: "3. Activate the feature",
     action: "Turn generated data on from the list or inside project settings.",
     response:
-      "Bulk actions support faster switching, with tooltips guiding users inside the project journey.",
+      "I added bulk actions for power users and kept tooltips for first-time users.",
   },
   {
     stage: "4. Confirm the change",
     action: "Understand that the project now uses generated hourly data.",
     response:
-      "Colour, iconography, and labels make the active state clear and accessible.",
+      "I used colour, icons, and plain labels for the active state. Generated data needed clear trust cues, not just a toggle.",
   },
 ];
 
 const designReviewFeedback = [
   {
     icon: Bookmark,
-    text: "Save functionality had to be clear because project information could only be saved manually, not automatically.",
+    text: "Save had to feel deliberate. Project info only saved when users clicked save, so I made that action clear instead of implying auto-save.",
   },
   {
     icon: Library,
-    text: "Building details needed to be grouped clearly because they affected whether a project was eligible for generated data.",
+    text: "I grouped building details by eligibility impact because review feedback showed users missed which fields blocked generated data.",
   },
   {
     icon: CheckSquare,
-    text: "Complete, partial, and incomplete status tags helped users understand what was missing and whether they could access generated data.",
+    text: "I introduced complete, partial, and incomplete status tags so users could see what was missing before committing to generated hourly data.",
   },
 ];
 
@@ -77,6 +80,8 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
       <CaseStudyAtAGlance
         title={arbncoSectionTitle("at-a-glance")}
         summary={arbncoAtAGlance.summary}
+        productGoal={arbncoAtAGlance.productGoal}
+        team={arbncoAtAGlance.team}
         problem={arbncoAtAGlance.problem}
         contribution={arbncoAtAGlance.contribution}
         highlights={arbncoAtAGlance.highlights}
@@ -111,13 +116,23 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
       <CaseStudySection
         id="my-role"
         title={arbncoSectionTitle("my-role")}
-        lead="Key responsibilities across research, design, and handoff."
+        lead={arbncoMyRole.lead}
       >
-        <ul className="list-disc pl-5 space-y-2">
-          {arbncoRoleItems.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        <CaseStudySubsection title="What we did together">
+          <ul className="list-disc pl-5 space-y-2">
+            {arbncoTeamTogetherItems.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </CaseStudySubsection>
+        <CaseStudySubsection title="What I owned">
+          <ul className="list-disc pl-5 space-y-2">
+            {arbncoRoleItems.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </CaseStudySubsection>
+        <p className="mt-6 text-body text-[var(--color-text-muted)]">{arbncoMyRole.impact}</p>
       </CaseStudySection>
 
       <CaseStudySplitSection
@@ -139,7 +154,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
       <CaseStudySection
         id="iteration"
         title={arbncoSectionTitle("iteration")}
-        lead="Explored ideas quickly, then refined through design review. AI helped explore options, not replace judgment."
+        lead="I explored ideas quickly with the team, then refined in design review. I showed rationale, not just screens."
       >
         <div className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 mb-6 text-body-sm text-amber-950 not-prose">
           <AlertCircle className="size-5 shrink-0 mt-0.5" aria-hidden />
@@ -158,7 +173,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
             lead="Explore the project list, open a building, enable synthetic hourly data, and review energy charts without leaving this page."
           >
             <HalfHourlyPrototypeEmbed
-              caption="Interactive prototype — compare data resolution, enable synthetic hourly data, and explore project settings"
+              caption="Interactive prototype: compare data resolution, enable synthetic hourly data, and explore project settings"
               compactHeader
             />
           </CaseStudySubsection>

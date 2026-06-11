@@ -4,10 +4,12 @@ import {
   nhsAtAGlance,
   nhsCaseStudyMeta,
   nhsFindingHighlights,
+  nhsMyRole,
   nhsQualitativeItems,
   nhsQuantitativeItems,
   nhsReflectionItems,
   nhsRoleItems,
+  nhsTeamTogetherItems,
   nhsSectionNav,
   nhsSectionTitle,
 } from "@/content/nhs-case-study";
@@ -15,6 +17,7 @@ import { Button } from "@/components/ui/Button";
 import { CaseStudyAtAGlance } from "@/components/projects/CaseStudyAtAGlance";
 import { CaseStudySectionNav } from "@/components/projects/CaseStudySectionNav";
 import { CaseStudySection } from "@/components/projects/CaseStudySection";
+import { CaseStudySubsection } from "@/components/projects/CaseStudySubsection";
 import { CaseStudyReflection } from "@/components/projects/CaseStudyReflection";
 import {
   CaseStudyIllustration,
@@ -53,6 +56,8 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
       <CaseStudyAtAGlance
         title={nhsSectionTitle("at-a-glance")}
         summary={nhsAtAGlance.summary}
+        productGoal={nhsAtAGlance.productGoal}
+        team={nhsAtAGlance.team}
         problem={nhsAtAGlance.problem}
         contribution={nhsAtAGlance.contribution}
         highlights={nhsAtAGlance.highlights}
@@ -80,13 +85,23 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
       <CaseStudySection
         id="my-role"
         title={nhsSectionTitle("my-role")}
-        lead="Key responsibilities across recruitment, research, analysis, and delivery."
+        lead={nhsMyRole.lead}
       >
-        <ul className="list-disc pl-5 space-y-2">
-          {nhsRoleItems.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        <CaseStudySubsection title="What we did together">
+          <ul className="list-disc pl-5 space-y-2">
+            {nhsTeamTogetherItems.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </CaseStudySubsection>
+        <CaseStudySubsection title="What I owned">
+          <ul className="list-disc pl-5 space-y-2">
+            {nhsRoleItems.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </CaseStudySubsection>
+        <p className="mt-6 text-body text-[var(--color-text-muted)]">{nhsMyRole.impact}</p>
       </CaseStudySection>
 
       <CaseStudySplitSection

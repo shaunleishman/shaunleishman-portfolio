@@ -399,7 +399,7 @@ function RouteCheckResults({ total, band, onRestart }: RouteCheckResultsProps) {
                   {" "}
                   · {entry.label}
                 </span>
-                <span className="text-[var(--color-text-muted)]"> — {entry.description}</span>
+                <span className="text-[var(--color-text-muted)]">: {entry.description}</span>
                 {isCurrent && (
                   <span className="sr-only"> (your result)</span>
                 )}

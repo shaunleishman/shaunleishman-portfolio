@@ -152,10 +152,10 @@ export function RouteCheckFinale({ band, icon: Icon, compact = false }: RouteChe
 
       <p className="sr-only">
         {tone === "positive"
-          ? "Strong result — low cognitive load."
+          ? "Strong result. Low cognitive load."
           : tone === "negative"
-            ? "Poor result — high cognitive load."
-            : "Mixed result — some friction on this route."}
+            ? "Poor result. High cognitive load."
+            : "Mixed result. Some friction on this route."}
       </p>
     </div>
   );

@@ -215,7 +215,7 @@ export function InteractiveBadgesDemo() {
           <p className="mt-4 text-xs text-[var(--colour-labels-disabled)]">
             {kind === "counter"
               ? "Click the counter to cycle through sizes."
-              : "Default fill chips use ConnectedChip — click × to remove. Other variants use the Figma Chip export."}
+              : "Default fill chips use ConnectedChip: click × to remove. Other variants use the Figma Chip export."}
           </p>
         </>
       )}
