@@ -28,7 +28,7 @@ const colors = {
   accent: "#3b66f5",
   text: "#525252",
   muted: "#737373",
-  dark: "#0a0a0a",
+  dark: "#171717",
   border: "#e5e5e5",
 };
 

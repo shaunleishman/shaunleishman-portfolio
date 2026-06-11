@@ -23,6 +23,15 @@ const DEFAULT_EMBED_OPTIONS: Required<FigmaEmbedOptions> = {
   viewportControls: false,
 };
 
+/** True for Figma Make share links — these cannot be iframe-embedded on external sites (CSP). */
+export function isFigmaMakeUrl(url: string): boolean {
+  try {
+    return new URL(url).pathname.startsWith("/make/");
+  } catch {
+    return false;
+  }
+}
+
 /** Apply embed-friendly scaling params to a Figma prototype share URL. */
 export function figmaPrototypeShareUrl(prototypeUrl: string, options: FigmaEmbedOptions = {}): string {
   const merged = { ...DEFAULT_EMBED_OPTIONS, ...options };

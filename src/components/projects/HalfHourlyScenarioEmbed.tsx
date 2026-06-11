@@ -11,6 +11,8 @@ import {
 import {
   highlightOverlayStyle,
   PrototypeDesignCallout,
+  PROTOTYPE_CALLOUT_REVEAL_DELAY_MS,
+  PROTOTYPE_HIGHLIGHT_ENTER_CLASS,
   resolveCalloutLayout,
   type PrototypeCalloutPlacement,
   type PrototypeHighlightRegion,
@@ -81,7 +83,7 @@ function PrototypeDemoProgressBar({ progress }: { progress: number }) {
       aria-label="Demo progress"
     >
       <div
-        className="absolute inset-y-0 left-0 bg-[var(--case-study-accent,#0d7377)]"
+        className="absolute inset-y-0 left-0 bg-[var(--case-study-accent,#00a7b5)]"
         style={{ width: `${percent}%` }}
       />
     </div>
@@ -379,7 +381,10 @@ function FramedPrototypeViewport({
 
         {measuredHighlight && showOverlays && showHighlight ? (
           <div
-            className="pointer-events-none absolute z-[25] rounded-md border-2 border-red-500 bg-red-500/10 shadow-[0_0_0_4px_rgba(239,68,68,0.2)] motion-safe:animate-[fade-in_0.25s_ease-out]"
+            className={cn(
+              "pointer-events-none absolute z-[25] rounded-md border-2 border-red-500 bg-red-500/10 shadow-[0_0_0_4px_rgba(239,68,68,0.2)]",
+              PROTOTYPE_HIGHLIGHT_ENTER_CLASS,
+            )}
             style={highlightOverlayStyle(measuredHighlight, layoutMetrics)}
             aria-hidden
           />
@@ -395,7 +400,7 @@ function FramedPrototypeViewport({
               severity={stepConfig.severity}
               placement={calloutPlacement}
               maxWidth={stepConfig.maxWidth}
-              accentColor="var(--case-study-accent, #0d7377)"
+              accentColor="var(--case-study-accent, #00a7b5)"
               showPointer
             />
           </div>
@@ -476,7 +481,7 @@ export function HalfHourlyScenarioEmbed({
       return;
     }
 
-    const showTimer = window.setTimeout(() => setOverlaysVisible(true), 500);
+    const showTimer = window.setTimeout(() => setOverlaysVisible(true), PROTOTYPE_CALLOUT_REVEAL_DELAY_MS);
     return () => window.clearTimeout(showTimer);
   }, [autoPlaySteps, demoScene, prototypeReady, stepIndex]);
 

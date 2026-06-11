@@ -155,7 +155,10 @@ function CallerPieChart({
   );
 }
 
-export function NhsTypicalCallerFunnel({ className, animationKey = "typical-caller" }: NhsTypicalCallerFunnelProps) {
+export function NhsTypicalCallerFunnel({
+  className,
+  animationKey = "typical-caller",
+}: NhsTypicalCallerFunnelProps) {
   const baseId = useId();
   const progress = useChartEnterProgress(animationKey);
   const { ageGroup, layers } = nhsTypicalCallerProfile;
@@ -198,14 +201,14 @@ export function NhsTypicalCallerFunnel({ className, animationKey = "typical-call
                     onBlur={() => setHoveredId(null)}
                     onClick={() => setActiveId(layer.id)}
                     className={cn(
-                      "grid w-full grid-cols-[0.625rem_3.25rem_minmax(0,1fr)] items-start gap-x-3 rounded-lg border border-transparent px-3 py-2.5 text-left motion-safe:transition-all motion-safe:duration-200",
+                      "grid w-full grid-cols-[0.625rem_3.25rem_minmax(0,1fr)] items-start gap-x-3 rounded-lg border border-transparent px-3 py-2.5 text-left",
                       isHovered
                         ? "border-[var(--case-study-accent)]/25 bg-neutral-50 shadow-sm"
                         : "hover:border-[var(--color-border)] hover:bg-white/70",
                     )}
                   >
                     <span
-                      className="mt-1.5 inline-block size-2.5 shrink-0 rounded-full motion-safe:transition-colors motion-safe:duration-300"
+                      className="mt-1.5 inline-block size-2.5 shrink-0 rounded-full"
                       style={{ backgroundColor: isHovered ? SLICE_ACTIVE : SLICE_NEUTRAL }}
                       aria-hidden
                     />
@@ -217,12 +220,10 @@ export function NhsTypicalCallerFunnel({ className, animationKey = "typical-call
                     </span>
                     <span
                       className={cn(
-                        "min-w-0 pt-0.5 text-body-sm leading-snug motion-safe:transition-colors motion-safe:duration-200",
-                        isHovered
+                        "min-w-0 pt-0.5 text-body-sm leading-snug",
+                        isHovered || isActive
                           ? "font-medium text-[var(--color-text-primary)]"
-                          : isActive
-                            ? "font-medium text-[var(--color-text-secondary)]"
-                            : "text-[var(--color-text-secondary)]",
+                          : "text-[var(--color-text-primary)]/80",
                       )}
                     >
                       {layer.label}

@@ -9,6 +9,8 @@ import {
   calloutViewportCornerStyle,
   highlightOverlayStyle,
   PrototypeDesignCallout,
+  PROTOTYPE_CALLOUT_REVEAL_DELAY_MS,
+  PROTOTYPE_HIGHLIGHT_ENTER_CLASS,
   type PrototypeCalloutConfig,
   type PrototypeCalloutPlacement,
 } from "@/components/projects/PrototypeDesignCallout";
@@ -167,7 +169,7 @@ export function EnhanceScenarioEmbed({
       return;
     }
 
-    const timer = window.setTimeout(() => setCalloutVisible(true), 500);
+    const timer = window.setTimeout(() => setCalloutVisible(true), PROTOTYPE_CALLOUT_REVEAL_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, [calloutDismissed, prototypeReady, resolvedCallout, showCallout]);
 
@@ -248,7 +250,10 @@ export function EnhanceScenarioEmbed({
           ) : null}
           {resolvedCallout?.highlight && calloutVisible ? (
             <div
-              className="pointer-events-none absolute z-[25] rounded-md border-2 border-red-500 bg-red-500/10 shadow-[0_0_0_4px_rgba(239,68,68,0.2)] motion-safe:animate-[fade-in_0.25s_ease-out]"
+              className={cn(
+                "pointer-events-none absolute z-[25] rounded-md border-2 border-red-500 bg-red-500/10 shadow-[0_0_0_4px_rgba(239,68,68,0.2)]",
+                PROTOTYPE_HIGHLIGHT_ENTER_CLASS,
+              )}
               style={highlightOverlayStyle(resolvedCallout.highlight, layoutMetrics)}
               aria-hidden
             />

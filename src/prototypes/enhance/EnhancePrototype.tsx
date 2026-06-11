@@ -329,11 +329,11 @@ function PractitionerProfileModal({
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="rounded-md border border-gray-200 p-3">
               <p className="text-xs text-gray-500">Current caseload</p>
-              <p className="mt-1 font-semibold text-gray-900">{profile.patients} patients</p>
+              <p className="mt-1 font-semibold text-[var(--color-text-primary)]">{profile.patients} patients</p>
             </div>
             <div className="rounded-md border border-gray-200 p-3">
               <p className="text-xs text-gray-500">Assigned to this patient</p>
-              <p className="mt-1 font-semibold text-gray-900">{assignment.assignedDate}</p>
+              <p className="mt-1 font-semibold text-[var(--color-text-primary)]">{assignment.assignedDate}</p>
             </div>
           </div>
         </div>
@@ -642,7 +642,7 @@ function EditMedicationsModal({
 function PatientActivityEntry({ entry }: { entry: PatientActivityEntry }) {
   return (
     <div className="text-sm">
-      <p className="font-medium text-gray-900">{entry.summary}</p>
+      <p className="font-medium text-[var(--color-text-primary)]">{entry.summary}</p>
       {entry.detail && <p className="mt-0.5 text-xs text-gray-600">{entry.detail}</p>}
       <p className="mt-1 text-xs text-gray-500">
         {entry.author} · {entry.date}
@@ -865,8 +865,8 @@ function ReassignPractitionerModal({
                 />
                 <div className="grid flex-1 grid-cols-3 gap-4 text-sm">
                   <p className="font-medium text-[#003153]">{practitioner.name}</p>
-                  <p className="text-gray-900">{practitioner.role}</p>
-                  <p className="text-gray-900">{practitioner.patients}</p>
+                  <p className="text-[var(--color-text-primary)]">{practitioner.role}</p>
+                  <p className="text-[var(--color-text-primary)]">{practitioner.patients}</p>
                 </div>
               </label>
             ))}
@@ -1153,7 +1153,7 @@ function BloodPressureHistoryChart({ history }: { history: BloodPressureHistoryP
                 const point = payload[0].payload as BloodPressureHistoryPoint;
                 return (
                   <div className="rounded-md border border-gray-200 bg-white p-3 text-xs shadow-md">
-                    <p className="font-semibold text-gray-900">{label}</p>
+                    <p className="font-semibold text-[var(--color-text-primary)]">{label}</p>
                     <p className="mt-1 text-red-700">Systolic: {point.systolic} mmHg</p>
                     <p className="text-blue-700">Diastolic: {point.diastolic} mmHg</p>
                     <p className="text-gray-600">Pulse: {point.pulse} bpm</p>
@@ -1920,7 +1920,7 @@ function AlertResolutionModal({
                   onChange={() => onSelectOption(option)}
                   className="mt-0.5 size-4 text-[#003153] focus:ring-[#003153]"
                 />
-                <span className="text-sm text-gray-900">{option}</span>
+                <span className="text-sm text-[var(--color-text-primary)]">{option}</span>
               </label>
             ))}
           </div>
@@ -2398,7 +2398,7 @@ function NotificationBell({
                       />
                       <span className="min-w-0 flex-1">
                         <span className="flex items-start justify-between gap-2">
-                          <span className={`text-sm ${isRead ? "font-medium text-gray-700" : "font-semibold text-gray-900"}`}>
+                          <span className={`text-sm ${isRead ? "font-medium text-gray-700" : "font-semibold text-[var(--color-text-primary)]"}`}>
                             {notification.title}
                           </span>
                           <span className="shrink-0 text-xs text-gray-500">{notification.time}</span>
@@ -2935,7 +2935,7 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
                       <div className="space-y-2">
                         {medications.map((medication) => (
                           <div key={medication.id} className="rounded-md border border-gray-200 p-3">
-                            <p className="text-sm font-semibold text-gray-900">{formatMedicationDisplay(medication)}</p>
+                            <p className="text-sm font-semibold text-[var(--color-text-primary)]">{formatMedicationDisplay(medication)}</p>
                             <p className="text-xs text-gray-600">
                               {medication.brand} · {medication.instructions}
                             </p>
@@ -3167,7 +3167,7 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
                       />
                     </td>
                     <td className="p-3">
-                      <p className="font-medium text-gray-900 text-sm">{patient.name}</p>
+                      <p className="font-medium text-[var(--color-text-primary)] text-sm">{patient.name}</p>
                     </td>
                     <td className="whitespace-nowrap p-3">
                       <PatientPriorityBadge priority={priority} />
@@ -3284,10 +3284,10 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
                         <p className="text-[#003153]">{practitioner.name}</p>
                       </div>
                       <div>
-                        <p className="text-black">{practitioner.role}</p>
+                        <p className="text-[var(--color-text-primary)]">{practitioner.role}</p>
                       </div>
                       <div>
-                        <p className="text-black">{practitioner.patients}</p>
+                        <p className="text-[var(--color-text-primary)]">{practitioner.patients}</p>
                       </div>
                     </div>
                   </label>

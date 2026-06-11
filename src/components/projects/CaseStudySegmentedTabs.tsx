@@ -15,10 +15,10 @@ const accentStyles = {
   },
   omron: {
     active:
-      "bg-[#f5f8fa] font-semibold text-[#003da5] shadow-[inset_0_2px_0_0_#003da5]",
+      "bg-[#f5f8fa] font-semibold text-[#003153] shadow-[inset_0_2px_0_0_#003153]",
     inactive:
-      "bg-[#eef2f9] text-[var(--color-text-secondary)] hover:bg-[#e4edf5] hover:text-[#003da5]",
-    divider: "border-[#003da5]/10",
+      "bg-[#eef2f9] text-[var(--color-text-secondary)] hover:bg-[#e4edf5] hover:text-[#003153]",
+    divider: "border-[#003153]/10",
   },
 } as const;
 

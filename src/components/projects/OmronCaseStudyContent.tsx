@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   AlertCircle,
   ArrowLeftRight,
@@ -13,7 +12,6 @@ import {
   omronAtAGlance,
   omronCaseStudyMeta,
   omronMyRole,
-  omronCoDesignItems,
   omronReflectionItems,
   omronRoleItems,
   omronTeamTogetherItems,
@@ -25,8 +23,13 @@ import { Button } from "@/components/ui/Button";
 import { CaseStudyAtAGlance } from "@/components/projects/CaseStudyAtAGlance";
 import { CaseStudySectionNav } from "@/components/projects/CaseStudySectionNav";
 import { CaseStudySection } from "@/components/projects/CaseStudySection";
-import { CaseStudyReflection } from "@/components/projects/CaseStudyReflection";
 import { CaseStudySubsection } from "@/components/projects/CaseStudySubsection";
+import {
+  CaseStudyFlowTable,
+  CaseStudyPointGrid,
+  CaseStudyRoleSplit,
+} from "@/components/projects/CaseStudyLayout";
+import { CaseStudyReflection } from "@/components/projects/CaseStudyReflection";
 import {
   CaseStudyIllustration,
   CaseStudySplitSection,
@@ -42,42 +45,42 @@ import { OmronWireframeSketchAnimationDeferred } from "@/components/projects/Omr
 const actionCardFlow = [
   {
     stage: "1. Monitoring dashboard",
-    action: "Review assigned patients and filter by alert category or referral status.",
+    action: "Review assigned patients and filter by alert or referral status.",
     response:
-      "Traffic-light alerts and “assigned to me” filters help practitioners prioritise out-of-limit readings quickly.",
+      "Traffic-light alerts and “assigned to me” filters help practitioners prioritise quickly.",
   },
   {
     stage: "2. Open action card",
-    action: "Select a patient alert and review clinical context before acting.",
+    action: "Select a patient alert and review clinical context.",
     response:
-      "Action cards surface the task, urgency, and patient history needed to decide next steps safely.",
+      "Action cards surface the task, urgency, and history needed to decide next steps.",
   },
   {
     stage: "3. Assign or reassign",
-    action: "Transfer a patient to another practitioner when escalation is needed.",
+    action: "Transfer a patient when escalation is needed.",
     response:
-      "Mandatory reason fields and clearer ownership reduce the risk of silent handovers.",
+      "Mandatory reason fields and clearer ownership reduce silent handovers.",
   },
   {
     stage: "4. Complete action",
-    action: "Confirm the titration or monitoring step and return to the queue.",
+    action: "Confirm the titration step and return to the queue.",
     response:
-      "Status tags and completion states keep the team aligned on what still needs attention.",
+      "Status tags and completion states show what still needs attention.",
   },
 ];
 
 const coDesignHighlights = [
   {
     icon: Users,
-    text: "I facilitated workshops with five user groups co-designing how they recruit, monitor, and hand off hypertension patients.",
+    text: "We ran workshops with five user groups on how they recruit, monitor, and hand off patients.",
   },
   {
     icon: Stethoscope,
-    text: "I built persona boards from role-specific tasks. They fed straight into wireframes, not a report that got shelved.",
+    text: "Persona boards fed straight into wireframes, not a shelved report.",
   },
   {
     icon: ClipboardCheck,
-    text: "Practitioners sketched solutions in sessions; I translated those into wireframes and a clickable prototype for usability testing.",
+    text: "Practitioner sketches became wireframes and a clickable prototype for testing.",
   },
 ];
 
@@ -107,7 +110,7 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
       <CaseStudySplitSection
         id="the-challenge"
         title={omronSectionTitle("the-challenge")}
-        lead="Patient safety depended on getting medication plans to the right person, the existing flow made that too easy to get wrong."
+        lead="Patient safety depended on getting medication plans to the right person."
         visual={
           <CaseStudyIllustration
             src="/projects/omron-patient-monitoring/problem-illustration.png"
@@ -118,7 +121,7 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
         <p className="text-h4 font-medium text-[var(--color-text-primary)] leading-snug">
           {omronCaseStudyMeta.problemStatement}
         </p>
-        <p className="mt-4 text-body text-[var(--color-text-muted)]">{project.problem}</p>
+        <p className="mt-4 text-body-sm text-[var(--color-text-muted)]">{project.problem}</p>
       </CaseStudySplitSection>
 
       <CaseStudySection
@@ -126,162 +129,91 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
         title={omronSectionTitle("my-role")}
         lead={omronMyRole.lead}
       >
-        <CaseStudySubsection title="What we did together">
-          <ul className="list-disc pl-5 space-y-2">
-            {omronTeamTogetherItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </CaseStudySubsection>
-        <CaseStudySubsection title="What I owned">
-          <ul className="list-disc pl-5 space-y-2">
-            {omronRoleItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </CaseStudySubsection>
-        <p className="mt-6 text-body text-[var(--color-text-muted)]">{omronMyRole.impact}</p>
+        <CaseStudyRoleSplit
+          teamTogetherItems={omronTeamTogetherItems}
+          roleItems={omronRoleItems}
+          impact={omronMyRole.impact}
+        />
       </CaseStudySection>
 
       <CaseStudySection
         id="co-design"
         title={omronSectionTitle("co-design")}
-        lead="Practitioners shaped the direction in workshops. I translated their sketches into wireframes and a prototype for moderated usability testing."
+        lead="Practitioners shaped direction in workshops. We turned sketches into design."
       >
-        <ul className="space-y-3 not-prose mb-10">
-          {coDesignHighlights.map(({ icon: Icon, text }) => (
-            <li key={text} className="flex gap-3 text-body text-[var(--color-text-secondary)]">
-              <Icon className="size-5 shrink-0 mt-0.5 text-[var(--case-study-accent)]" aria-hidden />
-              {text}
-            </li>
-          ))}
-        </ul>
+        <div className="mb-10 not-prose">
+          <div className="grid gap-6 md:grid-cols-2 md:items-stretch md:gap-8">
+            <ZoomableScreenshot
+              src="/projects/omron-patient-monitoring/co-design-workshop.png"
+              alt="Co-design workshop with practitioner persona boards and sticky-note feedback"
+              caption="Co-design session, persona boards and workshop feedback"
+              previewFit="cover"
+              previewFill
+              width={799}
+              height={1024}
+              className="h-full"
+            />
+
+            <CaseStudyPointGrid items={coDesignHighlights} columns={1} />
+          </div>
+        </div>
 
         <div className="space-y-8 not-prose">
-          <ZoomableScreenshot
-            src="/projects/omron-patient-monitoring/co-design-workshop.png"
-            alt="Co-design workshop with practitioner persona boards and sticky-note feedback"
-            caption="Co-design session, persona boards and workshop feedback"
-            previewFit="cover"
-            width={799}
-            height={1024}
-          />
-
           <OmronPractitionerBoardsInteractiveDeferred />
         </div>
       </CaseStudySection>
 
       <CaseStudySection
-        id="iteration"
-        title={omronSectionTitle("iteration")}
-        lead="From workshop sketches to a clickable prototype, iterating on action cards, dashboards, and assignment flows."
+        id="build-and-test"
+        title={omronSectionTitle("build-and-test")}
+        lead="From workshop sketches to prototype, then moderated usability testing."
       >
-        <div className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 mb-8 text-body-sm text-amber-950 not-prose">
+        <div className="mb-8 flex items-start gap-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-body-sm text-amber-950 not-prose sm:gap-5">
           <AlertCircle className="size-5 shrink-0 mt-0.5" aria-hidden />
-          <p>
-            Wireframes explored permissions, subtasks, and dashboard counts before high-fidelity
-            screens, keeping clinical roles and handover logic visible early.
+          <p className="min-w-0 text-pretty md:whitespace-nowrap">
+            Wireframes kept clinical roles and handover logic visible before polish.
           </p>
         </div>
 
-        <ul className="list-disc pl-5 space-y-2 mb-10">
-          {project.approach.slice(2).map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-
-        <div className="not-prose">
+        <CaseStudySubsection title="Wireframes" lead="Action cards, dashboard, and assignment logic.">
           <OmronWireframeSketchAnimationDeferred
             alt="Hand-drawn wireframes for action cards, dashboard, and patient assignment flows"
-            caption="Early wireframes, action cards, dashboard, and assignment logic"
+            caption="Early wireframes from workshops"
           />
-        </div>
+        </CaseStudySubsection>
 
-        <div className="not-prose">
-          <CaseStudySubsection
-            spacingTop
-            className="mb-0"
-            title="Interactive prototype"
-            lead="Built from workshop wireframes into a working prototype. Filter patients, assign practitioners, review alerts, and open records without leaving this page."
-          >
-            <EnhancePrototypeEmbed
-              title="OMRON patient monitoring prototype"
-              caption="Interactive prototype: assign patients, review alerts, resolve action cards, and explore patient detail"
-              compactHeader
-            />
-          </CaseStudySubsection>
-        </div>
-      </CaseStudySection>
+        <CaseStudySubsection
+          spacingTop
+          title="Interactive prototype"
+          lead="Filter patients, assign practitioners, review alerts, and open records."
+        >
+          <EnhancePrototypeEmbed
+            title="OMRON patient monitoring prototype"
+            caption="Interactive prototype: assign patients, review alerts, and resolve action cards"
+            compactHeader
+          />
+        </CaseStudySubsection>
 
-      <CaseStudySection
-        id="usability-testing"
-        title={omronSectionTitle("usability-testing")}
-        lead="Moderated sessions tested critical flows, especially assigning patients between practitioners."
-      >
-        <p className="text-body text-[var(--color-text-secondary)] mb-4">
-          {project.approachWhy.join(" · ")}
-        </p>
-        <div className="space-y-5 not-prose">
-          {omronTestingFindings.map(({ title, text }, index) => {
-            const Icon = testingFindingIcons[index] ?? FileSearch;
-
-            return (
-              <div
-                key={title}
-                className="flex gap-4 rounded-xl border border-[var(--color-border)] bg-neutral-50 px-5 py-4"
-              >
-                <span
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--case-study-accent)] text-white shadow-sm"
-                  aria-hidden
-                >
-                  <Icon size={20} strokeWidth={1.75} />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-body font-semibold text-[var(--color-text-primary)] mb-1.5">
-                    {title}
-                  </p>
-                  <p className="text-body-sm text-[var(--color-text-secondary)]">{text}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <CaseStudySubsection spacingTop title="Usability findings" lead={project.approachWhy[0]}>
+          <CaseStudyPointGrid
+            columns={2}
+            className="mt-4"
+            items={omronTestingFindings.map(({ title, text }, index) => ({
+              title,
+              text,
+              icon: testingFindingIcons[index] ?? FileSearch,
+            }))}
+          />
+        </CaseStudySubsection>
       </CaseStudySection>
 
       <CaseStudySection
         id="refined-solution"
         title={omronSectionTitle("refined-solution")}
-        lead="How practitioners move from the monitoring dashboard to a completed action. Screenshots show representative examples from the prototype."
+        lead="From monitoring dashboard to completed action."
       >
         <CaseStudySubsection title="User flow">
-          <div className="overflow-x-auto rounded-xl border border-[var(--color-border)] not-prose">
-            <table className="w-full min-w-[640px] text-left text-body-sm">
-              <thead className="bg-neutral-50 border-b border-[var(--color-border)]">
-                <tr>
-                  <th scope="col" className="px-4 py-3 font-semibold">
-                    Stage
-                  </th>
-                  <th scope="col" className="px-4 py-3 font-semibold">
-                    User action
-                  </th>
-                  <th scope="col" className="px-4 py-3 font-semibold">
-                    Design response
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--color-border)]">
-                {actionCardFlow.map((row) => (
-                  <tr key={row.stage} className="align-top">
-                    <td className="px-4 py-3 font-medium text-[var(--color-text-primary)] whitespace-nowrap">
-                      {row.stage}
-                    </td>
-                    <td className="px-4 py-3">{row.action}</td>
-                    <td className="px-4 py-3">{row.response}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <CaseStudyFlowTable stages={actionCardFlow} />
         </CaseStudySubsection>
 
         <div className="not-prose">
@@ -315,7 +247,7 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
         }
         limitations={project.limitations}
         takeaways={omronReflectionItems}
-        takeawaysLead="What designing for clinical workflows reinforced, and what I'd carry into the next regulated health product."
+        takeawaysLead="What clinical workflow design reinforced, and what I'd carry into the next regulated health product."
         feedbackPath="/work/omron-patient-monitoring"
       />
 

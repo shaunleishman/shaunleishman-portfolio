@@ -186,7 +186,7 @@ export function ProjectListPagination({
       )}
     >
       <p className="shrink-0 text-xs text-[#666]">
-        <span className="font-semibold text-[#404040]">{resultCount}</span> results
+        <span className="font-semibold text-[var(--color-text-primary)]">{resultCount}</span> results
       </p>
 
       <div className="flex min-w-0 shrink items-center gap-2 text-xs text-[#666]">

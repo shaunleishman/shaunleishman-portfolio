@@ -38,7 +38,7 @@ function renderMarkdownBlock(block: string, key: number) {
   if (block.startsWith("## ")) {
     return (
       <Reveal key={key} variant="up">
-        <h2 className="text-h3 font-semibold mt-10 mb-4">
+        <h2 className="text-h3 font-semibold text-[var(--color-text-primary)] mt-10 mb-4">
           {block.replace("## ", "")}
         </h2>
       </Reveal>

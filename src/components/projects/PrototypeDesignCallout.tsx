@@ -56,6 +56,15 @@ type PrototypeDesignCalloutProps = PrototypeCalloutConfig & {
 
 const OMRON_NAVY = "#003153";
 
+/** Wait after the prototype is ready before mounting callout overlays. */
+export const PROTOTYPE_CALLOUT_REVEAL_DELAY_MS = 900;
+
+export const PROTOTYPE_HIGHLIGHT_ENTER_CLASS =
+  "motion-safe:animate-[prototype-highlight-in_0.5s_ease-out_0.15s_both]";
+
+export const PROTOTYPE_CALLOUT_ENTER_CLASS =
+  "motion-safe:animate-[prototype-callout-in_0.65s_ease-out_0.3s_both]";
+
 const SEVERITY_META: Record<PrototypeCalloutSeverity, { label: string; className: string }> = {
   critical: {
     label: "Critical",
@@ -117,7 +126,8 @@ export function PrototypeDesignCallout({
   return (
     <div
       className={cn(
-        "relative motion-safe:animate-[fade-in_0.25s_ease-out]",
+        "relative",
+        PROTOTYPE_CALLOUT_ENTER_CLASS,
         pointerVisible && pointerClass(placement),
         className,
       )}

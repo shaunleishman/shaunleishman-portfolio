@@ -15,6 +15,10 @@ type ZoomableScreenshotProps = {
   className?: string;
   /** Cap inline preview height — full size is still available on zoom. */
   previewMaxHeight?: number;
+  /** Fixed preview frame height (cover mode). Use beside a matched-height column. */
+  previewHeight?: number;
+  /** Grow the cover preview to fill a stretched grid row (height follows sibling content). */
+  previewFill?: boolean;
   /** `cover` fills the preview (default); `contain` letterboxes the whole image. */
   previewFit?: "contain" | "cover";
   /** Intrinsic dimensions for `contain` previews (avoids wrong aspect-ratio cropping). */
@@ -54,6 +58,8 @@ export function ZoomableScreenshot({
   caption,
   className,
   previewMaxHeight = DEFAULT_PREVIEW_MAX_HEIGHT,
+  previewHeight,
+  previewFill = false,
   previewFit = "cover",
   width = 2048,
   height = 1280,
@@ -81,8 +87,11 @@ export function ZoomableScreenshot({
     };
   }, [open]);
 
-  const previewHeight = `min(${previewMaxHeight}px, 55vh)`;
+  const previewHeightCss = previewHeight
+    ? `${previewHeight}px`
+    : `min(${previewMaxHeight}px, 55vh)`;
   const isCover = previewFit === "cover";
+  const fillCover = isCover && previewFill;
 
   const previewClassName = cn(
     "transition-opacity duration-300",
@@ -92,8 +101,8 @@ export function ZoomableScreenshot({
     loaded ? "opacity-100" : "opacity-0",
   );
 
-  const previewStyle = isCover ? undefined : ({ maxHeight: previewHeight } as const);
-  const buttonStyle = isCover ? ({ height: previewHeight } as const) : undefined;
+  const previewStyle = isCover ? undefined : ({ maxHeight: previewHeightCss } as const);
+  const buttonStyle = isCover && !fillCover ? ({ height: previewHeightCss } as const) : undefined;
 
   return (
     <>
@@ -103,8 +112,12 @@ export function ZoomableScreenshot({
           onClick={() => setOpen(true)}
           style={buttonStyle}
           className={cn(
-            "group relative m-0 block w-full shrink-0 cursor-zoom-in overflow-hidden border-0 p-0 leading-none bg-neutral-900 text-left",
-            isCover ? undefined : "flex min-h-[8rem] items-center justify-center bg-neutral-100/70",
+            "group relative m-0 w-full cursor-zoom-in overflow-hidden border-0 p-0 leading-none bg-neutral-900 text-left",
+            fillCover
+              ? "min-h-[12rem] md:min-h-0 md:flex-1"
+              : isCover
+                ? "block shrink-0"
+                : "flex min-h-[8rem] shrink-0 items-center justify-center bg-neutral-100/70",
           )}
           aria-haspopup="dialog"
           aria-expanded={open}

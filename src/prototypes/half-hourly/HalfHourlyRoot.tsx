@@ -19,7 +19,7 @@ const raleway = Raleway({
 
 export function HalfHourlyRoot({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`arbnco-ds ${openSans.className} flex h-full min-h-0 flex-col overflow-hidden text-[#404040] antialiased`}>
+    <div className={`arbnco-ds ${openSans.className} flex h-full min-h-0 flex-col overflow-hidden text-[var(--color-text-primary)] antialiased`}>
       <style jsx global>{`
         .hh-display {
           font-family: ${raleway.style.fontFamily}, Raleway, sans-serif;

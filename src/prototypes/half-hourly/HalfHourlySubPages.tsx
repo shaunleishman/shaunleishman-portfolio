@@ -53,7 +53,7 @@ function ProjectPageHeader({
 }) {
   return (
     <div className="mb-6 flex flex-col items-start gap-2 lg:mb-8">
-      <h3 className="font-bold text-xl text-[#404040] lg:text-2xl">{title}</h3>
+      <h3 className="font-bold text-xl text-[var(--color-text-primary)] lg:text-2xl">{title}</h3>
       <p className="text-sm text-[#666]">{projectName}</p>
       <p className="max-w-2xl text-sm text-[#666]">{description}</p>
     </div>
@@ -84,7 +84,7 @@ function StatCard({
     <div className="rounded-lg border border-[#e0e0e0] bg-white p-4">
       <p className="text-xs font-semibold uppercase tracking-wide text-[#999]">{label}</p>
       <div className="mt-2 flex items-end gap-2">
-        <p className="font-bold text-2xl text-[#404040]">{value}</p>
+        <p className="font-bold text-2xl text-[var(--color-text-primary)]">{value}</p>
         {trend === "up" && <TrendingUp className="size-5 text-[#d04a21]" aria-hidden />}
         {trend === "down" && <TrendingDown className="size-5" style={{ color: accentColor }} aria-hidden />}
       </div>
@@ -119,7 +119,7 @@ export function ProjectBenchmarkingPage({ projectId }: { projectId: string }) {
             style={{ borderColor: `${accentColor}40`, backgroundColor: "#f0f9f4" }}
           >
             <Sparkles className="mt-0.5 size-5 shrink-0" style={{ color: accentColor }} />
-            <p className="text-sm text-[#404040]">
+            <p className="text-sm text-[var(--color-text-primary)]">
               Synthetic hourly data improves benchmarking accuracy by filling gaps in low-resolution meter readings,
               giving a fuller picture of out-of-hours baseload and peak demand.
             </p>
@@ -134,7 +134,7 @@ export function ProjectBenchmarkingPage({ projectId }: { projectId: string }) {
 
         <div className="rounded-lg border border-[#aab6b4] bg-white p-4 shadow-sm lg:p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h4 className="font-semibold text-[#404040]">Energy use intensity comparison</h4>
+            <h4 className="font-semibold text-[var(--color-text-primary)]">Energy use intensity comparison</h4>
             <Chip tone="success">Better than median</Chip>
           </div>
           <TableContainer>
@@ -199,7 +199,7 @@ export function ProjectCarbonPage({ projectId }: { projectId: string }) {
         </div>
 
         <div className="rounded-lg border border-[#aab6b4] bg-white p-4 shadow-sm lg:p-6">
-          <h4 className="mb-1 font-semibold text-[#404040]">Monthly operational emissions</h4>
+          <h4 className="mb-1 font-semibold text-[var(--color-text-primary)]">Monthly operational emissions</h4>
           <p className="mb-4 text-xs text-[#666]">
             {syntheticEnabled
               ? "Hourly grid carbon factors applied using synthetic half-hourly electricity profiles."
@@ -393,7 +393,7 @@ export function ProjectAlertsPage({ projectId }: { projectId: string }) {
                   <div className="flex flex-wrap items-center gap-2">
                     <h4
                       className={cn(
-                        "font-semibold text-sm text-[#404040]",
+                        "font-semibold text-sm text-[var(--color-text-primary)]",
                         alert.acknowledged && "line-through decoration-[#aab6b4]",
                       )}
                     >
@@ -501,7 +501,7 @@ export function ProjectIntegrationPage({ projectId }: { projectId: string }) {
                     <Icon className="size-5" style={{ color: connected ? accentColor : "#999" }} />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-sm text-[#404040]">{item.name}</h4>
+                    <h4 className="font-semibold text-sm text-[var(--color-text-primary)]">{item.name}</h4>
                     <p className="text-xs text-[#666]">{item.type}</p>
                     <p className="mt-1 text-xs text-[#999]">Last sync: {item.lastSync}</p>
                   </div>
@@ -538,7 +538,7 @@ function PageIntro({ title, children }: { title: string; children: ReactNode }) 
   return (
     <div className="mb-6 rounded-lg border border-[#00a7b5]/25 bg-[#00a7b5]/5 p-4 lg:mb-8">
       <p className="text-xs font-semibold uppercase tracking-wide text-[#00838f]">{title}</p>
-      <p className="mt-2 text-sm text-[#404040]">{children}</p>
+      <p className="mt-2 text-sm text-[var(--color-text-primary)]">{children}</p>
     </div>
   );
 }
@@ -566,7 +566,7 @@ export function MainOverviewPage() {
     <div className="p-4 lg:p-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-4 lg:mb-6">
-          <h3 className="font-bold text-xl text-[#404040] lg:text-2xl">Portfolio overview</h3>
+          <h3 className="font-bold text-xl text-[var(--color-text-primary)] lg:text-2xl">Portfolio overview</h3>
           <p className="mt-1 text-sm text-[#666]">
             Your starting point for portfolio health: consumption trends, data coverage, and buildings that need action.
           </p>
@@ -591,7 +591,7 @@ export function MainOverviewPage() {
 
         <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="rounded-lg border border-[#aab6b4] bg-white p-4 shadow-sm lg:p-6">
-            <h4 className="mb-1 font-semibold text-[#404040]">Portfolio electricity trend</h4>
+            <h4 className="mb-1 font-semibold text-[var(--color-text-primary)]">Portfolio electricity trend</h4>
             <p className="mb-4 text-xs text-[#666]">Combined monthly consumption across all metered buildings (MWh).</p>
             <div className="h-48 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -607,7 +607,7 @@ export function MainOverviewPage() {
           </div>
 
           <div className="rounded-lg border border-[#aab6b4] bg-white p-4 shadow-sm lg:p-6">
-            <h4 className="mb-4 font-semibold text-[#404040]">Needs attention</h4>
+            <h4 className="mb-4 font-semibold text-[var(--color-text-primary)]">Needs attention</h4>
             <div className="space-y-3">
               {needsAttention.map((item) => (
                 <div
@@ -616,7 +616,7 @@ export function MainOverviewPage() {
                 >
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-sm text-[#404040]">{item.name}</span>
+                      <span className="font-medium text-sm text-[var(--color-text-primary)]">{item.name}</span>
                       <Chip tone={alertTone(item.severity)} size="sm">
                         {item.severity}
                       </Chip>
@@ -639,7 +639,7 @@ export function MainOverviewPage() {
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Building2 className="size-5 text-[#666]" />
-              <h4 className="font-semibold text-[#404040]">Projects at a glance</h4>
+              <h4 className="font-semibold text-[var(--color-text-primary)]">Projects at a glance</h4>
             </div>
             <Button variant="tertiary" size="sm" onClick={() => navigate("/")}>
               Open full project list
@@ -718,7 +718,7 @@ export function MainAlertsPage() {
     <div className="p-4 lg:p-8">
       <div className="mx-auto max-w-4xl">
         <div className="mb-4 lg:mb-6">
-          <h3 className="font-bold text-xl text-[#404040] lg:text-2xl">Alerts</h3>
+          <h3 className="font-bold text-xl text-[var(--color-text-primary)] lg:text-2xl">Alerts</h3>
           <p className="mt-1 text-sm text-[#666]">
             Automated checks across every project: data gaps, odd consumption, and setup issues.
           </p>
@@ -760,7 +760,7 @@ export function MainAlertsPage() {
                   </Chip>
                 <span className="text-xs text-[#999]">{alert.date}</span>
               </div>
-              <h4 className="mt-2 font-semibold text-sm text-[#404040]">{alert.title}</h4>
+              <h4 className="mt-2 font-semibold text-sm text-[var(--color-text-primary)]">{alert.title}</h4>
               <p className="mt-1 text-sm text-[#666]">{alert.detail}</p>
               <Button
                 variant="primary"
@@ -829,7 +829,7 @@ export function MainSettingsPage() {
     <div className="p-4 lg:p-8">
       <div className="mx-auto max-w-2xl">
         <div className="mb-4 lg:mb-6">
-          <h3 className="font-bold text-xl text-[#404040] lg:text-2xl">Settings</h3>
+          <h3 className="font-bold text-xl text-[var(--color-text-primary)] lg:text-2xl">Settings</h3>
           <p className="mt-1 text-sm text-[#666]">
             Organisation preferences for notifications, reporting defaults, and display options.
           </p>
@@ -842,13 +842,13 @@ export function MainSettingsPage() {
 
         <div className="mb-6 rounded-lg border border-[#aab6b4] bg-white p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-[#999]">Organisation</p>
-          <p className="mt-2 font-semibold text-[#404040]">Demo Energy Portfolio</p>
+          <p className="mt-2 font-semibold text-[var(--color-text-primary)]">Demo Energy Portfolio</p>
           <p className="text-sm text-[#666]">Role: Portfolio manager · Timezone: Europe/London</p>
         </div>
 
         {sections.map((section) => (
           <div key={section.title} className="mb-6">
-            <h4 className="font-semibold text-[#404040]">{section.title}</h4>
+            <h4 className="font-semibold text-[var(--color-text-primary)]">{section.title}</h4>
             <p className="mt-1 mb-3 text-sm text-[#666]">{section.description}</p>
             <div className="space-y-3">
               {section.items.map((item) => (
@@ -857,7 +857,7 @@ export function MainSettingsPage() {
                   className="flex items-start justify-between gap-6 rounded-lg border border-[#aab6b4] bg-white p-4 shadow-sm"
                 >
                   <div>
-                    <h5 className="font-semibold text-sm text-[#404040]">{item.label}</h5>
+                    <h5 className="font-semibold text-sm text-[var(--color-text-primary)]">{item.label}</h5>
                     <p className="mt-1 text-sm text-[#666]">{item.description}</p>
                   </div>
                   <Toggle checked={item.checked} onCheckedChange={item.onChange} className="shrink-0" />
@@ -868,11 +868,11 @@ export function MainSettingsPage() {
         ))}
 
         <div className="mb-6">
-          <h4 className="font-semibold text-[#404040]">Display</h4>
+          <h4 className="font-semibold text-[var(--color-text-primary)]">Display</h4>
           <p className="mt-1 mb-3 text-sm text-[#666]">Units and formats shown in charts and exported reports.</p>
           <div className="space-y-3">
             <div className="rounded-lg border border-[#aab6b4] bg-white p-4 shadow-sm">
-              <p className="mb-3 font-semibold text-sm text-[#404040]">Measurement units</p>
+              <p className="mb-3 font-semibold text-sm text-[var(--color-text-primary)]">Measurement units</p>
               <div className="flex gap-2">
                 <Button
                   variant="tertiary"
@@ -901,7 +901,7 @@ export function MainSettingsPage() {
               </div>
             </div>
             <div className="rounded-lg border border-[#aab6b4] bg-white p-4 shadow-sm">
-              <p className="mb-2 font-semibold text-sm text-[#404040]">Default report date range</p>
+              <p className="mb-2 font-semibold text-sm text-[var(--color-text-primary)]">Default report date range</p>
               <p className="mb-3 text-sm text-[#666]">Pre-selected period when generating portfolio or project reports.</p>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -960,7 +960,7 @@ export function OperationalPatternsContent({
   return (
     <>
       <h4 className="mb-3 font-normal text-base text-[#313131] lg:mb-4 lg:text-lg">Operational Patterns</h4>
-      <p className="mb-6 font-normal text-sm text-[#404040] lg:text-base">
+      <p className="mb-6 font-normal text-sm text-[var(--color-text-primary)] lg:text-base">
         Typical weekday profile for {projectName}. Peak demand matches core office hours (08:00–18:00).
         {syntheticEnabled
           ? " Profile derived from synthetic half-hourly data."
@@ -995,7 +995,7 @@ export function OperationalPatternsContent({
             <div key={row.day} className="rounded-lg border border-[#e0e0e0] p-3 text-center">
               <Icon className="mx-auto size-4 text-[#666]" />
               <p className="mt-1 text-xs text-[#999]">{row.day}</p>
-              <p className="font-semibold text-sm text-[#404040]">{row.value}</p>
+              <p className="font-semibold text-sm text-[var(--color-text-primary)]">{row.value}</p>
             </div>
           );
         })}
@@ -1018,7 +1018,7 @@ export function DisaggregationContent({
       <h4 className="mb-3 font-normal text-base text-[#313131] lg:mb-4 lg:text-lg">
         Disaggregation & Potential Wastage
       </h4>
-      <p className="mb-6 font-normal text-sm text-[#404040] lg:text-base">
+      <p className="mb-6 font-normal text-sm text-[var(--color-text-primary)] lg:text-base">
         Estimated end-use split for {projectName}.
         {syntheticEnabled
           ? " Synthetic hourly profiles improve confidence in out-of-hours baseload detection."
@@ -1029,8 +1029,8 @@ export function DisaggregationContent({
         {END_USE.map((row) => (
           <div key={row.use}>
             <div className="mb-1 flex justify-between text-sm">
-              <span className="text-[#404040]">{row.use}</span>
-              <span className="font-medium text-[#404040]">{row.share}%</span>
+              <span className="text-[var(--color-text-primary)]">{row.use}</span>
+              <span className="font-medium text-[var(--color-text-primary)]">{row.share}%</span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-[#e5e8e7]">
               <div
@@ -1043,7 +1043,7 @@ export function DisaggregationContent({
       </div>
 
       <div className="rounded-lg border border-[#f5a50d]/40 bg-[#fff4e5] p-4">
-        <p className="text-sm font-semibold text-[#404040]">Potential wastage</p>
+        <p className="text-sm font-semibold text-[var(--color-text-primary)]">Potential wastage</p>
         <p className="mt-1 text-sm text-[#666]">
           Out-of-hours baseload is ~12% above the expected profile for an office this size. Worth investigating.
           overnight HVAC schedules and IT load.

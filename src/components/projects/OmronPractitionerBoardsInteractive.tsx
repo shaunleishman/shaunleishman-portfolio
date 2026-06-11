@@ -13,7 +13,10 @@ const PRACTITIONER_ILLUSTRATION_FRAME =
   "h-[6.5rem] w-[4.5rem] shrink-0 sm:h-[7rem] sm:w-[4.875rem] md:h-[7.25rem] md:w-[5rem]";
 const UNIFORM_ILLUSTRATION_WIDTH = 400;
 const UNIFORM_ILLUSTRATION_HEIGHT = 480;
-const PROFILE_DUO_CARD_CLASS = "flex h-full flex-col lg:col-span-6 lg:min-h-[12rem]";
+const PROFILE_DUO_CARD_CLASS = "flex h-full flex-col lg:col-span-7";
+const PROFILE_ROLE_CARD_CLASS = "flex h-full flex-col lg:col-span-5";
+const PROFILE_TASKS_CARD_CLASS = "flex h-full flex-col lg:col-span-7";
+const PROFILE_VISO_CARD_CLASS = "flex h-full flex-col lg:col-span-5";
 
 type OmronPractitionerBoardsInteractiveProps = {
   className?: string;
@@ -24,21 +27,26 @@ function PractitionerSection({
   children,
   className,
   fill = false,
+  accentColor,
 }: {
   title: string;
   children: ReactNode;
   className?: string;
   fill?: boolean;
+  accentColor: string;
 }) {
   return (
     <section
       className={cn(
-        "rounded-xl border border-[var(--case-study-accent)]/10 bg-white px-3 py-2.5",
+        "rounded-xl border border-[var(--color-border)] bg-white px-3 py-2.5",
         fill && "flex h-full min-h-0 flex-col",
         className,
       )}
     >
-      <h4 className="mb-1.5 shrink-0 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+      <h4
+        className="mb-1.5 shrink-0 text-[0.65rem] font-semibold uppercase tracking-[0.12em]"
+        style={{ color: accentColor }}
+      >
         {title}
       </h4>
       {fill ? <div className="flex min-h-0 flex-1 flex-col">{children}</div> : children}
@@ -61,24 +69,27 @@ function PractitionerNavItem({
       onClick={onSelect}
       aria-current={active ? "true" : undefined}
       className={cn(
-        "flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left motion-safe:transition-[border-color,background-color,box-shadow,color] motion-safe:duration-300 motion-safe:ease-out",
+        "flex w-full flex-col rounded-lg border px-3 py-2.5 text-left motion-safe:transition-[border-color,background-color,color] motion-safe:duration-300 motion-safe:ease-out",
         active
-          ? "border-[var(--case-study-accent)]/30 bg-white shadow-sm"
+          ? "border-[var(--case-study-accent)]/30 bg-white"
           : "border-transparent hover:border-[var(--color-border)] hover:bg-white/80",
       )}
+      style={
+        active
+          ? {
+              borderColor: `${practitioner.accentColor}55`,
+            }
+          : undefined
+      }
     >
-      <span className="min-w-0 text-body-sm">
-        <span
-          className={cn(
-            "font-medium motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out",
-            active ? "text-[var(--case-study-accent)]" : "text-[var(--color-text-primary)]",
-          )}
-        >
-          {practitioner.name}
-        </span>
-        <span className="mt-0.5 block text-[0.75rem] leading-snug text-[var(--color-text-muted)]">
-          {practitioner.tagline}
-        </span>
+      <span
+        className="text-body-sm font-medium leading-snug motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+        style={{ color: active ? practitioner.accentColor : "var(--color-text-primary)" }}
+      >
+        {practitioner.name}
+      </span>
+      <span className="mt-1 text-[0.8125rem] leading-relaxed text-[var(--color-text-muted)]">
+        {practitioner.tagline}
       </span>
     </button>
   );
@@ -107,11 +118,19 @@ function PractitionerSwitcher({
             aria-selected={selected}
             onClick={() => onSelect(practitioner.id)}
             className={cn(
-              "shrink-0 rounded-full border px-3 py-1.5 text-[0.75rem] font-medium whitespace-nowrap motion-safe:transition-[border-color,background-color,color,box-shadow] motion-safe:duration-300 motion-safe:ease-out",
+              "inline-flex shrink-0 rounded-full border px-3 py-1.5 text-[0.8125rem] font-medium leading-none whitespace-nowrap motion-safe:transition-[border-color,background-color,color] motion-safe:duration-300 motion-safe:ease-out",
               selected
-                ? "border-[var(--case-study-accent)]/35 bg-white text-[var(--case-study-accent)] shadow-sm"
-                : "border-[var(--color-border)] bg-white/70 text-[var(--color-text-secondary)] hover:border-[var(--case-study-accent)]/20 hover:text-[var(--color-text-primary)]",
+                ? "bg-white"
+                : "border-[var(--color-border)] bg-white/70 text-[var(--color-text-secondary)] hover:bg-white",
             )}
+            style={
+              selected
+                ? {
+                    borderColor: `${practitioner.accentColor}55`,
+                    color: practitioner.accentColor,
+                  }
+                : undefined
+            }
           >
             {practitioner.shortLabel}
           </button>
@@ -170,12 +189,21 @@ function PractitionerHeader({
   illustrationId: string;
 }) {
   return (
-    <header className="mb-3 flex flex-col gap-2.5 border-b border-[var(--color-border)] pb-3 sm:flex-row sm:items-end sm:justify-between">
+    <header
+      className="mb-3 flex flex-col gap-2.5 border-b pb-3 sm:flex-row sm:items-end sm:justify-between"
+      style={{ borderColor: `${displayPractitioner.accentColor}33` }}
+    >
       <div className={cn("min-w-0 flex-1", caseStudyContentFadeClass(contentVisible))}>
-        <p className="mb-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--case-study-accent)]">
+        <p
+          className="mb-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em]"
+          style={{ color: displayPractitioner.accentColor }}
+        >
           OMRON user group
         </p>
-        <h3 className="text-h4 font-semibold text-[var(--color-text-primary)]">
+        <h3
+          className="text-h4 font-semibold"
+          style={{ color: displayPractitioner.headingColor }}
+        >
           {displayPractitioner.name}
         </h3>
         <p className="mt-0.5 text-[0.8125rem] text-[var(--color-text-muted)]">
@@ -195,16 +223,17 @@ function PractitionerProfile({
   contentVisible: boolean;
 }) {
   const textFade = caseStudyContentFadeClass(contentVisible);
+  const accentColor = displayPractitioner.accentColor;
 
   return (
     <div className="grid items-stretch gap-2 sm:gap-2.5 lg:grid-cols-12">
-      <PractitionerSection title="Role" fill className={cn("lg:col-span-8", textFade)}>
+      <PractitionerSection title="Role" fill accentColor={accentColor} className={cn(PROFILE_ROLE_CARD_CLASS, textFade)}>
         <p className="text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
           {displayPractitioner.role}
         </p>
       </PractitionerSection>
 
-      <PractitionerSection title="Key tasks" fill className={cn("lg:col-span-4", textFade)}>
+      <PractitionerSection title="Key tasks" fill accentColor={accentColor} className={cn(PROFILE_TASKS_CARD_CLASS, textFade)}>
         <ul className="list-disc space-y-1 pl-4 text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
           {displayPractitioner.keyTasks.map((item) => (
             <li key={item}>{item}</li>
@@ -212,7 +241,12 @@ function PractitionerProfile({
         </ul>
       </PractitionerSection>
 
-      <PractitionerSection title="Interaction with others" fill className={cn(PROFILE_DUO_CARD_CLASS, textFade)}>
+      <PractitionerSection
+        title="Interaction with others"
+        fill
+        accentColor={accentColor}
+        className={cn(PROFILE_DUO_CARD_CLASS, textFade)}
+      >
         <ul className="space-y-2 text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
           {displayPractitioner.interactions.map(({ label, description }) => (
             <li key={label}>
@@ -223,7 +257,12 @@ function PractitionerProfile({
         </ul>
       </PractitionerSection>
 
-      <PractitionerSection title="Usage of OMRON VISO" fill className={cn(PROFILE_DUO_CARD_CLASS, textFade)}>
+      <PractitionerSection
+        title="Usage of OMRON VISO"
+        fill
+        accentColor={accentColor}
+        className={cn(PROFILE_VISO_CARD_CLASS, textFade)}
+      >
         <ul className="list-disc space-y-1 pl-4 text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
           {displayPractitioner.visoUsage.map((item) => (
             <li key={item}>{item}</li>
@@ -248,7 +287,7 @@ export function OmronPractitionerBoardsInteractive({
         className="overflow-hidden rounded-xl border border-[var(--color-border)] bg-neutral-50"
       >
         <div className="flex flex-col md:flex-row">
-          <aside className="hidden shrink-0 border-b border-[var(--color-border)] bg-neutral-50 md:flex md:w-56 md:flex-col md:border-b-0 md:border-r">
+          <aside className="hidden shrink-0 border-b border-[var(--color-border)] bg-neutral-50 md:flex md:w-64 md:flex-col md:border-b-0 md:border-r">
             <nav className="flex-1 space-y-1 overflow-y-auto p-3" aria-label="User groups">
               {omronPractitioners.map((practitioner) => (
                 <PractitionerNavItem
@@ -266,7 +305,11 @@ export function OmronPractitionerBoardsInteractive({
               <PractitionerSwitcher activeId={activeId} onSelect={setActiveId} />
             </div>
 
-            <div id={`${baseId}-panel`} className="bg-white p-4 md:p-5">
+            <div
+              id={`${baseId}-panel`}
+              className="border-t-[3px] bg-white p-4 md:border-t-0 md:p-5"
+              style={{ borderTopColor: displayItem.accentColor }}
+            >
               <PractitionerHeader
                 displayPractitioner={displayItem}
                 contentVisible={contentVisible}

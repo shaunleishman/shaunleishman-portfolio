@@ -15,7 +15,37 @@ import { CHART_ACCENTS, ChoiceOutlinePill } from "@/components/projects/CaseStud
 import { NhsPersonaJourneyMap } from "@/components/projects/NhsPersonaJourneyMap";
 
 const KEY_TIME_LABELS = ["12am", "3am", "6am", "9am", "12pm", "3pm", "6pm", "9pm"] as const;
-const PERSONA_ILLUSTRATION_WIDTH = "w-[13.5rem] sm:w-[15rem] md:w-[17.5rem]";
+/** Base mat — each persona is fit inside then scaled so figures read at similar size. */
+const ILLUSTRATION_FRAME_WIDTH = 280;
+const ILLUSTRATION_FRAME_HEIGHT = 210;
+
+function personaIllustrationRenderSize(persona: NhsPersona) {
+  const prominence = persona.illustrationScale ?? 1;
+  const fit = Math.min(
+    ILLUSTRATION_FRAME_WIDTH / persona.illustrationWidth,
+    ILLUSTRATION_FRAME_HEIGHT / persona.illustrationHeight,
+  );
+  const total = fit * prominence;
+
+  return {
+    width: Math.round(persona.illustrationWidth * total),
+    height: Math.round(persona.illustrationHeight * total),
+  };
+}
+
+const personaIllustrationLayout = (() => {
+  const sizes = nhsPersonas.map((persona) => ({
+    id: persona.id,
+    ...personaIllustrationRenderSize(persona),
+  }));
+
+  return {
+    width: Math.max(...sizes.map((size) => size.width)),
+    height: Math.max(...sizes.map((size) => size.height)),
+    byId: Object.fromEntries(sizes.map((size) => [size.id, size])),
+  };
+})();
+
 const PROFILE_TRIO_CARD_CLASS = "flex h-full flex-col lg:col-span-4 lg:min-h-[14rem]";
 const MOTION_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
 const MOTION_MS = 650;
@@ -218,41 +248,57 @@ function PersonaSwitcher({
   );
 }
 
-function PersonaIllustration({ persona }: { persona: NhsPersona }) {
+function PersonaIllustration({
+  persona,
+  displayWidth,
+  displayHeight,
+}: {
+  persona: NhsPersona;
+  displayWidth: number;
+  displayHeight: number;
+}) {
   return (
     <Image
       src={persona.illustrationSrc}
       alt={persona.illustrationAlt}
       width={persona.illustrationWidth}
       height={persona.illustrationHeight}
-      className="h-auto w-full"
-      sizes="(min-width: 768px) 280px, 240px"
+      className="block max-w-none"
+      style={{ width: displayWidth, height: displayHeight }}
+      sizes={`${displayWidth}px`}
     />
   );
 }
 
 function PersonaIllustrationStack({ activeId }: { activeId: string }) {
+  const { width, height, byId } = personaIllustrationLayout;
+
   return (
     <div
-      className={cn(
-        "grid shrink-0 [&>*]:col-start-1 [&>*]:row-start-1",
-        PERSONA_ILLUSTRATION_WIDTH,
-      )}
+      className="relative shrink-0 overflow-visible [&>*]:col-start-1 [&>*]:row-start-1"
+      style={{ width, height }}
     >
-      {nhsPersonas.map((persona) => (
-        <div
-          key={persona.id}
-          className={cn(
-            "w-full motion-safe:transition-opacity motion-safe:duration-[650ms] motion-safe:ease-in-out",
-            persona.id === activeId
-              ? "z-10 opacity-100"
-              : "pointer-events-none z-0 opacity-0",
-          )}
-          aria-hidden={persona.id !== activeId}
-        >
-          <PersonaIllustration persona={persona} />
-        </div>
-      ))}
+      {nhsPersonas.map((persona) => {
+        const displaySize = byId[persona.id];
+        return (
+          <div
+            key={persona.id}
+            className={cn(
+              "absolute inset-0 flex items-center justify-center overflow-visible motion-safe:transition-opacity motion-safe:duration-[650ms] motion-safe:ease-in-out",
+              persona.id === activeId
+                ? "z-10 opacity-100"
+                : "pointer-events-none z-0 opacity-0",
+            )}
+            aria-hidden={persona.id !== activeId}
+          >
+            <PersonaIllustration
+              persona={persona}
+              displayWidth={displaySize.width}
+              displayHeight={displaySize.height}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

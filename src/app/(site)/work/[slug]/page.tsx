@@ -72,7 +72,7 @@ export default async function CaseStudyPage({ params }: Props) {
 
           <h1 className="text-h1 font-semibold mb-4">{project.title}</h1>
           {isArbnco && (
-            <p className="text-body-lg font-medium text-[#14a085] mb-6 max-w-2xl">
+            <p className="text-body-lg font-medium text-[#26c6da] mb-6 max-w-2xl">
               {arbncoCaseStudyMeta.outcomeLine}
             </p>
           )}
@@ -82,7 +82,7 @@ export default async function CaseStudyPage({ params }: Props) {
             </p>
           )}
           {isOmron && (
-            <p className="text-body-lg font-medium text-[#6ba3ff] mb-6 max-w-2xl">
+            <p className="text-body-lg font-medium text-[#5a9fd4] mb-6 max-w-2xl">
               {omronCaseStudyMeta.outcomeLine}
             </p>
           )}

@@ -22,6 +22,8 @@ export type NhsPersona = {
   /** Trimmed source dimensions for layout and Next/Image */
   illustrationWidth: number;
   illustrationHeight: number;
+  /** Tune figure prominence when source padding differs — distressed caller is 1. */
+  illustrationScale?: number;
   /** End-to-end journey map image for this persona */
   journeyMapSrc: string;
   /** Call frequency through the day, 8 buckets from midnight → midnight */
@@ -60,6 +62,7 @@ export const nhsPersonas: NhsPersona[] = [
     illustrationAlt: "Connection seeker illustration, Are they listening to me?",
     illustrationWidth: 449,
     illustrationHeight: 325,
+    illustrationScale: 1.28,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-connection-seeker.png",
     keyTimes: [92, 85, 75, 28, 22, 35, 60, 90],
     positives:
@@ -97,6 +100,7 @@ export const nhsPersonas: NhsPersona[] = [
     illustrationAlt: "Distressed caller illustration, worried about a loved one's symptoms",
     illustrationWidth: 343,
     illustrationHeight: 346,
+    illustrationScale: 1,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-distressed-caller.png",
     keyTimes: [85, 80, 65, 30, 25, 35, 60, 82],
     positives:
@@ -136,6 +140,7 @@ export const nhsPersonas: NhsPersona[] = [
     illustrationAlt: "Confirmation seeker illustration, would have self-tested if possible",
     illustrationWidth: 643,
     illustrationHeight: 354,
+    illustrationScale: 1.42,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-confirmation-seeker.png",
     keyTimes: [8, 10, 18, 72, 95, 78, 88, 52],
     positives:
@@ -173,6 +178,7 @@ export const nhsPersonas: NhsPersona[] = [
     illustrationAlt: "Breaking point caller illustration, worsening situation and long wait",
     illustrationWidth: 561,
     illustrationHeight: 342,
+    illustrationScale: 1.38,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-breaking-point.png",
     keyTimes: [88, 75, 45, 22, 18, 28, 55, 80],
     positives:
@@ -212,6 +218,7 @@ export const nhsPersonas: NhsPersona[] = [
     illustrationAlt: "Illustration of a caller using 111 when GP access is blocked",
     illustrationWidth: 456,
     illustrationHeight: 290,
+    illustrationScale: 1.72,
     journeyMapSrc: "/projects/nhs-111-waiting-times/journey-gp-substitute.png",
     keyTimes: [12, 10, 22, 72, 95, 82, 48, 18],
     positives:

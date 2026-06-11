@@ -1,31 +1,5 @@
 import { cn } from "@/lib/utils";
-
-type CaseStudySubheadingProps = {
-  children: React.ReactNode;
-  className?: string;
-  id?: string;
-  withLead?: boolean;
-};
-
-export function CaseStudySubheading({
-  children,
-  className,
-  id,
-  withLead = false,
-}: CaseStudySubheadingProps) {
-  return (
-    <h3
-      id={id}
-      className={cn(
-        "text-h4 font-semibold text-[var(--color-text-primary)]",
-        withLead ? "mb-3" : "mb-5",
-        className,
-      )}
-    >
-      {children}
-    </h3>
-  );
-}
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 type CaseStudySubsectionProps = {
   title: string;
@@ -36,7 +10,7 @@ type CaseStudySubsectionProps = {
   spacingTop?: boolean;
 };
 
-/** Second-level heading used consistently across rich case studies (e.g. Key takeaways, User flow). */
+/** Second-level heading used consistently across rich case studies (e.g. User flow, Survey results). */
 export function CaseStudySubsection({
   title,
   lead,
@@ -55,12 +29,14 @@ export function CaseStudySubsection({
       )}
       aria-labelledby={headingId}
     >
-      <CaseStudySubheading id={headingId} withLead={Boolean(lead)}>
-        {title}
-      </CaseStudySubheading>
-      {lead && (
-        <p className="mb-6 max-w-2xl text-body text-[var(--color-text-muted)]">{lead}</p>
-      )}
+      <SectionHeader
+        id={headingId}
+        title={title}
+        lead={lead}
+        variant="secondary"
+        as="div"
+        className={lead ? "mb-6" : "mb-5"}
+      />
       {children}
     </section>
   );

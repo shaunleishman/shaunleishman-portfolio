@@ -2,19 +2,9 @@
 
 import { useCallback, useId, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import {
-  CHART_ENTER_MS,
-  displayPercent,
-  lerpByProgress,
-  useChartEnterProgress,
-} from "@/lib/useChartEnterProgress";
-import {
-  CHART_ACCENTS,
-  ChartInsightCard,
-  ChoiceOutlinePill,
-  FilterOutlinePill,
-} from "@/components/projects/CaseStudyChartControls";
-import { FilterChip } from "@/components/ui/FilterChip";
+import { displayPercent, lerpByProgress, useChartEnterProgress, CHART_ENTER_MS } from "@/lib/useChartEnterProgress";
+import { CHART_ACCENTS, ChartInsightCard } from "@/components/projects/CaseStudyChartControls";
+import { FilterChip, FilterChipRow } from "@/components/ui/FilterChip";
 import { NhsTypicalCallerFunnel } from "@/components/projects/NhsTypicalCallerFunnel";
 import {
   NHS_AGE_GROUPS,
@@ -32,12 +22,13 @@ import {
   type OutcomeTimeBlock,
 } from "@/content/nhs-quantitative";
 
-const MOTION_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
-const MOTION_MS = CHART_ENTER_MS;
-
 type NhsQuantitativeInteractiveProps = {
   className?: string;
 };
+
+const EXPLORER_ACCENT = "var(--case-study-accent)";
+const MOTION_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
+const MOTION_MS = CHART_ENTER_MS;
 
 function motionStyle(property: string) {
   return {
@@ -47,7 +38,7 @@ function motionStyle(property: string) {
   } as const;
 }
 
-function AgePills({
+function AgeFilterRow({
   baseId,
   activeAge,
   onSelect,
@@ -57,19 +48,21 @@ function AgePills({
   onSelect: (age: NhsAgeGroup) => void;
 }) {
   return (
-    <div role="tablist" aria-label="Age group" className="flex flex-wrap gap-1.5">
+    <FilterChipRow label="Age group">
       {NHS_AGE_GROUPS.map((age) => (
-        <ChoiceOutlinePill
+        <FilterChip
           key={age}
           id={`${baseId}-age-${age}`}
           role="tab"
           label={age}
           selected={age === activeAge}
-          ariaSelected={age === activeAge}
-          onSelect={() => onSelect(age)}
+          aria-selected={age === activeAge}
+          onClick={() => onSelect(age)}
+          accentColor={EXPLORER_ACCENT}
+          className="min-h-[32px] px-2.5 py-1"
         />
       ))}
-    </div>
+    </FilterChipRow>
   );
 }
 
@@ -108,7 +101,7 @@ function MetricBar({
 
 function InsightBox({ text, accentColor }: { text: string; accentColor: string }) {
   return (
-    <ChartInsightCard accentColor={accentColor} className="mt-2">
+    <ChartInsightCard accentColor={accentColor} className="mt-4">
       {text}
     </ChartInsightCard>
   );
@@ -121,9 +114,9 @@ function SurveyRespondentsPanel({ baseId, animationKey }: { baseId: string; anim
   const max = 45;
 
   return (
-    <div>
-      <AgePills baseId={`${baseId}-survey`} activeAge={activeAge} onSelect={setActiveAge} />
-      <div className="mt-3 space-y-3" role="tabpanel" aria-labelledby={`${baseId}-age-${activeAge}`}>
+    <div role="tabpanel" aria-labelledby={`${baseId}-age-${activeAge}`}>
+      <AgeFilterRow baseId={`${baseId}-survey`} activeAge={activeAge} onSelect={setActiveAge} />
+      <div className="mt-4 space-y-3">
         <MetricBar
           label="Survey respondents"
           value={row.surveyRespondents}
@@ -151,9 +144,9 @@ function PriorResourcesPanel({ baseId, animationKey }: { baseId: string; animati
   const max = 45;
 
   return (
-    <div>
-      <AgePills baseId={`${baseId}-resources`} activeAge={activeAge} onSelect={setActiveAge} />
-      <div className="mt-3 space-y-3" role="tabpanel">
+    <div role="tabpanel">
+      <AgeFilterRow baseId={`${baseId}-resources`} activeAge={activeAge} onSelect={setActiveAge} />
+      <div className="mt-4 space-y-3">
         <MetricBar
           label="Survey respondents"
           value={row.surveyRespondents}
@@ -234,7 +227,12 @@ function OutcomeLineChart({
         strokeWidth={1}
         strokeDasharray="4 4"
       />
-      <text x={width - padX} y={toPoint(0, 21).y - 4} textAnchor="end" className="fill-[var(--color-text-muted)] text-[8px]">
+      <text
+        x={width - padX}
+        y={toPoint(0, 21).y - 4}
+        textAnchor="end"
+        className="fill-[var(--color-text-muted)] text-[8px]"
+      >
         21%
       </text>
 
@@ -273,7 +271,6 @@ function OutcomeLineChart({
             strokeWidth={1}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="motion-safe:transition-opacity motion-safe:duration-300"
           />
           {nhs999OutcomeSeries.didNotTry.map((value, index) => {
             const { x, y } = toPoint(index, value);
@@ -301,7 +298,6 @@ function OutcomeLineChart({
             strokeWidth={1}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="motion-safe:transition-opacity motion-safe:duration-300"
           />
           {nhs999OutcomeSeries.tried.map((value, index) => {
             const { x, y } = toPoint(index, value);
@@ -328,21 +324,31 @@ function SatisfactionPanel({ animationKey }: { animationKey: string }) {
   const progress = useChartEnterProgress(animationKey);
 
   return (
-    <div>
-      <div className="space-y-3">
-        {nhsSatisfactionLevels.map((row) => (
-          <MetricBar
-            key={row.label}
-            label={row.label}
-            value={row.value}
-            max={max}
-            color={NHS_QUANT_COLORS.coral}
-            progress={progress}
-          />
-        ))}
-      </div>
+    <div className="space-y-3">
+      {nhsSatisfactionLevels.map((row) => (
+        <MetricBar
+          key={row.label}
+          label={row.label}
+          value={row.value}
+          max={max}
+          color={NHS_QUANT_COLORS.coral}
+          progress={progress}
+        />
+      ))}
     </div>
   );
+}
+
+type WeekdayBarTooltip = {
+  day: string;
+  outcome: string;
+  value: number;
+  x: number;
+  y: number;
+};
+
+function formatWeekdayPercent(value: number) {
+  return `${Number.isInteger(value) ? value : value.toFixed(1)}%`;
 }
 
 function WeekdayGroupedBarChart({
@@ -352,6 +358,7 @@ function WeekdayGroupedBarChart({
   visibleWeekdays: Record<NhsWeekday, boolean>;
   progress: number;
 }) {
+  const [tooltip, setTooltip] = useState<WeekdayBarTooltip | null>(null);
   const yMax = 10;
   const width = 654;
   const height = 132;
@@ -375,13 +382,14 @@ function WeekdayGroupedBarChart({
   const baselineY = pad.top + plotH;
 
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      className="block h-auto w-full max-h-[13.5rem]"
-      preserveAspectRatio="xMidYMid meet"
-      role="img"
-      aria-label="Grouped bar chart of call outcomes by weekday"
-    >
+    <div className="relative">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="block h-auto w-full max-h-[13.5rem]"
+        preserveAspectRatio="xMidYMid meet"
+        role="img"
+        aria-label="Grouped bar chart of call outcomes by weekday"
+      >
       {[2.5, 5, 7.5, 10].map((tick) => {
         const y = baselineY - (tick / yMax) * plotH;
         return (
@@ -430,16 +438,31 @@ function WeekdayGroupedBarChart({
           if (h <= 0) return null;
 
           return (
-            <rect
+            <g
               key={`${outcome.id}-${day.id}`}
-              x={x}
-              y={baselineY - h}
-              width={barW}
-              height={h}
-              rx={1}
-              fill={day.color}
-              className="motion-safe:transition-[height,y] motion-safe:duration-[650ms] motion-safe:ease-in-out"
-            />
+              className="cursor-default"
+              onMouseEnter={() =>
+                setTooltip({
+                  day: day.label,
+                  outcome: outcome.label,
+                  value,
+                  x: x + barW / 2,
+                  y: baselineY - h,
+                })
+              }
+              onMouseLeave={() => setTooltip(null)}
+            >
+              <rect
+                x={x}
+                y={baselineY - h}
+                width={barW}
+                height={h}
+                rx={1}
+                fill={day.color}
+                className="motion-safe:transition-[height,y] motion-safe:duration-[650ms] motion-safe:ease-in-out"
+              />
+              <title>{`${day.label} · ${outcome.label} · ${formatWeekdayPercent(value)}`}</title>
+            </g>
           );
         }),
       )}
@@ -458,7 +481,24 @@ function WeekdayGroupedBarChart({
           </text>
         );
       })}
-    </svg>
+      </svg>
+
+      {tooltip && (
+        <div
+          role="tooltip"
+          className="pointer-events-none absolute z-10 max-w-[12rem] -translate-x-1/2 -translate-y-full rounded-md border border-[var(--color-border)] bg-white px-2.5 py-1.5 text-[0.6875rem] leading-snug text-[var(--color-text-primary)]"
+          style={{
+            left: `${(tooltip.x / width) * 100}%`,
+            top: `${(tooltip.y / height) * 100}%`,
+            marginTop: -6,
+          }}
+        >
+          <p className="font-medium">{tooltip.day}</p>
+          <p className="text-[var(--color-text-secondary)]">{tooltip.outcome} outcome</p>
+          <p className="font-medium tabular-nums">{formatWeekdayPercent(tooltip.value)}</p>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -478,26 +518,24 @@ function WeekdayOutcomesPanel({ animationKey }: { animationKey: string }) {
 
   return (
     <div>
-      <div
-        role="group"
-        aria-label="Filter by weekday"
-        className="mb-3 flex flex-wrap gap-1.5"
-      >
+      <FilterChipRow label="Weekday">
         {NHS_WEEKDAYS.map((day) => (
-          <FilterOutlinePill
+          <FilterChip
             key={day.id}
             label={day.shortLabel}
-            ariaLabel={day.label}
-            color={day.color}
-            pressed={visibleWeekdays[day.id]}
-            onToggle={() => toggleWeekday(day.id)}
+            selected={visibleWeekdays[day.id]}
+            aria-pressed={visibleWeekdays[day.id]}
+            onClick={() => toggleWeekday(day.id)}
+            accentColor={day.color}
+            className="min-h-[32px] px-2.5 py-1"
           />
         ))}
+      </FilterChipRow>
+
+      <div className="mt-4">
+        <WeekdayGroupedBarChart visibleWeekdays={visibleWeekdays} progress={progress} />
+        <p className="mt-2 text-body-sm text-[var(--color-text-muted)]">Overall percentage by outcome</p>
       </div>
-
-      <WeekdayGroupedBarChart visibleWeekdays={visibleWeekdays} progress={progress} />
-
-      <p className="mt-1.5 text-body-sm text-[var(--color-text-muted)]">Overall percentage by outcome</p>
     </div>
   );
 }
@@ -512,55 +550,61 @@ function Outcome999Panel({ baseId, animationKey }: { baseId: string; animationKe
 
   return (
     <div>
-      <div
-        role="group"
-        aria-label="Chart series"
-        className="mb-3 flex flex-wrap gap-1.5"
-      >
-        <FilterOutlinePill
+      <FilterChipRow label="Series">
+        <FilterChip
           label="Didn't try other resources"
-          color={NHS_QUANT_COLORS.coral}
-          pressed={showDidNotTry}
-          onToggle={() => setShowDidNotTry((value) => !value)}
+          selected={showDidNotTry}
+          aria-pressed={showDidNotTry}
+          onClick={() => setShowDidNotTry((value) => !value)}
+          accentColor={NHS_QUANT_COLORS.coral}
+          className="min-h-[32px] px-2.5 py-1"
         />
-        <FilterOutlinePill
+        <FilterChip
           label="Tried other resources first"
-          color={NHS_QUANT_COLORS.teal}
-          pressed={showTried}
-          onToggle={() => setShowTried((value) => !value)}
+          selected={showTried}
+          aria-pressed={showTried}
+          onClick={() => setShowTried((value) => !value)}
+          accentColor={NHS_QUANT_COLORS.teal}
+          className="min-h-[32px] px-2.5 py-1"
+        />
+      </FilterChipRow>
+
+      <div className="mt-4">
+        <OutcomeLineChart
+          activeBlockId={activeBlockId}
+          showDidNotTry={showDidNotTry}
+          showTried={showTried}
+          progress={progress}
         />
       </div>
 
-      <OutcomeLineChart
-        activeBlockId={activeBlockId}
-        showDidNotTry={showDidNotTry}
-        showTried={showTried}
-        progress={progress}
-      />
-
-      <div
-        role="tablist"
-        aria-label="Time of call"
-        className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-4"
-      >
-        {nhs999OutcomeBlocks.map((block) => (
-          <ChoiceOutlinePill
-            key={block.id}
-            id={`${baseId}-time-${block.id}`}
-            role="tab"
-            label={block.shortLabel}
-            selected={block.id === activeBlockId}
-            ariaSelected={block.id === activeBlockId}
-            onSelect={() => setActiveBlockId(block.id)}
-            variant="tile"
-          />
-        ))}
+      <div className="mb-3 mt-3">
+        <p className="text-label text-[var(--color-text-muted)] mb-1.5">Time of call</p>
+        <div
+          role="tablist"
+          aria-label="Time of call"
+          className="grid grid-cols-2 gap-1.5 sm:grid-cols-4"
+        >
+          {nhs999OutcomeBlocks.map((block) => (
+            <FilterChip
+              key={block.id}
+              id={`${baseId}-time-${block.id}`}
+              role="tab"
+              label={block.shortLabel}
+              selected={block.id === activeBlockId}
+              aria-selected={block.id === activeBlockId}
+              onClick={() => setActiveBlockId(block.id)}
+              accentColor={EXPLORER_ACCENT}
+              className="min-h-[36px] w-full rounded-lg px-2 py-1.5"
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2" role="tabpanel">
+      <div className="grid gap-3 sm:grid-cols-2" role="tabpanel">
         {showDidNotTry && (
           <div className="rounded-xl border border-[var(--color-border)] bg-white px-4 py-3">
-            <p className="text-body-sm text-[var(--color-text-muted)] mb-1">Didn&apos;t try other resources</p>
+            <p className="mb-1 text-body-sm text-[var(--color-text-muted)]">Didn&apos;t try other resources</p>
             <p
               className="text-h3 font-semibold tabular-nums"
               style={{ color: NHS_QUANT_COLORS.coral }}
@@ -572,7 +616,7 @@ function Outcome999Panel({ baseId, animationKey }: { baseId: string; animationKe
         )}
         {showTried && (
           <div className="rounded-xl border border-[var(--color-border)] bg-white px-4 py-3">
-            <p className="text-body-sm text-[var(--color-text-muted)] mb-1">Tried other resources first</p>
+            <p className="mb-1 text-body-sm text-[var(--color-text-muted)]">Tried other resources first</p>
             <p
               className="text-h3 font-semibold tabular-nums"
               style={{ color: NHS_QUANT_COLORS.teal }}
@@ -629,45 +673,43 @@ export function NhsQuantitativeInteractive({ className }: NhsQuantitativeInterac
     <div className={cn("not-prose", className)}>
       <div
         id={`${baseId}-explorer`}
-        className="overflow-hidden rounded-xl border border-[var(--color-border)] bg-white"
+        className="overflow-hidden rounded-xl border border-[var(--color-border)] bg-white p-4 md:p-5"
       >
-        <div className="border-b border-[var(--color-border)] px-4 py-2.5 md:px-5">
-          <div
-            role="tablist"
-            aria-label="Quantitative survey charts"
-            className="-mx-4 flex gap-1.5 overflow-x-auto overscroll-x-contain px-4 pb-0.5 scrollbar-none md:-mx-5 md:px-5"
-          >
-            {nhsQuantitativeViews.map((view) => {
-              const selected = view.id === activeViewId;
+        <div
+          role="tablist"
+          aria-label="Survey result views"
+          className="-mx-4 flex gap-1.5 overflow-x-auto overscroll-x-contain px-4 pb-1 scrollbar-none md:-mx-5 md:px-5"
+        >
+          {nhsQuantitativeViews.map((view) => {
+            const selected = view.id === activeViewId;
 
-              return (
-                <FilterChip
-                  key={view.id}
-                  id={`${baseId}-view-${view.id}`}
-                  label={view.name}
-                  selected={selected}
-                  onClick={() => handleSelect(view.id)}
-                  accentColor="var(--case-study-accent)"
-                  aria-pressed={selected}
-                  role="tab"
-                  aria-selected={selected}
-                  aria-controls={`${baseId}-quant-panel`}
-                  className="min-h-[32px] px-2.5 py-1"
-                />
-              );
-            })}
-          </div>
+            return (
+              <FilterChip
+                key={view.id}
+                id={`${baseId}-view-${view.id}`}
+                label={view.name}
+                selected={selected}
+                onClick={() => handleSelect(view.id)}
+                accentColor={EXPLORER_ACCENT}
+                aria-pressed={selected}
+                role="tab"
+                aria-selected={selected}
+                aria-controls={`${baseId}-quant-panel`}
+                className="min-h-[32px] px-2.5 py-1"
+              />
+            );
+          })}
         </div>
 
         <div
           role="tabpanel"
           id={`${baseId}-quant-panel`}
           aria-labelledby={`${baseId}-view-${activeView.id}`}
-          className="p-4 md:p-5"
+          className="mt-4 border-t border-[var(--color-border)] pt-4"
         >
-          <div className="mb-3">
+          <div className="mb-4">
             <h3 className="text-body font-semibold text-[var(--color-text-primary)]">{activeView.title}</h3>
-            <p className="mt-0.5 text-body-sm text-[var(--color-text-muted)]">{activeView.description}</p>
+            <p className="mt-0.5 text-body-sm text-[var(--color-text-secondary)]">{activeView.description}</p>
           </div>
 
           <div className="motion-safe:animate-[fade-in_0.25s_ease-out]" key={activeView.id}>

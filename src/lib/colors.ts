@@ -4,13 +4,15 @@ import type { CSSProperties } from "react";
 export const SITE_COLORS = {
   accent: "#3b66f5",
   accentHover: "#2d52d4",
+  /** Off-black text — WCAG AAA on white; avoids pure #000 halation. */
+  textPrimary: "#171717",
 } as const;
 
 /** Per-project accent colours — defined once in `projects.ts` and passed via context. */
 export const PROJECT_ACCENTS = {
-  omron: "#003da5",
+  omron: "#003153",
   nhs: "#005eb8",
-  arbnco: "#0d7377",
+  arbnco: "#00a7b5",
 } as const;
 
 /** Darken a hex colour by a ratio (0–1) for hover states. */

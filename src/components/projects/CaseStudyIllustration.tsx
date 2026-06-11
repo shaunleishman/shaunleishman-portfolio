@@ -4,6 +4,11 @@ import Image from "next/image";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/utils";
+import {
+  CaseStudySectionHeader,
+  caseStudyMainSectionClass,
+} from "@/components/projects/CaseStudySectionHeader";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 type CaseStudyIllustrationProps = {
   src: string;
@@ -125,6 +130,8 @@ type CaseStudySplitSectionProps = {
   children: React.ReactNode;
   visualFirst?: boolean;
   className?: string;
+  /** Show a divider above this section. Off for nested sub-sections and the first block. */
+  dividerTop?: boolean;
 };
 
 /** Notion-style two-column section: illustration beside text */
@@ -136,22 +143,33 @@ export function CaseStudySplitSection({
   children,
   visualFirst = true,
   className,
+  dividerTop = Boolean(id),
 }: CaseStudySplitSectionProps) {
   const headingId = id ?? title.replace(/\s/g, "-").toLowerCase();
+  const isMainSection = Boolean(id);
 
   return (
     <section
       id={id}
       aria-labelledby={headingId}
-      className={cn("mb-16 scroll-mt-36 md:mb-20", className)}
+      className={
+        isMainSection
+          ? caseStudyMainSectionClass(dividerTop, className)
+          : cn("mb-10 md:mb-12", className)
+      }
     >
-      <h2 id={headingId} className="text-h3 font-semibold mb-3">
-        {title}
-      </h2>
-      {lead && (
-        <p className="text-body text-[var(--color-text-muted)] mb-8 max-w-2xl">{lead}</p>
+      {isMainSection ? (
+        <CaseStudySectionHeader id={id!} title={title} lead={lead} />
+      ) : (
+        <SectionHeader
+          id={headingId}
+          title={title}
+          lead={lead}
+          variant="secondary"
+          as="div"
+          className={lead ? "mb-6" : "mb-4"}
+        />
       )}
-      {!lead && <div className="mb-6" />}
       <div
         className={cn(
           "flex flex-col gap-8 md:flex-row md:items-start md:gap-10",
@@ -159,7 +177,7 @@ export function CaseStudySplitSection({
         )}
       >
         <div className="shrink-0 self-center md:self-start">{visual}</div>
-        <div className="min-w-0 flex-1 text-body-lg text-[var(--color-text-secondary)]">
+        <div className="min-w-0 flex-1 text-body text-[var(--color-text-secondary)]">
           {children}
         </div>
       </div>

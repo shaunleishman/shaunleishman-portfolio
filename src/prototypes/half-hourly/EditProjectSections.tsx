@@ -113,7 +113,7 @@ function EditSectionShell({
         </div>
 
         <div className="rounded-lg border border-[#aab6b4] bg-white p-6 shadow-sm lg:p-8">
-          <h1 className="mb-2 font-bold text-2xl text-[#404040] lg:text-3xl">{title}</h1>
+          <h1 className="mb-2 font-bold text-2xl text-[var(--color-text-primary)] lg:text-3xl">{title}</h1>
           <p className="mb-6 text-sm text-[#666]">{subtitle}</p>
 
           <div className="mb-8 rounded-lg border border-[#90caf9] bg-[#e3f2fd] p-4">

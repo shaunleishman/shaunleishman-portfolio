@@ -1,9 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { ExternalLink, Maximize2, X } from "lucide-react";
+import { ExternalLink, Maximize2, Play, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { figmaPrototypeEmbedUrl, type FigmaEmbedScaling } from "@/lib/figma";
+import {
+  figmaPrototypeEmbedUrl,
+  isFigmaMakeUrl,
+  type FigmaEmbedScaling,
+} from "@/lib/figma";
 import { cn } from "@/lib/utils";
 
 const FIGMA_ORIGINS = ["https://embed.figma.com", "https://www.figma.com"] as const;
@@ -13,6 +18,11 @@ type FigmaPrototypeEmbedProps = {
   title: string;
   description?: string;
   caption?: string;
+  /** Preview image when the URL is Figma Make (Make files cannot be iframe-embedded externally). */
+  previewSrc?: string;
+  previewAlt?: string;
+  previewWidth?: number;
+  previewHeight?: number;
   /** Preview container aspect ratio (width / height) */
   aspectRatio?: number;
   /** Inline scaling — default shows the full frame scaled down */
@@ -23,6 +33,8 @@ type FigmaPrototypeEmbedProps = {
   priority?: boolean;
   /** Hide title/description in the card — use when a CaseStudySubsection heading sits above */
   compactHeader?: boolean;
+  /** Inset frame on grey — matches built prototype embeds, not edge-to-edge full width */
+  layout?: "full" | "inset";
   className?: string;
 };
 
@@ -31,18 +43,27 @@ export function FigmaPrototypeEmbed({
   title,
   description,
   caption,
+  previewSrc,
+  previewAlt,
+  previewWidth,
+  previewHeight,
   aspectRatio = 16 / 10,
   scaling = "scale-down",
   fullscreenScaling = "fit-width",
   priority = false,
   compactHeader = false,
+  layout = "full",
   className,
 }: FigmaPrototypeEmbedProps) {
   const dialogId = useId();
   const containerRef = useRef<HTMLElement>(null);
   const [loadEmbed, setLoadEmbed] = useState(priority);
   const [inlineLoaded, setInlineLoaded] = useState(false);
+  const [previewLoaded, setPreviewLoaded] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
+
+  const isMake = isFigmaMakeUrl(url);
+  const usePreview = isMake && Boolean(previewSrc);
 
   const inlineSrc = useMemo(
     () => figmaPrototypeEmbedUrl(url, { scaling, contentScaling: "fixed" }),
@@ -58,6 +79,8 @@ export function FigmaPrototypeEmbed({
   );
 
   useEffect(() => {
+    if (usePreview) return;
+
     const links: HTMLLinkElement[] = [];
 
     for (const origin of FIGMA_ORIGINS) {
@@ -81,19 +104,19 @@ export function FigmaPrototypeEmbed({
     return () => {
       for (const link of links) link.remove();
     };
-  }, [inlineSrc]);
+  }, [inlineSrc, usePreview]);
 
   useEffect(() => {
-    if (priority || loadEmbed) return;
+    if (priority || loadEmbed || usePreview) return;
 
     const hash = window.location.hash.replace(/^#/, "");
     if (hash === "iteration") {
       setLoadEmbed(true);
     }
-  }, [loadEmbed, priority]);
+  }, [loadEmbed, priority, usePreview]);
 
   useEffect(() => {
-    if (priority || loadEmbed) return;
+    if (priority || loadEmbed || usePreview) return;
 
     const el = containerRef.current;
     if (!el) return;
@@ -110,7 +133,7 @@ export function FigmaPrototypeEmbed({
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [loadEmbed, priority]);
+  }, [loadEmbed, priority, usePreview]);
 
   useEffect(() => {
     if (!fullscreen) return;
@@ -146,71 +169,142 @@ export function FigmaPrototypeEmbed({
     );
   }
 
+  function HeaderActions() {
+    return (
+      <div className="flex shrink-0 items-center gap-2">
+        {!usePreview && (
+          <button
+            type="button"
+            onClick={() => setFullscreen(true)}
+            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white px-3 py-1.5 text-body-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:border-[var(--case-study-accent)]/40 hover:text-[var(--case-study-accent)]"
+            aria-haspopup="dialog"
+            aria-expanded={fullscreen}
+            aria-controls={dialogId}
+          >
+            <Maximize2 className="size-4" aria-hidden />
+            Expand
+          </button>
+        )}
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white px-3 py-1.5 text-body-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:border-[var(--case-study-accent)]/40 hover:text-[var(--case-study-accent)]"
+          aria-label={`${title} (opens in a new tab)`}
+        >
+          {usePreview ? <Play className="size-4" aria-hidden /> : <ExternalLink className="size-4" aria-hidden />}
+          {usePreview ? "Open in Figma Make" : "Figma"}
+        </a>
+      </div>
+    );
+  }
+
+  function PreviewPanel() {
+    if (!previewSrc) return null;
+
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group relative block w-full bg-[#f5f6f6]"
+        aria-label={`${title} — open interactive prototype in Figma Make`}
+      >
+        {!previewLoaded && <Skeleton className="absolute inset-0 min-h-[12rem] rounded-none" aria-hidden />}
+        <Image
+          src={previewSrc}
+          alt={previewAlt ?? title}
+          width={previewWidth ?? 1024}
+          height={previewHeight ?? 604}
+          className="h-auto w-full motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out group-hover:scale-[1.005]"
+          sizes="(min-width: 768px) 1120px, 100vw"
+          onLoad={() => setPreviewLoaded(true)}
+        />
+        <div className="absolute inset-0 flex items-center justify-center bg-[#171717]/0 motion-safe:transition-colors motion-safe:duration-200 group-hover:bg-[#171717]/5">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-white/95 px-4 py-2 text-body-sm font-medium text-[var(--color-text-primary)] shadow-sm motion-safe:transition-transform motion-safe:duration-200 group-hover:scale-105">
+            <Play className="size-4 text-[var(--case-study-accent)]" aria-hidden />
+            Open in Figma Make
+          </span>
+        </div>
+      </a>
+    );
+  }
+
+  const figureClassName = cn(
+    "m-0 flex w-full flex-col gap-0 overflow-hidden not-prose",
+    layout === "inset"
+      ? "rounded-2xl border border-[var(--color-border)] bg-white"
+      : "surface-card",
+    className,
+  );
+
+  const viewportClassName = cn(
+    "relative w-full overflow-hidden bg-[#f5f6f6]",
+    layout === "inset" && "p-4 md:p-6",
+    usePreview && layout === "inset" && "rounded-t-2xl",
+  );
+
+  const frameClassName = cn(
+    "relative w-full overflow-hidden",
+    layout === "inset" &&
+      "rounded-xl border border-[var(--color-border)] bg-white shadow-sm",
+  );
+
   return (
     <>
-      <figure ref={containerRef} className={cn("surface-card flex flex-col gap-0 overflow-hidden not-prose", className)}>
-        <div
-          className={cn(
-            "flex flex-wrap items-center gap-3 border-b border-[var(--color-border)] bg-neutral-50 px-5 py-4",
-            compactHeader ? "justify-end" : "justify-between",
-          )}
-        >
-          {!compactHeader && (
-            <div className="min-w-0">
-              <p className="text-body font-semibold text-[var(--color-text-primary)]">{title}</p>
-              {description && (
-                <p className="text-body-sm text-[var(--color-text-muted)]">{description}</p>
-              )}
-            </div>
-          )}
-          <div className="flex shrink-0 items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setFullscreen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white px-3 py-1.5 text-body-sm font-medium text-[var(--color-text-secondary)] hover:border-[var(--case-study-accent)]/40 hover:text-[var(--case-study-accent)] transition-colors"
-              aria-haspopup="dialog"
-              aria-expanded={fullscreen}
-              aria-controls={dialogId}
-            >
-              <Maximize2 className="size-4" aria-hidden />
-              Expand
-            </button>
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white px-3 py-1.5 text-body-sm font-medium text-[var(--color-text-secondary)] hover:border-[var(--case-study-accent)]/40 hover:text-[var(--case-study-accent)] transition-colors"
-              aria-label={`${title} (opens in a new tab)`}
-            >
-              <ExternalLink className="size-4" aria-hidden />
-              Figma
-            </a>
+      <figure ref={containerRef} className={figureClassName}>
+        {!usePreview && (
+          <div
+            className={cn(
+              "flex flex-wrap items-center gap-3 border-b border-[var(--color-border)] bg-neutral-50 px-5 py-4",
+              compactHeader ? "justify-end" : "justify-between",
+            )}
+          >
+            {!compactHeader && (
+              <div className="min-w-0">
+                <p className="text-body font-semibold text-[var(--color-text-primary)]">{title}</p>
+                {description && (
+                  <p className="text-body-sm text-[var(--color-text-muted)]">{description}</p>
+                )}
+              </div>
+            )}
+            <HeaderActions />
+          </div>
+        )}
+
+        <div className={viewportClassName}>
+          <div
+            className={frameClassName}
+            style={usePreview ? undefined : { aspectRatio }}
+          >
+            {usePreview ? (
+              <PreviewPanel />
+            ) : (
+              <>
+                {(!loadEmbed || !inlineLoaded) && (
+                  <Skeleton className="absolute inset-0 rounded-none" aria-hidden={inlineLoaded} />
+                )}
+                {loadEmbed ? (
+                  <PrototypeFrame src={inlineSrc} onLoad={() => setInlineLoaded(true)} />
+                ) : null}
+                {!inlineLoaded && loadEmbed && (
+                  <p className="absolute inset-x-0 bottom-4 text-center text-body-sm text-[var(--color-text-muted)]">
+                    Loading interactive prototype from Figma…
+                  </p>
+                )}
+              </>
+            )}
           </div>
         </div>
 
-        <div
-          className="relative w-full overflow-hidden bg-neutral-100"
-          style={{ aspectRatio }}
-        >
-          {(!loadEmbed || !inlineLoaded) && (
-            <Skeleton className="absolute inset-0 rounded-none" aria-hidden={inlineLoaded} />
-          )}
-          {loadEmbed ? <PrototypeFrame src={inlineSrc} onLoad={() => setInlineLoaded(true)} /> : null}
-          {!inlineLoaded && loadEmbed && (
-            <p className="absolute inset-x-0 bottom-4 text-center text-body-sm text-[var(--color-text-muted)]">
-              Loading interactive prototype from Figma…
-            </p>
-          )}
-        </div>
-
         {caption && (
-          <figcaption className="m-0 border-t border-[var(--color-border)] bg-white px-4 py-2 text-body-sm leading-snug text-[var(--color-text-muted)]">
+          <figcaption className="m-0 border-t border-[var(--color-border)] bg-white px-4 py-2.5 text-body-sm leading-snug text-[var(--color-text-muted)]">
             {caption}
           </figcaption>
         )}
       </figure>
 
-      {fullscreen && (
+      {!usePreview && fullscreen && (
         <div
           id={dialogId}
           role="dialog"
@@ -225,7 +319,7 @@ export function FigmaPrototypeEmbed({
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-body-sm font-medium text-white hover:bg-white/20 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-body-sm font-medium text-white transition-colors hover:bg-white/20"
               >
                 <ExternalLink className="size-4" aria-hidden />
                 Open in Figma

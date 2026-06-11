@@ -164,7 +164,7 @@ export const projectVisuals: Record<string, CaseStudyVisualBlock[]> = {
       afterIndex: 3,
       heading: "Inflexible communication",
       supportText:
-        "Testing showed silent handovers created error risk. I added a mandatory reason field so practitioners had to document transfers.",
+        "Testing showed silent handovers created error risk. We added a mandatory reason field so practitioners had to document transfers.",
       images: [
         {
           src: "/projects/omron-patient-monitoring/group-122.png",

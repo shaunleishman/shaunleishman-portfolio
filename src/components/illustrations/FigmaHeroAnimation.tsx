@@ -81,7 +81,7 @@ function FigmaCursor({ x, y, pressing }: { x: number; y: number; pressing: boole
       <path
         d="M0 0 L0 18 L5 14 L9 22 L12 20.5 L8 12.5 L15 12.5 Z"
         fill="#ffffff"
-        stroke="#0a0a0a"
+        stroke="#171717"
         strokeWidth="1.25"
         strokeLinejoin="round"
         filter="url(#cursor-shadow)"
@@ -143,7 +143,7 @@ function CommentBubble({
       <text
         x={textX}
         y={midY + 4}
-        fill="#0a0a0a"
+        fill="#171717"
         fontSize={fontSize}
         fontFamily="var(--font-inter, Inter, sans-serif)"
       >

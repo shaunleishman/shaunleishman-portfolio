@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 
 export const CHART_ENTER_MS = 650;
+/** Pause after tab/filter change before bars and charts animate in. */
+export const CHART_ENTER_DELAY_MS = 120;
 
 function easeOutCubic(t: number) {
   return 1 - (1 - t) ** 3;
@@ -20,17 +22,27 @@ export function useChartEnterProgress(animationKey: string) {
     }
 
     setProgress(0);
-    const start = performance.now();
     let frame = 0;
+    let delayTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / CHART_ENTER_MS);
-      setProgress(easeOutCubic(t));
-      if (t < 1) frame = requestAnimationFrame(tick);
+    const startAnimation = () => {
+      const start = performance.now();
+
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / CHART_ENTER_MS);
+        setProgress(easeOutCubic(t));
+        if (t < 1) frame = requestAnimationFrame(tick);
+      };
+
+      frame = requestAnimationFrame(tick);
     };
 
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    delayTimer = setTimeout(startAnimation, CHART_ENTER_DELAY_MS);
+
+    return () => {
+      if (delayTimer) clearTimeout(delayTimer);
+      cancelAnimationFrame(frame);
+    };
   }, [animationKey]);
 
   return progress;

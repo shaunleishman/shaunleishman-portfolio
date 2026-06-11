@@ -2,6 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/Reveal";
+import {
+  CaseStudySectionHeader,
+  caseStudyMainSectionClass,
+} from "@/components/projects/CaseStudySectionHeader";
 
 type CaseStudySectionProps = {
   id: string;
@@ -11,6 +15,8 @@ type CaseStudySectionProps = {
   children: React.ReactNode;
   className?: string;
   delay?: number;
+  /** Show a divider above this section. Off for the first section on the page. */
+  dividerTop?: boolean;
 };
 
 export function CaseStudySection({
@@ -20,18 +26,17 @@ export function CaseStudySection({
   children,
   className,
   delay = 0,
+  dividerTop = true,
 }: CaseStudySectionProps) {
   return (
     <Reveal delay={delay} variant="up">
-      <section id={id} aria-labelledby={`${id}-heading`} className={cn("mb-16 scroll-mt-36 md:mb-20", className)}>
-        <h2 id={`${id}-heading`} className="text-h3 font-semibold mb-3">
-          {title}
-        </h2>
-        {lead && (
-          <p className="text-body text-[var(--color-text-muted)] mb-8 max-w-2xl">{lead}</p>
-        )}
-        {!lead && <div className="mb-6" />}
-        <div className="text-body-lg text-[var(--color-text-secondary)]">{children}</div>
+      <section
+        id={id}
+        aria-labelledby={`${id}-heading`}
+        className={caseStudyMainSectionClass(dividerTop, className)}
+      >
+        <CaseStudySectionHeader id={id} title={title} lead={lead} />
+        <div className="text-body text-[var(--color-text-secondary)]">{children}</div>
       </section>
     </Reveal>
   );

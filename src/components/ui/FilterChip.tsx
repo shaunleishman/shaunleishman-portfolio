@@ -34,7 +34,7 @@ export type FilterChipProps = FilterChipButton | FilterChipLink;
 
 const presetStyles = {
   accent: {
-    selected: "bg-[var(--color-accent)] text-white border-transparent shadow-sm",
+    selected: "bg-[var(--color-accent)] text-white border-transparent",
     idle: "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/40 bg-white",
   },
   neutral: {
@@ -46,7 +46,7 @@ const presetStyles = {
 function customAccentClasses(selected: boolean) {
   return cn(
     selected
-      ? "border-transparent text-white shadow-sm bg-[var(--chip-accent)]"
+      ? "border-transparent text-white bg-[var(--chip-accent)]"
       : "text-[var(--color-text-secondary)] bg-white chip-accent-idle",
   );
 }
@@ -68,7 +68,7 @@ export function FilterChip(props: FilterChipProps) {
   const styles = usesCustomAccent ? null : presetStyles[accent];
 
   const classes = cn(
-    "inline-flex min-h-[36px] shrink-0 items-center rounded-full border px-3 py-1.5 text-body-sm font-medium transition-[background-color,color,box-shadow] whitespace-nowrap",
+    "inline-flex min-h-[36px] shrink-0 items-center rounded-full border px-3 py-1.5 text-body-sm font-medium transition-[background-color,color,border-color] whitespace-nowrap",
     usesCustomAccent ? customAccentClasses(Boolean(selected)) : selected ? styles!.selected : styles!.idle,
     className,
     selected && "text-white",

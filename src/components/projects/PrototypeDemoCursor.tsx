@@ -39,7 +39,7 @@ export function PrototypeDemoCursor({
     >
       <path
         d="M4 2l2.2 16.2L10.5 12 16 18.5 18.5 17 13 10.5 20.2 9.2z"
-        fill="#111827"
+        fill="#171717"
         stroke="#fff"
         strokeWidth="1.25"
         strokeLinejoin="round"

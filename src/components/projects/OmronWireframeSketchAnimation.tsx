@@ -251,7 +251,7 @@ export function OmronWireframeSketchAnimation({
                   className={cn(
                     "pointer-events-none absolute rounded-[3px] border-2 transition-all duration-300",
                     expandedId === panel.id
-                      ? "border-[var(--case-study-accent,#003da5)] bg-[var(--case-study-accent,#003da5)]/8 opacity-100 shadow-[0_0_0_1px_rgba(0,61,165,0.15)]"
+                      ? "border-[var(--case-study-accent,#003153)] bg-[var(--case-study-accent,#003153)]/8 opacity-100 shadow-[0_0_0_1px_rgba(0,61,165,0.15)]"
                       : "border-transparent opacity-0",
                   )}
                   style={{
@@ -300,7 +300,7 @@ export function OmronWireframeSketchAnimation({
                   >
                     <path
                       d="M0,0 L8,4 L0,8 Z"
-                      fill="var(--case-study-accent, #003da5)"
+                      fill="var(--case-study-accent, #003153)"
                       fillOpacity={0.75}
                     />
                   </marker>
@@ -312,7 +312,7 @@ export function OmronWireframeSketchAnimation({
                     fill="none"
                     stroke={
                       expandedId === null || expandedId === id
-                        ? "var(--case-study-accent, #003da5)"
+                        ? "var(--case-study-accent, #003153)"
                         : "var(--color-border)"
                     }
                     strokeWidth={expandedId === id ? 2 : 1.25}
@@ -335,7 +335,7 @@ export function OmronWireframeSketchAnimation({
                       cx={end.x - layout.left}
                       cy={end.y - layout.top}
                       r={4}
-                      fill="var(--case-study-accent, #003da5)"
+                      fill="var(--case-study-accent, #003153)"
                     />
                   );
                 })}
@@ -524,8 +524,8 @@ const WireframeCard = forwardRef(function WireframeCard(
       className={cn(
         "flex max-h-full min-h-0 w-full cursor-pointer flex-col overflow-hidden rounded-lg border bg-white text-left shadow-sm transition-all duration-200",
         selected
-          ? "border-[var(--case-study-accent,#003da5)] ring-2 ring-[var(--case-study-accent,#003da5)]/20"
-          : "border-[var(--color-border)] hover:border-[var(--case-study-accent,#003da5)]/50 hover:shadow-md",
+          ? "border-[var(--case-study-accent,#003153)] ring-2 ring-[var(--case-study-accent,#003153)]/20"
+          : "border-[var(--color-border)] hover:border-[var(--case-study-accent,#003153)]/50 hover:shadow-md",
         className,
       )}
       aria-label={`View wireframe: ${label}`}
@@ -538,7 +538,7 @@ const WireframeCard = forwardRef(function WireframeCard(
         className={cn(
           "shrink-0 truncate border-t px-1.5 py-0.5 text-[0.5625rem] font-medium leading-tight",
           selected
-            ? "border-[var(--case-study-accent,#003da5)]/20 bg-[var(--case-study-accent,#003da5)]/5 text-[var(--case-study-accent,#003da5)]"
+            ? "border-[var(--case-study-accent,#003153)]/20 bg-[var(--case-study-accent,#003153)]/5 text-[var(--case-study-accent,#003153)]"
             : "border-[var(--color-border)] bg-neutral-50 text-[var(--color-text-muted)]",
         )}
       >

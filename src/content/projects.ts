@@ -33,7 +33,7 @@ export const projects: Project[] = [
     tags: ["UI design", "Co-design", "Usability testing", "Interviews"],
     duration: "6 weeks",
     overview:
-      "The platform failed a patient-safety check. I ran co-design with practitioners, built safer assignment flows, and moderated usability testing before handoff.",
+      "The platform failed a patient-safety check. We ran co-design with practitioners, built safer assignment flows, and moderated usability testing before handoff.",
     problem:
       "The platform failed a risk assessment due to a high risk of human error when assigning patients a medication plan (titration).",
     role: [
@@ -44,11 +44,11 @@ export const projects: Project[] = [
     approach: [
       "Interviewed practitioners across primary care roles to understand how each group assigns and monitors patients",
       "Facilitated co-design workshops where practitioners sketched solutions together",
-      "Built a clickable prototype from workshop outputs so I could test critical flows in moderated sessions before build",
+      "Built a clickable prototype from workshop outputs so we could test critical flows in moderated sessions before build",
       "Moderated usability tests on assignment and handover, documenting findings the product team acted on",
     ],
     approachWhy: [
-      "Workshops kept practitioners involved. I was not designing assignment logic from guesses alone.",
+      "Workshops kept practitioners involved. We were not designing assignment logic from guesses alone.",
       "Testing focused on assign-and-handover because that was where the risk assessment failed.",
       "A working prototype gave stakeholders something concrete to align on, not just static screens.",
     ],
@@ -75,7 +75,8 @@ export const projects: Project[] = [
     ],
     limitations: [
       "Scope lacked design system and library consideration",
-      "Practical and real-life use of the assignment feature",
+      "Practical and real-life use of the assignment feature was not tested in live clinical systems",
+      "Usability sessions used a prototype, so we could not fully test behaviour with real records and integrations",
     ],
     learnings: [
       "I learnt not to design from assumptions. Healthcare workflows need real practitioner context because roles and responsibilities vary.",
@@ -83,8 +84,8 @@ export const projects: Project[] = [
       "I learnt to think about scalability earlier. Next time, I'd bring design system thinking in sooner to reduce design and technical debt.",
     ],
     featured: true,
-    accentColor: "#003da5",
-    accentClass: "from-[#003da5] to-[#0055cc]",
+    accentColor: "#003153",
+    accentClass: "from-[#003153] to-[#004266]",
     thumbnail: "/projects/omron-patient-monitoring.gif",
   },
   {
@@ -93,13 +94,13 @@ export const projects: Project[] = [
     tags: ["Interviews", "UX", "Surveys"],
     duration: "4 weeks",
     overview:
-      "Solo research for the NHS product team. I delivered personas and journey maps to improve routing, reassurance, and wait-time updates.",
+      "Research lead for the NHS product team. We delivered personas and journey maps to improve routing, reassurance, and wait-time updates.",
     problem:
       "Many 111 callers were using the service for the wrong type of support. The team needed to understand who was calling, why they were unsure, and where the triage journey broke down.",
     role: [
       "Managed recruitment and wrote the survey and interview plan",
       "Moderated interviews with call handlers and recent callers",
-      "Synthesised findings into personas, journey maps, and a report I presented to the product team",
+      "Synthesised findings into personas, journey maps, and a report we presented to the product team",
     ],
     approach: [
       "Ran 30-minute interviews, then affinity mapping to surface recurring behaviours and needs",
@@ -124,7 +125,7 @@ export const projects: Project[] = [
     cardHighlights: [
       "Five personas gave the NHS team shared language for caller types",
       "Journey maps highlighted where reassurance and routing broke down",
-      "Four-week solo research engagement from recruitment to final report",
+      "Four-week research engagement from recruitment to final report",
     ],
     nextSteps: [
       "Integrate the outcomes in further team discussions",
@@ -133,6 +134,8 @@ export const projects: Project[] = [
     ],
     limitations: [
       "Face-to-face styled interviews could have helped the richness of data gathered",
+      "Phone-only recruitment within a four-week brief limited how deeply we could explore each caller type",
+      "We did not run follow-up research to validate findings before the team moved into solution design",
     ],
     learnings: [
       "I learnt the value of mixing data types. Quantitative data showed what was happening, while interviews helped explain why it was happening.",
@@ -164,7 +167,7 @@ export const projects: Project[] = [
       "Prioritised project list and settings flows because that is where users decided whether to trust generated data",
     ],
     approachWhy: [
-      "No time for new research. I worked from known customer needs and existing patterns.",
+      "No time for new research. We worked from known customer needs and existing patterns.",
       "Eligibility rules were complex. Status tags and tooltips showed missing data early.",
       "Design reviews with PM and engineering kept handoff aligned without me owning backend decisions.",
     ],
@@ -179,7 +182,7 @@ export const projects: Project[] = [
       { value: "6+", label: "UI surfaces updated across the platform" },
     ],
     cardHighlights: [
-      "Solo design lead. Journey map to prototype in 3–4 weeks.",
+      "Design lead on a team sprint. Journey map to implementation in 3–4 weeks.",
       "Made eligibility and active state visible across six platform surfaces.",
       "Aligned engineering on status patterns that cut handoff back-and-forth.",
     ],
@@ -190,15 +193,15 @@ export const projects: Project[] = [
     limitations: [
       "No time for new user research. I relied on existing journey knowledge and design-review feedback.",
       "Fixed technical limits shaped what could ship in the sprint window.",
-      "The UI had to explain eligibility without overwhelming users.",
+      "The platform structure predated this sprint. I couldn't redesign where features lived, so eligibility had to be explained within the existing layout.",
     ],
     learnings: [
       "Complex technical features need simple, trustworthy UI, especially when they change how people read their data.",
       "Clear status tags, labels, tooltips, and icons helped users see what was available, what was missing, and what to do next.",
     ],
     featured: true,
-    accentColor: "#0d7377",
-    accentClass: "from-[#0d7377] to-[#14a085]",
+    accentColor: "#00a7b5",
+    accentClass: "from-[#00a7b5] to-[#088391]",
     thumbnail: "/projects/arbnco-synthetic-ai-data.gif",
   },
 ];

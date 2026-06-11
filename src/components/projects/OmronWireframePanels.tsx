@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export const OMRON_WF_BLUE = "#003da5";
+export const OMRON_WF_BLUE = "#003153";
 export const IMAGE_W = 799;
 export const IMAGE_H = 1024;
 const INK = "#334155";
@@ -757,7 +757,7 @@ export function OmronWireframeOverview({
             key={panel.id}
             className={cn(
               "absolute overflow-hidden rounded-[3px] bg-white shadow-sm ring-1 transition-[opacity,transform,box-shadow] duration-500",
-              isHighlight ? "z-20 ring-[var(--case-study-accent,#003da5)]/50 shadow-md" : "ring-[var(--case-study-accent,#003da5)]/15",
+              isHighlight ? "z-20 ring-[var(--case-study-accent,#003153)]/50 shadow-md" : "ring-[var(--case-study-accent,#003153)]/15",
             )}
             style={{
               left: `${(x / IMAGE_W) * 100}%`,
@@ -775,7 +775,7 @@ export function OmronWireframeOverview({
 
       {showScanLine && (
         <div
-          className="pointer-events-none absolute left-0 right-0 z-30 h-[2px] bg-[var(--case-study-accent,#003da5)]/80 shadow-[0_0_16px_rgba(0,61,165,0.35)]"
+          className="pointer-events-none absolute left-0 right-0 z-30 h-[2px] bg-[var(--case-study-accent,#003153)]/80 shadow-[0_0_16px_rgba(0,61,165,0.35)]"
           style={{ top: `${scanProgress * 100}%`, transform: "translateY(-50%)" }}
           aria-hidden
         />
@@ -872,7 +872,7 @@ export function OmronWireframeGrid({
       {[0, 1].map((sheet) => (
         <div
           key={sheet}
-          className="grid grid-cols-2 gap-2 rounded-md border border-dashed border-[#003da5]/20 bg-white/80 p-2"
+          className="grid grid-cols-2 gap-2 rounded-md border border-dashed border-[#003153]/20 bg-white/80 p-2"
         >
           {OMRON_WIREFRAME_PANELS.slice(sheet * 4, sheet * 4 + 4).map((panel) => (
             <div
@@ -880,7 +880,7 @@ export function OmronWireframeGrid({
               className={cn(
                 "aspect-[360/260] overflow-hidden rounded border transition-[border-color,box-shadow,opacity] duration-500",
                 highlightId === panel.id
-                  ? "border-[#003da5] shadow-md shadow-[#003da5]/10"
+                  ? "border-[#003153] shadow-md shadow-[#003153]/10"
                   : "border-[var(--color-border)] opacity-90",
               )}
             >

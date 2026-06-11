@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function CvPage() {
   return (
-    <div className="cv-document min-h-screen bg-white text-[#0a0a0a]">
+    <div className="cv-document min-h-screen bg-white text-[var(--color-text-primary)]">
       <header className="cv-no-print border-b border-[#e5e5e5] bg-[#0a0a0a] text-white">
         <div className="container-site flex items-center justify-between gap-4 py-4">
           <Link href="/" className="min-h-[44px] inline-flex items-center">

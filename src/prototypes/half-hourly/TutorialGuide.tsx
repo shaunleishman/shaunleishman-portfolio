@@ -113,7 +113,7 @@ export function TutorialGuide({ step, steps, onNext, onClose, onPrimary }: Tutor
               <Sparkles className="size-6 text-white" aria-hidden />
             </div>
             <div className="flex-1">
-              <h3 id="hh-tutorial-title" className="mb-2 text-lg font-bold text-gray-900">
+              <h3 id="hh-tutorial-title" className="mb-2 text-lg font-bold text-[var(--color-text-primary)]">
                 {current.title}
               </h3>
               <p className="text-sm leading-relaxed text-gray-600">{current.description}</p>

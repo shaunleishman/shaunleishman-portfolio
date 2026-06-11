@@ -158,7 +158,7 @@ export function MainPlaceholderPage({
       <div className="p-4 lg:p-8">
         <div className="mx-auto max-w-4xl">
           <div className="mb-6 flex flex-col items-start gap-2 lg:mb-8">
-            <h3 className="font-bold text-xl lg:text-2xl text-[#404040]">{title}</h3>
+            <h3 className="font-bold text-xl lg:text-2xl text-[var(--color-text-primary)]">{title}</h3>
           </div>
           <div className="rounded-lg border border-[#aab6b4] bg-white p-6 shadow-sm lg:p-8">
             <p className="text-sm text-[#666]">{description}</p>
@@ -366,7 +366,7 @@ export function ProjectListPage({ demoMode = false }: { demoMode?: boolean }) {
                 <FileText className="size-5 shrink-0 text-[#666] lg:size-6" aria-hidden />
                 <h3
                   className={cn(
-                    "font-bold text-[#404040]",
+                    "font-bold text-[var(--color-text-primary)]",
                     demoMode ? "text-lg" : "text-xl lg:text-2xl",
                   )}
                 >
@@ -396,7 +396,7 @@ export function ProjectListPage({ demoMode = false }: { demoMode?: boolean }) {
           {!demoMode ? (
             <div className="mb-6 rounded-lg border border-[#00a7b5]/25 bg-[#00a7b5]/5 p-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-[#00838f]">What this page is for</p>
-              <p className="mt-2 text-sm text-[#404040]">
+              <p className="mt-2 text-sm text-[var(--color-text-primary)]">
                 Search and select buildings, compare data resolution at a glance, and jump into the tutorial to see how
                 synthetic hourly data unlocks half-hourly charts. Resolution chips show whether a building uses actual
                 reads, mixed-frequency data, or AI-generated hourly profiles.
@@ -430,7 +430,7 @@ export function ProjectListPage({ demoMode = false }: { demoMode?: boolean }) {
               )}
             >
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-[var(--measurement-spacing-md)]">
-                <p className="shrink-0 self-center whitespace-nowrap text-sm font-semibold leading-none tracking-[var(--typography-letter-spacing-md)] text-[#404040]">
+                <p className="shrink-0 self-center whitespace-nowrap text-sm font-semibold leading-none tracking-[var(--typography-letter-spacing-md)] text-[var(--color-text-primary)]">
                   {selectedIds.size > 0
                     ? `${selectedIds.size} selected`
                     : `${filteredProjects.length} buildings`}
@@ -601,7 +601,7 @@ export function EditProjectPage({
             </div>
 
             <div className="bg-white rounded-lg border border-[#aab6b4] p-6 lg:p-8 shadow-sm">
-              <h1 className="font-bold text-2xl lg:text-3xl text-[#404040] mb-4">Edit Project</h1>
+              <h1 className="font-bold text-2xl lg:text-3xl text-[var(--color-text-primary)] mb-4">Edit Project</h1>
               <p className="text-sm text-[#666] mb-2">
                 Review, edit and update your project details here.
               </p>
@@ -620,7 +620,7 @@ export function EditProjectPage({
                 >
                   <div className="flex items-start justify-between gap-6">
                     <div className="flex-1">
-                      <h3 className="font-bold text-base lg:text-lg text-[#404040] mb-2 flex items-center gap-2">
+                      <h3 className="font-bold text-base lg:text-lg text-[var(--color-text-primary)] mb-2 flex items-center gap-2">
                         Enable synthetic hourly data
                         <TooltipAnchor
                           open={showTooltip}
@@ -699,7 +699,7 @@ export function EditProjectPage({
                       <div className="flex items-center gap-4">
                         <Icon className="size-6 text-[#666]" />
                         <div>
-                          <h4 className="font-semibold text-sm lg:text-base text-[#404040]">
+                          <h4 className="font-semibold text-sm lg:text-base text-[var(--color-text-primary)]">
                             {section.title}
                           </h4>
                           <p className="text-xs lg:text-sm text-[#999]">{section.subtitle}</p>
@@ -739,7 +739,7 @@ export function ProjectPlaceholderPage({
     <div className="p-4 lg:p-8">
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex flex-col items-start gap-2 lg:mb-8">
-          <h3 className="font-bold text-xl lg:text-2xl text-[#404040]">{title}</h3>
+          <h3 className="font-bold text-xl lg:text-2xl text-[var(--color-text-primary)]">{title}</h3>
           <p className="text-sm text-[#666]">{project.name}</p>
         </div>
 
@@ -770,12 +770,12 @@ export function ProjectAboutPage({ projectId }: { projectId: string }) {
     <div className="p-4 lg:p-8">
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex flex-col items-start gap-2 lg:mb-8">
-          <h3 className="font-bold text-xl lg:text-2xl text-[#404040]">About the building</h3>
+          <h3 className="font-bold text-xl lg:text-2xl text-[var(--color-text-primary)]">About the building</h3>
           <p className="text-sm text-[#666]">{project.name}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-[#aab6b4] p-6 lg:p-8 shadow-sm">
-          <h1 className="font-bold text-2xl lg:text-3xl text-[#404040] mb-4">{project.name}</h1>
+          <h1 className="font-bold text-2xl lg:text-3xl text-[var(--color-text-primary)] mb-4">{project.name}</h1>
           <p className="text-sm text-[#666] mb-8">
             Essential building information for this project. Review address, size, and type before exploring energy
             data.
@@ -797,7 +797,7 @@ export function ProjectAboutPage({ projectId }: { projectId: string }) {
                   <Icon className="mt-0.5 size-5 shrink-0 text-[#666]" />
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wide text-[#999]">{field.label}</p>
-                    <p className="mt-1 text-sm font-medium text-[#404040]">{field.value}</p>
+                    <p className="mt-1 text-sm font-medium text-[var(--color-text-primary)]">{field.value}</p>
                   </div>
                 </div>
               );
@@ -898,7 +898,7 @@ export function EnergyOverviewShell({
         )}
 
         <div className="mb-6 flex flex-col items-start justify-between gap-4 lg:mb-8 lg:flex-row lg:items-baseline">
-          <h3 className="font-bold text-xl lg:text-2xl text-[#404040]">Energy Consumption Overview</h3>
+          <h3 className="font-bold text-xl lg:text-2xl text-[var(--color-text-primary)]">Energy Consumption Overview</h3>
           <Button
             variant="tertiary"
             size="md"
@@ -984,7 +984,7 @@ export function EnergyConsumptionTabPage({ projectId }: { projectId: string }) {
               <h4 className="font-normal text-base lg:text-lg text-[#313131] mb-3 lg:mb-4">
                 Energy Consumption Time Series
               </h4>
-              <p className="font-normal text-sm lg:text-base text-[#404040] mb-4 lg:mb-6">
+              <p className="font-normal text-sm lg:text-base text-[var(--color-text-primary)] mb-4 lg:mb-6">
                 The energy consumption time series graph shows how much energy was used at different times and the
                 predicted energy consumption in your building.{" "}
                 <span className="cursor-pointer hover:underline" style={{ color: accentColor }}>
@@ -1059,7 +1059,7 @@ export function EnergyConsumptionTabPage({ projectId }: { projectId: string }) {
                       className="min-w-[80px] border-transparent"
                       style={{
                         backgroundColor: activeYear === year ? accentColor : "#e5e8e7",
-                        color: activeYear === year ? "#fff" : "#000",
+                        color: activeYear === year ? "#fff" : "#171717",
                       }}
                     >
                       {year}

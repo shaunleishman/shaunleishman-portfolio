@@ -18,6 +18,13 @@ import { CaseStudyAtAGlance } from "@/components/projects/CaseStudyAtAGlance";
 import { CaseStudySectionNav } from "@/components/projects/CaseStudySectionNav";
 import { CaseStudySection } from "@/components/projects/CaseStudySection";
 import { CaseStudySubsection } from "@/components/projects/CaseStudySubsection";
+import {
+  CaseStudyCompactList,
+  CaseStudyPanel,
+  CaseStudyPointGrid,
+  CaseStudyRoleSplit,
+  CaseStudyTwoColumn,
+} from "@/components/projects/CaseStudyLayout";
 import { CaseStudyReflection } from "@/components/projects/CaseStudyReflection";
 import {
   CaseStudyIllustration,
@@ -32,15 +39,15 @@ const findingHighlightIcons = [Building2, Headset, Route] as const;
 const deliverableHighlights = [
   {
     icon: Users,
-    text: "Five interactive personas, explore traits, call patterns, frustrations, and journey maps.",
+    text: "Five interactive personas with traits, call patterns, and frustrations.",
   },
   {
     icon: Map,
-    text: "Five matching journey maps, frustrations, quotes, and emotional peaks mapped end-to-end for each persona.",
+    text: "Five journey maps with quotes and emotional peaks for each persona.",
   },
   {
     icon: ClipboardList,
-    text: "Survey data triangulated interview themes with measurable patterns across urgency, timing, and outcomes.",
+    text: "Survey data backed up interview themes with measurable patterns.",
   },
 ];
 
@@ -68,7 +75,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
       <CaseStudySplitSection
         id="the-challenge"
         title={nhsSectionTitle("the-challenge")}
-        lead="Callers needed reassurance and clearer routing. The service needed evidence of where the journey broke down."
+        lead="Callers needed reassurance and clearer routing."
         visual={
           <CaseStudyIllustration
             src="/projects/nhs-111-waiting-times/problem-illustration.png"
@@ -79,7 +86,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         <p className="text-h4 font-medium text-[var(--color-text-primary)] leading-snug">
           {nhsCaseStudyMeta.problemStatement}
         </p>
-        <p className="mt-5 text-body text-[var(--color-text-muted)]">{project.problem}</p>
+        <p className="mt-4 text-body-sm text-[var(--color-text-muted)]">{project.problem}</p>
       </CaseStudySplitSection>
 
       <CaseStudySection
@@ -87,124 +94,75 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         title={nhsSectionTitle("my-role")}
         lead={nhsMyRole.lead}
       >
-        <CaseStudySubsection title="What we did together">
-          <ul className="list-disc pl-5 space-y-2">
-            {nhsTeamTogetherItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </CaseStudySubsection>
-        <CaseStudySubsection title="What I owned">
-          <ul className="list-disc pl-5 space-y-2">
-            {nhsRoleItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </CaseStudySubsection>
-        <p className="mt-6 text-body text-[var(--color-text-muted)]">{nhsMyRole.impact}</p>
-      </CaseStudySection>
-
-      <CaseStudySplitSection
-        id="research-approach"
-        title={nhsSectionTitle("research-approach")}
-        lead="Mixed methods to combine caller stories with measurable patterns the product team could act on."
-        visual={
-          <CaseStudyIllustration
-            src="/projects/nhs-111-waiting-times/research-approach.png"
-            alt="Illustration representing structured research and learning"
-          />
-        }
-      >
-        <ul className="list-disc pl-5 space-y-2 mb-6">
-          {project.approach.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-        <p className="text-body-sm text-[var(--color-text-muted)]">
-          {project.approachWhy.join(" · ")}
-        </p>
-      </CaseStudySplitSection>
-
-      <CaseStudySplitSection
-        id="qualitative-research"
-        title={nhsSectionTitle("qualitative-research")}
-        lead="Interviews and affinity mapping surfaced why callers behaved the way they did, not just what they did."
-        visual={
-          <CaseStudyIllustration
-            src="/projects/nhs-111-waiting-times/research-discovery.png"
-            alt="Illustration of research discovery and investigation"
-          />
-        }
-        visualFirst={false}
-      >
-        <ul className="list-disc pl-5 space-y-2">
-          {nhsQualitativeItems.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </CaseStudySplitSection>
-
-      <CaseStudySection
-        id="personas-journeys"
-        title={nhsSectionTitle("personas-journeys")}
-        lead="Personas and journey maps turned interview themes into artefacts the NHS team could reuse in product decisions."
-      >
-        <ul className="space-y-3 not-prose mb-10">
-          {deliverableHighlights.map(({ icon: Icon, text }) => (
-            <li key={text} className="flex gap-3 text-body text-[var(--color-text-secondary)]">
-              <Icon className="size-5 shrink-0 mt-0.5 text-[var(--case-study-accent)]" aria-hidden />
-              {text}
-            </li>
-          ))}
-        </ul>
-
-        <NhsPersonasInteractiveDeferred />
+        <CaseStudyRoleSplit
+          teamTogetherItems={nhsTeamTogetherItems}
+          roleItems={nhsRoleItems}
+          impact={nhsMyRole.impact}
+        />
       </CaseStudySection>
 
       <CaseStudySection
-        id="quantitative-research"
-        title={nhsSectionTitle("quantitative-research")}
-        lead="Survey data strengthened qualitative themes with patterns across timing, urgency, and outcomes."
+        id="research"
+        title={nhsSectionTitle("research")}
+        lead="Mixed methods: caller stories plus numbers the product team could act on."
       >
-        <ul className="list-disc pl-5 space-y-2 mb-10">
-          {nhsQuantitativeItems.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        <CaseStudySplitSection
+          title="Approach"
+          lead="Interviews, affinity mapping, and a follow-up survey within a four-week brief."
+          visual={
+            <CaseStudyIllustration
+              src="/projects/nhs-111-waiting-times/research-approach.png"
+              alt="Illustration representing structured research and learning"
+            />
+          }
+          className="mb-10 md:mb-12"
+        >
+          <CaseStudyCompactList items={project.approach} />
+          <p className="mt-4 text-body-sm text-[var(--color-text-muted)]">
+            {project.approachWhy.join(" · ")}
+          </p>
+        </CaseStudySplitSection>
 
-        <NhsQuantitativeInteractiveDeferred />
+        <CaseStudyTwoColumn className="not-prose mb-10">
+          <CaseStudyPanel title="Qualitative">
+            <CaseStudyCompactList items={nhsQualitativeItems} />
+          </CaseStudyPanel>
+          <CaseStudyPanel title="Quantitative">
+            <CaseStudyCompactList items={nhsQuantitativeItems} />
+          </CaseStudyPanel>
+        </CaseStudyTwoColumn>
+
+        <CaseStudySubsection
+          className="mb-0"
+          title="Survey results"
+          lead="Interactive views from the follow-up survey we ran with 111 callers in April 2023. Each tab is a different cut of the data."
+        >
+          <NhsQuantitativeInteractiveDeferred />
+        </CaseStudySubsection>
       </CaseStudySection>
 
       <CaseStudySection
         id="key-findings"
         title={nhsSectionTitle("key-findings")}
-        lead="What the combined research told the NHS team about caller behaviour and service improvements."
+        lead="What combined research showed about caller behaviour."
       >
-        <div className="space-y-5 not-prose">
-          {nhsFindingHighlights.map(({ title, text }, index) => {
-            const Icon = findingHighlightIcons[index] ?? Building2;
+        <CaseStudyPointGrid
+          columns={2}
+          items={nhsFindingHighlights.map(({ title, text }, index) => ({
+            title,
+            text,
+            icon: findingHighlightIcons[index] ?? Building2,
+          }))}
+        />
+      </CaseStudySection>
 
-            return (
-              <div
-                key={title}
-                className="flex gap-4 rounded-xl border border-[var(--color-border)] bg-neutral-50 px-5 py-4"
-              >
-                <span
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--case-study-accent)] text-white shadow-sm"
-                  aria-hidden
-                >
-                  <Icon size={20} strokeWidth={1.75} />
-                </span>
-                <div className="min-w-0">
-                  <h3 className="text-body font-semibold text-[var(--color-text-primary)] mb-1.5">
-                    {title}
-                  </h3>
-                  <p className="text-body-sm text-[var(--color-text-secondary)]">{text}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+      <CaseStudySection
+        id="deliverables"
+        title={nhsSectionTitle("deliverables")}
+        lead="Personas and journey maps the NHS team could reuse in product decisions."
+      >
+        <CaseStudyPointGrid items={deliverableHighlights} columns={1} className="mb-10" />
+        <NhsPersonasInteractiveDeferred />
       </CaseStudySection>
 
       <CaseStudyReflection
@@ -217,7 +175,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         }
         limitations={project.limitations}
         takeaways={nhsReflectionItems}
-        takeawaysLead="What mixed-methods research on NHS 111 reinforced, and how it shaped my approach to public-service discovery."
+        takeawaysLead="What NHS 111 research reinforced, and how it shaped my public-service discovery approach."
         feedbackPath="/work/nhs-111-waiting-times"
       />
 
