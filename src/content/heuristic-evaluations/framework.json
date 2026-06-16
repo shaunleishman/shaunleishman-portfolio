@@ -1,0 +1,910 @@
+{
+  "metadata": {
+    "name": "UX_UI_Heuristic_Evaluation_Quality_Framework",
+    "version": "1.0.0",
+    "created_date": "2026-06-15",
+    "language": "en-GB",
+    "purpose": "Provide a consistent standard for planning, running, scoring and reporting UX/UI heuristic evaluations across future projects.",
+    "intended_users": [
+      "UX designers",
+      "Product designers",
+      "Product managers",
+      "Researchers",
+      "Design reviewers"
+    ],
+    "source_basis": [
+      "Nielsen Norman Group 10 usability heuristics",
+      "Nielsen Norman Group severity rating guidance",
+      "WCAG 2.2 accessibility principles and success criteria",
+      "Practical UX/UI review workflows for product teams"
+    ]
+  },
+  "definition": {
+    "what_it_is": "A structured expert review where evaluators inspect an interface against agreed usability principles, identify problems, explain why they matter, and recommend improvements.",
+    "what_it_is_not": [
+      "A replacement for usability testing with real users",
+      "A visual design opinion dump",
+      "A bug bash",
+      "A list of personal preferences",
+      "A stakeholder approval exercise"
+    ],
+    "good_evaluation_outcome": "The team can clearly see what is causing friction, who it affects, how serious it is, and what should be improved first."
+  },
+  "quality_principles": [
+    {
+      "id": "QP01",
+      "principle": "Evaluate against user goals, not personal taste",
+      "description": "Every issue should explain how the interface affects a user trying to complete a task.",
+      "good_example": "Users may not realise the consent request has been sent because there is no clear status change after sending.",
+      "poor_example": "I do not like this button style."
+    },
+    {
+      "id": "QP02",
+      "principle": "Use consistent heuristics",
+      "description": "Use the same core heuristic set across projects so findings are comparable over time.",
+      "good_example": "Each finding is mapped to one primary heuristic and optional secondary heuristics.",
+      "poor_example": "Each evaluator invents their own categories."
+    },
+    {
+      "id": "QP03",
+      "principle": "Separate evidence from recommendation",
+      "description": "Record what was observed before jumping to a solution.",
+      "good_example": "Observed issue: Error message says 'Invalid input' without naming the field. Recommendation: Show the specific field and how to fix it.",
+      "poor_example": "Change the error message because it feels bad."
+    },
+    {
+      "id": "QP04",
+      "principle": "Score severity consistently",
+      "description": "Severity should be based on impact, frequency, persistence, confidence and business/user risk, not loudness in a meeting.",
+      "good_example": "Critical because it blocks users from submitting required evidence and affects compliance deadlines.",
+      "poor_example": "Critical because a stakeholder mentioned it."
+    },
+    {
+      "id": "QP05",
+      "principle": "Prioritise clarity over cleverness",
+      "description": "Findings should be written so a designer, developer or product manager can act on them without decoding UX fog.",
+      "good_example": "The empty state does not tell users what to do next, so they may think the page is broken.",
+      "poor_example": "The page lacks affordance salience within the interaction paradigm."
+    },
+    {
+      "id": "QP06",
+      "principle": "Include accessibility as a core lens",
+      "description": "Accessibility should be checked as part of the evaluation, not bolted on later like a wobbly roof rack.",
+      "good_example": "Check keyboard access, focus order, contrast, labels, touch targets, error identification and screen reader meaning.",
+      "poor_example": "Accessibility will be reviewed after launch."
+    },
+    {
+      "id": "QP07",
+      "principle": "Make findings traceable",
+      "description": "Each issue should link to a screen, flow, screenshot, prototype frame, task or URL where possible.",
+      "good_example": "Finding includes screen name, task, screenshot reference and affected component.",
+      "poor_example": "Somewhere in settings is confusing."
+    },
+    {
+      "id": "QP08",
+      "principle": "Explain the why",
+      "description": "The best heuristic findings explain why the issue matters for user trust, speed, confidence, comprehension or task completion.",
+      "good_example": "This reduces trust because the user is asked to confirm without seeing the consequence of the action.",
+      "poor_example": "This modal needs work."
+    }
+  ],
+  "core_heuristics": [
+    {
+      "id": "H01",
+      "name": "Visibility of system status",
+      "plain_english": "The interface should keep users informed about what is happening.",
+      "evaluation_questions": [
+        "Does the system show progress, loading, saving, success and failure states?",
+        "Can users tell whether their action worked?",
+        "Are long-running actions explained clearly?",
+        "Are status labels meaningful and current?"
+      ],
+      "look_for": [
+        "Missing loading states",
+        "No confirmation after an action",
+        "Ambiguous statuses",
+        "Delayed feedback",
+        "Silent failures"
+      ],
+      "evidence_examples": [
+        "After selecting 'Send request', the status remains unchanged for several seconds.",
+        "The user receives no confirmation that the file has uploaded."
+      ],
+      "severity_triggers": {
+        "low": "Feedback is slightly delayed but the user can continue safely.",
+        "medium": "The user may repeat actions or hesitate because feedback is unclear.",
+        "high": "The user may submit duplicate data, abandon the task or lose confidence.",
+        "critical": "The user cannot tell whether a legally, financially or operationally important action has completed."
+      }
+    },
+    {
+      "id": "H02",
+      "name": "Match between system and the real world",
+      "plain_english": "The interface should use language and concepts that make sense to users.",
+      "evaluation_questions": [
+        "Does the language match what users actually call these things?",
+        "Are technical terms explained or avoided?",
+        "Does the flow match the real-world process?",
+        "Are dates, units, statuses and labels understandable?"
+      ],
+      "look_for": [
+        "Internal jargon",
+        "Unclear abbreviations",
+        "System-first language",
+        "Labels that mean different things to different users",
+        "Workflows that ignore real-world responsibilities"
+      ],
+      "evidence_examples": [
+        "The label 'Denied' could mean the bill payer denied consent or an admin rejected the evidence.",
+        "The page uses internal product codes where users expect asset names."
+      ],
+      "severity_triggers": {
+        "low": "The term is mildly unclear but users can infer the meaning.",
+        "medium": "Users may need support or training to understand the interface.",
+        "high": "Users may make the wrong choice because the wording is ambiguous.",
+        "critical": "Ambiguous language could lead to compliance, consent, safety or financial mistakes."
+      }
+    },
+    {
+      "id": "H03",
+      "name": "User control and freedom",
+      "plain_english": "Users should be able to undo, cancel, go back or recover from unwanted actions.",
+      "evaluation_questions": [
+        "Can users cancel before committing?",
+        "Can users undo or reverse safe actions?",
+        "Are destructive actions clearly confirmed?",
+        "Can users leave a flow without losing work unexpectedly?"
+      ],
+      "look_for": [
+        "No cancel option",
+        "No undo",
+        "Destructive actions too easy",
+        "Trapped modals",
+        "Unexpected data loss"
+      ],
+      "evidence_examples": [
+        "Closing the drawer clears all unsaved selections without warning.",
+        "Deleting an uploaded proof has no confirmation or recovery path."
+      ],
+      "severity_triggers": {
+        "low": "Minor inconvenience with an easy recovery.",
+        "medium": "Users may lose small amounts of effort.",
+        "high": "Users may lose important work or need support to recover.",
+        "critical": "Users can accidentally cause irreversible legal, financial, safety or data-loss consequences."
+      }
+    },
+    {
+      "id": "H04",
+      "name": "Consistency and standards",
+      "plain_english": "Similar things should look and behave in similar ways.",
+      "evaluation_questions": [
+        "Are components used consistently?",
+        "Do similar actions use the same labels?",
+        "Do patterns match platform and product standards?",
+        "Are icons, colours and statuses used consistently?"
+      ],
+      "look_for": [
+        "Same action with different labels",
+        "Different components for the same job",
+        "Inconsistent status colours",
+        "Icons with unclear or changing meaning",
+        "Navigation patterns changing between pages"
+      ],
+      "evidence_examples": [
+        "The same primary action is called 'Submit' on one page and 'Send' on another.",
+        "Warning colours are used for both errors and informational tips."
+      ],
+      "severity_triggers": {
+        "low": "Small inconsistency that does not affect task completion.",
+        "medium": "Users may slow down or second-guess the interface.",
+        "high": "Users may misunderstand actions or statuses across pages.",
+        "critical": "Inconsistency could cause serious mistakes in high-risk flows."
+      }
+    },
+    {
+      "id": "H05",
+      "name": "Error prevention",
+      "plain_english": "The interface should prevent mistakes before they happen.",
+      "evaluation_questions": [
+        "Does the design stop users from entering invalid data?",
+        "Are risky actions guarded?",
+        "Are required fields and constraints shown before submission?",
+        "Are defaults safe and helpful?"
+      ],
+      "look_for": [
+        "Validation only after submission",
+        "Hidden requirements",
+        "Unsafe defaults",
+        "Easy-to-miss destructive actions",
+        "No duplicate detection"
+      ],
+      "evidence_examples": [
+        "The form only reveals that the tenancy end date is required after the user tries to submit.",
+        "Users can send a request without reviewing the selected meters."
+      ],
+      "severity_triggers": {
+        "low": "Mistake is unlikely and easy to fix.",
+        "medium": "Mistake causes delay or frustration.",
+        "high": "Mistake creates rework, support requests or incorrect records.",
+        "critical": "Mistake could cause compliance issues, data exposure, payment errors or safety risks."
+      }
+    },
+    {
+      "id": "H06",
+      "name": "Recognition rather than recall",
+      "plain_english": "Users should not have to remember information from elsewhere.",
+      "evaluation_questions": [
+        "Is key information visible when users need it?",
+        "Are choices explained in context?",
+        "Do users have to remember values from previous screens?",
+        "Are labels and summaries available before confirmation?"
+      ],
+      "look_for": [
+        "Hidden details",
+        "Unclear icon-only actions",
+        "No summary before submission",
+        "Users forced to copy information between pages",
+        "Filters or selections not visible"
+      ],
+      "evidence_examples": [
+        "The confirmation screen does not show which assets are included.",
+        "The table hides selected filters, so users cannot easily understand the current results."
+      ],
+      "severity_triggers": {
+        "low": "Users may pause briefly.",
+        "medium": "Users may have to navigate back and forth.",
+        "high": "Users may make incorrect selections due to missing context.",
+        "critical": "Missing context could lead to serious approval, data or consent mistakes."
+      }
+    },
+    {
+      "id": "H07",
+      "name": "Flexibility and efficiency of use",
+      "plain_english": "The interface should support both new and experienced users.",
+      "evaluation_questions": [
+        "Can frequent users complete common tasks quickly?",
+        "Are bulk actions, shortcuts or saved settings available where useful?",
+        "Does the interface avoid unnecessary repeated work?",
+        "Can users filter, search, sort and scan efficiently?"
+      ],
+      "look_for": [
+        "Repetitive manual actions",
+        "No bulk selection",
+        "Weak search",
+        "No keyboard efficiency",
+        "No saved preferences",
+        "Slow table workflows"
+      ],
+      "evidence_examples": [
+        "Users must open each meter individually to check consent status.",
+        "There is no way to filter by expired consent."
+      ],
+      "severity_triggers": {
+        "low": "Small efficiency issue for occasional users.",
+        "medium": "Frequent users lose noticeable time.",
+        "high": "Core workflows become slow at scale.",
+        "critical": "The product becomes impractical for large portfolios, high-volume tasks or urgent operations."
+      }
+    },
+    {
+      "id": "H08",
+      "name": "Aesthetic and minimalist design",
+      "plain_english": "The interface should focus attention on what matters.",
+      "evaluation_questions": [
+        "Is the most important information easy to find?",
+        "Is unnecessary content competing for attention?",
+        "Does the layout support scanning?",
+        "Are visual hierarchy, spacing and grouping clear?"
+      ],
+      "look_for": [
+        "Crowded screens",
+        "Weak hierarchy",
+        "Too many competing actions",
+        "Decorative noise",
+        "Dense copy",
+        "Important warnings buried in the page"
+      ],
+      "evidence_examples": [
+        "The dashboard warning takes premium space but does not explain the next action.",
+        "Three secondary actions visually compete with the main task."
+      ],
+      "severity_triggers": {
+        "low": "Visual noise but task remains clear.",
+        "medium": "Users may take longer to understand the page.",
+        "high": "Users may miss important information or actions.",
+        "critical": "Critical information is hidden or visually deprioritised in a high-risk flow."
+      }
+    },
+    {
+      "id": "H09",
+      "name": "Help users recognise, diagnose and recover from errors",
+      "plain_english": "Error messages should clearly explain what happened and how to fix it.",
+      "evaluation_questions": [
+        "Does the error identify the problem?",
+        "Does it tell users how to fix it?",
+        "Is the error near the relevant field or action?",
+        "Does it avoid blame and scary system language?"
+      ],
+      "look_for": [
+        "Generic errors",
+        "Errors shown far from the problem",
+        "No recovery action",
+        "Error codes without explanation",
+        "Blaming language"
+      ],
+      "evidence_examples": [
+        "The error says 'Failed' but does not explain whether the file type, size or connection caused it.",
+        "The form summary says there are errors but does not link to the fields."
+      ],
+      "severity_triggers": {
+        "low": "Error is slightly unclear but recovery is obvious.",
+        "medium": "Users may need trial and error to recover.",
+        "high": "Users may abandon the task or contact support.",
+        "critical": "Users cannot recover from a blocking error in a critical flow."
+      }
+    },
+    {
+      "id": "H10",
+      "name": "Help and documentation",
+      "plain_english": "Help should be available when users need it, especially for complex or rare tasks.",
+      "evaluation_questions": [
+        "Is guidance available for unfamiliar tasks?",
+        "Is help contextual rather than hidden in a giant manual swamp?",
+        "Are examples, tooltips or explanations provided where needed?",
+        "Can users understand consequences before acting?"
+      ],
+      "look_for": [
+        "No explanation for complex terms",
+        "Missing examples",
+        "Help hidden away from the task",
+        "No guidance for edge cases",
+        "No support path"
+      ],
+      "evidence_examples": [
+        "Users are asked to upload evidence but are not told what counts as valid evidence.",
+        "The CRREM page shows high-risk assets but does not explain how to interpret stranding year."
+      ],
+      "severity_triggers": {
+        "low": "Help would improve confidence but is not essential.",
+        "medium": "Users may need training or support.",
+        "high": "Users may complete the task incorrectly without guidance.",
+        "critical": "Missing guidance could cause legal, compliance, financial or safety issues."
+      }
+    }
+  ],
+  "additional_lenses": [
+    {
+      "id": "L01",
+      "name": "Accessibility and inclusive design",
+      "mapped_to": "WCAG 2.2 principles: perceivable, operable, understandable, robust",
+      "evaluation_questions": [
+        "Can the interface be used with a keyboard?",
+        "Is focus order logical and visible?",
+        "Do text and meaningful UI elements have sufficient contrast?",
+        "Are form fields programmatically labelled?",
+        "Are errors announced and explained clearly?",
+        "Are touch targets large enough?",
+        "Does the interface avoid relying only on colour?",
+        "Can content reflow and zoom without breaking?",
+        "Are animations safe, purposeful and controllable?"
+      ],
+      "common_findings": [
+        "Focus state missing or too subtle",
+        "Colour-only status indicators",
+        "Low contrast text",
+        "Unlabelled icon buttons",
+        "Form errors not linked to fields",
+        "Modal traps keyboard users",
+        "Tiny click or tap targets"
+      ]
+    },
+    {
+      "id": "L02",
+      "name": "Content clarity",
+      "evaluation_questions": [
+        "Is the copy written in plain language?",
+        "Does the copy explain what users need to know before acting?",
+        "Are labels specific enough?",
+        "Are instructions short, timely and useful?",
+        "Are empty states helpful?"
+      ],
+      "common_findings": [
+        "Vague CTA labels",
+        "Overly technical copy",
+        "Long paragraphs where a short instruction would work",
+        "Missing consequence copy",
+        "Empty state does not guide the next step"
+      ]
+    },
+    {
+      "id": "L03",
+      "name": "Trust, consent and data confidence",
+      "evaluation_questions": [
+        "Does the interface clearly explain what data is being used and why?",
+        "Can users see who gave consent, when and for how long?",
+        "Are privacy or data actions clear and auditable?",
+        "Does the interface avoid making uncertain data look certain?",
+        "Are confidence scores, assumptions or gaps explained?"
+      ],
+      "common_findings": [
+        "Consent status lacks evidence",
+        "Data confidence not visible",
+        "Audit trail unclear",
+        "Users cannot see expiry or ownership details",
+        "System implies certainty where data is incomplete"
+      ]
+    },
+    {
+      "id": "L04",
+      "name": "Responsive and cross-device behaviour",
+      "evaluation_questions": [
+        "Does the layout work on common desktop, tablet and mobile sizes?",
+        "Are tables usable on smaller screens?",
+        "Do controls remain reachable?",
+        "Are important actions hidden or pushed too far down?",
+        "Does content reflow without becoming a tiny puzzle box?"
+      ],
+      "common_findings": [
+        "Table columns collapse poorly",
+        "Primary action disappears below the fold",
+        "Horizontal scrolling hides important context",
+        "Modals too large on small screens",
+        "Filters become difficult to manage"
+      ]
+    },
+    {
+      "id": "L05",
+      "name": "Performance perception",
+      "evaluation_questions": [
+        "Does the interface communicate loading states?",
+        "Are skeletons, progress indicators or optimistic updates used appropriately?",
+        "Can users continue working while data loads where safe?",
+        "Does slow loading create confusion or repeated actions?"
+      ],
+      "common_findings": [
+        "Blank page during loading",
+        "Spinner with no context",
+        "No progress on upload",
+        "Actions look available while unavailable",
+        "Users can double-submit"
+      ]
+    }
+  ],
+  "evaluation_process": {
+    "recommended_evaluator_count": {
+      "minimum": 2,
+      "ideal": "3 to 5 evaluators when the project is high impact or complex",
+      "reason": "Multiple evaluators reduce blind spots and make findings less dependent on one person’s taste."
+    },
+    "stages": [
+      {
+        "stage": "01_prepare",
+        "description": "Define what is being evaluated and why.",
+        "activities": [
+          "Define product area, screen, flow or prototype scope",
+          "Define target users and their main goals",
+          "Define key tasks to inspect",
+          "Define known constraints, such as release deadline, technical limits or compliance needs",
+          "Confirm which heuristics and additional lenses will be used",
+          "Collect links to prototype, live environment, screenshots, analytics or support notes"
+        ],
+        "outputs": [
+          "Evaluation brief",
+          "Task list",
+          "Scope boundaries",
+          "Evidence links"
+        ]
+      },
+      {
+        "stage": "02_individual_review",
+        "description": "Each evaluator reviews independently first.",
+        "activities": [
+          "Walk through each task from the user’s point of view",
+          "Record issues without discussing them with other evaluators",
+          "Capture screenshots or frame references",
+          "Map each issue to a primary heuristic",
+          "Add initial severity and confidence"
+        ],
+        "outputs": [
+          "Raw findings",
+          "Screenshots",
+          "Initial severity scores"
+        ]
+      },
+      {
+        "stage": "03_group_calibration",
+        "description": "Evaluators compare findings and remove duplicates.",
+        "activities": [
+          "Merge duplicate issues",
+          "Challenge vague findings",
+          "Agree primary heuristic",
+          "Agree severity rating",
+          "Check whether findings are evidence-based",
+          "Separate usability issues from bugs, content gaps and product questions"
+        ],
+        "outputs": [
+          "Clean findings list",
+          "Aligned severity scores",
+          "Open questions"
+        ]
+      },
+      {
+        "stage": "04_prioritisation",
+        "description": "Rank issues by user impact, risk and effort.",
+        "activities": [
+          "Identify blockers first",
+          "Group related issues by journey or component",
+          "Highlight quick wins separately from strategic fixes",
+          "Use severity, frequency, affected users and confidence to prioritise",
+          "Call out issues that need user testing before solutioning"
+        ],
+        "outputs": [
+          "Prioritised issue list",
+          "Top recommendations",
+          "Follow-up research needs"
+        ]
+      },
+      {
+        "stage": "05_reporting",
+        "description": "Create a report that is clear enough to act on.",
+        "activities": [
+          "Summarise the biggest themes",
+          "Show issue, evidence, impact and recommendation",
+          "Include screenshots where useful",
+          "State what was out of scope",
+          "Add next steps for design, product, engineering and research"
+        ],
+        "outputs": [
+          "Heuristic evaluation report",
+          "Issue backlog",
+          "Design recommendations",
+          "Decision log"
+        ]
+      },
+      {
+        "stage": "06_follow_up",
+        "description": "Make sure the evaluation leads to better design, not a dusty PDF goblin.",
+        "activities": [
+          "Turn high-priority issues into backlog items",
+          "Review fixes against the original issue",
+          "Retest critical flows",
+          "Record what changed",
+          "Add reusable patterns to the design system if relevant"
+        ],
+        "outputs": [
+          "Updated backlog",
+          "Resolved findings list",
+          "Design system updates",
+          "Retest notes"
+        ]
+      }
+    ]
+  },
+  "finding_schema": {
+    "required_fields": [
+      "finding_id",
+      "title",
+      "screen_or_flow",
+      "user_task",
+      "primary_heuristic",
+      "description",
+      "evidence",
+      "user_impact",
+      "severity",
+      "confidence",
+      "recommendation",
+      "owner",
+      "status"
+    ],
+    "optional_fields": [
+      "secondary_heuristics",
+      "accessibility_lens",
+      "screenshot_reference",
+      "prototype_link",
+      "affected_user_groups",
+      "frequency_estimate",
+      "business_risk",
+      "technical_notes",
+      "related_findings",
+      "research_needed",
+      "effort_estimate",
+      "before_state",
+      "after_state"
+    ],
+    "template": {
+      "finding_id": "HE-001",
+      "title": "Short plain-English summary of the problem",
+      "screen_or_flow": "Name of screen, flow, page, component or prototype frame",
+      "user_task": "What the user is trying to do",
+      "primary_heuristic": "H01-H10",
+      "secondary_heuristics": [],
+      "description": "What is wrong in the current experience",
+      "evidence": {
+        "observed_where": "URL, Figma frame, screenshot reference or screen name",
+        "observed_behaviour": "What the evaluator saw",
+        "expected_behaviour": "What the user would reasonably expect"
+      },
+      "user_impact": "Why this causes friction, confusion, mistrust, delay or error",
+      "severity": "low | medium | high | critical",
+      "confidence": "low | medium | high",
+      "recommendation": "Suggested improvement written as a direction, not an over-prescribed final solution",
+      "owner": "Design | Product | Engineering | Content | Research | Unknown",
+      "status": "new | triaged | in_progress | fixed | accepted_risk | needs_research",
+      "accessibility_lens": {
+        "is_accessibility_related": false,
+        "wcag_principle": null,
+        "notes": null
+      }
+    }
+  },
+  "severity_model": {
+    "scale": [
+      {
+        "score": 0,
+        "label": "not_a_problem",
+        "definition": "Not a usability issue or not enough evidence to include."
+      },
+      {
+        "score": 1,
+        "label": "low",
+        "definition": "Minor friction, polish issue or small clarity problem. Users can still complete the task."
+      },
+      {
+        "score": 2,
+        "label": "medium",
+        "definition": "Noticeable friction. Some users may slow down, misunderstand, need help or make a recoverable mistake."
+      },
+      {
+        "score": 3,
+        "label": "high",
+        "definition": "Serious issue. Users may fail the task, lose confidence, create incorrect data or need support."
+      },
+      {
+        "score": 4,
+        "label": "critical",
+        "definition": "Blocking or high-risk issue. Users cannot complete a key task, or the issue creates serious legal, financial, safety, privacy or operational risk."
+      }
+    ],
+    "scoring_inputs": [
+      {
+        "name": "impact",
+        "question": "How badly does this affect the user’s ability to complete the task?",
+        "values": [
+          "minor",
+          "moderate",
+          "major",
+          "blocking"
+        ]
+      },
+      {
+        "name": "frequency",
+        "question": "How often are users likely to encounter it?",
+        "values": [
+          "rare",
+          "occasional",
+          "common",
+          "almost_every_time"
+        ]
+      },
+      {
+        "name": "persistence",
+        "question": "Can users recover easily, or does the issue keep following them around like a tiny UX gremlin?",
+        "values": [
+          "one_off",
+          "recoverable",
+          "repeated",
+          "hard_to_recover"
+        ]
+      },
+      {
+        "name": "risk",
+        "question": "Could this cause serious data, trust, compliance, financial or safety consequences?",
+        "values": [
+          "none",
+          "low",
+          "medium",
+          "high"
+        ]
+      },
+      {
+        "name": "confidence",
+        "question": "How confident are we that this is a real issue?",
+        "values": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    ],
+    "severity_rules": [
+      "Use critical when a user is blocked from a core task or when the mistake could create serious legal, financial, privacy, safety or compliance risk.",
+      "Use high when the task can technically continue but users are likely to fail, abandon, create incorrect data or need support.",
+      "Use medium when the issue creates confusion, hesitation, avoidable effort or recoverable mistakes.",
+      "Use low when the issue is mostly polish, small inconsistency or minor inefficiency.",
+      "If confidence is low, either mark the finding as needs_research or reduce priority until validated.",
+      "Do not raise severity just because a stakeholder dislikes something.",
+      "Do not lower severity just because the fix is difficult."
+    ]
+  },
+  "report_structure": {
+    "recommended_sections": [
+      {
+        "section": "Executive summary",
+        "contents": [
+          "What was evaluated",
+          "Overall usability health",
+          "Top 3 to 5 issues",
+          "Main design risks",
+          "Recommended next steps"
+        ]
+      },
+      {
+        "section": "Scope and method",
+        "contents": [
+          "Screens or flows reviewed",
+          "User groups considered",
+          "Tasks evaluated",
+          "Heuristics used",
+          "Evaluator names or roles",
+          "Date of evaluation",
+          "Known limitations"
+        ]
+      },
+      {
+        "section": "Severity summary",
+        "contents": [
+          "Number of critical, high, medium and low findings",
+          "Themes by journey or component",
+          "Accessibility-related findings",
+          "Findings needing further research"
+        ]
+      },
+      {
+        "section": "Detailed findings",
+        "contents": [
+          "Finding title",
+          "Screenshot or reference",
+          "Heuristic",
+          "Evidence",
+          "User impact",
+          "Severity",
+          "Recommendation",
+          "Owner",
+          "Status"
+        ]
+      },
+      {
+        "section": "Recommended action plan",
+        "contents": [
+          "Fix now",
+          "Fix next",
+          "Monitor",
+          "Validate with users",
+          "Add to design system"
+        ]
+      }
+    ],
+    "good_report_traits": [
+      "Clear enough for non-UX stakeholders",
+      "Specific enough for designers and developers",
+      "Evidence-based",
+      "Prioritised",
+      "Linked to user goals",
+      "Not overloaded with every tiny preference",
+      "Includes what not to fix yet"
+    ]
+  },
+  "consistency_checks": {
+    "before_review": [
+      "Has the scope been defined?",
+      "Are user goals and tasks listed?",
+      "Are all evaluators using the same heuristic set?",
+      "Is accessibility included?",
+      "Is the severity scale agreed?",
+      "Are screenshots or references easy to capture?"
+    ],
+    "during_review": [
+      "Is each finding tied to a user task?",
+      "Is each finding mapped to a primary heuristic?",
+      "Is the observed evidence separate from the recommendation?",
+      "Is severity based on impact rather than opinion?",
+      "Are accessibility issues being captured properly?",
+      "Are duplicate findings being grouped?"
+    ],
+    "before_sharing_report": [
+      "Can a non-UX stakeholder understand the top issues?",
+      "Can a designer act on the recommendations?",
+      "Can a developer identify where the issue occurs?",
+      "Are critical and high issues clearly justified?",
+      "Are assumptions labelled?",
+      "Are research gaps separated from confirmed findings?",
+      "Are quick wins and bigger strategic fixes separated?",
+      "Is the report short enough to be read?"
+    ]
+  },
+  "anti_patterns": [
+    {
+      "name": "The opinion parade",
+      "description": "The evaluation becomes a list of personal design preferences.",
+      "how_to_avoid": "Tie every finding to a user goal, heuristic and observed evidence."
+    },
+    {
+      "name": "The screenshot graveyard",
+      "description": "The report contains many screenshots but does not explain impact or priority.",
+      "how_to_avoid": "Every screenshot must support a clear issue, user impact and recommendation."
+    },
+    {
+      "name": "The severity soup",
+      "description": "Everything is marked high, so nothing is actually prioritised.",
+      "how_to_avoid": "Use the severity model and reserve critical/high for task failure, high risk or major friction."
+    },
+    {
+      "name": "The accessibility afterthought",
+      "description": "Accessibility is reviewed only after visual and interaction issues.",
+      "how_to_avoid": "Include accessibility questions in the core evaluation pass."
+    },
+    {
+      "name": "The solution cannon",
+      "description": "Evaluators jump straight to detailed redesigns before agreeing what the problem is.",
+      "how_to_avoid": "Write the problem first, then a recommendation direction."
+    },
+    {
+      "name": "The lonely evaluator",
+      "description": "One person reviews everything and blind spots sneak through wearing tiny slippers.",
+      "how_to_avoid": "Use at least two evaluators when possible and calibrate severity together."
+    }
+  ],
+  "example_finding": {
+    "finding_id": "HE-001",
+    "title": "Users may not understand what action to take from the dashboard warning",
+    "screen_or_flow": "Dashboard > Unit coverage warning",
+    "user_task": "Identify where to go to fix unmatched or unattached units",
+    "primary_heuristic": "H01",
+    "secondary_heuristics": [
+      "H08",
+      "H10"
+    ],
+    "description": "The warning highlights that a coverage issue exists, but the next action is not clear enough. Users may understand that something is wrong without knowing where to go or what fixing it involves.",
+    "evidence": {
+      "observed_where": "Dashboard warning card",
+      "observed_behaviour": "The warning takes prominent dashboard space but does not clearly explain the fix path.",
+      "expected_behaviour": "The warning should act as a signpost, showing what is wrong, why it matters and where to go next."
+    },
+    "user_impact": "Users may treat the metric as stagnant information rather than an actionable route to improve coverage.",
+    "severity": "medium",
+    "confidence": "medium",
+    "recommendation": "Make the warning more action-oriented by adding a clear next step, such as 'Review unmatched units', and explain the impact of fixing the issue.",
+    "owner": "Design",
+    "status": "new",
+    "accessibility_lens": {
+      "is_accessibility_related": false,
+      "wcag_principle": null,
+      "notes": null
+    }
+  },
+  "machine_readable_empty_finding_template": {
+    "finding_id": "",
+    "title": "",
+    "screen_or_flow": "",
+    "user_task": "",
+    "primary_heuristic": "",
+    "secondary_heuristics": [],
+    "description": "",
+    "evidence": {
+      "observed_where": "",
+      "observed_behaviour": "",
+      "expected_behaviour": ""
+    },
+    "user_impact": "",
+    "severity": "",
+    "confidence": "",
+    "recommendation": "",
+    "owner": "",
+    "status": "",
+    "accessibility_lens": {
+      "is_accessibility_related": false,
+      "wcag_principle": "",
+      "notes": ""
+    }
+  }
+}

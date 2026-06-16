@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Layers, LineChart, Palette } from "lucide-react";
+import { ArrowRight, BookOpen, Layers, LineChart, Palette } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { MetricsKpiCard } from "@/components/metrics/metrics-ui";
 import { useMetricsDashboard } from "@/hooks/useMetricsDashboard";
@@ -15,7 +15,7 @@ export default function AdminOverviewPage() {
   return (
     <AdminShell
       title="Overview"
-      description="Your admin home. Quick health checks and shortcuts to site metrics, prototypes, and design systems."
+      description="Your admin home. Quick health checks and shortcuts to site metrics, prototypes, design systems, and case studies."
     >
       {loading && !data ? (
         <p className="text-body-sm text-[var(--color-text-muted)]">Loading overview…</p>
@@ -33,7 +33,7 @@ export default function AdminOverviewPage() {
             <MetricsKpiCard label="Feedback" value={String(data.overview.feedbackSubmissions)} />
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
             <Link
               href={`${base}/site`}
               className="group rounded-2xl border border-[var(--color-border)] bg-white p-6 transition-colors hover:border-[var(--color-accent)]/40"
@@ -81,6 +81,23 @@ export default function AdminOverviewPage() {
               </p>
               <span className="mt-4 inline-flex items-center gap-1 text-body-sm font-medium text-[var(--color-accent)]">
                 Browse design systems
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+              </span>
+            </Link>
+
+            <Link
+              href={`${base}/case-studies`}
+              className="group rounded-2xl border border-[var(--color-border)] bg-white p-6 transition-colors hover:border-[var(--color-accent)]/40"
+            >
+              <div className="mb-4 flex size-10 items-center justify-center rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
+                <BookOpen className="size-5" aria-hidden />
+              </div>
+              <h2 className="text-h4 font-semibold">Case studies</h2>
+              <p className="mt-2 text-body-sm text-[var(--color-text-secondary)]">
+                Heuristic evaluations and UX audit reports for job applications. Hidden from the public site.
+              </p>
+              <span className="mt-4 inline-flex items-center gap-1 text-body-sm font-medium text-[var(--color-accent)]">
+                Browse case studies
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
               </span>
             </Link>

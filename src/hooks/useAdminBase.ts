@@ -8,6 +8,8 @@ const ADMIN_SUFFIXES = [
   "/site/audience",
   "/site/insights",
   "/site",
+  "/case-studies/mg-employees",
+  "/case-studies",
   "/design-systems/showcase",
   "/design-systems",
   "/prototypes/half-hourly/project",

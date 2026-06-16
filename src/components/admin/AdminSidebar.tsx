@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LineChart, Layers, Palette, LogOut } from "lucide-react";
+import { LayoutDashboard, LineChart, Layers, Palette, BookOpen, LogOut } from "lucide-react";
 import { buildAdminNav } from "@/lib/admin-nav";
 import { useAdminBase } from "@/hooks/useAdminBase";
 import { useMetricsAuth } from "@/hooks/useMetricsAuth";
@@ -13,6 +13,7 @@ const SECTION_ICONS = {
   site: LineChart,
   prototypes: Layers,
   "design-systems": Palette,
+  "case-studies": BookOpen,
 } as const;
 
 export function AdminSidebar() {

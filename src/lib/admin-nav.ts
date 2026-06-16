@@ -38,6 +38,12 @@ export function buildAdminNav(base: string): AdminNavItem[] {
       href: `${base}/design-systems`,
       description: "Design token and component showcases",
     },
+    {
+      id: "case-studies",
+      label: "Case Studies",
+      href: `${base}/case-studies`,
+      description: "Heuristic evaluations and UX audit reports",
+    },
   ];
 }
 
@@ -68,6 +74,31 @@ export const DESIGN_SYSTEM_ENTRIES: DesignSystemEntry[] = [
       "Tokens, components, and usage patterns. Includes page controls, meters table toolbar, and bulk actions.",
     accent: "#00a7b5",
     tags: ["Design tokens", "Components", "Page controls"],
+  },
+];
+
+export type CaseStudyEntry = {
+  slug: string;
+  title: string;
+  client: string;
+  description: string;
+  accent: string;
+  tags: string[];
+  evaluatedUrl: string;
+  evaluationDate: string;
+};
+
+export const CASE_STUDY_ENTRIES: CaseStudyEntry[] = [
+  {
+    slug: "mg-employees",
+    title: "M&G Employees heuristic evaluation",
+    client: "M&G / Prudential Workplace Pensions",
+    description:
+      "Expert UX review of the employee landing page for enrolled workplace pension members. Identifies content, hierarchy, and action-path gaps.",
+    accent: "#E85D04",
+    tags: ["Heuristic evaluation", "Financial services", "Content clarity"],
+    evaluatedUrl: "https://workplacepensions.mandg.com/employees/",
+    evaluationDate: "2026-06-15",
   },
 ];
 

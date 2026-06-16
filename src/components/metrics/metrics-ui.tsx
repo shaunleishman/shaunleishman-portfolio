@@ -1,11 +1,43 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
 import { formatBucketLabel, type ContentRow, type TimeSeriesPoint } from "@/lib/analytics-metrics-types";
 
-export function MetricsKpiCard({ label, value }: { label: string; value: string }) {
+export function MetricsKpiCard({
+  label,
+  value,
+  active = false,
+  disabled = false,
+  onClick,
+}: {
+  label: string;
+  value: string;
+  active?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+}) {
+  const interactive = Boolean(onClick) && !disabled;
+  const className = cn(
+    "rounded-2xl border bg-white p-5 text-left",
+    interactive && "cursor-pointer motion-safe:transition-[border-color,box-shadow,background-color] motion-safe:duration-200 hover:border-[var(--color-accent)]/40 hover:shadow-sm",
+    active
+      ? "border-[var(--color-accent)] ring-2 ring-[var(--color-accent)]/20"
+      : "border-[var(--color-border)]",
+    disabled && "opacity-50",
+  );
+
+  if (interactive) {
+    return (
+      <button type="button" onClick={onClick} aria-pressed={active} className={className}>
+        <p className="text-label text-[var(--color-text-muted)] mb-1">{label}</p>
+        <p className="text-h3 font-semibold tabular-nums">{value}</p>
+      </button>
+    );
+  }
+
   return (
-    <div className="rounded-2xl border border-[var(--color-border)] bg-white p-5">
+    <div className={className}>
       <p className="text-label text-[var(--color-text-muted)] mb-1">{label}</p>
       <p className="text-h3 font-semibold tabular-nums">{value}</p>
     </div>
