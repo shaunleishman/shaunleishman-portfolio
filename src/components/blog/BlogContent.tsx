@@ -6,6 +6,10 @@ import { KanoCategoryOverview } from "./kano/KanoCategoryOverview";
 import { KanoCurveExplorer } from "./kano/KanoCurveExplorer";
 import { KanoExpectationShift } from "./kano/KanoExpectationShift";
 import { RouteCheckCalculator } from "./route-check/RouteCheckCalculator";
+import { ProximityExplorer } from "./grouping/ProximityExplorer";
+import { SimilarityExplorer } from "./grouping/SimilarityExplorer";
+import { CommonRegionExplorer } from "./grouping/CommonRegionExplorer";
+import { ConnectednessExplorer } from "./grouping/ConnectednessExplorer";
 import { Reveal } from "@/components/ui/Reveal";
 
 const VIZ_MARKERS: Record<string, ReactNode> = {
@@ -13,6 +17,10 @@ const VIZ_MARKERS: Record<string, ReactNode> = {
   "kano-curve": <KanoCurveExplorer />,
   "kano-shift": <KanoExpectationShift />,
   "route-check": <RouteCheckCalculator />,
+  "grouping-proximity": <ProximityExplorer />,
+  "grouping-similarity": <SimilarityExplorer />,
+  "grouping-common-region": <CommonRegionExplorer />,
+  "grouping-connectedness": <ConnectednessExplorer />,
 };
 
 function renderMarkdownBlock(block: string, key: number) {
