@@ -14,5 +14,5 @@ export async function GET(request: NextRequest) {
   const filterPath = path && path !== "all" ? path : null;
   const filterPeriod = parseAnalyticsPeriod(request.nextUrl.searchParams.get("period"));
 
-  return NextResponse.json(getAnalyticsSummary(filterPath, filterPeriod));
+  return NextResponse.json(await getAnalyticsSummary(filterPath, filterPeriod));
 }

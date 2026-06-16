@@ -97,7 +97,7 @@ async function writeStoreToBlob(store: BlogEngagementStore): Promise<boolean> {
 
   try {
     await put(BLOB_PATHNAME, JSON.stringify(store), {
-      access: "public",
+      access: "private",
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: "application/json",

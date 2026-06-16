@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeEvent, writeEvents, getAnalyticsSummary, readEvents } from "@/lib/analytics";
+import { writeEventAsync, writeEventsAsync, getAnalyticsSummary, readEventsAsync } from "@/lib/analytics";
 import { METRICS_COOKIE_NAME } from "@/lib/metrics-config";
 import { verifyMetricsPassword, verifyMetricsSessionToken } from "@/lib/metrics-auth";
 import crypto from "crypto";
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Invalid batch" }, { status: 400 });
       }
 
-      writeEvents(batch as NonNullable<ReturnType<typeof normalizeEvent>>[]);
+      await writeEventsAsync(batch as NonNullable<ReturnType<typeof normalizeEvent>>[]);
       return NextResponse.json({ ok: true, count: batch.length });
     }
 
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (event.type === "blog_like") {
-      const events = readEvents();
+      const events = await readEventsAsync();
       const alreadyLiked = events.some(
         (existing) =>
           existing.type === "blog_like" &&
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    writeEvent(event);
+    await writeEventAsync(event);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -98,5 +98,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json(getAnalyticsSummary());
+  return NextResponse.json(await getAnalyticsSummary());
 }

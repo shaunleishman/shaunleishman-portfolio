@@ -1,6 +1,7 @@
 import { getAllPosts } from "@/lib/blog";
 import { projects } from "@/content/projects";
-import { readEvents, type AnalyticsEvent } from "@/lib/analytics";
+import { readAnalyticsEvents } from "@/lib/analytics-store";
+import type { AnalyticsEvent } from "@/lib/analytics-types";
 import {
   type AnalyticsPeriod,
   eventInPeriod,
@@ -226,16 +227,16 @@ function computeAudienceSeries(
   return { series, summary };
 }
 
-export function getAnalyticsDashboard(options: {
+export async function getAnalyticsDashboard(options: {
   period?: AnalyticsPeriod;
   contentSort?: ContentSortKey;
   audienceMetric?: AudienceMetricKey;
-}): AnalyticsDashboard {
+}): Promise<AnalyticsDashboard> {
   const period = options.period ?? METRICS_HOME_PERIOD;
   const contentSort = options.contentSort ?? "views";
   const audienceMetric = options.audienceMetric ?? "active_viewers";
 
-  const allEvents = readEvents();
+  const allEvents = await readAnalyticsEvents();
   const events = filterByPeriod(allEvents, period);
   const sessions = new Set(events.map((e) => e.sessionId));
   const feedbackSubmissions = events.filter((e) => e.type === "click" && e.metadata?.feedback).length;

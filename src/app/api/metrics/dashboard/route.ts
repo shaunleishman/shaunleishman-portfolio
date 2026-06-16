@@ -16,6 +16,6 @@ export async function GET(request: NextRequest) {
   const audienceMetric = parseAudienceMetric(request.nextUrl.searchParams.get("metric"));
 
   return NextResponse.json(
-    getAnalyticsDashboard({ period, contentSort, audienceMetric }),
+    await getAnalyticsDashboard({ period, contentSort, audienceMetric }),
   );
 }

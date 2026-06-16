@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
 import { eventInPeriod, getPeriodLabel } from "@/lib/analytics-period";
 import {
@@ -13,95 +11,25 @@ import {
   getQualityLabel,
 } from "@/lib/feedback-config";
 import { isArticlePath } from "@/lib/analytics-paths";
+import {
+  appendAnalyticsEvent,
+  appendAnalyticsEvents,
+  readAnalyticsEvents,
+} from "@/lib/analytics-store";
 
-export type AnalyticsEvent = {
-  id: string;
-  sessionId: string;
-  type:
-    | "pageview"
-    | "scroll"
-    | "section_view"
-    | "click"
-    | "exit"
-    | "heatmap_dwell"
-    | "page_meta"
-    | "scroll_band"
-    | "blog_like"
-    | "blog_share";
-  path: string;
-  timestamp: string;
-  metadata?: Record<string, string | number>;
-};
+export type { AnalyticsEvent, AnalyticsSummary } from "@/lib/analytics-types";
+import type { AnalyticsEvent, AnalyticsSummary } from "@/lib/analytics-types";
 
-export type AnalyticsSummary = {
-  filterPath: string | null;
-  filterPeriod: AnalyticsPeriod;
-  filterPeriodLabel: string;
-  paths: string[];
-  totalPageviews: number;
-  uniqueSessions: number;
-  totalDwellMs: number;
-  avgDwellPerSession: number;
-  topPages: { path: string; views: number }[];
-  topSections: { section: string; views: number }[];
-  scrollDepth: { depth: string; count: number }[];
-  exitPages: { path: string; count: number }[];
-  hourlyActivity: { hour: string; count: number }[];
-  eventTypes: { type: string; count: number }[];
-  feedback: {
-    total: number;
-    averageScore: number;
-    byBucket: { bucket: string; count: number }[];
-    byQuality: { quality: string; label: string; count: number }[];
-    byImprovementArea: { area: string; label: string; count: number }[];
-    byContentType: { contentType: string; count: number }[];
-    byPage: { path: string; count: number; averageScore: number; contentType: string }[];
-    otherComments: { path: string; comment: string; timestamp: string }[];
-    /** @deprecated Use byPage and byImprovementArea */
-    byCaseStudy: { path: string; count: number; averageScore: number }[];
-    /** @deprecated Use byImprovementArea and otherComments */
-    topReasons: { reason: string; count: number }[];
-  };
-  dailyPageviews: { date: string; count: number }[];
-  recentEvents: AnalyticsEvent[];
-};
-
-const DATA_DIR = process.env.VERCEL
-  ? path.join("/tmp", "portfolio-data")
-  : path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "analytics.json");
-
-function ensureDataFile() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-  if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify([]));
-  }
+export async function readEventsAsync(): Promise<AnalyticsEvent[]> {
+  return readAnalyticsEvents();
 }
 
-export function readEvents(): AnalyticsEvent[] {
-  ensureDataFile();
-  try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
-  } catch {
-    return [];
-  }
+export async function writeEventAsync(event: AnalyticsEvent): Promise<void> {
+  await appendAnalyticsEvent(event);
 }
 
-export function writeEvent(event: AnalyticsEvent) {
-  const events = readEvents();
-  events.push(event);
-  const trimmed = events.slice(-20000);
-  fs.writeFileSync(DATA_FILE, JSON.stringify(trimmed, null, 2));
-}
-
-export function writeEvents(batch: AnalyticsEvent[]) {
-  if (batch.length === 0) return;
-  const events = readEvents();
-  events.push(...batch);
-  const trimmed = events.slice(-20000);
-  fs.writeFileSync(DATA_FILE, JSON.stringify(trimmed, null, 2));
+export async function writeEventsAsync(batch: AnalyticsEvent[]): Promise<void> {
+  await appendAnalyticsEvents(batch);
 }
 
 function filterEvents(
@@ -119,16 +47,16 @@ function filterEvents(
   return filtered;
 }
 
-export function getAnalyticsSummary(
+export function buildAnalyticsSummary(
+  allEvents: AnalyticsEvent[],
   filterPath?: string | null,
   filterPeriod: AnalyticsPeriod = "all",
 ): AnalyticsSummary {
-  const allEvents = readEvents();
   const events = filterEvents(allEvents, filterPath, filterPeriod);
   const periodEvents = filterEvents(allEvents, null, filterPeriod);
   const pageviews = events.filter((e) => e.type === "pageview");
   const sessions = new Set(events.map((e) => e.sessionId));
-  const totalDwellMs = getTotalDwellMs(filterPath, filterPeriod);
+  const totalDwellMs = getTotalDwellMs(allEvents, filterPath, filterPeriod);
 
   const pageCounts = new Map<string, number>();
   (filterPath ? pageviews : periodEvents.filter((e) => e.type === "pageview")).forEach((e) => {
@@ -287,7 +215,7 @@ export function getAnalyticsSummary(
     filterPath: filterPath ?? null,
     filterPeriod,
     filterPeriodLabel: getPeriodLabel(filterPeriod),
-    paths: getHeatmapPagePaths(),
+    paths: getHeatmapPagePaths(allEvents),
     totalPageviews: pageviews.length,
     uniqueSessions: sessions.size,
     totalDwellMs,
@@ -307,8 +235,8 @@ export function getAnalyticsSummary(
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
       .map(([pathKey, count]) => ({ path: pathKey, count })),
-    hourlyActivity: getHourlyActivity(filterPath, filterPeriod),
-    eventTypes: getEventTypeBreakdown(filterPath, filterPeriod),
+    hourlyActivity: getHourlyActivity(allEvents, filterPath, filterPeriod),
+    eventTypes: getEventTypeBreakdown(allEvents, filterPath, filterPeriod),
     feedback: {
       total: feedbackEvents.length,
       averageScore: scoreCount > 0 ? Math.round((scoreSum / scoreCount) * 10) / 10 : 0,
@@ -333,4 +261,12 @@ export function getAnalyticsSummary(
     dailyPageviews,
     recentEvents: events.slice(-30).reverse(),
   };
+}
+
+export async function getAnalyticsSummary(
+  filterPath?: string | null,
+  filterPeriod: AnalyticsPeriod = "all",
+): Promise<AnalyticsSummary> {
+  const allEvents = await readAnalyticsEvents();
+  return buildAnalyticsSummary(allEvents, filterPath, filterPeriod);
 }

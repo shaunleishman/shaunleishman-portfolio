@@ -1,4 +1,4 @@
-import { readEvents, type AnalyticsEvent } from "@/lib/analytics";
+import type { AnalyticsEvent } from "@/lib/analytics-types";
 import { type AnalyticsPeriod, eventInPeriod } from "@/lib/analytics-period";
 import {
   HEATMAP_CELL_SIZE,
@@ -21,9 +21,9 @@ export {
   type PageHeatmapData,
 } from "@/lib/analytics-heatmap-types";
 
-export function getHeatmapPagePaths(): string[] {
+export function getHeatmapPagePaths(events: AnalyticsEvent[]): string[] {
   const paths = new Set<string>();
-  readEvents().forEach((event) => {
+  events.forEach((event) => {
     if (event.type === "pageview" || event.type === "heatmap_dwell" || event.type === "section_view") {
       paths.add(event.path);
     }
@@ -42,8 +42,12 @@ function filterEvents(events: AnalyticsEvent[], path?: string | null, period: An
   return filtered;
 }
 
-export function getPageHeatmapData(path: string, period: AnalyticsPeriod = "all"): PageHeatmapData {
-  const events = filterEvents(readEvents(), path, period);
+export function getPageHeatmapData(
+  events: AnalyticsEvent[],
+  path: string,
+  period: AnalyticsPeriod = "all",
+): PageHeatmapData {
+  const filtered = filterEvents(events, path, period);
 
   const dwellMap = new Map<string, number>();
   const sessions = new Set<string>();
@@ -53,7 +57,7 @@ export function getPageHeatmapData(path: string, period: AnalyticsPeriod = "all"
   let maxCellX = 0;
   let maxCellY = 0;
 
-  events.forEach((event) => {
+  filtered.forEach((event) => {
     if (event.type === "page_meta") {
       const w = Number(event.metadata?.pageWidth);
       const h = Number(event.metadata?.pageHeight);
@@ -62,7 +66,7 @@ export function getPageHeatmapData(path: string, period: AnalyticsPeriod = "all"
     }
   });
 
-  events
+  filtered
     .filter((event) => event.type === "heatmap_dwell")
     .forEach((event) => {
       sessions.add(event.sessionId);
@@ -90,7 +94,7 @@ export function getPageHeatmapData(path: string, period: AnalyticsPeriod = "all"
   }
 
   const bandCounts = new Map<number, number>();
-  events
+  filtered
     .filter((event) => event.type === "scroll_band")
     .forEach((event) => {
       const band = Number(event.metadata?.band);
@@ -99,7 +103,7 @@ export function getPageHeatmapData(path: string, period: AnalyticsPeriod = "all"
     });
 
   const sectionCounts = new Map<string, number>();
-  events
+  filtered
     .filter((event) => event.type === "section_view")
     .forEach((event) => {
       const section = String(event.metadata?.section ?? "unknown");
@@ -139,13 +143,14 @@ export function getPageHeatmapData(path: string, period: AnalyticsPeriod = "all"
 }
 
 export function getHourlyActivity(
+  events: AnalyticsEvent[],
   path?: string | null,
   period: AnalyticsPeriod = "all",
 ): HourlyActivity[] {
-  const events = filterEvents(readEvents(), path, period);
+  const filtered = filterEvents(events, path, period);
   const counts = new Map<string, number>();
 
-  events.forEach((event) => {
+  filtered.forEach((event) => {
     const hour = event.timestamp.slice(0, 13);
     counts.set(hour, (counts.get(hour) ?? 0) + 1);
   });
@@ -157,13 +162,14 @@ export function getHourlyActivity(
 }
 
 export function getEventTypeBreakdown(
+  events: AnalyticsEvent[],
   path?: string | null,
   period: AnalyticsPeriod = "all",
 ): EventTypeBreakdown[] {
-  const events = filterEvents(readEvents(), path, period);
+  const filtered = filterEvents(events, path, period);
   const counts = new Map<string, number>();
 
-  events.forEach((event) => {
+  filtered.forEach((event) => {
     counts.set(event.type, (counts.get(event.type) ?? 0) + 1);
   });
 
@@ -172,8 +178,12 @@ export function getEventTypeBreakdown(
     .map(([type, count]) => ({ type, count }));
 }
 
-export function getTotalDwellMs(path?: string | null, period: AnalyticsPeriod = "all"): number {
-  return filterEvents(readEvents(), path, period)
+export function getTotalDwellMs(
+  events: AnalyticsEvent[],
+  path?: string | null,
+  period: AnalyticsPeriod = "all",
+): number {
+  return filterEvents(events, path, period)
     .filter((event) => event.type === "heatmap_dwell")
     .reduce((sum, event) => sum + Number(event.metadata?.dwellMs ?? 0), 0);
 }

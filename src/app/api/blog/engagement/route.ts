@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { writeEvent } from "@/lib/analytics";
+import { writeEventAsync } from "@/lib/analytics";
 import {
   getBlogEngagementForSlugAsync,
   getBlogEngagementMapAsync,
@@ -17,7 +17,7 @@ function isValidAction(value: unknown): value is BlogEngagementAction {
   return value === "view" || value === "like" || value === "share";
 }
 
-function mirrorToAnalytics(
+async function mirrorToAnalytics(
   blogPath: string,
   action: BlogEngagementAction,
   sessionId: string,
@@ -25,7 +25,7 @@ function mirrorToAnalytics(
 ) {
   try {
     const type = action === "like" ? "blog_like" : action === "share" ? "blog_share" : "pageview";
-    writeEvent({
+    await writeEventAsync({
       id: crypto.randomUUID(),
       sessionId,
       type,
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     const blogPath = blogPostPath(slug);
     const { record, changed } = await incrementBlogEngagement(blogPath, action, sessionId);
     if (changed) {
-      mirrorToAnalytics(blogPath, action, sessionId, slug);
+      await mirrorToAnalytics(blogPath, action, sessionId, slug);
     }
 
     const stats = await getBlogEngagementForSlugAsync(slug);
