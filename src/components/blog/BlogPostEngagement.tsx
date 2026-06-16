@@ -13,6 +13,7 @@ import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
 import {
   blogPostPath,
   formatEngagementCount,
+  mergeBlogEngagementStats,
   type BlogEngagementStats,
 } from "@/lib/blog-engagement-shared";
 import {
@@ -64,7 +65,7 @@ export function BlogPostEngagement({
   initialStats,
   children,
 }: BlogPostEngagementProps) {
-  const { stats, setStats, refreshStats } = useBlogEngagementStats(slug, initialStats);
+  const { stats, setStats } = useBlogEngagementStats(slug, initialStats);
   const [liked, setLiked] = useState(false);
   const [liking, setLiking] = useState(false);
 
@@ -73,10 +74,12 @@ export function BlogPostEngagement({
   }, [slug]);
 
   useEffect(() => {
-    void recordBlogArticleView(slug).then((stats) => {
-      if (stats) setStats(stats);
+    void recordBlogArticleView(slug).then((nextStats) => {
+      if (nextStats) {
+        setStats((current) => mergeBlogEngagementStats(current, nextStats));
+      }
     });
-  }, [slug]);
+  }, [slug, setStats]);
 
   const linkedInHref = useMemo(
     () => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
@@ -87,34 +90,36 @@ export function BlogPostEngagement({
     if (liked || liking) return;
 
     setLiking(true);
+    setStats((current) => ({ ...current, likes: current.likes + 1 }));
+
     const result = await trackBlogEngagement("blog_like", blogPostPath(slug), { slug });
     if (result.ok) {
       markBlogPostLiked(slug);
       setLiked(true);
       if (result.stats) {
-        setStats(result.stats);
-      } else {
-        setStats((current) => ({ ...current, likes: current.likes + 1 }));
+        setStats((current) => mergeBlogEngagementStats(current, result.stats!));
       }
-      await refreshStats();
+    } else {
+      setStats((current) => ({ ...current, likes: Math.max(0, current.likes - 1) }));
     }
     setLiking(false);
-  }, [liked, liking, refreshStats, slug]);
+  }, [liked, liking, setStats, slug]);
 
   const handleShare = useCallback(async () => {
+    setStats((current) => ({ ...current, shares: current.shares + 1 }));
+
     const result = await trackBlogEngagement("blog_share", blogPostPath(slug), {
       slug,
       channel: "linkedin",
     });
     if (result.ok) {
       if (result.stats) {
-        setStats(result.stats);
-      } else {
-        setStats((current) => ({ ...current, shares: current.shares + 1 }));
+        setStats((current) => mergeBlogEngagementStats(current, result.stats!));
       }
-      await refreshStats();
+    } else {
+      setStats((current) => ({ ...current, shares: Math.max(0, current.shares - 1) }));
     }
-  }, [refreshStats, slug]);
+  }, [setStats, slug]);
 
   const value = useMemo(
     () => ({

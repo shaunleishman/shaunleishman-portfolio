@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
+import { MetricsTrackingExclusionWarmup } from "@/components/analytics/MetricsTrackingExclusionWarmup";
 import { CookieConsent } from "@/components/consent/CookieConsent";
 import { ConsentProvider } from "@/components/consent/ConsentProvider";
 import { LazyMetricsHeatmapOverlay } from "@/components/metrics/LazyMetricsHeatmapOverlay";
@@ -40,6 +41,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <ConsentProvider>
+          <MetricsTrackingExclusionWarmup />
           <Suspense fallback={null}>
             <AnalyticsProvider>{children}</AnalyticsProvider>
             <LazyMetricsHeatmapOverlay />

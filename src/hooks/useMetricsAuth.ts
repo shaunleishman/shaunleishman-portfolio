@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { invalidateMetricsTrackingExclusionCache } from "@/lib/metrics-tracking-exclusion-client";
 
 export function useMetricsAuth() {
   const [password, setPassword] = useState("");
@@ -61,6 +62,7 @@ export function useMetricsAuth() {
       setAuthenticated(true);
       setError("");
       setLoading(false);
+      invalidateMetricsTrackingExclusionCache();
       return true;
     },
     [password],
@@ -69,6 +71,7 @@ export function useMetricsAuth() {
   const logout = useCallback(async () => {
     await fetch("/api/metrics/auth", { method: "DELETE", credentials: "include" });
     setAuthenticated(false);
+    invalidateMetricsTrackingExclusionCache();
   }, []);
 
   return {

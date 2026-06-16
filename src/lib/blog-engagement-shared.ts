@@ -37,3 +37,16 @@ export function formatEngagementCount(count: number): string {
   }
   return String(count);
 }
+
+/** Keep the higher count per metric so in-flight fetches cannot roll back a like/share. */
+export function mergeBlogEngagementStats(
+  current: BlogEngagementStats,
+  incoming: BlogEngagementStats,
+): BlogEngagementStats {
+  return {
+    slug: current.slug,
+    views: Math.max(current.views, incoming.views),
+    likes: Math.max(current.likes, incoming.likes),
+    shares: Math.max(current.shares, incoming.shares),
+  };
+}

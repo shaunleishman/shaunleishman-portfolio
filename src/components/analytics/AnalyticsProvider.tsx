@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useConsent } from "@/components/consent/ConsentProvider";
 import { useHeatmapOverlayActive } from "@/hooks/useHeatmapOverlayActive";
+import { useMetricsTrackingExcluded } from "@/hooks/useMetricsTrackingExcluded";
 import {
   HEATMAP_CELL_SIZE,
   METRICS_PREVIEW_PARAM,
@@ -80,7 +81,13 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const { ready: consentReady, analytics: analyticsAllowed } = useConsent();
   const isPreview = searchParams.get(METRICS_PREVIEW_PARAM) === "1";
   const isHeatmapOverlay = useHeatmapOverlayActive();
-  const skipTracking = !consentReady || !analyticsAllowed || isPreview || isHeatmapOverlay;
+  const metricsOwnerExcluded = useMetricsTrackingExcluded();
+  const skipTracking =
+    !consentReady ||
+    !analyticsAllowed ||
+    isPreview ||
+    isHeatmapOverlay ||
+    metricsOwnerExcluded !== false;
 
   const scrollTracked = useRef(new Set<number>());
   const scrollBandsTracked = useRef(new Set<number>());

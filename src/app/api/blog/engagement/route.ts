@@ -10,6 +10,7 @@ import {
   incrementBlogEngagement,
   type BlogEngagementAction,
 } from "@/lib/blog-engagement-store";
+import { isMetricsOwnerRequest } from "@/lib/metrics-tracking-exclusion";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,11 @@ export async function POST(request: NextRequest) {
 
     if (!slug || !isValidAction(action) || !sessionId) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+
+    if (isMetricsOwnerRequest(request)) {
+      const stats = await getBlogEngagementForSlugAsync(slug);
+      return NextResponse.json({ ok: true, skipped: true, reason: "metrics_owner", stats, changed: false });
     }
 
     const blogPath = blogPostPath(slug);

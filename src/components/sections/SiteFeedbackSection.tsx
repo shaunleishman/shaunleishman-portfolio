@@ -5,7 +5,7 @@ import { useCallback, useId, useState } from "react";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FeedbackSubmittedNotice } from "@/components/ui/FeedbackSubmittedNotice";
 import { FeedbackProximityPopover } from "@/components/feedback/FeedbackProximityPopover";
-import { isAnalyticsAllowed } from "@/lib/consent";
+import { isPassiveAnalyticsAllowed } from "@/lib/analytics-client";
 import { cn } from "@/lib/utils";
 
 const SCORE_LABELS: Record<number, string> = {
@@ -80,7 +80,7 @@ function SiteFeedbackForm() {
 
     setSubmitting(true);
 
-    if (!isAnalyticsAllowed()) {
+    if (!isPassiveAnalyticsAllowed()) {
       setSubmitted(true);
       setSubmitting(false);
       return;

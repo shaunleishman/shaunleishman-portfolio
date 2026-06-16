@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { BlogEngagementStats } from "@/lib/blog-engagement-shared";
+import {
+  mergeBlogEngagementStats,
+  type BlogEngagementStats,
+} from "@/lib/blog-engagement-shared";
 import { fetchBlogEngagementStats } from "@/lib/blog-engagement-client";
 
 const REFRESH_INTERVAL_MS = 20_000;
@@ -15,7 +18,9 @@ export function useBlogEngagementStats(slug: string, initialStats: BlogEngagemen
 
   const refreshStats = useCallback(async () => {
     const next = await fetchBlogEngagementStats(slug);
-    if (next) setStats(next);
+    if (next) {
+      setStats((current) => mergeBlogEngagementStats(current, next));
+    }
   }, [slug]);
 
   useEffect(() => {

@@ -2,7 +2,11 @@
 
 import { useMemo } from "react";
 import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
-import { blogPostPath, formatEngagementCount } from "@/lib/blog-engagement-shared";
+import {
+  blogPostPath,
+  formatEngagementCount,
+  mergeBlogEngagementStats,
+} from "@/lib/blog-engagement-shared";
 import { trackBlogEngagement } from "@/lib/analytics-client";
 import { useBlogEngagementStats } from "@/hooks/useBlogEngagementStats";
 import { cn } from "@/lib/utils";
@@ -22,7 +26,7 @@ export function LinkedInShare({
   initialShareCount = 0,
   className,
 }: LinkedInShareProps) {
-  const { stats, refreshStats } = useBlogEngagementStats(slug, {
+  const { stats, setStats } = useBlogEngagementStats(slug, {
     slug,
     views: 0,
     likes: 0,
@@ -35,12 +39,18 @@ export function LinkedInShare({
   );
 
   async function handleShare() {
+    setStats((current) => ({ ...current, shares: current.shares + 1 }));
+
     const result = await trackBlogEngagement("blog_share", blogPostPath(slug), {
       slug,
       channel: "linkedin",
     });
     if (result.ok) {
-      await refreshStats();
+      if (result.stats) {
+        setStats((current) => mergeBlogEngagementStats(current, result.stats!));
+      }
+    } else {
+      setStats((current) => ({ ...current, shares: Math.max(0, current.shares - 1) }));
     }
   }
 

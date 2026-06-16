@@ -9,6 +9,10 @@ export function getAnalyticsSessionId(): string {
 }
 
 import { isAnalyticsAllowed } from "@/lib/consent";
+import {
+  getCachedMetricsTrackingExcluded,
+  isMetricsTrackingExcluded,
+} from "@/lib/metrics-tracking-exclusion-client";
 import type { BlogEngagementStats } from "@/lib/blog-engagement-shared";
 
 export async function trackAnalyticsEvent(
@@ -25,6 +29,8 @@ export async function trackBlogEngagement(
   path: string,
   metadata?: Record<string, string | number>,
 ): Promise<{ ok: boolean; stats?: BlogEngagementStats }> {
+  if (await isMetricsTrackingExcluded()) return { ok: false };
+
   const sessionId = getAnalyticsSessionId();
   if (!sessionId) return { ok: false };
 
@@ -60,6 +66,7 @@ export async function trackBlogEngagement(
 
 export async function recordBlogArticleView(slug: string): Promise<BlogEngagementStats | null> {
   if (typeof window === "undefined") return null;
+  if (await isMetricsTrackingExcluded()) return null;
   if (sessionStorage.getItem(`blog_view_${slug}`) === "1") return null;
 
   const sessionId = getAnalyticsSessionId();
@@ -84,7 +91,7 @@ export async function recordBlogArticleView(slug: string): Promise<BlogEngagemen
 }
 
 export function isPassiveAnalyticsAllowed(): boolean {
-  return isAnalyticsAllowed();
+  return isAnalyticsAllowed() && !getCachedMetricsTrackingExcluded();
 }
 
 export function hasLikedBlogPost(slug: string): boolean {

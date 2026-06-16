@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeEventAsync, writeEventsAsync, getAnalyticsSummary, readEventsAsync } from "@/lib/analytics";
 import { METRICS_COOKIE_NAME } from "@/lib/metrics-config";
 import { verifyMetricsPassword, verifyMetricsSessionToken } from "@/lib/metrics-auth";
+import { isMetricsOwnerRequest } from "@/lib/metrics-tracking-exclusion";
 import crypto from "crypto";
 
 const VALID_TYPES = [
@@ -38,6 +39,10 @@ function normalizeEvent(raw: Record<string, unknown>) {
 
 export async function POST(request: NextRequest) {
   try {
+    if (isMetricsOwnerRequest(request)) {
+      return NextResponse.json({ ok: true, skipped: true, reason: "metrics_owner" });
+    }
+
     const body = await request.json();
 
     if (Array.isArray(body.events)) {

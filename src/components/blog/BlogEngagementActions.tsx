@@ -5,6 +5,7 @@ import { Heart } from "lucide-react";
 import {
   blogPostPath,
   formatEngagementCount,
+  mergeBlogEngagementStats,
   type BlogEngagementStats,
 } from "@/lib/blog-engagement-shared";
 import {
@@ -26,7 +27,7 @@ export function BlogEngagementActions({
   initialStats,
   className,
 }: BlogEngagementActionsProps) {
-  const { stats, refreshStats } = useBlogEngagementStats(slug, initialStats);
+  const { stats, setStats } = useBlogEngagementStats(slug, initialStats);
   const [liked, setLiked] = useState(false);
   const [liking, setLiking] = useState(false);
 
@@ -38,11 +39,17 @@ export function BlogEngagementActions({
     if (liked || liking) return;
 
     setLiking(true);
+    setStats((current) => ({ ...current, likes: current.likes + 1 }));
+
     const result = await trackBlogEngagement("blog_like", blogPostPath(slug), { slug });
     if (result.ok) {
       markBlogPostLiked(slug);
       setLiked(true);
-      await refreshStats();
+      if (result.stats) {
+        setStats((current) => mergeBlogEngagementStats(current, result.stats!));
+      }
+    } else {
+      setStats((current) => ({ ...current, likes: Math.max(0, current.likes - 1) }));
     }
     setLiking(false);
   }

@@ -9,7 +9,7 @@ import {
   isOtherImprovement,
   type FeedbackVariant,
 } from "@/lib/feedback-config";
-import { isAnalyticsAllowed } from "@/lib/consent";
+import { isPassiveAnalyticsAllowed } from "@/lib/analytics-client";
 import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FeedbackSubmittedNotice } from "@/components/ui/FeedbackSubmittedNotice";
@@ -79,7 +79,7 @@ export function CaseStudyFeedback({
           ? `Other: ${trimmedOther}`
           : improvementLabel ?? null;
 
-      if (!isAnalyticsAllowed()) {
+      if (!isPassiveAnalyticsAllowed()) {
         setSubmitted(true);
         setSubmitting(false);
         setStep("done");

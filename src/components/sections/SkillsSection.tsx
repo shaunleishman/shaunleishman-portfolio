@@ -34,15 +34,15 @@ export function SkillsSection() {
             return (
               <li key={skill.title}>
                 <Reveal delay={index * 50}>
-                  <div className="grid gap-4 py-8 md:grid-cols-[auto_1fr] lg:grid-cols-[auto_200px_1fr_1fr] lg:gap-8 items-start">
-                    <div className="flex gap-4 items-start md:contents">
+                  <div className="flex flex-col gap-4 py-8 xl:grid xl:grid-cols-[auto_11rem_minmax(0,1fr)_minmax(0,auto)] xl:items-start xl:gap-x-8 xl:gap-y-0">
+                    <div className="flex items-start gap-4 xl:contents">
                       {Icon && <IconBadge icon={Icon} size="lg" variant="light" className="shrink-0" />}
-                      <h3 className="text-h4 font-semibold flex-1 md:col-start-2">{skill.title}</h3>
+                      <h3 className="text-h4 min-w-0 flex-1 font-semibold xl:flex-none">{skill.title}</h3>
                     </div>
-                    <p className="text-body text-[var(--color-text-secondary)] md:col-start-2 lg:col-start-3">
+                    <p className="text-body text-[var(--color-text-secondary)] xl:col-start-3 xl:row-start-1">
                       {skill.description}
                     </p>
-                    <ul className="m-0 flex list-none flex-wrap items-center gap-2 p-0 lg:col-start-4 lg:justify-end">
+                    <ul className="m-0 flex list-none flex-wrap items-center gap-2 p-0 xl:col-start-4 xl:row-start-1 xl:justify-end">
                       {skill.items.map((item) => (
                         <li
                           key={item}

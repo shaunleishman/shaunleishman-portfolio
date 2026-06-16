@@ -14,6 +14,31 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+function MobileMenuIcon({ open }: { open: boolean }) {
+  return (
+    <span className="relative flex h-6 w-6 flex-col items-center justify-center" aria-hidden="true">
+      <span
+        className={cn(
+          "absolute block h-0.5 w-6 rounded-full bg-current motion-safe:transition-all motion-safe:duration-300",
+          open ? "translate-y-0 rotate-45" : "-translate-y-2",
+        )}
+      />
+      <span
+        className={cn(
+          "absolute block h-0.5 w-6 rounded-full bg-current motion-safe:transition-all motion-safe:duration-300",
+          open ? "scale-x-0 opacity-0" : "scale-x-100 opacity-100",
+        )}
+      />
+      <span
+        className={cn(
+          "absolute block h-0.5 w-6 rounded-full bg-current motion-safe:transition-all motion-safe:duration-300",
+          open ? "translate-y-0 -rotate-45" : "translate-y-2",
+        )}
+      />
+    </span>
+  );
+}
+
 export function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -36,6 +61,15 @@ export function Header() {
       document.body.style.overflow = "";
     };
   }, [menuOpen]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <header
@@ -96,56 +130,74 @@ export function Header() {
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => setMenuOpen((open) => !open)}
         >
           <span className="sr-only">{menuOpen ? "Close" : "Menu"}</span>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden="true"
-          >
-            {menuOpen ? (
-              <path d="M6 6l12 12M18 6L6 18" />
-            ) : (
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            )}
-          </svg>
+          <MobileMenuIcon open={menuOpen} />
         </button>
       </div>
 
-      {menuOpen && (
+      <div className="lg:hidden" aria-hidden={!menuOpen}>
+        <button
+          type="button"
+          tabIndex={menuOpen ? 0 : -1}
+          aria-label="Close menu"
+          className={cn(
+            "fixed inset-0 top-16 z-40 bg-black/50 motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out",
+            menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
+          )}
+          onClick={() => setMenuOpen(false)}
+        />
+
         <nav
           id="mobile-menu"
           aria-label="Mobile navigation"
+          inert={menuOpen ? undefined : true}
           className={cn(
-            "lg:hidden border-t",
-            isDarkHero ? "border-white/10 bg-[var(--color-bg-dark)]" : "border-[var(--color-border)] bg-white",
+            "fixed inset-x-0 top-16 z-50 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b shadow-lg motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
+            menuOpen
+              ? "pointer-events-auto translate-y-0 opacity-100"
+              : "pointer-events-none -translate-y-2 opacity-0",
+            isDarkHero
+              ? "border-white/10 bg-[var(--color-bg-dark)]/95 backdrop-blur-md"
+              : "border-[var(--color-border)] bg-white/95 backdrop-blur-md",
           )}
         >
           <ul className="container-site flex flex-col py-4">
-            {navLinks.map((link) => (
-              <li key={link.href}>
+            {navLinks.map((link, index) => (
+              <li
+                key={link.href}
+                className={cn(
+                  "motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
+                  menuOpen ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0",
+                )}
+                style={menuOpen ? { transitionDelay: `${80 + index * 40}ms` } : undefined}
+              >
                 <Link
                   href={link.href}
+                  tabIndex={menuOpen ? 0 : -1}
                   className="block py-3 text-body font-medium min-h-[44px]"
                   aria-current={pathname === link.href ? "page" : undefined}
+                  onClick={() => setMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               </li>
             ))}
-            <li className="pt-2">
+            <li
+              className={cn(
+                "pt-2 motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
+                menuOpen ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0",
+              )}
+              style={menuOpen ? { transitionDelay: `${80 + navLinks.length * 40}ms` } : undefined}
+            >
               <Button href="/contact" variant={isDarkHero ? "inverse" : "primary"}>
                 Let&apos;s talk
               </Button>
             </li>
           </ul>
         </nav>
-      )}
+      </div>
     </header>
   );
 }

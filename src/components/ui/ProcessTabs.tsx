@@ -30,7 +30,7 @@ export function ProcessTabs() {
               aria-controls={`process-panel-${index}`}
               tabIndex={isSelected ? 0 : -1}
               className={cn(
-                "flex gap-4 py-6 text-left transition-colors duration-200 min-h-[44px]",
+                "flex cursor-pointer gap-4 py-6 text-left transition-colors duration-200 min-h-[44px]",
                 isSelected
                   ? "text-[var(--color-text-primary)]"
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]",
