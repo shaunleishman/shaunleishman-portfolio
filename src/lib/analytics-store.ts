@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { head, put } from "@vercel/blob";
 import type { AnalyticsEvent } from "@/lib/analytics-types";
+import { hasBlobStorage, readJsonFromBlob, writeJsonToBlob } from "@/lib/blob-storage";
 
 const BLOB_PATHNAME = "analytics-events.json";
 
@@ -65,32 +65,16 @@ function writeStoreToLocalSync(events: AnalyticsEvent[]) {
 }
 
 async function readStoreFromBlob(): Promise<AnalyticsEvent[] | null> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return null;
+  if (!hasBlobStorage()) return null;
 
-  try {
-    const meta = await head(BLOB_PATHNAME);
-    const response = await fetch(meta.url, { cache: "no-store" });
-    if (!response.ok) return null;
-    return normalizeEvents(await response.json());
-  } catch {
-    return null;
-  }
+  const raw = await readJsonFromBlob(BLOB_PATHNAME);
+  if (raw === null) return null;
+  return normalizeEvents(raw);
 }
 
 async function writeStoreToBlob(events: AnalyticsEvent[]): Promise<boolean> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return false;
-
-  try {
-    await put(BLOB_PATHNAME, JSON.stringify(trimEvents(events)), {
-      access: "private",
-      addRandomSuffix: false,
-      allowOverwrite: true,
-      contentType: "application/json",
-    });
-    return true;
-  } catch {
-    return false;
-  }
+  if (!hasBlobStorage()) return false;
+  return writeJsonToBlob(BLOB_PATHNAME, trimEvents(events));
 }
 
 async function mergeLegacyLocalEvents(events: AnalyticsEvent[]): Promise<AnalyticsEvent[]> {
