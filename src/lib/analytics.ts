@@ -32,6 +32,13 @@ export async function writeEventsAsync(batch: AnalyticsEvent[]): Promise<void> {
   await appendAnalyticsEvents(batch);
 }
 
+/** @deprecated Use readEventsAsync */
+export const readEvents = readEventsAsync;
+/** @deprecated Use writeEventAsync */
+export const writeEvent = writeEventAsync;
+/** @deprecated Use writeEventsAsync */
+export const writeEvents = writeEventsAsync;
+
 function filterEvents(
   events: AnalyticsEvent[],
   filterPath?: string | null,
