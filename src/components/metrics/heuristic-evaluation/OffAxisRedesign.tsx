@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   Accessibility,
   ArrowLeft,
@@ -16,6 +16,7 @@ import {
   Globe,
   Mail,
   MapPin,
+  Menu,
   Minus,
   Music,
   Plus,
@@ -28,6 +29,7 @@ import {
   Trash2,
   User,
   Users,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { offAxisRedesignCallouts } from "@/content/heuristic-evaluations/off-axis-tours";
@@ -620,6 +622,8 @@ export function OffAxisRedesign() {
   const [view, setView] = useState<View>("home");
   const [loggedIn, setLoggedIn] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const mobileNavId = useId();
 
   const [activeArtist, setActiveArtist] = useState<Artist>(ARTISTS[0]);
   const [activeGig, setActiveGig] = useState<Gig>(GIGS[0]);
@@ -644,8 +648,18 @@ export function OffAxisRedesign() {
   const rootRef = useRef<HTMLDivElement>(null);
   const undoTimerRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileNavOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileNavOpen]);
+
   const changeView = (next: View) => {
     setAccountMenuOpen(false);
+    setMobileNavOpen(false);
     setView(next);
     requestAnimationFrame(() => {
       let el = rootRef.current?.parentElement ?? null;
@@ -778,7 +792,8 @@ export function OffAxisRedesign() {
           <button type="button" onClick={() => changeView("home")} className="shrink-0 cursor-pointer text-sm font-bold tracking-[0.15em] transition-opacity hover:opacity-80 sm:tracking-[0.2em]" style={{ color: OA.text }}>
             OFF AXIS
           </button>
-          <nav className="flex min-w-0 flex-1 items-center gap-3 overflow-x-auto text-sm [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-5 [&::-webkit-scrollbar]:hidden">
+          {/* Desktop nav — inline links from the sm breakpoint up (unchanged for desktop) */}
+          <nav className="hidden min-w-0 flex-1 items-center gap-5 text-sm sm:flex">
             {navItems.map((item) => {
               const active = view === item.target;
               return (
@@ -891,8 +906,49 @@ export function OffAxisRedesign() {
                 </PrimaryButton>
               </RedesignCalloutRegion>
             )}
+
+            {/* Mobile menu trigger — replaces the cramped inline nav below sm */}
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen((open) => !open)}
+              aria-label="Menu"
+              aria-expanded={mobileNavOpen}
+              aria-controls={mobileNavId}
+              className="flex cursor-pointer items-center justify-center rounded-lg border p-2 transition-colors hover:bg-white/5 sm:hidden"
+              style={{ borderColor: OA.border, color: OA.secondary }}
+            >
+              {mobileNavOpen ? <X className="size-4" aria-hidden /> : <Menu className="size-4" aria-hidden />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile navigation panel — full-width sheet under the header (below sm only) */}
+        {mobileNavOpen ? (
+          <div className="sm:hidden">
+            <button type="button" aria-hidden tabIndex={-1} onClick={() => setMobileNavOpen(false)} className="fixed inset-0 z-40 cursor-default" />
+            <nav id={mobileNavId} aria-label="Primary" className={cn("absolute inset-x-0 top-full z-50 border-b shadow-xl", PAGE_GUTTER)} style={{ borderColor: OA.border, backgroundColor: OA.surface }}>
+              <ul className={cn(CONTENT, "flex flex-col gap-1 py-3")}>
+                {navItems.map((item) => {
+                  const active = view === item.target;
+                  return (
+                    <li key={item.target}>
+                      <button
+                        type="button"
+                        onClick={() => changeView(item.target)}
+                        aria-current={active ? "page" : undefined}
+                        className="flex min-h-[44px] w-full cursor-pointer items-center justify-between rounded-lg px-3 text-base font-medium transition-colors hover:bg-white/5"
+                        style={active ? { color: OA.text, backgroundColor: "rgba(168,85,247,0.18)" } : { color: OA.secondary }}
+                      >
+                        {item.label}
+                        {active ? <span className="size-1.5 rounded-full" style={{ backgroundImage: ACCENT_GRADIENT }} aria-hidden /> : null}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          </div>
+        ) : null}
       </header>
 
       {/* HOME */}
