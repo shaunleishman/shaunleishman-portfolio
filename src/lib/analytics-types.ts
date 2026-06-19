@@ -8,6 +8,7 @@ export type AnalyticsEvent = {
     | "click"
     | "exit"
     | "heatmap_dwell"
+    | "click_map"
     | "page_meta"
     | "scroll_band"
     | "blog_like"

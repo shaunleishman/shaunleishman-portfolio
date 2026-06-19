@@ -17,19 +17,26 @@ export const arbncoAtAGlance = {
   problem:
     "Users could not get hourly carbon data without enough meter readings. Generated data could help, but only if the UI made rules, status, and trust easy to see.",
   contribution:
-    "I led the UI/UX. We mapped the journey, built wireframes and a prototype, ran design reviews, and handed off to engineering. We turned product rules into flows, status patterns, and specs the squad could build.",
+    "I led the UI/UX: mapped the journey, built wireframes and a prototype, ran design reviews, and handed off flows, status patterns, and specs to engineering.",
   highlights: [
     "Eligibility visible before users turn data on",
     "One status pattern PM and engineering shared",
     "Journey map to implementation in 3–4 weeks",
   ],
-  methods: ["Service design", "Journey mapping", "UI design", "Prototyping", "Design reviews"],
+  methods: [
+    { label: "Service design", percent: 15 },
+    { label: "Journey mapping", percent: 15 },
+    { label: "UI design", percent: 30 },
+    { label: "Prototyping", percent: 25 },
+    { label: "Design reviews", percent: 15 },
+  ],
 };
 
 export const arbncoSectionNav = [
   { id: "at-a-glance", label: "Summary" },
   { id: "the-challenge", label: "Challenge" },
   { id: "my-role", label: "My role" },
+  { id: "timeline", label: "Timeline" },
   { id: "design", label: "Design" },
   { id: "refined-solution", label: "Solution" },
   { id: "limitations", label: "Limitations" },
@@ -54,10 +61,41 @@ export const arbncoTeamTogetherItems = [
 ];
 
 export const arbncoRoleItems = [
-  "We mapped where synthetic data fit in the journey, then focused on the project list and settings. That is where users decide if they trust the feature.",
-  "We updated graphs, tables, filters, and reports. We used plain labels instead of ML jargon because review feedback showed users needed reassurance.",
-  "We ran design reviews and wrote handoff specs for eligibility logic and status tags so engineering could use one pattern everywhere.",
+  "We mapped where synthetic data fit, then focused on the project list and settings, where users decide if they trust it.",
+  "We updated graphs, tables, filters, and reports, using plain labels over ML jargon to reassure users.",
+  "We ran design reviews and wrote handoff specs for eligibility logic and status tags, so engineering had one pattern.",
 ];
+
+export const arbncoProjectTimeline = {
+  totalWeeks: 4,
+  lead: "3 to 4 weeks from journey map to engineering handoff. I led design throughout.",
+  intro:
+    "A squad sprint with PM and engineering. I mapped the journey, designed the flows, and handed off specs, while the squad worked out what could ship.",
+  phases: [
+    {
+      label: "Discovery",
+      tasks: [
+        { label: "Journey mapping", startWeek: 1, endWeek: 1.65, involved: true, detail: "Mapped the energy team's end-to-end data journey." },
+        { label: "Squad alignment", startWeek: 1.4, endWeek: 1.9, involved: true, detail: "Aligned with PM and engineers on what could ship." },
+      ],
+    },
+    {
+      label: "Design",
+      tasks: [
+        { label: "Wireframes & UI", startWeek: 1.5, endWeek: 2.85, involved: true, detail: "Designed flows for eligibility and data status." },
+        { label: "Design reviews", startWeek: 2, endWeek: 3.15, involved: true, detail: "Reviewed designs with the squad for feasibility." },
+      ],
+    },
+    {
+      label: "Prototype & handoff",
+      tasks: [
+        { label: "High-fidelity prototype", startWeek: 2.75, endWeek: 3.5, involved: true, detail: "Built a clickable prototype for deeper exploration." },
+        { label: "Design review", startWeek: 3.42, endWeek: 3.49, involved: true, detail: "Walked the squad through the prototype." },
+        { label: "Engineering handoff", startWeek: 3.3, endWeek: 4, involved: true, detail: "Handed off flows, states, and specs to engineering." },
+      ],
+    },
+  ],
+} as const;
 
 /** Synthetic-data journey, aligned to the half-hourly prototype flow. */
 export const arbncoJourneyStages = [

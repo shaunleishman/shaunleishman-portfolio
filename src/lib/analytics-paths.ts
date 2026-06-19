@@ -1,13 +1,22 @@
+export function normalizeAnalyticsPath(path: string): string {
+  if (path.length > 1 && path.endsWith("/")) {
+    return path.slice(0, -1);
+  }
+  return path;
+}
+
 export function isProjectPath(path: string): boolean {
-  return path.startsWith("/work/") && path.length > "/work/".length;
+  const normalized = normalizeAnalyticsPath(path);
+  return normalized.startsWith("/work/") && normalized.length > "/work/".length;
 }
 
 export function isArticlePath(path: string): boolean {
-  return path.startsWith("/blog/") && path.length > "/blog/".length;
+  const normalized = normalizeAnalyticsPath(path);
+  return normalized.startsWith("/blog/") && normalized.length > "/blog/".length;
 }
 
 export function slugFromPath(path: string, prefix: "/work/" | "/blog/"): string {
-  return path.slice(prefix.length);
+  return normalizeAnalyticsPath(path).slice(prefix.length);
 }
 
 export function formatPathLabel(path: string): string {

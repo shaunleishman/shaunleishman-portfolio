@@ -1,11 +1,15 @@
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRightLeft,
+  BriefcaseBusiness,
   ClipboardCheck,
   Compass,
   FlaskConical,
   Handshake,
+  HeartPulse,
+  Landmark,
   Layers,
+  Leaf,
   Lightbulb,
   Microscope,
   Palette,
@@ -14,6 +18,7 @@ import {
   ScanSearch,
   Target,
   TrendingUp,
+  Wallet,
 } from "lucide-react";
 
 export const skillIcons: Record<string, LucideIcon> = {
@@ -38,3 +43,11 @@ export const valuePropIcons: LucideIcon[] = [
   TrendingUp,
   ArrowRightLeft,
 ];
+
+export const heroFocusIcons: Record<string, LucideIcon> = {
+  "Energy & sustainability": Leaf,
+  Healthcare: HeartPulse,
+  Government: Landmark,
+  Finance: Wallet,
+  "Mostly B2B products": BriefcaseBusiness,
+};

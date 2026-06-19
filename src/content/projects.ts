@@ -3,6 +3,12 @@ export type ProjectMetric = {
   label: string;
 };
 
+export type ProjectCardStats = {
+  team: string;
+  role: string;
+  industry: string;
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -15,6 +21,8 @@ export type Project = {
   approachWhy: string[];
   keyFindings: string[];
   metrics: ProjectMetric[];
+  /** Concise context on the home featured card */
+  cardStats: ProjectCardStats;
   /** Narrative highlights on the home featured card */
   cardHighlights: string[];
   nextSteps: string[];
@@ -63,6 +71,11 @@ export const projects: Project[] = [
       { value: "4", label: "Key usability findings addressed in the prototype" },
       { value: "100%", label: "Practitioner involvement through co-design workshops" },
     ],
+    cardStats: {
+      team: "Product team + clinicians",
+      role: "UX/UI designer",
+      industry: "Healthcare",
+    },
     cardHighlights: [
       "Ran co-design and built a safer medication assignment flow",
       "Usability testing led to mandatory handover reasons in the prototype",
@@ -122,6 +135,11 @@ export const projects: Project[] = [
       { value: "4 weeks", label: "From recruitment to final report delivery" },
       { value: "3", label: "Research methods triangulated for accuracy" },
     ],
+    cardStats: {
+      team: "NHS product team",
+      role: "Research lead",
+      industry: "Public sector",
+    },
     cardHighlights: [
       "Five personas gave the NHS team shared language for caller types",
       "Journey maps highlighted where reassurance and routing broke down",
@@ -181,6 +199,11 @@ export const projects: Project[] = [
       { value: "3–4 weeks", label: "From journey mapping to prototype handoff" },
       { value: "6+", label: "UI surfaces updated across the platform" },
     ],
+    cardStats: {
+      team: "3",
+      role: "Solo design lead",
+      industry: "Energy & sustainability",
+    },
     cardHighlights: [
       "Design lead on a team sprint. Journey map to implementation in 3–4 weeks.",
       "Made eligibility and active state visible across six platform surfaces.",
@@ -332,7 +355,15 @@ export const siteConfig = {
   logoDark: "/brand/logo-dark.png",
   domain: "shaunleishmanportfolio.com",
   siteUrl: "https://www.shaunleishmanportfolio.com",
-  tagline: "UX/UI designer helping teams build products users trust.",
+  tagline: "Helping Teams Design Products Users Trust",
+  heroHeadlineLines: ["Helping Teams", "Design Products", "Users Trust"],
+  heroFocusAreas: [
+    "Energy & sustainability",
+    "Healthcare",
+    "Government",
+    "Finance",
+    "Mostly B2B products",
+  ],
   quote:
     "It's one thing shaping experiences that improve lives, but to encourage better decision-making is where the true magic happens.",
   email: "postalshaun@outlook.com",

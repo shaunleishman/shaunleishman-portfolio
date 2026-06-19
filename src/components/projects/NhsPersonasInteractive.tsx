@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useId, useState, type ReactNode } from "react";
+import { useId, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   caseStudyContentFadeClass,
@@ -11,167 +11,18 @@ import {
   type NhsPersona,
   nhsPersonas,
 } from "@/content/nhs-personas";
-import { CHART_ACCENTS, ChoiceOutlinePill } from "@/components/projects/CaseStudyChartControls";
+import { ChoiceOutlinePill } from "@/components/projects/CaseStudyChartControls";
 import { NhsPersonaJourneyMap } from "@/components/projects/NhsPersonaJourneyMap";
 
-const KEY_TIME_LABELS = ["12am", "3am", "6am", "9am", "12pm", "3pm", "6pm", "9pm"] as const;
-/** Base mat — each persona is fit inside then scaled so figures read at similar size. */
-const ILLUSTRATION_FRAME_WIDTH = 280;
-const ILLUSTRATION_FRAME_HEIGHT = 210;
-
-function personaIllustrationRenderSize(persona: NhsPersona) {
-  const prominence = persona.illustrationScale ?? 1;
-  const fit = Math.min(
-    ILLUSTRATION_FRAME_WIDTH / persona.illustrationWidth,
-    ILLUSTRATION_FRAME_HEIGHT / persona.illustrationHeight,
-  );
-  const total = fit * prominence;
-
-  return {
-    width: Math.round(persona.illustrationWidth * total),
-    height: Math.round(persona.illustrationHeight * total),
-  };
-}
-
-const personaIllustrationLayout = (() => {
-  const sizes = nhsPersonas.map((persona) => ({
-    id: persona.id,
-    ...personaIllustrationRenderSize(persona),
-  }));
-
-  return {
-    width: Math.max(...sizes.map((size) => size.width)),
-    height: Math.max(...sizes.map((size) => size.height)),
-    byId: Object.fromEntries(sizes.map((size) => [size.id, size])),
-  };
-})();
-
-const PROFILE_TRIO_CARD_CLASS = "flex h-full flex-col lg:col-span-4 lg:min-h-[14rem]";
-const MOTION_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
-const MOTION_MS = 650;
+/** Native dimensions of the persona infographic screenshots. */
+const INFOGRAPHIC_WIDTH = 1024;
+const INFOGRAPHIC_HEIGHT = 614;
 
 type NhsPersonasInteractiveProps = {
   className?: string;
 };
 
 type DetailView = "profile" | "journey";
-
-function motionStyle(property: string) {
-  return {
-    transitionProperty: property,
-    transitionDuration: `${MOTION_MS}ms`,
-    transitionTimingFunction: MOTION_EASE,
-  } as const;
-}
-
-function TraitBar({
-  label,
-  value,
-  accentColor,
-}: {
-  label: string;
-  value: number;
-  accentColor: string;
-}) {
-  return (
-    <div>
-      <div className="mb-0.5 flex items-center justify-between gap-2 text-[0.8125rem]">
-        <span className="font-medium text-[var(--color-text-primary)]">{label}</span>
-        <span className="text-[var(--color-text-muted)] tabular-nums motion-safe:transition-[opacity,color] motion-safe:duration-[650ms] motion-safe:ease-in-out">
-          {value}%
-        </span>
-      </div>
-      <div className="relative h-1.5 rounded-full" style={{ backgroundColor: CHART_ACCENTS.nhs.trackBg }}>
-        <div
-          className="absolute inset-y-0 left-0 rounded-full motion-safe:transition-[width] motion-safe:duration-[650ms] motion-safe:ease-in-out"
-          style={{ width: `${value}%`, backgroundColor: accentColor, ...motionStyle("width") }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function KeyTimesChart({ values, accentColor }: { values: number[]; accentColor: string }) {
-  const max = Math.max(...values, 1);
-
-  return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="relative min-h-[6.5rem] flex-1" role="img" aria-label="Call frequency through the day">
-        <div className="absolute inset-0 flex gap-0.5">
-          {values.map((value, index) => {
-            const heightPercent = Math.max(8, (value / max) * 100);
-            const isPeak = value >= max * 0.85;
-
-            return (
-              <div key={KEY_TIME_LABELS[index]} className="flex min-w-0 flex-1 flex-col justify-end">
-                <div
-                  className="w-full rounded-t-sm motion-safe:transition-[height,background-color] motion-safe:duration-[650ms] motion-safe:ease-in-out"
-                  style={{
-                    height: `${heightPercent}%`,
-                    backgroundColor: isPeak ? accentColor : CHART_ACCENTS.nhs.trackBg,
-                    ...motionStyle("height, background-color"),
-                  }}
-                  title={`${KEY_TIME_LABELS[index]}: relative call volume ${value}`}
-                />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      <div className="mt-1.5 flex shrink-0 gap-1">
-        {KEY_TIME_LABELS.map((label) => (
-          <span
-            key={label}
-            className="flex-1 text-center text-[0.55rem] text-[var(--color-text-muted)]"
-          >
-            {label}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function PersonaSection({
-  title,
-  children,
-  className,
-  fill = false,
-}: {
-  title: string;
-  children: ReactNode;
-  className?: string;
-  fill?: boolean;
-}) {
-  return (
-    <section
-      className={cn(
-        "rounded-xl border border-[var(--case-study-accent)]/10 bg-white px-3 py-2.5",
-        fill && "flex h-full min-h-0 flex-col",
-        className,
-      )}
-    >
-      <h4 className="mb-1.5 shrink-0 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
-        {title}
-      </h4>
-      {fill ? <div className="flex min-h-0 flex-1 flex-col">{children}</div> : children}
-    </section>
-  );
-}
-
-function PersonaText({ children }: { children: React.ReactNode }) {
-  return <p className="text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">{children}</p>;
-}
-
-function PersonaList({ items }: { items: string[] }) {
-  return (
-    <ul className="list-disc space-y-1 pl-4 text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
-      {items.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
-    </ul>
-  );
-}
 
 function PersonaNavItem({
   persona,
@@ -248,148 +99,23 @@ function PersonaSwitcher({
   );
 }
 
-function PersonaIllustration({
-  persona,
-  displayWidth,
-  displayHeight,
-}: {
-  persona: NhsPersona;
-  displayWidth: number;
-  displayHeight: number;
-}) {
-  return (
-    <Image
-      src={persona.illustrationSrc}
-      alt={persona.illustrationAlt}
-      width={persona.illustrationWidth}
-      height={persona.illustrationHeight}
-      className="block max-w-none"
-      style={{ width: displayWidth, height: displayHeight }}
-      sizes={`${displayWidth}px`}
-    />
-  );
-}
-
-function PersonaIllustrationStack({ activeId }: { activeId: string }) {
-  const { width, height, byId } = personaIllustrationLayout;
-
-  return (
-    <div
-      className="relative shrink-0 overflow-visible [&>*]:col-start-1 [&>*]:row-start-1"
-      style={{ width, height }}
-    >
-      {nhsPersonas.map((persona) => {
-        const displaySize = byId[persona.id];
-        return (
-          <div
-            key={persona.id}
-            className={cn(
-              "absolute inset-0 flex items-center justify-center overflow-visible motion-safe:transition-opacity motion-safe:duration-[650ms] motion-safe:ease-in-out",
-              persona.id === activeId
-                ? "z-10 opacity-100"
-                : "pointer-events-none z-0 opacity-0",
-            )}
-            aria-hidden={persona.id !== activeId}
-          >
-            <PersonaIllustration
-              persona={persona}
-              displayWidth={displaySize.width}
-              displayHeight={displaySize.height}
-            />
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function PersonaHeader({
-  displayPersona,
-  contentVisible,
-  illustrationId,
-}: {
-  displayPersona: NhsPersona;
-  contentVisible: boolean;
-  illustrationId: string;
-}) {
-  return (
-    <header className="mb-3 flex flex-col gap-2.5 border-b border-[var(--color-border)] pb-3 sm:flex-row sm:items-start sm:justify-between">
-      <div className={cn("min-w-0 flex-1", caseStudyContentFadeClass(contentVisible))}>
-        <p className="mb-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--case-study-accent)]">
-          NHS 111 persona
-        </p>
-        <h3 className="text-h4 font-semibold text-[var(--color-text-primary)]">{displayPersona.name}</h3>
-        <p className="mt-0.5 text-[0.8125rem] text-[var(--color-text-muted)]">{displayPersona.tagline}</p>
-      </div>
-      <PersonaIllustrationStack activeId={illustrationId} />
-    </header>
-  );
-}
-
-function PersonaProfile({
-  activePersona,
+function PersonaInfographic({
   displayPersona,
   contentVisible,
 }: {
-  activePersona: NhsPersona;
   displayPersona: NhsPersona;
   contentVisible: boolean;
 }) {
-  const accent = "var(--case-study-accent)";
-  const pullQuote = displayPersona.pullQuotes[0];
-  const textFade = caseStudyContentFadeClass(contentVisible);
-
   return (
-    <div className="grid items-stretch gap-2 sm:gap-2.5 lg:grid-cols-12">
-      <PersonaSection title="Caller situation" fill className={cn("lg:col-span-8", textFade)}>
-        <PersonaText>{displayPersona.callerSituation}</PersonaText>
-      </PersonaSection>
-
-      <PersonaSection title="Traits" fill className="lg:col-span-4">
-        <div className="flex flex-1 flex-col justify-center space-y-1.5">
-          <TraitBar label="Emotional" value={activePersona.traits.emotional} accentColor={accent} />
-          <TraitBar label="Thankful" value={activePersona.traits.thankful} accentColor={accent} />
-          <TraitBar label="Aggravated" value={activePersona.traits.aggravated} accentColor={accent} />
-        </div>
-      </PersonaSection>
-
-      <PersonaSection title="Call context" className={cn("lg:col-span-12", textFade)}>
-        <dl className="grid gap-2.5 sm:grid-cols-3 sm:gap-3 text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
-          <div>
-            <dt className="font-medium text-[var(--color-text-primary)]">How they heard about 111</dt>
-            <dd className="mt-0.5">{displayPersona.heardAbout}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--color-text-primary)]">Motivations</dt>
-            <dd className="mt-0.5">{displayPersona.motivations}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--color-text-primary)]">When they tend to call</dt>
-            <dd className="mt-0.5">{displayPersona.whenTheyCall}</dd>
-          </div>
-        </dl>
-      </PersonaSection>
-
-      <PersonaSection title="Key times" fill className={PROFILE_TRIO_CARD_CLASS}>
-        <KeyTimesChart values={activePersona.keyTimes} accentColor={accent} />
-      </PersonaSection>
-
-      <PersonaSection title="Expectations" fill className={cn(PROFILE_TRIO_CARD_CLASS, textFade)}>
-        <PersonaList items={displayPersona.expectations} />
-      </PersonaSection>
-
-      <PersonaSection title="Frustrations" fill className={cn(PROFILE_TRIO_CARD_CLASS, textFade)}>
-        <PersonaList items={displayPersona.frustrations} />
-      </PersonaSection>
-
-      <PersonaSection title="Positives" className={cn("lg:col-span-12", textFade)}>
-        {pullQuote && (
-          <p className="mb-2 border-l-2 border-[var(--case-study-accent)]/30 pl-2.5 text-[0.8125rem] italic leading-snug text-[var(--case-study-accent)]">
-            &ldquo;{pullQuote}&rdquo;
-          </p>
-        )}
-        <PersonaText>{displayPersona.positives}</PersonaText>
-      </PersonaSection>
+    <div className={caseStudyContentFadeClass(contentVisible)}>
+      <Image
+        src={displayPersona.infographicSrc}
+        alt={`${displayPersona.name} persona overview`}
+        width={INFOGRAPHIC_WIDTH}
+        height={INFOGRAPHIC_HEIGHT}
+        className="h-auto w-full rounded-lg border border-[var(--color-border)]"
+        sizes="(min-width: 768px) 640px, 100vw"
+      />
     </div>
   );
 }
@@ -417,8 +143,6 @@ export function NhsPersonasInteractive({ className }: NhsPersonasInteractiveProp
   const [activeId, setActiveId] = useState(nhsPersonas[0]?.id ?? "connection-seeker");
   const { displayItem: displayPersona, contentVisible } = useCaseStudyTransition(activeId, nhsPersonas);
 
-  const activePersona = nhsPersonas.find((persona) => persona.id === activeId) ?? nhsPersonas[0];
-
   return (
     <div className={cn("not-prose", className)}>
       <div
@@ -445,15 +169,9 @@ export function NhsPersonasInteractive({ className }: NhsPersonasInteractiveProp
             </div>
 
             <div id={`${baseId}-panel`} className="bg-white p-4 md:p-5">
-              <PersonaHeader
-                displayPersona={displayPersona}
-                contentVisible={contentVisible}
-                illustrationId={activeId}
-              />
-
               <div className="mb-3 flex flex-wrap gap-1.5" role="group" aria-label="Persona detail view">
                 <ChoiceOutlinePill
-                  label="Profile"
+                  label="Persona"
                   selected={detailView === "profile"}
                   onSelect={() => setDetailView("profile")}
                 />
@@ -465,11 +183,7 @@ export function NhsPersonasInteractive({ className }: NhsPersonasInteractiveProp
               </div>
 
               {detailView === "profile" ? (
-                <PersonaProfile
-                  activePersona={activePersona}
-                  displayPersona={displayPersona}
-                  contentVisible={contentVisible}
-                />
+                <PersonaInfographic displayPersona={displayPersona} contentVisible={contentVisible} />
               ) : (
                 <PersonaJourneyMap displayPersona={displayPersona} contentVisible={contentVisible} />
               )}

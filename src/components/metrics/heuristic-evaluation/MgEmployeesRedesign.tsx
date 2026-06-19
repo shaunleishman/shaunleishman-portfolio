@@ -28,7 +28,7 @@ const PRU = {
 } as const;
 
 /** Shared page layout — one gutter and content width across all sections */
-const PAGE_GUTTER = "px-6";
+const PAGE_GUTTER = "px-4 sm:px-6";
 const CONTENT = "mx-auto w-full max-w-5xl";
 
 /** Shared vertical rhythm — update once to restyle spacing across the mock */
@@ -431,10 +431,10 @@ function PruHeader({
 
   return (
     <header className={cn("sticky top-0 z-40 overflow-visible border-b border-neutral-200 bg-white py-4", PAGE_GUTTER)}>
-      <div className={cn(CONTENT, "flex items-center gap-6")}>
-        <button type="button" onClick={onGoHome} className="cursor-pointer transition-opacity hover:opacity-80">
+      <div className={cn(CONTENT, "flex items-center gap-3 sm:gap-6")}>
+        <button type="button" onClick={onGoHome} className="shrink-0 cursor-pointer transition-opacity hover:opacity-80">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={ASSETS.logo} alt="Pru, part of M&G plc" className="h-11 w-auto" />
+          <img src={ASSETS.logo} alt="Pru, part of M&G plc" className="h-9 w-auto sm:h-11" />
         </button>
 
         <nav className="hidden items-center gap-5 text-[0.875rem] text-neutral-800 sm:flex">
@@ -470,11 +470,13 @@ function PruHeader({
           />
         </nav>
 
-        <div className="ml-auto flex items-center gap-3">
-          <PruSecondaryButton onClick={onGoRegister} showExternalIcon={false}>
+        <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+          <PruSecondaryButton onClick={onGoRegister} showExternalIcon={false} className="!px-3 sm:!px-6">
             Register
           </PruSecondaryButton>
-          <PruTealButton onClick={onGoLogin}>Log in</PruTealButton>
+          <PruTealButton onClick={onGoLogin} className="!px-3 sm:!px-6">
+            Log in
+          </PruTealButton>
         </div>
       </div>
       {showCallouts ? (
@@ -607,7 +609,7 @@ function PruCookieBar({ onDismiss }: { onDismiss: () => void }) {
           <span className="underline">cookie policy</span>.
         </p>
       </div>
-      <div className="flex shrink-0 flex-wrap items-center gap-2">
+      <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0">
         <PruCookieButton onClick={onDismiss}>Accept optional cookies</PruCookieButton>
         <PruCookieButton onClick={onDismiss}>Essential cookies only</PruCookieButton>
         <PruCookieButton onClick={onDismiss}>More options</PruCookieButton>

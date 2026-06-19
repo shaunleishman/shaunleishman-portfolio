@@ -240,7 +240,7 @@ export function FigmaPrototypeEmbed({
 
   const viewportClassName = cn(
     "relative w-full overflow-hidden bg-[#f5f6f6]",
-    layout === "inset" && "p-4 md:p-6",
+    layout === "inset" && "p-6 md:p-10 lg:p-12",
     usePreview && layout === "inset" && "rounded-t-2xl",
   );
 

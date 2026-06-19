@@ -470,7 +470,7 @@ export function AnnotatedScreenshot({
           aria-controls={dialogId}
         >
           {content}
-          <span className="absolute bottom-3 right-3 z-20 rounded-full bg-black/60 px-2.5 py-1 text-[0.75rem] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+          <span className="absolute bottom-3 right-3 z-20 rounded-full bg-black/60 px-2.5 py-1 text-[0.75rem] font-medium text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-visible:opacity-100">
             Expand
           </span>
         </button>
@@ -482,18 +482,18 @@ export function AnnotatedScreenshot({
           role="dialog"
           aria-modal="true"
           aria-label={`Enlarged view of ${alt}`}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 md:p-8 motion-safe:animate-[fade-in_0.2s_ease-out]"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 md:p-8 motion-safe:animate-[fade-in_0.2s_ease-out]"
           onClick={() => setOpen(false)}
         >
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="absolute top-4 right-4 rounded-lg bg-white/10 px-3 py-1.5 text-sm font-medium text-white hover:bg-white/20"
+            className="absolute top-3 right-3 z-10 inline-flex min-h-11 items-center rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 sm:top-4 sm:right-4"
           >
             Close
           </button>
           <div
-            className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-xl bg-white p-4 pt-10 pb-4"
+            className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-xl bg-white p-3 pt-14 pb-4 sm:p-4 sm:pt-10"
             onClick={(e) => e.stopPropagation()}
           >
             <AnnotatedScreenshotContent

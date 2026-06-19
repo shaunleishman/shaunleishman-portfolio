@@ -23,12 +23,12 @@ export const nhsAtAGlance = {
     "Survey data backed interview themes",
   ],
   methods: [
-    "User interviews",
-    "Surveys",
-    "Affinity mapping",
-    "Personas",
-    "Journey mapping",
-    "Thematic analysis",
+    { label: "User interviews", percent: 25 },
+    { label: "Surveys", percent: 15 },
+    { label: "Affinity mapping", percent: 15 },
+    { label: "Personas", percent: 15 },
+    { label: "Journey mapping", percent: 15 },
+    { label: "Thematic analysis", percent: 15 },
   ],
 };
 
@@ -36,6 +36,7 @@ export const nhsSectionNav = [
   { id: "at-a-glance", label: "Summary" },
   { id: "the-challenge", label: "Challenge" },
   { id: "my-role", label: "My role" },
+  { id: "timeline", label: "Timeline" },
   { id: "research", label: "Research" },
   { id: "key-findings", label: "Findings" },
   { id: "deliverables", label: "Deliverables" },
@@ -66,9 +67,49 @@ export const nhsRoleItems = [
   "We designed a survey to back up interview themes with numbers, then turned both into personas, journey maps, and a report for the product team.",
 ];
 
+export const nhsProjectTimeline = {
+  totalWeeks: 4,
+  lead: "4 weeks from brief to final presentation. I led research throughout.",
+  intro:
+    "A four-week NHS brief. I owned recruitment, fieldwork, analysis, and deliverables; the product team scoped priorities and joined the final readout.",
+  phases: [
+    {
+      label: "Planning",
+      tasks: [
+        { label: "Brief with NHS team", startWeek: 1, endWeek: 1.2, involved: true, detail: "Aligned on goals and scope with the NHS team." },
+        { label: "Survey plan", startWeek: 1.2, endWeek: 1.55, involved: true, detail: "Designed the survey to back up interview themes." },
+        { label: "Interview plan", startWeek: 1.75, endWeek: 3.75, involved: true, detail: "Wrote the interview guide and screening criteria." },
+        { label: "Recruitment", startWeek: 1.75, endWeek: 3.25, involved: true, detail: "Recruited callers and call handlers to take part." },
+        { label: "Study prep", startWeek: 1.75, endWeek: 2.25, involved: true, detail: "Set up consent, logistics, and session schedules." },
+      ],
+    },
+    {
+      label: "Fieldwork",
+      tasks: [
+        { label: "Phone interviews", startWeek: 2.25, endWeek: 3.25, involved: true, detail: "Ran 30-minute interviews with callers and handlers." },
+        { label: "Survey fielding", startWeek: 2, endWeek: 3.25, involved: true, detail: "Collected survey responses to quantify the themes." },
+      ],
+    },
+    {
+      label: "Synthesis",
+      tasks: [
+        { label: "Affinity mapping", startWeek: 3.25, endWeek: 3.55, involved: true, detail: "Clustered findings to surface behaviour patterns." },
+      ],
+    },
+    {
+      label: "Delivery",
+      tasks: [
+        { label: "Personas", startWeek: 3.55, endWeek: 3.75, involved: true, detail: "Built five personas for shared caller language." },
+        { label: "Journey maps", startWeek: 3.65, endWeek: 3.85, involved: true, detail: "Mapped where reassurance and routing matter most." },
+        { label: "Findings report", startWeek: 3.75, endWeek: 3.92, involved: true, detail: "Packaged the evidence into reusable team tools." },
+        { label: "Final presentation", startWeek: 3.9, endWeek: 4, involved: true, detail: "Presented findings and recommendations to the team." },
+      ],
+    },
+  ],
+} as const;
+
 export const nhsQualitativeItems = [
-  "We ran 30-minute interviews with recent callers and call handlers",
-  "We led affinity mapping to find recurring behaviours, frustrations, and needs",
+  "We ran 30-minute interviews with callers and handlers, then affinity-mapped the recurring behaviours, frustrations, and needs",
   "We created five personas covering uncertainty, distress, confirmation-seeking, breaking point, and GP substitution",
   "We mapped journeys showing where reassurance, routing clarity, and wait-time updates matter most",
 ];

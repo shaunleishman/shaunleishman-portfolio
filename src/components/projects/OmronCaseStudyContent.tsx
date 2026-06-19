@@ -12,6 +12,7 @@ import {
   omronAtAGlance,
   omronCaseStudyMeta,
   omronMyRole,
+  omronProjectTimeline,
   omronReflectionItems,
   omronRoleItems,
   omronTeamTogetherItems,
@@ -39,6 +40,7 @@ import { OmronActionCardLiveDemo } from "@/components/projects/OmronActionCardLi
 import { OmronAssignPatientLiveDemo } from "@/components/projects/OmronAssignPatientLiveDemo";
 import { ZoomableScreenshot } from "@/components/projects/ZoomableScreenshot";
 import { CaseStudyAccentProvider } from "@/components/projects/CaseStudyAccentProvider";
+import { CaseStudyTimelineSection } from "@/components/projects/CaseStudyTimelineSection";
 import { OmronPractitionerBoardsInteractiveDeferred } from "@/components/projects/OmronPractitionerBoardsInteractiveDeferred";
 import { OmronWireframeSketchAnimationDeferred } from "@/components/projects/OmronWireframeSketchAnimationDeferred";
 
@@ -135,6 +137,11 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
           impact={omronMyRole.impact}
         />
       </CaseStudySection>
+
+      <CaseStudyTimelineSection
+        title={omronSectionTitle("timeline")}
+        timeline={omronProjectTimeline}
+      />
 
       <CaseStudySection
         id="co-design"

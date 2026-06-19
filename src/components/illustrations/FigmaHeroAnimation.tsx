@@ -6,6 +6,15 @@ import { cn } from "@/lib/utils";
 const MESSAGE = "Hello I am Shaun";
 const VB_W = 520;
 const VB_H = 380;
+const FRAME = { x: 24, y: 24, w: 472, h: 332, chromeH: 36, inset: 12 };
+const CANVAS = {
+  x: FRAME.x + FRAME.inset,
+  y: FRAME.y + FRAME.chromeH + FRAME.inset,
+  w: FRAME.w - FRAME.inset * 2,
+  h: FRAME.h - FRAME.chromeH - FRAME.inset * 2,
+};
+const CANVAS_RIGHT = CANVAS.x + CANVAS.w;
+const CANVAS_BOTTOM = CANVAS.y + CANVAS.h;
 /** Constant cursor speed — linear px/s feels closest to real mouse movement */
 const CURSOR_SPEED_PX_S = 320;
 const DRAG_SPEED_PX_S = 280;
@@ -175,16 +184,8 @@ function StaticFallback() {
 }
 
 function ArtboardBackground() {
-  const frameX = 24;
-  const frameY = 24;
-  const frameW = 472;
-  const frameH = 332;
-  const chromeH = 36;
-  const inset = 12;
-  const canvasX = frameX + inset;
-  const canvasY = frameY + chromeH + inset;
-  const canvasW = frameW - inset * 2;
-  const canvasH = frameH - chromeH - inset * 2;
+  const { x: frameX, y: frameY, w: frameW, h: frameH, chromeH } = FRAME;
+  const { x: canvasX, y: canvasY, w: canvasW, h: canvasH } = CANVAS;
 
   return (
     <>
@@ -195,6 +196,16 @@ function ArtboardBackground() {
         <clipPath id="figma-canvas-clip">
           <rect x={canvasX} y={canvasY} width={canvasW} height={canvasH} rx={8} />
         </clipPath>
+        <pattern
+          id="figma-canvas-dots"
+          x={0}
+          y={0}
+          width={18}
+          height={18}
+          patternUnits="userSpaceOnUse"
+        >
+          <circle cx={9} cy={9} r={1.25} fill="rgba(255,255,255,0.14)" />
+        </pattern>
         <filter id="cursor-shadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.35" />
         </filter>
@@ -223,40 +234,9 @@ function ArtboardBackground() {
         <circle cx={76} cy={frameY + 18} r={4} fill="rgba(255,255,255,0.12)" />
 
         <g clipPath="url(#figma-canvas-clip)">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <line
-              key={`v-${i}`}
-              x1={canvasX + 12 + i * 54}
-              y1={canvasY}
-              x2={canvasX + 12 + i * 54}
-              y2={canvasY + canvasH}
-              stroke="rgba(255,255,255,0.05)"
-              strokeWidth={1}
-            />
-          ))}
-          {Array.from({ length: 5 }).map((_, i) => (
-            <line
-              key={`h-${i}`}
-              x1={canvasX}
-              y1={canvasY + 12 + i * 52}
-              x2={canvasX + canvasW}
-              y2={canvasY + 12 + i * 52}
-              stroke="rgba(255,255,255,0.05)"
-              strokeWidth={1}
-            />
-          ))}
+          <rect x={canvasX} y={canvasY} width={canvasW} height={canvasH} fill="#141414" />
+          <rect x={canvasX} y={canvasY} width={canvasW} height={canvasH} fill="url(#figma-canvas-dots)" />
         </g>
-
-        <rect
-          x={canvasX}
-          y={canvasY}
-          width={canvasW}
-          height={canvasH}
-          rx={8}
-          fill="none"
-          stroke="rgba(255,255,255,0.1)"
-          strokeWidth={1}
-        />
       </g>
     </>
   );
@@ -384,7 +364,6 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
               ...s,
               x: s.x + dx * t,
               y: s.y + dy * t,
-              opacity: t > 0.65 ? 1 - (t - 0.65) / 0.35 : 1,
               selected: true,
             })),
           );
@@ -393,6 +372,20 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
       );
 
       setPressing(false);
+    },
+    [],
+  );
+
+  const dragShapesOffCanvas = useCallback(
+    (cursorFrom: Point, shapes: Shape[]) => {
+      if (shapes.length === 0) return cursorFrom;
+
+      const maxX = Math.max(...shapes.map((shape) => shape.x + shape.w));
+      const maxY = Math.max(...shapes.map((shape) => shape.y + shape.h));
+      const dx = CANVAS_RIGHT + 48 - maxX;
+      const dy = Math.max(28, Math.min(CANVAS_BOTTOM + 32 - maxY, dx * 0.38));
+
+      return { x: cursorFrom.x + dx, y: cursorFrom.y + dy };
     },
     [],
   );
@@ -466,7 +459,9 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
 
         await animateCursor({ x: 318, y: 218 }, signal);
         await sleep(100, signal);
-        await animateGroupDrag({ x: 318, y: 218 }, { x: 560, y: 360 }, dragShapes, signal);
+        const dragFrom = { x: 318, y: 218 };
+        const dragTo = dragShapesOffCanvas(dragFrom, dragShapes);
+        await animateGroupDrag(dragFrom, dragTo, dragShapes, signal);
         setShapes([]);
         await sleep(200, signal);
 
@@ -480,7 +475,7 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
     });
 
     return () => controller.abort();
-  }, [reducedMotion, animateCursor, animateDragShape, animateMarqueeSelect, animateGroupDrag, fadeComment, setCursorPoint]);
+  }, [reducedMotion, animateCursor, animateDragShape, animateMarqueeSelect, animateGroupDrag, dragShapesOffCanvas, fadeComment, setCursorPoint]);
 
   if (reducedMotion === null) {
     return (
@@ -513,6 +508,7 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
       >
         <ArtboardBackground />
 
+        <g clipPath="url(#figma-canvas-clip)">
         {shapes.length > 1 && shapes.every((s) => s.selected) && (
           <rect
             x={Math.min(...shapes.map((s) => s.x)) - 6}
@@ -619,6 +615,7 @@ export function FigmaHeroAnimation({ className }: { className?: string }) {
         )}
 
         <FigmaCursor x={cursor.x} y={cursor.y} pressing={pressing} />
+        </g>
       </svg>
     </div>
   );

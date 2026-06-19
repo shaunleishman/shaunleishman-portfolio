@@ -120,9 +120,12 @@ export function CaseStudyJourneyMap({ stages, className }: CaseStudyJourneyMapPr
   const totalPages = Math.ceil(total / STAGES_PER_PAGE);
   const pageStart = activePage * STAGES_PER_PAGE;
   const pageEnd = Math.min(pageStart + STAGES_PER_PAGE, total);
-  const visibleStages = stages.slice(pageStart, pageEnd);
   const isAtStart = activePage === 0;
   const isAtEnd = activePage === totalPages - 1;
+
+  const pages = Array.from({ length: totalPages }, (_, pageIndex) =>
+    stages.slice(pageIndex * STAGES_PER_PAGE, (pageIndex + 1) * STAGES_PER_PAGE),
+  );
 
   const goToPage = useCallback(
     (page: number) => {
@@ -166,19 +169,29 @@ export function CaseStudyJourneyMap({ stages, className }: CaseStudyJourneyMapPr
           <ChevronLeft className="size-5" strokeWidth={1.75} aria-hidden />
         </button>
 
-        <div
-          key={activePage}
-          aria-live="polite"
-          className="grid min-h-[22rem] flex-1 grid-cols-1 gap-4 motion-safe:animate-[fade-in_0.3s_ease-out] sm:grid-cols-3 sm:gap-5"
-        >
-          {visibleStages.map((stage, index) => (
-            <StageCard
-              key={stage.label}
-              stage={stage}
-              index={pageStart + index}
-              total={total}
-            />
-          ))}
+        <div className="min-w-0 flex-1 overflow-hidden">
+          <div
+            aria-live="polite"
+            className="flex items-start motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out"
+            style={{ transform: `translateX(-${activePage * 100}%)` }}
+          >
+            {pages.map((pageStages, pageIndex) => (
+              <div
+                key={pageIndex}
+                aria-hidden={pageIndex !== activePage}
+                className="grid min-h-[22rem] w-full shrink-0 grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5"
+              >
+                {pageStages.map((stage, index) => (
+                  <StageCard
+                    key={stage.label}
+                    stage={stage}
+                    index={pageIndex * STAGES_PER_PAGE + index}
+                    total={total}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
 
         <button

@@ -8,7 +8,7 @@ import {
   getPeriodLabel,
   METRICS_HOME_PERIOD,
 } from "@/lib/analytics-period";
-import { formatPathLabel, isArticlePath, isProjectPath, slugFromPath } from "@/lib/analytics-paths";
+import { formatPathLabel, isArticlePath, isProjectPath, normalizeAnalyticsPath, slugFromPath } from "@/lib/analytics-paths";
 import {
   type ActiveVisitor,
   type AnalyticsDashboard,
@@ -27,7 +27,9 @@ function filterByPeriod(events: AnalyticsEvent[], period: AnalyticsPeriod): Anal
 }
 
 function countPageviews(events: AnalyticsEvent[], matcher: (path: string) => boolean): number {
-  return events.filter((e) => e.type === "pageview" && matcher(e.path)).length;
+  return events.filter(
+    (e) => e.type === "pageview" && matcher(normalizeAnalyticsPath(e.path)),
+  ).length;
 }
 
 function buildContentCatalog(): { projects: ContentRow[]; articles: ContentRow[] } {
@@ -60,19 +62,20 @@ function applyEventStats(rows: Map<string, ContentRow>, events: AnalyticsEvent[]
   const listenersByPath = new Map<string, Set<string>>();
 
   events.forEach((event) => {
+    const path = normalizeAnalyticsPath(event.path);
     if (event.type === "pageview") {
-      const row = rows.get(event.path);
+      const row = rows.get(path);
       if (row) row.views += 1;
-      const set = listenersByPath.get(event.path) ?? new Set();
+      const set = listenersByPath.get(path) ?? new Set();
       set.add(event.sessionId);
-      listenersByPath.set(event.path, set);
+      listenersByPath.set(path, set);
     }
     if (event.type === "blog_like") {
-      const row = rows.get(event.path);
+      const row = rows.get(path);
       if (row) row.likes += 1;
     }
     if (event.type === "blog_share") {
-      const row = rows.get(event.path);
+      const row = rows.get(path);
       if (row) row.shares += 1;
     }
   });
@@ -168,8 +171,9 @@ function computeAudienceSeries(
 
     if (event.type === "pageview") {
       bucket.pageviews += 1;
-      if (isProjectPath(event.path)) bucket.projectViews += 1;
-      if (isArticlePath(event.path)) bucket.articleViews += 1;
+      const path = normalizeAnalyticsPath(event.path);
+      if (isProjectPath(path)) bucket.projectViews += 1;
+      if (isArticlePath(path)) bucket.articleViews += 1;
     }
     if (event.type === "blog_share") bucket.shares += 1;
   });
@@ -201,8 +205,12 @@ function computeAudienceSeries(
 
   const sessions = new Set(events.map((e) => e.sessionId));
   const pageviews = events.filter((e) => e.type === "pageview").length;
-  const projectViews = events.filter((e) => e.type === "pageview" && isProjectPath(e.path)).length;
-  const articleViews = events.filter((e) => e.type === "pageview" && isArticlePath(e.path)).length;
+  const projectViews = events.filter(
+    (e) => e.type === "pageview" && isProjectPath(normalizeAnalyticsPath(e.path)),
+  ).length;
+  const articleViews = events.filter(
+    (e) => e.type === "pageview" && isArticlePath(normalizeAnalyticsPath(e.path)),
+  ).length;
   const shares = events.filter((e) => e.type === "blog_share").length;
 
   let summary = 0;
@@ -252,7 +260,7 @@ export async function getAnalyticsDashboard(options: {
 
   events.forEach((event) => {
     if (event.type !== "pageview" && event.type !== "blog_like" && event.type !== "blog_share") return;
-    const path = event.path;
+    const path = normalizeAnalyticsPath(event.path);
     if (isProjectPath(path) && !rowMap.has(path)) {
       const slug = slugFromPath(path, "/work/");
       if (!unknownProjects.has(path)) {
@@ -288,11 +296,17 @@ export async function getAnalyticsDashboard(options: {
   applyEventStats(unknownArticles, events);
 
   const projectRows = sortContentRows(
-    [...catalog.projects, ...unknownProjects.values()],
+    [
+      ...catalog.projects.map((row) => rowMap.get(row.path)!),
+      ...unknownProjects.values(),
+    ],
     contentSort,
   );
   const articleRows = sortContentRows(
-    [...catalog.articles, ...unknownArticles.values()],
+    [
+      ...catalog.articles.map((row) => rowMap.get(row.path)!),
+      ...unknownArticles.values(),
+    ],
     contentSort,
   );
 

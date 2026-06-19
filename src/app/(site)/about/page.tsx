@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { siteConfig } from "@/content/projects";
 import { AboutBackgroundSection } from "@/components/sections/AboutBackgroundSection";
+import { AboutLifeWindows } from "@/components/sections/AboutLifeWindows";
+import { AboutOriginTimeline } from "@/components/sections/AboutOriginTimeline";
+import { AboutStatsSection } from "@/components/sections/AboutStatsSection";
 import { CTASection } from "@/components/sections/CTASection";
+import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { PageHero } from "@/components/layout/PageHero";
 
 export const metadata: Metadata = {
@@ -37,6 +41,14 @@ export default function AboutPage() {
       </section>
 
       <AboutBackgroundSection />
+
+      <AboutLifeWindows />
+
+      <AboutOriginTimeline />
+
+      <AboutStatsSection />
+
+      <TestimonialsSection />
 
       <CTASection
         dark={false}

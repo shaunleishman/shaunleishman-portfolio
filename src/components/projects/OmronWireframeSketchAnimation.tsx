@@ -25,6 +25,16 @@ import {
 
 const IMAGE_SRC = "/projects/omron-patient-monitoring/wireframe-sketches.png";
 
+/** Show only the top four sketches (top two rows of the workshop sheet). */
+const DISPLAY_PANEL_IDS: OmronWireframePanelId[] = ["actions", "task-flow", "dashboard", "subtask"];
+const DISPLAY_PANELS = OMRON_WIREFRAME_PANELS.filter((p) => DISPLAY_PANEL_IDS.includes(p.id));
+const DISPLAY_LEFT_PANELS = OMRON_LEFT_PANELS.filter((p) => DISPLAY_PANEL_IDS.includes(p.id));
+const DISPLAY_RIGHT_PANELS = OMRON_RIGHT_PANELS.filter((p) => DISPLAY_PANEL_IDS.includes(p.id));
+
+/** Only the top half of the workshop sheet is shown — the bottom half is cropped to save space. */
+const SKETCH_VISIBLE_H = Math.round(IMAGE_H / 2);
+const SKETCH_ASPECT = `${IMAGE_W} / ${SKETCH_VISIBLE_H}`;
+
 type Point = { x: number; y: number };
 
 type ConnectorPath = {
@@ -33,7 +43,7 @@ type ConnectorPath = {
 };
 
 function panelRowY(sketchRect: DOMRect, trace: { y: number; h: number }): number {
-  return sketchRect.top + ((trace.y + trace.h / 2) / IMAGE_H) * sketchRect.height;
+  return sketchRect.top + ((trace.y + trace.h / 2) / SKETCH_VISIBLE_H) * sketchRect.height;
 }
 
 function panelAnchorOnSketch(
@@ -103,7 +113,7 @@ export function OmronWireframeSketchAnimation({
 
     const paths: ConnectorPath[] = [];
 
-    for (const panel of OMRON_WIREFRAME_PANELS) {
+    for (const panel of DISPLAY_PANELS) {
       const card = cardRefs.current[panel.id]?.getBoundingClientRect();
       if (!card) continue;
 
@@ -216,7 +226,7 @@ export function OmronWireframeSketchAnimation({
           <div ref={layoutRef} className="relative flex items-start gap-x-4 xl:gap-x-6">
             <SideColumn
               ref={leftColRef}
-              panels={OMRON_LEFT_PANELS}
+              panels={DISPLAY_LEFT_PANELS}
               side="left"
               expandedId={expandedId}
               onExpand={openWireframe}
@@ -226,7 +236,8 @@ export function OmronWireframeSketchAnimation({
 
             <div
               ref={sketchRef}
-              className="relative min-w-0 flex-1 aspect-[799/1024] overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-sm"
+              className="relative min-w-0 flex-1 overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-sm"
+              style={{ aspectRatio: SKETCH_ASPECT }}
             >
               {!loaded && <Skeleton className="absolute inset-0 rounded-none" aria-hidden />}
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -240,12 +251,12 @@ export function OmronWireframeSketchAnimation({
                 onLoad={markSketchLoaded}
                 onError={markSketchLoaded}
                 className={cn(
-                  "block h-full w-full object-contain transition-opacity duration-300",
+                  "block h-full w-full object-cover object-top transition-opacity duration-300",
                   loaded ? "opacity-100" : "opacity-0",
                 )}
               />
 
-              {OMRON_WIREFRAME_PANELS.map((panel) => (
+              {DISPLAY_PANELS.map((panel) => (
                 <div
                   key={panel.id}
                   className={cn(
@@ -256,9 +267,9 @@ export function OmronWireframeSketchAnimation({
                   )}
                   style={{
                     left: `${(panel.trace.x / IMAGE_W) * 100}%`,
-                    top: `${(panel.trace.y / IMAGE_H) * 100}%`,
+                    top: `${(panel.trace.y / SKETCH_VISIBLE_H) * 100}%`,
                     width: `${(panel.trace.w / IMAGE_W) * 100}%`,
-                    height: `${(panel.trace.h / IMAGE_H) * 100}%`,
+                    height: `${(panel.trace.h / SKETCH_VISIBLE_H) * 100}%`,
                   }}
                   aria-hidden
                 />
@@ -279,7 +290,7 @@ export function OmronWireframeSketchAnimation({
 
             <SideColumn
               ref={rightColRef}
-              panels={OMRON_RIGHT_PANELS}
+              panels={DISPLAY_RIGHT_PANELS}
               side="right"
               expandedId={expandedId}
               onExpand={openWireframe}
@@ -346,7 +357,10 @@ export function OmronWireframeSketchAnimation({
 
         {/* Mobile / tablet: sketch then labelled wireframes */}
         <div className="lg:hidden">
-          <div className="relative aspect-[799/1024] overflow-hidden bg-neutral-50/80 p-4">
+          <div
+            className="relative overflow-hidden bg-neutral-50/80 p-4"
+            style={{ aspectRatio: SKETCH_ASPECT }}
+          >
             {!loaded && <Skeleton className="absolute inset-4 rounded-lg" aria-hidden />}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -359,13 +373,13 @@ export function OmronWireframeSketchAnimation({
               onLoad={markSketchLoaded}
               onError={markSketchLoaded}
               className={cn(
-                "h-full w-full rounded-lg border border-[var(--color-border)] bg-white object-contain shadow-sm transition-opacity duration-300",
+                "h-full w-full rounded-lg border border-[var(--color-border)] bg-white object-cover object-top shadow-sm transition-opacity duration-300",
                 loaded ? "opacity-100" : "opacity-0",
               )}
             />
           </div>
           <div className="grid grid-cols-2 gap-3 border-t border-[var(--color-border)] bg-white p-4">
-            {OMRON_WIREFRAME_PANELS.map((panel) => (
+            {DISPLAY_PANELS.map((panel) => (
               <WireframeCard
                 key={panel.id}
                 id={panel.id}
@@ -402,13 +416,13 @@ export function OmronWireframeSketchAnimation({
               <X className="size-4" />
             </button>
             <div
-              className="max-h-full w-full max-w-2xl overflow-hidden rounded-xl border border-[var(--color-border)] bg-white shadow-2xl motion-safe:animate-[fade-in_0.25s_ease-out]"
+              className="flex h-full w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-[var(--color-border)] bg-white shadow-2xl motion-safe:animate-[fade-in_0.25s_ease-out]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="aspect-[360/260] w-full max-h-[min(65vh,480px)] border-b border-[var(--color-border)] bg-white">
+              <div className="min-h-0 flex-1 border-b border-[var(--color-border)] bg-white p-2">
                 <OmronWireframePanel id={expandedId} solid />
               </div>
-              <div className="px-4 py-3">
+              <div className="shrink-0 px-4 py-3">
                 <p className="text-body-sm font-semibold text-[var(--color-text-primary)]">{expandedPanel.label}</p>
                 <p className="mt-0.5 text-body-sm text-[var(--color-text-muted)]">
                   Refined wireframe from the workshop sketch, click outside or press Escape to close.
@@ -471,8 +485,8 @@ const SideColumn = forwardRef(function SideColumn(
       style={{ height: height > 0 ? height : undefined }}
     >
       {panels.map((panel) => {
-        const topPct = (panel.trace.y / IMAGE_H) * 100;
-        const heightPct = (panel.trace.h / IMAGE_H) * 100;
+        const topPct = (panel.trace.y / SKETCH_VISIBLE_H) * 100;
+        const heightPct = (panel.trace.h / SKETCH_VISIBLE_H) * 100;
 
         return (
           <div

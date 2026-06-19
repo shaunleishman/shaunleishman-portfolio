@@ -33,6 +33,7 @@ async function track(
     | "exit"
     | "scroll_band"
     | "heatmap_dwell"
+    | "click_map"
     | "page_meta",
   metadata?: Record<string, string | number>,
 ) {
@@ -51,7 +52,7 @@ async function track(
       path,
       metadata,
     }),
-    keepalive: type === "exit" || type === "heatmap_dwell" || type === "page_meta",
+    keepalive: type === "exit" || type === "heatmap_dwell" || type === "click_map" || type === "page_meta",
   });
 }
 
@@ -187,6 +188,22 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       sampleDwell(event.clientX, event.clientY);
     };
 
+    const handleClick = (event: MouseEvent) => {
+      if (event.button !== 0) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest("[data-analytics-no-click-map]")) return;
+
+      const x = event.clientX + window.scrollX;
+      const y = event.clientY + window.scrollY;
+      const cellX = Math.floor(x / HEATMAP_CELL_SIZE);
+      const cellY = Math.floor(y / HEATMAP_CELL_SIZE);
+      const pageWidth = document.documentElement.clientWidth;
+      const pageHeight = document.documentElement.scrollHeight;
+
+      void track("click_map", { cellX, cellY, pageWidth, pageHeight });
+    };
+
     const handleMouseLeave = () => {
       if (activeCellRef.current) {
         dwellAccumulator.current.set(
@@ -209,6 +226,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("click", handleClick, { capture: true });
     document.documentElement.addEventListener("mouseleave", handleMouseLeave);
     window.addEventListener("beforeunload", handleExit);
     handleScroll();
@@ -248,6 +266,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("click", handleClick, { capture: true });
       document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
       window.removeEventListener("beforeunload", handleExit);
       if (typeof window.cancelIdleCallback === "function") {

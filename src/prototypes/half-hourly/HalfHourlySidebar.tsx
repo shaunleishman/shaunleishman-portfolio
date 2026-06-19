@@ -1,18 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 import {
   AlertTriangle,
   BarChart3,
   Bell,
   Building2,
-  ChevronLeft,
   Cloud,
   FileText,
   Info,
   LayoutGrid,
   Lightbulb,
-  Menu,
   Plug,
   Settings,
   Stars,
@@ -86,6 +84,33 @@ const PROJECT_SUB_NAV: SubNavItem[] = [
 
 const SIDEBAR_TRANSITION = "transition-all duration-700 ease-in-out";
 
+/**
+ * Expanded state lives outside the component so it survives the remounts that
+ * happen on in-app navigation — clicking a nav item keeps the menu open instead
+ * of collapsing it, since the pointer is still over the sidebar.
+ */
+let sidebarHovered = false;
+const sidebarHoverListeners = new Set<() => void>();
+
+function setSidebarHovered(value: boolean) {
+  if (sidebarHovered === value) return;
+  sidebarHovered = value;
+  sidebarHoverListeners.forEach((listener) => listener());
+}
+
+function subscribeSidebarHover(listener: () => void) {
+  sidebarHoverListeners.add(listener);
+  return () => sidebarHoverListeners.delete(listener);
+}
+
+function useSidebarHovered() {
+  return useSyncExternalStore(
+    subscribeSidebarHover,
+    () => sidebarHovered,
+    () => false,
+  );
+}
+
 type HalfHourlySidebarProps = {
   currentProject?: { name: string; syntheticEnabled: boolean };
   currentProjectId?: string;
@@ -103,49 +128,23 @@ export function HalfHourlySidebar({
 }: HalfHourlySidebarProps) {
   const { navigate } = useHalfHourlyNav();
   const isSubPage = Boolean(activeSubSection);
-  const [isHovered, setIsHovered] = useState(false);
+  const isHovered = useSidebarHovered();
 
-  const showLabels = isHovered;
   const showSubMenu = Boolean(currentProject && isSubPage);
-  const railWidth = isHovered ? "w-64" : "w-[72px]";
+  // The main rail stays collapsed (icons only) while the submenu is open.
+  const showLabels = isHovered && !showSubMenu;
+  const railWidth = showLabels ? "w-64" : "w-[72px]";
 
   return (
     <div
       className="relative flex h-full shrink-0"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setSidebarHovered(true)}
+      onMouseLeave={() => setSidebarHovered(false)}
     >
       <aside
         className={`flex h-full shrink-0 flex-col bg-[#232828] p-3 ${SIDEBAR_TRANSITION} ${railWidth}`}
         aria-label="Application navigation"
       >
-        <div className="mb-2 flex shrink-0 items-center gap-2 overflow-hidden">
-          <button
-            type="button"
-            className={cn(
-              "rounded p-1 text-[#aab6b4] transition-all duration-700 ease-in-out hover:text-white",
-              showLabels ? "w-auto opacity-100" : "pointer-events-none w-0 opacity-0",
-            )}
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-            tabIndex={showLabels ? 0 : -1}
-          >
-            <ChevronLeft className="size-4" />
-          </button>
-          <button
-            type="button"
-            className={cn(
-              "rounded p-1 text-[#aab6b4] transition-all duration-700 ease-in-out hover:text-white",
-              showLabels ? "ml-auto" : "mx-auto",
-            )}
-            aria-label="Main navigation (expands on hover)"
-          >
-            <Menu className="size-4" />
-          </button>
-        </div>
-
-        <div className="mb-2 h-px shrink-0 rounded bg-[#aab6b4]/40" aria-hidden />
-
         <nav className="flex flex-col gap-1">
           {MAIN_NAV.map((item) => (
             <ShowcaseNavMenuItem

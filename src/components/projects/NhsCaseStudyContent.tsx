@@ -5,6 +5,7 @@ import {
   nhsCaseStudyMeta,
   nhsFindingHighlights,
   nhsMyRole,
+  nhsProjectTimeline,
   nhsQualitativeItems,
   nhsQuantitativeItems,
   nhsReflectionItems,
@@ -31,6 +32,7 @@ import {
   CaseStudySplitSection,
 } from "@/components/projects/CaseStudyIllustration";
 import { CaseStudyAccentProvider } from "@/components/projects/CaseStudyAccentProvider";
+import { CaseStudyTimelineSection } from "@/components/projects/CaseStudyTimelineSection";
 import { NhsPersonasInteractiveDeferred } from "@/components/projects/NhsPersonasInteractiveDeferred";
 import { NhsQuantitativeInteractiveDeferred } from "@/components/projects/NhsQuantitativeInteractiveDeferred";
 
@@ -39,11 +41,11 @@ const findingHighlightIcons = [Building2, Headset, Route] as const;
 const deliverableHighlights = [
   {
     icon: Users,
-    text: "Five interactive personas with traits, call patterns, and frustrations.",
+    text: "5 interactive personas with traits, call patterns, and frustrations.",
   },
   {
     icon: Map,
-    text: "Five journey maps with quotes and emotional peaks for each persona.",
+    text: "5 journey maps with quotes and emotional peaks for each persona.",
   },
   {
     icon: ClipboardList,
@@ -100,6 +102,11 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
           impact={nhsMyRole.impact}
         />
       </CaseStudySection>
+
+      <CaseStudyTimelineSection
+        title={nhsSectionTitle("timeline")}
+        timeline={nhsProjectTimeline}
+      />
 
       <CaseStudySection
         id="research"

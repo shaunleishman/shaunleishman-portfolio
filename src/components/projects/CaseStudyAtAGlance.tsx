@@ -16,7 +16,7 @@ type CaseStudyAtAGlanceProps = {
   problem: string;
   contribution: string;
   highlights: string[];
-  methods: string[];
+  methods: { label: string; percent: number }[];
   accentColor?: string;
 };
 
@@ -93,13 +93,15 @@ export function CaseStudyAtAGlance({
               <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-2">
                 Team
               </h3>
-              <p className="text-body-sm text-[var(--color-text-secondary)]">{team}</p>
+              <p className="line-clamp-3 text-body-sm text-[var(--color-text-secondary)]">{team}</p>
             </div>
             <div>
               <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-2">
                 What I owned
               </h3>
-              <p className="text-body-sm text-[var(--color-text-secondary)]">{contribution}</p>
+              <p className="line-clamp-3 text-body-sm text-[var(--color-text-secondary)]">
+                {contribution}
+              </p>
             </div>
           </CaseStudyTwoColumn>
         ) : (
@@ -107,22 +109,35 @@ export function CaseStudyAtAGlance({
             <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-2">
               What I owned
             </h3>
-            <p className="text-body-sm text-[var(--color-text-secondary)]">{contribution}</p>
+            <p className="line-clamp-3 text-body-sm text-[var(--color-text-secondary)]">
+              {contribution}
+            </p>
           </div>
         )}
 
         <div className="mt-6 pt-6 border-t border-[var(--color-border)]">
-          <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-3">
-            Methods &amp; skills
-          </h3>
-          <ul className="m-0 flex list-none flex-wrap items-center gap-2 p-0" aria-label="Methods and skills demonstrated">
+          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            <h3 className="text-label uppercase tracking-wide text-[var(--color-text-muted)]">
+              Methods &amp; skills
+            </h3>
+            <span className="text-[0.6875rem] text-[var(--color-text-muted)]">
+              Rough share of my effort
+            </span>
+          </div>
+          <ul
+            className="m-0 flex list-none flex-wrap items-center gap-2 p-0"
+            aria-label="Methods and skills demonstrated, with rough share of effort"
+          >
             {methods.map((method) => (
               <li
-                key={method}
-                className="inline-flex items-center justify-center rounded-full px-3 py-1.5 text-body-sm font-medium leading-none min-h-8 whitespace-nowrap text-white"
+                key={method.label}
+                className="inline-flex items-center gap-2 rounded-full py-1.5 pl-3.5 pr-2 text-body-sm font-medium leading-none text-white"
                 style={{ backgroundColor: accentColor }}
               >
-                {method}
+                {method.label}
+                <span className="inline-flex items-center justify-center rounded-full bg-white/20 px-2 py-0.5 text-[0.6875rem] font-semibold tabular-nums">
+                  {method.percent}%
+                </span>
               </li>
             ))}
           </ul>

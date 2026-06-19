@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { writeEventAsync, writeEventsAsync, getAnalyticsSummary, readEventsAsync } from "@/lib/analytics";
+import { normalizeAnalyticsPath } from "@/lib/analytics-paths";
 import { METRICS_COOKIE_NAME } from "@/lib/metrics-config";
 import { verifyMetricsPassword, verifyMetricsSessionToken } from "@/lib/metrics-auth";
 import { isMetricsOwnerRequest } from "@/lib/metrics-tracking-exclusion";
@@ -12,6 +13,7 @@ const VALID_TYPES = [
   "click",
   "exit",
   "heatmap_dwell",
+  "click_map",
   "page_meta",
   "scroll_band",
   "blog_like",
@@ -31,7 +33,7 @@ function normalizeEvent(raw: Record<string, unknown>) {
     id: crypto.randomUUID(),
     sessionId,
     type: type as (typeof VALID_TYPES)[number],
-    path,
+    path: normalizeAnalyticsPath(path),
     timestamp: new Date().toISOString(),
     metadata: metadata as Record<string, string | number> | undefined,
   };

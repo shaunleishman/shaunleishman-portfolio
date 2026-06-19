@@ -22,6 +22,7 @@
 
   /* Fluid type scale — min at 320px, max at 1280px */
   --text-display: clamp(2.25rem, 1.5rem + 3.75vw, 4.5rem);
+  --text-hero-display: clamp(2rem, 1.2rem + 2.75vw, 3.25rem);
   --text-h1: clamp(2rem, 1.4rem + 3vw, 3.75rem);
   --text-h2: clamp(1.75rem, 1.3rem + 2.25vw, 3rem);
   --text-h3: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
@@ -38,6 +39,10 @@
   --space-section: clamp(4rem, 3rem + 5vw, 8rem);
   --container-max: 75rem;
   --container-padding: clamp(1.25rem, 4vw, 2.5rem);
+
+  /* Custom cursors — hotspot tuned for ~32px assets in /public/cursors */
+  --cursor-default: url("/cursors/default.png") 2 2, auto;
+  --cursor-pointer: url("/cursors/pointer.png") 14 2, pointer;
 }
 
 @theme inline {
@@ -81,6 +86,41 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  @media (pointer: fine) {
+    html {
+      cursor: var(--cursor-default);
+    }
+
+    a[href],
+    button:not(:disabled),
+    summary,
+    label[for],
+    select,
+    [role="button"]:not([aria-disabled="true"]),
+    [role="link"],
+    [role="menuitem"],
+    [role="tab"],
+    input[type="button"]:not(:disabled),
+    input[type="submit"]:not(:disabled),
+    input[type="reset"]:not(:disabled),
+    input[type="checkbox"]:not(:disabled),
+    input[type="radio"]:not(:disabled) {
+      cursor: var(--cursor-pointer);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    input[type="url"],
+    input[type="tel"],
+    input[type="number"],
+    textarea,
+    [contenteditable="true"] {
+      cursor: text;
+    }
+  }
+
   h1,
   h2,
   h3,
@@ -117,6 +157,12 @@
 
   .text-display {
     font-size: var(--text-display);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.03em;
+  }
+
+  .text-hero-display {
+    font-size: var(--text-hero-display);
     line-height: var(--leading-tight);
     letter-spacing: -0.03em;
   }
@@ -163,6 +209,12 @@
 }
 
 @layer utilities {
+  @media (pointer: fine) {
+    .cursor-pointer {
+      cursor: var(--cursor-pointer);
+    }
+  }
+
   .container-site {
     width: 100%;
     max-width: var(--container-max);
@@ -172,6 +224,11 @@
 
   .section-padding {
     padding-block: var(--space-section);
+  }
+
+  .hero-section-padding {
+    padding-top: clamp(3rem, 2.5rem + 3.5vw, 6rem);
+    padding-bottom: clamp(2.5rem, 2.25rem + 2vw, 4rem);
   }
 
   .grid-bg {

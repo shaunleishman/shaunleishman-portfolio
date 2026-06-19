@@ -7,6 +7,8 @@ import {
   type EventTypeBreakdown,
   type HourlyActivity,
   type PageHeatmapData,
+  type PageClickmapData,
+  type ClickCell,
 } from "@/lib/analytics-heatmap-types";
 
 export {
@@ -14,21 +16,33 @@ export {
   SCROLL_BAND_COUNT,
   METRICS_PREVIEW_PARAM,
   type DwellCell,
+  type ClickCell,
   type EventTypeBreakdown,
   type HourlyActivity,
   type HeatmapScrollBand,
   type HeatmapSectionRow,
   type PageHeatmapData,
+  type PageClickmapData,
 } from "@/lib/analytics-heatmap-types";
 
-export function getHeatmapPagePaths(events: AnalyticsEvent[]): string[] {
+export function getMapPagePaths(events: AnalyticsEvent[]): string[] {
   const paths = new Set<string>();
   events.forEach((event) => {
-    if (event.type === "pageview" || event.type === "heatmap_dwell" || event.type === "section_view") {
+    if (
+      event.type === "pageview" ||
+      event.type === "heatmap_dwell" ||
+      event.type === "click_map" ||
+      event.type === "section_view"
+    ) {
       paths.add(event.path);
     }
   });
   return [...paths].sort((a, b) => a.localeCompare(b));
+}
+
+/** @deprecated Use getMapPagePaths */
+export function getHeatmapPagePaths(events: AnalyticsEvent[]): string[] {
+  return getMapPagePaths(events);
 }
 
 function filterEvents(events: AnalyticsEvent[], path?: string | null, period: AnalyticsPeriod = "all") {
@@ -139,6 +153,72 @@ export function getPageHeatmapData(
     sections: [...sectionCounts.entries()]
       .sort((a, b) => b[1] - a[1])
       .map(([section, count]) => ({ section, count })),
+  };
+}
+
+export function getPageClickmapData(
+  events: AnalyticsEvent[],
+  path: string,
+  period: AnalyticsPeriod = "all",
+): PageClickmapData {
+  const filtered = filterEvents(events, path, period);
+
+  const clickMap = new Map<string, number>();
+  const sessions = new Set<string>();
+  let totalClicks = 0;
+  let pageWidth = 1280;
+  let pageHeight = 0;
+  let maxCellY = 0;
+
+  filtered.forEach((event) => {
+    if (event.type === "page_meta") {
+      const w = Number(event.metadata?.pageWidth);
+      const h = Number(event.metadata?.pageHeight);
+      if (Number.isFinite(w) && w > 0) pageWidth = w;
+      if (Number.isFinite(h) && h > 0) pageHeight = Math.max(pageHeight, h);
+    }
+  });
+
+  filtered
+    .filter((event) => event.type === "click_map")
+    .forEach((event) => {
+      sessions.add(event.sessionId);
+      const cellX = Number(event.metadata?.cellX);
+      const cellY = Number(event.metadata?.cellY);
+      if (!Number.isFinite(cellX) || !Number.isFinite(cellY)) return;
+
+      const key = `${cellX}:${cellY}`;
+      clickMap.set(key, (clickMap.get(key) ?? 0) + 1);
+      totalClicks += 1;
+      maxCellY = Math.max(maxCellY, cellY);
+
+      const w = Number(event.metadata?.pageWidth);
+      const h = Number(event.metadata?.pageHeight);
+      if (Number.isFinite(w) && w > 0) pageWidth = w;
+      if (Number.isFinite(h) && h > 0) pageHeight = Math.max(pageHeight, h);
+    });
+
+  if (pageHeight <= 0) {
+    pageHeight = (maxCellY + 1) * HEATMAP_CELL_SIZE;
+  }
+
+  const cells: ClickCell[] = [...clickMap.entries()]
+    .map(([key, clicks]) => {
+      const [cellX, cellY] = key.split(":").map(Number);
+      return { cellX, cellY, clicks };
+    })
+    .sort((a, b) => b.clicks - a.clicks);
+
+  const maxClicks = cells.reduce((max, cell) => Math.max(max, cell.clicks), 0);
+
+  return {
+    path,
+    pageWidth,
+    pageHeight,
+    totalClicks,
+    totalSessions: sessions.size,
+    cells,
+    maxClicks,
   };
 }
 

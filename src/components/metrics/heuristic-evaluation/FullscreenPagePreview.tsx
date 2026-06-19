@@ -113,9 +113,9 @@ function FullscreenPreviewHud({
           : undefined
       }
       className={cn(
-        "fixed z-[9999] rounded-2xl border border-neutral-700 bg-neutral-900/95 text-white shadow-2xl backdrop-blur-sm",
-        !position && "bottom-4 right-4",
-        expanded ? "w-[min(100vw-2rem,20rem)] p-4" : "w-auto p-2",
+        "fixed z-[9999] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-neutral-700 bg-neutral-900/95 text-white shadow-2xl backdrop-blur-sm sm:max-w-[calc(100vw-2rem)]",
+        !position && "bottom-3 right-3 sm:bottom-4 sm:right-4",
+        expanded ? "w-[min(100vw-1.5rem,20rem)] p-4" : "w-auto p-2",
         dragging && "select-none",
       )}
     >
@@ -128,7 +128,7 @@ function FullscreenPreviewHud({
           onPointerMove={onDragHandlePointerMove}
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
-          className="inline-flex shrink-0 cursor-grab touch-none rounded-md border border-neutral-600 px-2 py-1 text-[0.65rem] font-medium text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-neutral-200 active:cursor-grabbing"
+          className="inline-flex shrink-0 cursor-grab touch-none items-center rounded-md border border-neutral-600 px-2.5 py-1.5 text-[0.65rem] font-medium text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-neutral-200 active:cursor-grabbing"
         >
           Drag
         </button>
@@ -142,7 +142,7 @@ function FullscreenPreviewHud({
               <p className="truncate text-sm font-medium">{title}</p>
             </>
           ) : (
-            <p className="max-w-[10rem] truncate text-xs font-medium text-neutral-200">{title}</p>
+            <p className="max-w-[6.5rem] truncate text-xs font-medium text-neutral-200 sm:max-w-[10rem]">{title}</p>
           )}
         </div>
 
@@ -150,7 +150,7 @@ function FullscreenPreviewHud({
           <button
             type="button"
             onClick={() => setExpanded((current) => !current)}
-            className="rounded-lg border border-neutral-600 px-2 py-1 text-[0.65rem] font-medium text-neutral-300 hover:bg-neutral-800"
+            className="rounded-lg border border-neutral-600 px-2.5 py-1.5 text-[0.65rem] font-medium text-neutral-300 hover:bg-neutral-800"
             aria-expanded={expanded}
           >
             {expanded ? "Less" : "More"}
@@ -159,7 +159,7 @@ function FullscreenPreviewHud({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-neutral-600 px-2 py-1 text-[0.65rem] font-medium text-neutral-200 hover:bg-neutral-800"
+              className="rounded-lg border border-neutral-600 px-2.5 py-1.5 text-[0.65rem] font-medium text-neutral-200 hover:bg-neutral-800"
             >
               Back
             </button>
@@ -255,9 +255,16 @@ export function FullscreenPagePreview({
         style={{ ["--preview-accent" as string]: accentColor }}
       >
         <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-4 sm:p-5">
-          <button
-            type="button"
+          <div
+            role="button"
+            tabIndex={0}
             onClick={openFullscreen}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                openFullscreen();
+              }
+            }}
             className={cn(
               "group relative mx-auto block w-full max-w-2xl cursor-pointer overflow-hidden rounded-xl",
               "border border-[var(--color-border)] bg-white text-left shadow-sm",
@@ -277,7 +284,8 @@ export function FullscreenPagePreview({
             >
               <RedesignPreviewProvider immersive={false} callouts={callouts} accentColor={accentColor}>
                 <div
-                  aria-hidden={fullscreen}
+                  aria-hidden
+                  inert
                   className="pointer-events-none absolute left-1/2 top-0 select-none"
                   style={{
                     width: `${100 / INLINE_PREVIEW_SCALE}%`,
@@ -301,13 +309,12 @@ export function FullscreenPagePreview({
                   "group-hover:bg-[var(--preview-accent)]/[0.06] group-focus-visible:bg-[var(--preview-accent)]/[0.06]",
                 )}
               >
-                <span
+                  <span
                   className={cn(
                     "inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-white/95 px-4 py-2",
                     "text-[0.8125rem] font-medium text-[var(--color-text-primary)] shadow-md",
-                    "opacity-0 transition-all duration-200",
-                    "group-hover:opacity-100 group-hover:scale-100 group-focus-visible:opacity-100",
-                    "scale-95",
+                    "opacity-100 scale-100 transition-all duration-200",
+                    "sm:opacity-0 sm:scale-95 sm:group-hover:opacity-100 sm:group-hover:scale-100 sm:group-focus-visible:opacity-100",
                   )}
                 >
                   <Maximize2 className="size-4 text-[var(--preview-accent)]" strokeWidth={2} aria-hidden />
@@ -315,7 +322,7 @@ export function FullscreenPagePreview({
                 </span>
               </div>
             </div>
-          </button>
+          </div>
 
           <p className="mt-3 text-center text-body-sm text-[var(--color-text-muted)]">
             Click the preview to open the interactive mock and explore audit fix markers

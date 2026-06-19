@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { AnalyticsSummary } from "@/lib/analytics";
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
-import { MetricsHeatmapViewer } from "@/components/metrics/MetricsHeatmapViewer";
 import { MetricsPageFilter } from "@/components/metrics/MetricsPageFilter";
 import { MetricsPeriodFilter } from "@/components/metrics/MetricsPeriodFilter";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -36,13 +35,10 @@ export default function MetricsInsightsPage() {
     void loadSummary();
   }, [loadSummary]);
 
-  const heatmapPath =
-    filterPath !== "all" ? filterPath : data?.topPages[0]?.path ?? data?.paths[0] ?? "/";
-
   return (
     <AdminShell
       title="Insights"
-      description="Deep dive: heatmaps, scroll depth, section attention, exit pages, and portfolio feedback."
+      description="Scroll depth, section attention, exit pages, and portfolio feedback."
     >
       {loading && !data ? (
         <p className="text-body-sm text-[var(--color-text-muted)]">Loading insights…</p>
@@ -125,8 +121,6 @@ export default function MetricsInsightsPage() {
               )}
             </section>
           )}
-
-          <MetricsHeatmapViewer path={heatmapPath} period={filterPeriod} />
 
           <div className="mt-10 grid gap-8 lg:grid-cols-2">
             <DataTable

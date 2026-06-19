@@ -24,6 +24,8 @@ export function buildAdminNav(base: string): AdminNavItem[] {
         { id: "site-content", label: "Content", href: `${base}/site/content` },
         { id: "site-audience", label: "Audience", href: `${base}/site/audience` },
         { id: "site-insights", label: "Insights", href: `${base}/site/insights` },
+        { id: "site-dwell-map", label: "Dwell heatmap", href: `${base}/site/maps/dwell` },
+        { id: "site-click-map", label: "Click map", href: `${base}/site/maps/clicks` },
       ],
     },
     {
@@ -89,6 +91,17 @@ export type CaseStudyEntry = {
 };
 
 export const CASE_STUDY_ENTRIES: CaseStudyEntry[] = [
+  {
+    slug: "off-axis-tours",
+    title: "Off Axis heuristic evaluation",
+    client: "Off Axis · Live music gig-swap platform",
+    description:
+      "Expert UX review of the public marketplace for a live-music gig-swap startup. Covers first impression, action paths, directory search, and trust signals.",
+    accent: "#A855F7",
+    tags: ["Heuristic evaluation", "Marketplace", "First impression"],
+    evaluatedUrl: "https://offaxistours.com/",
+    evaluationDate: "2026-06-18",
+  },
   {
     slug: "mg-employees",
     title: "M&G Employees heuristic evaluation",

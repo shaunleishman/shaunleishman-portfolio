@@ -4,10 +4,13 @@ import { usePathname } from "next/navigation";
 import { useMetricsPathContext } from "@/components/admin/MetricsPathProvider";
 
 const ADMIN_SUFFIXES = [
+  "/site/maps/clicks",
+  "/site/maps/dwell",
   "/site/content",
   "/site/audience",
   "/site/insights",
   "/site",
+  "/case-studies/off-axis-tours",
   "/case-studies/mg-employees",
   "/case-studies",
   "/design-systems/showcase",

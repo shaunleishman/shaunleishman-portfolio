@@ -2,7 +2,7 @@
 
 import { useCallback, useId, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { displayPercent, lerpByProgress, useChartEnterProgress, CHART_ENTER_MS } from "@/lib/useChartEnterProgress";
+import { displayPercent, lerpByProgress, useChartEnterProgress } from "@/lib/useChartEnterProgress";
 import { CHART_ACCENTS, ChartInsightCard } from "@/components/projects/CaseStudyChartControls";
 import { FilterChip, FilterChipRow } from "@/components/ui/FilterChip";
 import { NhsTypicalCallerFunnel } from "@/components/projects/NhsTypicalCallerFunnel";
@@ -27,16 +27,6 @@ type NhsQuantitativeInteractiveProps = {
 };
 
 const EXPLORER_ACCENT = "var(--case-study-accent)";
-const MOTION_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
-const MOTION_MS = CHART_ENTER_MS;
-
-function motionStyle(property: string) {
-  return {
-    transitionProperty: property,
-    transitionDuration: `${MOTION_MS}ms`,
-    transitionTimingFunction: MOTION_EASE,
-  } as const;
-}
 
 function AgeFilterRow({
   baseId,
@@ -92,7 +82,7 @@ function MetricBar({
       <div className="relative h-2.5 rounded-full" style={{ backgroundColor: CHART_ACCENTS.nhs.trackBg }}>
         <div
           className="absolute inset-y-0 left-0 rounded-full"
-          style={{ width: `${width}%`, backgroundColor: color, ...motionStyle("width") }}
+          style={{ width: `${width}%`, backgroundColor: color }}
         />
       </div>
     </div>

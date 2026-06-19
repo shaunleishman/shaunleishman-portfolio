@@ -58,7 +58,10 @@ export function MetricsHeatmapViewer({ path, period = "all" }: { path: string; p
           href={overlayUrl}
           onClick={() => {
             if (typeof window !== "undefined") {
-              startHeatmapOverlaySession(`${window.location.pathname}${window.location.search}`);
+              startHeatmapOverlaySession(
+                `${window.location.pathname}${window.location.search}`,
+                "dwell",
+              );
             }
           }}
           className="inline-flex shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)] px-5 py-2.5 text-body-sm font-medium text-white min-h-[44px] hover:bg-[var(--color-accent-hover)] transition-colors"

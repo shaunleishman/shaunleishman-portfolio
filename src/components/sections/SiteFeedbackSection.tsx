@@ -131,7 +131,7 @@ function SiteFeedbackForm() {
   }
 
   return (
-    <div className="surface-muted rounded-xl p-5 not-prose text-left">
+    <div className="surface-muted rounded-xl p-5 not-prose text-left" data-analytics-no-click-map>
       <p className="text-body-sm font-medium text-[var(--color-text-primary)] mb-4">
         How useful did you find this?
       </p>

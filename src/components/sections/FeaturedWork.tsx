@@ -6,6 +6,13 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SectionIntro } from "@/components/ui/SectionIntro";
 import { ProjectThumbnail } from "@/components/projects/ProjectThumbnail";
 
+const featuredStatItems = [
+  { key: "team", label: "Team", getValue: (project: (typeof featuredProjects)[number]) => project.cardStats.team },
+  { key: "role", label: "Role", getValue: (project: (typeof featuredProjects)[number]) => project.cardStats.role },
+  { key: "industry", label: "Industry", getValue: (project: (typeof featuredProjects)[number]) => project.cardStats.industry },
+  { key: "duration", label: "Duration", getValue: (project: (typeof featuredProjects)[number]) => project.duration },
+] as const;
+
 export function FeaturedWork() {
   return (
     <section
@@ -68,20 +75,19 @@ export function FeaturedWork() {
                     {project.overview.slice(0, 180)}…
                   </p>
 
-                  <ul className="space-y-2.5">
-                    {project.cardHighlights.map((item) => (
-                      <li
-                        key={item}
-                        className="flex gap-3 text-body-sm leading-snug text-[var(--color-text-secondary)]"
+                  <dl className="grid grid-cols-2 gap-3">
+                    {featuredStatItems.map(({ key, label, getValue }) => (
+                      <div
+                        key={key}
+                        className="flex flex-col gap-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-light)] p-4"
                       >
-                        <span
-                          className="mt-[0.55em] size-1.5 shrink-0 rounded-full bg-[var(--color-accent)]"
-                          aria-hidden
-                        />
-                        <span>{item}</span>
-                      </li>
+                        <dt className="text-label text-[var(--color-text-muted)]">{label}</dt>
+                        <dd className="m-0 text-body-sm font-medium leading-snug text-[var(--color-text-primary)]">
+                          {getValue(project)}
+                        </dd>
+                      </div>
                     ))}
-                  </ul>
+                  </dl>
                 </div>
               </article>
             </Reveal>

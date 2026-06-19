@@ -8,7 +8,6 @@ import {
   useId,
   useRef,
   useState,
-  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
@@ -29,28 +28,9 @@ type FeedbackProximityPopoverProps = {
 
 /** Show the floating prompt when the sentinel is this far below the viewport fold */
 const TRIGGER_BEFORE_BOTTOM_PX = 520;
-const MOBILE_MEDIA_QUERY = "(max-width: 639px)";
 
 function getDismissKey(pathname: string) {
   return `feedback_floating_dismiss_${pathname}`;
-}
-
-function subscribeToMobileQuery(onChange: () => void) {
-  const media = window.matchMedia(MOBILE_MEDIA_QUERY);
-  media.addEventListener("change", onChange);
-  return () => media.removeEventListener("change", onChange);
-}
-
-function getMobileSnapshot() {
-  return window.matchMedia(MOBILE_MEDIA_QUERY).matches;
-}
-
-function getMobileServerSnapshot() {
-  return false;
-}
-
-function useIsMobileViewport() {
-  return useSyncExternalStore(subscribeToMobileQuery, getMobileSnapshot, getMobileServerSnapshot);
 }
 
 function useFeedbackProximity(anchorRef: React.RefObject<HTMLElement | null>) {
@@ -118,7 +98,6 @@ export function FeedbackProximityPopover({
   const fabId = useId();
   const [portalReady, setPortalReady] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const isMobile = useIsMobileViewport();
   const { showFloating, dismissFloating } = useFeedbackProximity(anchorRef);
 
   useEffect(() => {
@@ -134,8 +113,8 @@ export function FeedbackProximityPopover({
     setExpanded(false);
   }, [dismissFloating]);
 
-  const showFab = showFloating && isMobile && !expanded;
-  const showPanel = showFloating && (!isMobile || expanded);
+  const showFab = showFloating && !expanded;
+  const showPanel = showFloating && expanded;
 
   const floatingCardClass =
     variant === "site-dark"
@@ -165,7 +144,10 @@ export function FeedbackProximityPopover({
   const mobilePromptLabel = fabLabel ?? "Give feedback?";
 
   const floatingFab = showFab ? (
-    <div className="fixed z-[70] bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 flex flex-col items-end gap-2 sm:hidden">
+    <div
+      className="fixed z-[70] bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 sm:bottom-4 sm:right-6 flex flex-col items-end gap-2"
+      data-analytics-no-click-map
+    >
       <button
         type="button"
         onClick={handleDismiss}
@@ -200,6 +182,7 @@ export function FeedbackProximityPopover({
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
+      data-analytics-no-click-map
       className={cn(
         "fixed z-[70] bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 right-4 sm:bottom-4 sm:left-auto sm:right-6 sm:max-w-md",
         "rounded-2xl border p-4 sm:p-5 overflow-visible",

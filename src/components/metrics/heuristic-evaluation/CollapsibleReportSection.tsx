@@ -81,7 +81,7 @@ function CollapsibleSummary({
       aria-controls={`${controlsId}-panel`}
       onClick={onToggle}
       className={cn(
-        "flex w-full cursor-pointer items-start justify-between gap-4 p-5 text-left motion-safe:transition-colors motion-safe:duration-200 hover:bg-[var(--color-bg-muted)]/40",
+        "flex w-full cursor-pointer items-start justify-between gap-3 p-4 text-left motion-safe:transition-colors motion-safe:duration-200 hover:bg-[var(--color-bg-muted)]/40 sm:gap-4 sm:p-5",
         summaryClassName,
       )}
     >
@@ -142,7 +142,7 @@ function CollapsibleContent({
       <div className="overflow-hidden">
         <div
           className={cn(
-            "border-t border-[var(--color-border)] px-5 pb-5 pt-4",
+            "border-t border-[var(--color-border)] px-4 pb-4 pt-4 sm:px-5 sm:pb-5",
             isOpen && "motion-safe:animate-[report-panel-in_0.35s_ease-out_both]",
           )}
         >
@@ -262,7 +262,7 @@ export function CollapsibleTeaserCard({
         aria-controls={panelId}
         onClick={toggle}
         className={cn(
-          "flex w-full cursor-pointer items-start justify-between gap-4 p-5 text-left motion-safe:transition-colors motion-safe:duration-200 hover:bg-[var(--color-bg-muted)]/40",
+          "flex w-full cursor-pointer items-start justify-between gap-3 p-4 text-left motion-safe:transition-colors motion-safe:duration-200 hover:bg-[var(--color-bg-muted)]/40 sm:gap-4 sm:p-5",
           summaryClassName,
         )}
       >

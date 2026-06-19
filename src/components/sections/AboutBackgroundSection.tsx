@@ -16,12 +16,13 @@ import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/utils";
 
 const tabButtonClass =
-  "relative z-10 inline-flex min-h-[40px] flex-1 items-center justify-center rounded-full px-5 py-2 text-body-sm font-medium motion-safe:transition-[color] motion-safe:duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2";
+  "relative z-10 inline-flex min-h-[40px] w-full items-center justify-center rounded-full px-6 py-2 text-body-sm font-medium motion-safe:transition-[color] motion-safe:duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2";
 
 export function AboutBackgroundSection() {
   const [activeView, setActiveView] = useState<AboutBackgroundView>("professional");
   const panel = aboutBackgroundViews[activeView];
   const activeTabIndex = aboutBackgroundViewOrder.indexOf(activeView);
+  const tabCount = aboutBackgroundViewOrder.length;
 
   return (
     <section className="section-padding bg-white">
@@ -31,15 +32,14 @@ export function AboutBackgroundSection() {
             <div
               role="tablist"
               aria-label="About me views"
-              className="relative inline-flex rounded-full border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-1"
+              className="relative grid min-w-[17.5rem] grid-cols-2 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-1 sm:min-w-[19rem]"
             >
               <div
                 aria-hidden="true"
-                className="absolute bottom-1 top-1 rounded-full bg-white shadow-sm motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out"
+                className="absolute bottom-1 top-1 rounded-full bg-white shadow-sm motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-out"
                 style={{
-                  width: `calc((100% - 0.5rem) / ${aboutBackgroundViewOrder.length})`,
-                  left: "0.25rem",
-                  transform: `translateX(calc(${activeTabIndex} * 100%))`,
+                  width: `calc((100% - 0.5rem) / ${tabCount})`,
+                  left: `calc(0.25rem + ${activeTabIndex} * ((100% - 0.5rem) / ${tabCount}))`,
                 }}
               />
               {aboutBackgroundViewOrder.map((viewId) => {
@@ -126,8 +126,7 @@ export function AboutBackgroundSection() {
                       >
                         {eyesOfHome.name}
                       </a>
-                      . You&apos;ll also find me skiing, scuba diving, mountain biking, training jiujitsu, fixing
-                      electronics, and mentoring junior designers when I can.
+                      . The gallery below is a quick look at what keeps me balanced outside of work.
                     </p>
                     {panel.paragraphs.map((paragraph) => (
                       <p key={paragraph}>{paragraph}</p>

@@ -19,7 +19,7 @@ export function MetricsKpiCard({
 }) {
   const interactive = Boolean(onClick) && !disabled;
   const className = cn(
-    "rounded-2xl border bg-white p-5 text-left",
+    "rounded-2xl border bg-white p-4 text-left sm:p-5",
     interactive && "cursor-pointer motion-safe:transition-[border-color,box-shadow,background-color] motion-safe:duration-200 hover:border-[var(--color-accent)]/40 hover:shadow-sm",
     active
       ? "border-[var(--color-accent)] ring-2 ring-[var(--color-accent)]/20"

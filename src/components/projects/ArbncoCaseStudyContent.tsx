@@ -7,6 +7,7 @@ import {
   arbncoInitialPrototypePreview,
   arbncoJourneyStages,
   arbncoMyRole,
+  arbncoProjectTimeline,
   arbncoReflectionItems,
   arbncoRoleItems,
   arbncoTeamTogetherItems,
@@ -34,6 +35,7 @@ import { ArbncoBulkSynthesiseLiveDemo } from "@/components/projects/ArbncoBulkSy
 import { HalfHourlyPrototypeEmbed } from "@/components/projects/HalfHourlyPrototypeEmbed";
 import { FigmaPrototypeEmbed } from "@/components/projects/FigmaPrototypeEmbed";
 import { CaseStudyAccentProvider } from "@/components/projects/CaseStudyAccentProvider";
+import { CaseStudyTimelineSection } from "@/components/projects/CaseStudyTimelineSection";
 
 const designPrincipleIcons = [Eye, Layers, MessageCircle] as const;
 
@@ -119,6 +121,11 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           impact={arbncoMyRole.impact}
         />
       </CaseStudySection>
+
+      <CaseStudyTimelineSection
+        title={arbncoSectionTitle("timeline")}
+        timeline={arbncoProjectTimeline}
+      />
 
       <CaseStudySection
         id="design"

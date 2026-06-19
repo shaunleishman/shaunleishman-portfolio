@@ -11,6 +11,7 @@ import { CollapsiblePanel, CollapsibleTeaserCard, ReportSection, scrollIntoRepor
 import { AnnotatedScreenshot } from "./AnnotatedScreenshot";
 import { FullscreenPagePreview } from "./FullscreenPagePreview";
 import { MgEmployeesRedesign } from "./MgEmployeesRedesign";
+import { OffAxisRedesign } from "./OffAxisRedesign";
 import {
   type FindingsSeverityFilterValue,
   FindingsSeverityFilter,
@@ -44,13 +45,40 @@ const ACTION_PRIORITY_STYLES = {
   validate: "border-purple-200 bg-purple-50",
 } as const;
 
-type HeuristicEvaluationReportProps = {
-  evaluation: HeuristicEvaluation;
+/** Interactive redesign mocks, keyed by evaluation slug. Studies without an entry fall back to the static redesign summary. */
+const REDESIGN_MOCKS: Record<
+  string,
+  { Component: React.ComponentType; headline: string; teaser: string }
+> = {
+  "mg-employees": {
+    Component: MgEmployeesRedesign,
+    headline: "Live-site layout with audit fixes",
+    teaser: "Task cards, plain language, stronger Log in, slimmer cookie bar",
+  },
+  "off-axis-tours": {
+    Component: OffAxisRedesign,
+    headline: "Live-site layout with audit fixes",
+    teaser: "Clear hero actions, how-it-works, directory search, real cards, footer",
+  },
 };
 
-export function HeuristicEvaluationReport({ evaluation }: HeuristicEvaluationReportProps) {
-  const backHref = useAdminHref("case-studies");
+type HeuristicEvaluationReportProps = {
+  evaluation: HeuristicEvaluation;
+  /** Override the "Back to case studies" destination. Defaults to the secret metrics case-studies path. */
+  backHref?: string;
+  /** Hide the internal back link entirely (e.g. when a public shell provides its own). */
+  hideBack?: boolean;
+};
+
+export function HeuristicEvaluationReport({
+  evaluation,
+  backHref: backHrefProp,
+  hideBack = false,
+}: HeuristicEvaluationReportProps) {
+  const adminBackHref = useAdminHref("case-studies");
+  const backHref = backHrefProp ?? adminBackHref;
   const { executiveSummary, scope, findings, actionPlan, screenshots } = evaluation;
+  const redesignMock = REDESIGN_MOCKS[evaluation.slug];
 
   const fixNowCount = actionPlan.filter((item) => item.priority === "fix_now").length;
   const [severityFilter, setSeverityFilter] = useState<FindingsSeverityFilterValue>("all");
@@ -91,22 +119,24 @@ export function HeuristicEvaluationReport({ evaluation }: HeuristicEvaluationRep
   }, [findingsExpanded]);
 
   return (
-    <div className="space-y-10 pb-24">
+    <div className="space-y-8 pb-20 sm:space-y-10 sm:pb-24">
       <div>
-        <Link
-          href={backHref}
-          className="mb-4 inline-block text-body-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent)]"
-        >
-          Back to case studies
-        </Link>
+        {!hideBack && (
+          <Link
+            href={backHref}
+            className="mb-4 inline-flex min-h-11 items-center text-body-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent)]"
+          >
+            Back to case studies
+          </Link>
+        )}
         <div className="h-1 w-16 rounded-full mb-4" style={{ backgroundColor: evaluation.accent }} aria-hidden />
         <p className="text-label text-[var(--color-text-muted)]">{evaluation.client}</p>
-        <h1 className="text-h2 font-semibold mt-1">{evaluation.title}</h1>
+        <h1 className="text-h2 font-semibold mt-1 text-balance">{evaluation.title}</h1>
         <a
           href={scope.evaluatedUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-block text-body-sm text-[var(--color-accent)] hover:underline"
+          className="mt-2 inline-block max-w-full break-words text-body-sm text-[var(--color-accent)] hover:underline"
         >
           {scope.evaluatedUrl}
         </a>
@@ -265,7 +295,7 @@ export function HeuristicEvaluationReport({ evaluation }: HeuristicEvaluationRep
             </button>
           )}
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6" role="group" aria-label="Filter findings by severity">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 mb-6" role="group" aria-label="Filter findings by severity">
           {SEVERITY_KPI_OPTIONS.map(({ key, label }) => {
             const count = countFindingsBySeverity(findings, key);
             return (
@@ -395,9 +425,9 @@ export function HeuristicEvaluationReport({ evaluation }: HeuristicEvaluationRep
             {actionPlan.map((item) => (
               <div
                 key={item.action}
-                className={`flex items-start gap-4 rounded-xl border p-4 ${ACTION_PRIORITY_STYLES[item.priority]}`}
+                className={`flex flex-col gap-2 rounded-xl border p-4 sm:flex-row sm:items-start sm:gap-4 ${ACTION_PRIORITY_STYLES[item.priority]}`}
               >
-                <span className="shrink-0 rounded-full bg-white border border-current/20 px-2.5 py-0.5 text-[0.75rem] font-semibold">
+                <span className="w-max shrink-0 rounded-full bg-white border border-current/20 px-2.5 py-0.5 text-[0.75rem] font-semibold">
                   {ACTION_PRIORITY_LABELS[item.priority]}
                 </span>
                 <p className="text-body-sm">{item.action}</p>
@@ -407,12 +437,12 @@ export function HeuristicEvaluationReport({ evaluation }: HeuristicEvaluationRep
         </CollapsiblePanel>
       </ReportSection>
 
-      {evaluation.slug === "mg-employees" && (
+      {redesignMock && (
         <ReportSection id="proposed-redesign" title="Proposed redesign">
           <CollapsiblePanel
             label="Interactive mock"
-            headline="Live-site layout with audit fixes"
-            teaser="Task cards, plain language, stronger Log in, slimmer cookie bar"
+            headline={redesignMock.headline}
+            teaser={redesignMock.teaser}
           >
             <FullscreenPagePreview
               title="Proposed redesign"
@@ -420,7 +450,7 @@ export function HeuristicEvaluationReport({ evaluation }: HeuristicEvaluationRep
               callouts={evaluation.redesignSummary?.callouts}
               accentColor={evaluation.accent}
             >
-              <MgEmployeesRedesign />
+              <redesignMock.Component />
             </FullscreenPagePreview>
             {evaluation.redesignSummary && (
               <div className="mt-6 grid gap-6 sm:grid-cols-2">
@@ -452,7 +482,7 @@ export function HeuristicEvaluationReport({ evaluation }: HeuristicEvaluationRep
         </ReportSection>
       )}
 
-      {evaluation.redesignSummary && evaluation.slug !== "mg-employees" ? (
+      {evaluation.redesignSummary && !redesignMock ? (
         <ReportSection id="redesign-summary" title="Redesign summary">
           <div className="rounded-2xl border border-[var(--color-border)] bg-white p-5 sm:p-6">
             {evaluation.redesignSummary.intro && (
