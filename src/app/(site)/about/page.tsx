@@ -34,8 +34,8 @@ export default function AboutPage() {
           </nav>
           <h1 className="mb-4 text-h1 font-semibold">I&apos;m {siteConfig.name}</h1>
           <p className="text-body-lg text-neutral-300">
-            A UX/UI designer who combines user research, co-design, and usability testing to build
-            products people trust, especially in complex, high-stakes environments.
+            A UX/UI designer who blends research, co-design, and testing to build trusted products in
+            high-stakes environments.
           </p>
         </PageHero>
       </section>

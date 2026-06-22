@@ -111,7 +111,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
       <CaseStudySection
         id="research"
         title={nhsSectionTitle("research")}
-        lead="Mixed methods: caller stories plus numbers the product team could act on."
+        lead="Mixed methods that paired caller stories with numbers the product team could act on."
       >
         <CaseStudySplitSection
           title="Approach"
@@ -142,7 +142,7 @@ export function NhsCaseStudyContent({ project }: NhsCaseStudyContentProps) {
         <CaseStudySubsection
           className="mb-0"
           title="Survey results"
-          lead="Interactive views from the follow-up survey we ran with 111 callers in April 2023. Each tab is a different cut of the data."
+          lead="Interactive cuts of the follow-up survey we ran with 111 callers in April 2023."
         >
           <NhsQuantitativeInteractiveDeferred />
         </CaseStudySubsection>

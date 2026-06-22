@@ -49,7 +49,7 @@
       "id": "QP03",
       "principle": "Separate evidence from recommendation",
       "description": "Record what was observed before jumping to a solution.",
-      "good_example": "Observed issue: Error message says 'Invalid input' without naming the field. Recommendation: Show the specific field and how to fix it.",
+      "good_example": "The error message says 'Invalid input' without naming the field. A good recommendation shows the specific field and how to fix it.",
       "poor_example": "Change the error message because it feels bad."
     },
     {
@@ -376,7 +376,7 @@
     {
       "id": "L01",
       "name": "Accessibility and inclusive design",
-      "mapped_to": "WCAG 2.2 principles: perceivable, operable, understandable, robust",
+      "mapped_to": "WCAG 2.2 principles of perceivable, operable, understandable, and robust",
       "evaluation_questions": [
         "Can the interface be used with a keyboard?",
         "Is focus order logical and visible?",

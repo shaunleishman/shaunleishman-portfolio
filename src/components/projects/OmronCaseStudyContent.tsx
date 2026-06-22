@@ -74,7 +74,7 @@ const actionCardFlow = [
 const coDesignHighlights = [
   {
     icon: Users,
-    text: "We ran workshops with five user groups on how they recruit, monitor, and hand off patients.",
+    text: "We interviewed five user groups on how they recruit, monitor, and hand off patients.",
   },
   {
     icon: Stethoscope,
@@ -82,7 +82,7 @@ const coDesignHighlights = [
   },
   {
     icon: ClipboardCheck,
-    text: "Practitioner sketches became wireframes and a clickable prototype for testing.",
+    text: "Our co-design sketches became wireframes and a clickable prototype for testing.",
   },
 ];
 
@@ -146,7 +146,7 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
       <CaseStudySection
         id="co-design"
         title={omronSectionTitle("co-design")}
-        lead="Practitioners shaped direction in workshops. We turned sketches into design."
+        lead="Grounded in practitioner research, the product team and I shaped the direction in workshops."
       >
         <div className="mb-10 not-prose">
           <div className="grid gap-6 md:grid-cols-2 md:items-stretch md:gap-8">
@@ -192,11 +192,11 @@ export function OmronCaseStudyContent({ project }: OmronCaseStudyContentProps) {
         <CaseStudySubsection
           spacingTop
           title="Interactive prototype"
-          lead="Filter patients, assign practitioners, review alerts, and open records."
+          lead="Assign practitioners, review alerts, and open patient records."
         >
           <EnhancePrototypeEmbed
             title="OMRON patient monitoring prototype"
-            caption="Interactive prototype: assign patients, review alerts, and resolve action cards"
+            caption="Prototype to assign patients and resolve action cards"
             compactHeader
           />
         </CaseStudySubsection>

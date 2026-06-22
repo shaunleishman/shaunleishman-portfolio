@@ -121,7 +121,7 @@ export const PROTOTYPE_ENTRIES: PrototypeEntry[] = [
     title: "Half-hourly synthetic data",
     client: "Arbnco",
     description:
-      "Energy Insight prototype: project list, synthetic data toggle, and consumption charts.",
+      "Energy Insight prototype with a project list, synthetic data toggle, and consumption charts.",
     accent: "#00a7b5",
     tags: ["Energy", "Dashboard", "Synthetic data"],
   },
@@ -130,7 +130,7 @@ export const PROTOTYPE_ENTRIES: PrototypeEntry[] = [
     title: "Patient monitoring & assignment",
     client: "Enhance",
     description:
-      "Healthcare monitoring dashboard: patient list, practitioner assignment flow, and patient detail view.",
+      "Healthcare monitoring dashboard with a patient list, practitioner assignment flow, and patient detail view.",
     accent: "#003153",
     tags: ["Healthcare", "Monitoring", "Assignment flow"],
   },

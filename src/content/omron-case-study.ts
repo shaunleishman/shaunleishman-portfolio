@@ -4,23 +4,23 @@ export const omronCaseStudyMeta = {
   outcomeLine:
     "Safer monitoring and handover flows after the platform failed its medication titration risk assessment.",
   problemStatement:
-    "The hypertension platform failed a risk assessment because practitioners could assign the wrong medication plan to the wrong patient. Small UI gaps (missing records, stale data, unclear handovers) created serious clinical risk.",
+    "The hypertension platform failed a risk assessment because practitioners could assign the wrong medication plan to the wrong patient.",
 };
 
 export const omronAtAGlance = {
-  summary: "Practitioners co-designed with the product team on a patient-safety fix.",
+  summary: "OMRON brought me in to co-design a safer monitoring platform.",
   productGoal:
-    "Make hypertension monitoring and medication titration assignment safe enough to pass a clinical risk assessment.",
+    "Make hypertension monitoring and medication titration safe enough to pass clinical risk assessments.",
   team:
-    "Worked with OMRON's product team and clinical stakeholders. Practitioners co-designed in workshops, which I facilitated and turned into design decisions.",
+    "I co-designed with OMRON's product team, a service designer, a product manager, and a consultant doctor who gave us the clinical expertise.",
   problem:
-    "Assigning medication titration was error-prone without full patient context, role-specific workflows, or clear handover when patients moved between practitioners.",
+    "Assigning medication titration carried real medical risk. A single mistake could put a patient on the wrong medication and harm their health.",
   contribution:
-    "I ran the co-design workshops, built wireframes and a clickable prototype, then scripted and moderated the usability tests that shaped the final flows.",
+    "I ran the co-design workshops and turned our sketches into wireframes and a clickable prototype. Then I scripted and moderated the usability tests that shaped the final flows.",
   highlights: [
     "Workshop sketches fed straight into wireframes",
-    "Four critical issues found in usability testing",
     "Prototype aligned the team before build",
+    "Four critical issues found in usability testing",
   ],
   methods: [
     { label: "Interviews", percent: 15 },
@@ -50,27 +50,27 @@ export function omronSectionTitle(id: OmronSectionId): string {
 }
 
 export const omronMyRole = {
-  lead: "Practitioners and product team shaped direction together. Below: in the room vs what I led after.",
+  lead: "The product team and I shaped the direction together. Here is what I led after.",
   impact:
-    "Persona boards and workshop outputs helped five role groups align on how they assign and monitor patients. Then we turned that into a prototype the team could test.",
+    "Persona boards from research helped us design for five different roles. Then we turned that into a prototype the team could test.",
 };
 
 export const omronTeamTogetherItems = [
-  "Practitioners co-designed assignment and monitoring flows in workshops we ran together. They sketched solutions. We captured constraints and turned them into design.",
+  "The product team and I co-designed the assignment and monitoring flows in workshops we ran together.",
   "The product team scoped the risk-assessment fix and joined usability sessions to hear findings firsthand.",
 ];
 
 export const omronRoleItems = [
-  "We ran co-design workshops and turned practitioner sketches into wireframes, keeping role-specific assignment logic visible early.",
+  "We ran the co-design workshops and turned our sketches into wireframes, keeping role-specific assignment logic visible early.",
   "We built a clickable prototype from workshop outputs so the team could test assign-and-handover flows before development.",
-  "We scripted usability sessions, moderated tests, and wrote the findings report, including mandatory handover reasons after practitioners struggled with silent transfers.",
+  "We scripted usability sessions, moderated the tests, and wrote the findings report.",
 ];
 
 export const omronProjectTimeline = {
   totalWeeks: 10,
   lead: "Where I led work vs where the wider team ran discovery before I joined.",
   intro:
-    "Six weeks from risk assessment through to handoff. I led the early testing and everything from co-design onward; the wider team ran practitioner discovery interviews.",
+    "Six weeks from risk assessment through to handoff. I led the early testing and everything from co-design onward, while the wider team ran practitioner discovery interviews.",
   phases: [
     {
       label: "Risk assessment",
@@ -95,7 +95,7 @@ export const omronProjectTimeline = {
       label: "Co-design",
       tasks: [
         { label: "Workshop prep", startWeek: 5.3, endWeek: 6.4, involved: true, detail: "Planned the activities and materials for the workshops." },
-        { label: "Running the workshops", startWeek: 6.4, endWeek: 6.55, involved: true, detail: "Facilitated practitioners sketching the safer flows." },
+        { label: "Running the workshops", startWeek: 6.4, endWeek: 6.55, involved: true, detail: "Facilitated the team sketching the safer flows." },
         { label: "Prototyping", startWeek: 6.75, endWeek: 7, involved: true, detail: "Turned workshop sketches into a clickable prototype." },
       ],
     },
@@ -114,14 +114,14 @@ export const omronProjectTimeline = {
 
 export const omronCoDesignItems = [
   "We interviewed existing and prospective OMRON VISO users across primary care roles",
-  "We ran workshops to share interview findings and sketch solutions with practitioners",
-  "We mapped how GPs, nurse practitioners, pharmacists, practice nurses, and admin staff assign and monitor patients differently",
+  "We ran workshops to share the interview findings and sketch solutions as a team",
+  "We mapped how five primary care roles assign and monitor patients differently",
 ];
 
 export const omronTestingFindings = [
   {
     title: "Medical records dependency",
-    text: "Practitioners could not safely assign titration plans without full clinical records. We flagged this in testing and raised it as a blocker before handoff.",
+    text: "Practitioners could not safely assign titration plans without full clinical records. We flagged it in testing as a blocker before handoff.",
   },
   {
     title: "Role-specific workflows",
@@ -129,11 +129,11 @@ export const omronTestingFindings = [
   },
   {
     title: "Stale monitoring data",
-    text: "Dashboards did not always show live readings. Testing showed practitioners lost confidence making titration decisions. We documented this for the product team.",
+    text: "Dashboards did not always show live readings, so practitioners lost confidence making titration decisions. We documented it for the product team.",
   },
   {
     title: "Inflexible handover",
-    text: "Transferring patients between practitioners needed clearer notes. We added a mandatory reason field in the prototype after testing showed silent handovers created error risk.",
+    text: "Transferring patients between practitioners needed clearer notes. After testing showed silent handovers created risk, we added a mandatory reason field.",
   },
 ];
 

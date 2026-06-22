@@ -16,7 +16,6 @@ import {
   Globe,
   Mail,
   MapPin,
-  Menu,
   Minus,
   Music,
   Plus,
@@ -29,7 +28,6 @@ import {
   Trash2,
   User,
   Users,
-  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { offAxisRedesignCallouts } from "@/content/heuristic-evaluations/off-axis-tours";
@@ -623,7 +621,9 @@ export function OffAxisRedesign() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(0);
   const mobileNavId = useId();
+  const headerRef = useRef<HTMLElement>(null);
 
   const [activeArtist, setActiveArtist] = useState<Artist>(ARTISTS[0]);
   const [activeGig, setActiveGig] = useState<Gig>(GIGS[0]);
@@ -656,6 +656,17 @@ export function OffAxisRedesign() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [mobileNavOpen]);
+
+  /** Keep the slide-down panel/backdrop pinned to the bottom edge of the header
+      regardless of its (responsive) height. */
+  useEffect(() => {
+    const measure = () => {
+      if (headerRef.current) setHeaderHeight(headerRef.current.offsetHeight);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   const changeView = (next: View) => {
     setAccountMenuOpen(false);
@@ -787,7 +798,7 @@ export function OffAxisRedesign() {
   return (
     <div ref={rootRef} style={{ backgroundColor: OA.bg, color: OA.text }} className={cn("relative min-h-full", basketBarVisible ? "pb-24" : "")}>
       {/* Header */}
-      <header className={cn("sticky top-0 z-40 overflow-visible border-b py-4", PAGE_GUTTER)} style={{ borderColor: OA.border, backgroundColor: "rgba(9,9,11,0.85)" }}>
+      <header ref={headerRef} className={cn("sticky top-0 z-40 overflow-visible border-b py-4", PAGE_GUTTER)} style={{ borderColor: OA.border, backgroundColor: "rgba(9,9,11,0.85)" }}>
         <div className={cn(CONTENT, "flex items-center gap-3 sm:gap-6")}>
           <button type="button" onClick={() => changeView("home")} className="shrink-0 cursor-pointer text-sm font-bold tracking-[0.15em] transition-opacity hover:opacity-80 sm:tracking-[0.2em]" style={{ color: OA.text }}>
             OFF AXIS
@@ -907,48 +918,104 @@ export function OffAxisRedesign() {
               </RedesignCalloutRegion>
             )}
 
-            {/* Mobile menu trigger — replaces the cramped inline nav below sm */}
+            {/* Mobile menu trigger — animated 3-bar icon that morphs to an X,
+                matching the main-site header (replaces the cramped inline nav below sm) */}
             <button
               type="button"
               onClick={() => setMobileNavOpen((open) => !open)}
-              aria-label="Menu"
+              aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileNavOpen}
               aria-controls={mobileNavId}
-              className="flex cursor-pointer items-center justify-center rounded-lg border p-2 transition-colors hover:bg-white/5 sm:hidden"
+              className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-lg border transition-colors hover:bg-white/5 sm:hidden"
               style={{ borderColor: OA.border, color: OA.secondary }}
             >
-              {mobileNavOpen ? <X className="size-4" aria-hidden /> : <Menu className="size-4" aria-hidden />}
+              <span className="sr-only">{mobileNavOpen ? "Close menu" : "Open menu"}</span>
+              <span className="relative flex h-5 w-5 flex-col items-center justify-center" aria-hidden>
+                <span className={cn("absolute block h-0.5 w-5 rounded-full bg-current motion-safe:transition-all motion-safe:duration-300", mobileNavOpen ? "translate-y-0 rotate-45" : "-translate-y-1.5")} />
+                <span className={cn("absolute block h-0.5 w-5 rounded-full bg-current motion-safe:transition-all motion-safe:duration-300", mobileNavOpen ? "scale-x-0 opacity-0" : "scale-x-100 opacity-100")} />
+                <span className={cn("absolute block h-0.5 w-5 rounded-full bg-current motion-safe:transition-all motion-safe:duration-300", mobileNavOpen ? "translate-y-0 -rotate-45" : "translate-y-1.5")} />
+              </span>
             </button>
           </div>
         </div>
 
-        {/* Mobile navigation panel — full-width sheet under the header (below sm only) */}
-        {mobileNavOpen ? (
-          <div className="sm:hidden">
-            <button type="button" aria-hidden tabIndex={-1} onClick={() => setMobileNavOpen(false)} className="fixed inset-0 z-40 cursor-default" />
-            <nav id={mobileNavId} aria-label="Primary" className={cn("absolute inset-x-0 top-full z-50 border-b shadow-xl", PAGE_GUTTER)} style={{ borderColor: OA.border, backgroundColor: OA.surface }}>
-              <ul className={cn(CONTENT, "flex flex-col gap-1 py-3")}>
-                {navItems.map((item) => {
-                  const active = view === item.target;
-                  return (
-                    <li key={item.target}>
-                      <button
-                        type="button"
-                        onClick={() => changeView(item.target)}
-                        aria-current={active ? "page" : undefined}
-                        className="flex min-h-[44px] w-full cursor-pointer items-center justify-between rounded-lg px-3 text-base font-medium transition-colors hover:bg-white/5"
-                        style={active ? { color: OA.text, backgroundColor: "rgba(168,85,247,0.18)" } : { color: OA.secondary }}
-                      >
-                        {item.label}
-                        {active ? <span className="size-1.5 rounded-full" style={{ backgroundImage: ACCENT_GRADIENT }} aria-hidden /> : null}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-          </div>
-        ) : null}
+        {/* Mobile navigation — full-width slide-down sheet with a dimmed backdrop,
+            matching the main-site header UX (below sm only). Kept mounted so it can
+            animate open/closed; pinned to the header's bottom edge via headerHeight. */}
+        <div className="sm:hidden" aria-hidden={!mobileNavOpen}>
+          <button
+            type="button"
+            tabIndex={mobileNavOpen ? 0 : -1}
+            aria-label="Close menu"
+            onClick={() => setMobileNavOpen(false)}
+            style={{ top: headerHeight, backgroundColor: "rgba(0,0,0,0.5)" }}
+            className={cn(
+              "fixed inset-x-0 bottom-0 z-40 cursor-default motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out",
+              mobileNavOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
+            )}
+          />
+
+          <nav
+            id={mobileNavId}
+            aria-label="Primary"
+            inert={mobileNavOpen ? undefined : true}
+            style={{ top: headerHeight, borderColor: OA.border, backgroundColor: OA.surface }}
+            className={cn(
+              "fixed inset-x-0 z-50 border-b shadow-xl motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
+              PAGE_GUTTER,
+              mobileNavOpen ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0",
+            )}
+          >
+            <ul className={cn(CONTENT, "flex flex-col gap-1 py-3")}>
+              {navItems.map((item, index) => {
+                const active = view === item.target;
+                return (
+                  <li
+                    key={item.target}
+                    className={cn(
+                      "motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
+                      mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0",
+                    )}
+                    style={mobileNavOpen ? { transitionDelay: `${80 + index * 40}ms` } : undefined}
+                  >
+                    <button
+                      type="button"
+                      tabIndex={mobileNavOpen ? 0 : -1}
+                      onClick={() => changeView(item.target)}
+                      aria-current={active ? "page" : undefined}
+                      className="flex min-h-[44px] w-full cursor-pointer items-center justify-between rounded-lg px-3 text-base font-medium transition-colors hover:bg-white/5"
+                      style={active ? { color: OA.text, backgroundColor: "rgba(168,85,247,0.18)" } : { color: OA.secondary }}
+                    >
+                      {item.label}
+                      {active ? <span className="size-1.5 rounded-full" style={{ backgroundImage: ACCENT_GRADIENT }} aria-hidden /> : null}
+                    </button>
+                  </li>
+                );
+              })}
+              {/* "Log in" is hidden in the header bar below sm — surface it here so the
+                  logged-out account path stays reachable on mobile. */}
+              {!loggedIn ? (
+                <li
+                  className={cn(
+                    "mt-1 border-t pt-2 motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
+                    mobileNavOpen ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0",
+                  )}
+                  style={{ borderColor: OA.border, transitionDelay: mobileNavOpen ? `${80 + navItems.length * 40}ms` : undefined }}
+                >
+                  <button
+                    type="button"
+                    tabIndex={mobileNavOpen ? 0 : -1}
+                    onClick={() => changeView("login")}
+                    className="flex min-h-[44px] w-full cursor-pointer items-center rounded-lg px-3 text-base font-medium transition-colors hover:bg-white/5"
+                    style={{ color: OA.secondary }}
+                  >
+                    Log in
+                  </button>
+                </li>
+              ) : null}
+            </ul>
+          </nav>
+        </div>
       </header>
 
       {/* HOME */}
@@ -2124,7 +2191,9 @@ function AccountView({ onOpenSubscriptions, callouts, showCallouts }: { onOpenSu
 
         {/* Tabs on one row (HE-024) */}
         <RedesignCalloutRegion calloutId="HE-024" callouts={callouts} showMarkers={showCallouts} className="mt-6">
-          <div className="flex gap-1 overflow-x-auto rounded-xl border p-1" style={{ borderColor: OA.border, backgroundColor: OA.surface }}>
+          {/* Tabs wrap on narrow screens (no stray horizontal scrollbar) and sit on a
+              single row from sm up where they fit (HE-024). */}
+          <div className="flex flex-wrap gap-1 rounded-xl border p-1 sm:flex-nowrap" style={{ borderColor: OA.border, backgroundColor: OA.surface }}>
             {ACCOUNT_TABS.map((t) => {
               const active = t === tab;
               return (

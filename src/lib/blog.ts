@@ -16,6 +16,8 @@ export type BlogPost = {
   tags: string[];
   /** Optional share/card image under /public, e.g. /images/blog/my-post.jpg (1200×630 recommended). */
   thumbnail?: string;
+  /** Optional narrated-audio file under /public, e.g. /audio/my-post.mp3. Renders the article audio player when set. */
+  audioUrl?: string;
   content: string;
   readingTime: string;
 };
@@ -51,6 +53,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     category: resolveBlogCategoryId(data.category, data.tags ?? []),
     tags: data.tags ?? [],
     thumbnail: data.thumbnail,
+    audioUrl: data.audioUrl,
     content,
     readingTime: stats.text,
   };

@@ -116,8 +116,8 @@ export function AboutBackgroundSection() {
                 {activeView === "personal" ? (
                   <>
                     <p>
-                      I&apos;m based in Edinburgh. Music fills most of my spare time. I write songs, produce,
-                      and sing lead in the band{" "}
+                      I&apos;m based in Edinburgh, and music fills most of my spare time. I write songs,
+                      produce, and sing lead in the band{" "}
                       <a
                         href={eyesOfHome.instagramUrl}
                         target="_blank"
@@ -126,7 +126,7 @@ export function AboutBackgroundSection() {
                       >
                         {eyesOfHome.name}
                       </a>
-                      . The gallery below is a quick look at what keeps me balanced outside of work.
+                      .
                     </p>
                     {panel.paragraphs.map((paragraph) => (
                       <p key={paragraph}>{paragraph}</p>

@@ -53,7 +53,7 @@ export const nhsPersonas: NhsPersona[] = [
     expectations: [
       "To feel listened to and heard.",
       "Some expect a call back to check in on them.",
-      "Long wait times for the mental health IVR option, some deliberately press another option hoping to get through faster.",
+      "Long waits on the mental health IVR option lead some to press another option to get through faster.",
     ],
     heardAbout: "Word of mouth or through the GP IVR system.",
     motivations:
@@ -71,7 +71,7 @@ export const nhsPersonas: NhsPersona[] = [
     positives:
       "Callers often feel supported when connected to a member of the call handling team. Glad to hear someone's voice once connected.",
     frustrations: [
-      "High demand for mental health concerns leads to perceived long wait times, some manipulate the IVR to get answered faster.",
+      "High demand for mental health support means long waits, so some manipulate the IVR to get answered faster.",
       "Perception that call handlers are not trained in mental health.",
       "Frustration when not connected directly to a more advanced practitioner for complex histories.",
     ],
@@ -88,7 +88,7 @@ export const nhsPersonas: NhsPersona[] = [
     spectrumPosition: 1,
     quote: "So when he is not himself, I go straight to oh my God he's gonna die.",
     callerSituation:
-      "Often a third-party caller for a loved one with acute symptoms, chest pain, breathing difficulty, or sudden deterioration. Highly emotional, anxious, and time-sensitive; every minute in the queue feels critical.",
+      "Often a third-party caller for a loved one with acute symptoms, chest pain, breathing difficulty, or sudden deterioration. Highly emotional, anxious, and time-sensitive. Every minute in the queue feels critical.",
     traits: { emotional: 90, thankful: 50, aggravated: 85 },
     expectations: [
       "To reach a medically trained person as soon as possible.",
@@ -111,8 +111,7 @@ export const nhsPersonas: NhsPersona[] = [
       "Intense anxiety eases once a clinical professional is on the line and takes the situation seriously.",
     frustrations: [
       "Long wait times with no indication of queue position or progress.",
-      "Too many contact points, repeating details to handler, then nurse, then supervisor.",
-      "The repetitive nature of questions at each stage, \"It's like groundhog day.\"",
+      "Repeating details to the handler, then the nurse, then the supervisor.",
       "Not being connected directly to specialist departments such as mental health.",
     ],
     pullQuotes: [
@@ -190,8 +189,7 @@ export const nhsPersonas: NhsPersona[] = [
     positives:
       "Values having a service available when the GP is closed. Appreciates thorough, diligent call handlers even when the process involves many questions.",
     frustrations: [
-      "Wait times, being put on hold, and waiting for callbacks, feeling there are not enough nurses on shift.",
-      "No progress indicator in the queue, not knowing their position.",
+      "Long waits and callbacks, with a sense there are too few nurses on shift.",
       "Repetitive questions at each stage in the chain of command.",
       "Unclear what is classed as \"an emergency\" versus \"urgent.\"",
     ],
@@ -233,8 +231,7 @@ export const nhsPersonas: NhsPersona[] = [
     frustrations: [
       "Long queue times only to be directed back to the GP practice.",
       "Feeling passed in circles, GP sends to pharmacy, pharmacy sends to 111, 111 sends back to GP.",
-      "Very difficult to get a GP appointment and long waiting times.",
-      "Difficulty booking GP appointments online in the first place.",
+      "Very difficult to get a GP appointment, and hard to book online.",
     ],
     pullQuotes: [
       "Easiest and quickest route, makes sense.",

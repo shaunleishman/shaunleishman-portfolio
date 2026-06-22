@@ -8,7 +8,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "Work",
-  description: "UX/UI design case studies: research, co-design, and usability testing.",
+  description: "UX/UI design case studies covering research, co-design, and usability testing.",
 };
 
 export default function WorkPage() {

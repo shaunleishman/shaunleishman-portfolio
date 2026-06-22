@@ -214,7 +214,7 @@ export function HeuristicEvaluationReport({
 
       <ReportSection title="Priority problems">
         <p className="mb-4 text-body-sm text-[var(--color-text-muted)]">
-          Top {PRIORITY_PROBLEMS_COUNT} findings by priority rank — same order as the list below.
+          Top {PRIORITY_PROBLEMS_COUNT} findings by priority rank, in the same order as the list below.
         </p>
         <div className="space-y-3">
           {topPriorityFindings.map((finding) => {
@@ -346,7 +346,7 @@ export function HeuristicEvaluationReport({
         <FindingsSeverityFilter findings={findings} value={severityFilter} onChange={setSeverityFilter} />
         <p className="mb-4 text-body-sm text-[var(--color-text-muted)]">
           Severity reflects how blocking an issue is. Priority points on each card reflect fix order from
-          frequency, impact, and persistence — separate from the severity filter above.
+          frequency, impact, and persistence, which is separate from the severity filter above.
         </p>
         {severityFilter !== "all" && (
           <p className="mb-4 text-body-sm text-[var(--color-text-muted)]">

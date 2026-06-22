@@ -552,7 +552,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
     },
     {
       src: "/metrics/case-studies/mg-employees/cta-hierarchy.png",
-      alt: "Register is the first mid-page CTA; Log in sits lower on the page",
+      alt: "Register is the first mid-page CTA, and Log in sits lower on the page",
       caption: "Register is prominent mid-page. Log in is only a small header link here.",
       annotations: ctaHierarchyAnnotations,
     },

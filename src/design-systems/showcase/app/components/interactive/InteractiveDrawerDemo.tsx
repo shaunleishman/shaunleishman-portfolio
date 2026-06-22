@@ -28,13 +28,13 @@ function ConnectedEditDrawer({
       onClose={() => onStatus("Drawer closed")}
       onCancel={() => {
         resetFields();
-        onStatus("Changes cancelled: fields reset");
+        onStatus("Changes cancelled, fields reset");
       }}
       onImport={() =>
         onStatus(
           fields.columnName.trim()
             ? `Imported "${fields.columnName.trim()}"`
-            : "Import: add a column name in the Default field first",
+            : "Import needs a column name in the Default field first",
         )
       }
     >

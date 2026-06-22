@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Headphones } from "lucide-react";
 import type { BlogPost } from "@/lib/blog";
 import { getBlogThumbnailSrc } from "@/lib/blog-images";
 import {
@@ -120,6 +121,12 @@ export function BlogPostList({ posts, engagement }: BlogPostListProps) {
                     </time>
                     {" · "}
                     {formatReadingTime(post.readingTime)}
+                    {post.audioUrl && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-accent)]/10 px-2 py-0.5 text-[var(--color-accent)]">
+                        <Headphones className="size-3" aria-hidden />
+                        Audio
+                      </span>
+                    )}
                   </SectionLabel>
                   <BlogEngagementStatsDisplay
                     stats={

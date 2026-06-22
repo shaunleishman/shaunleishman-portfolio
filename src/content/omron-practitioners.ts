@@ -45,8 +45,7 @@ export const omronPractitioners: OmronPractitioner[] = [
     keyTasks: [
       "Triages daily patient flow and designates health professionals accordingly.",
       "Focuses on home blood pressure monitoring to reduce white coat hypertension.",
-      "Initiates annual blood checks for hypertension management.",
-      "Uses tech tools for patient data and ensuring accurate clinical decisions.",
+      "Uses tech tools to manage patient data and support accurate clinical decisions.",
     ],
     interactions: [
       { label: "Administrative staff", description: "Sorting and documenting patient data." },
@@ -54,8 +53,8 @@ export const omronPractitioners: OmronPractitioner[] = [
       { label: "Patients", description: "Blood pressure monitoring and follow-ups." },
     ],
     visoUsage: [
-      "Uses in-practice monitors for initial checks. If readings are high, patients are advised to undergo home monitoring, given either paper forms or guided to use apps.",
-      "Based on results, issues treatment plans following NICE guidelines.",
+      "Uses in-practice monitors for initial checks, then moves high readings to home monitoring.",
+      "Issues treatment plans based on the results, following NICE guidelines.",
       "Actions alerted cards when appropriate to their role.",
     ],
   },
@@ -75,9 +74,9 @@ export const omronPractitioners: OmronPractitioner[] = [
     boardAlt: "Nurse practitioner persona board",
     role: "Acts like a GP registrar, assesses, diagnoses, treats conditions, and refers patients to secondary or specialist care.",
     keyTasks: [
-      "Engages in remote monitoring of long-term diseases, especially for blood pressure, with decisions based on patient situations.",
+      "Remotely monitors long-term conditions like blood pressure, with care based on each patient.",
       "Uses guidelines and templates for diagnosis and structured patient care.",
-      "Promotes streamlined approaches to monitoring conditions and their administration, including by introduction of relevant technology.",
+      "Promotes streamlined ways to monitor conditions, including new technology.",
     ],
     interactions: [
       {
@@ -87,11 +86,9 @@ export const omronPractitioners: OmronPractitioner[] = [
       { label: "Patients", description: "Remote monitoring and in-person visits." },
     ],
     visoUsage: [
-      "The nurse practitioner and their team work to recruit and onboard prospective patients on VISO.",
-      "Prompts patients and follows up about blood pressure readings and tests required for diagnostics and condition review.",
+      "Works with their team to recruit and onboard prospective patients on VISO.",
+      "Prompts patients and follows up on blood pressure readings and required tests.",
       "Checks alerts and action cards needing attention.",
-      "Appreciates the data overviews, graphs and data pulled from other systems, but thinks further data synchronisation between primary and secondary care systems is needed.",
-      "Acknowledges VISO is not an option for older and less tech-savvy patients, with slight reservations about entirely relying on remote methods.",
     ],
   },
   {
@@ -110,10 +107,9 @@ export const omronPractitioners: OmronPractitioner[] = [
     boardAlt: "Clinical pharmacist persona board",
     role: "Oversee patient medication management in primary care settings.",
     keyTasks: [
-      "Manages and reviews long-term conditions like hypertension, ensuring appropriate monitoring and treatment measures.",
-      "Performs remote and on-site consultations based on the disease type and patient conditions.",
+      "Manages and reviews long-term conditions like hypertension, monitoring and adjusting treatment.",
+      "Runs remote and on-site consultations based on the condition and the patient.",
       "Diagnoses and manages hypertension using local and national guidelines.",
-      "Collaborates with teams for continuous patient care.",
     ],
     interactions: [
       { label: "GPs and nurses", description: "Collaboration on patient issues." },
@@ -121,8 +117,8 @@ export const omronPractitioners: OmronPractitioner[] = [
       { label: "Patients", description: "Direct communication via Accurx." },
     ],
     visoUsage: [
-      "Diagnosis and treatment: comprehensive management of hypertension, from diagnosing new cases based on local and national guidelines to managing known cases.",
-      "Monitoring: emphasis on regular monitoring, involving blood tests, pulse checks, and home blood pressure readings. Also oversees anticoagulant monitoring to ensure accurate dosing.",
+      "Covers the full management of hypertension, from diagnosing new cases to managing known ones.",
+      "Monitors through blood tests, pulse checks, and home blood pressure readings.",
     ],
   },
   {
@@ -141,10 +137,9 @@ export const omronPractitioners: OmronPractitioner[] = [
     boardAlt: "Practice nurse persona board",
     role: "Working as part of the primary healthcare team, practice nurses provide and support patient care.",
     keyTasks: [
-      "Contributes to patient diagnostics, monitoring and treatment.",
-      "Maintains patient records, receives, reviews, and passes on data.",
+      "Contributes to patient diagnostics, monitoring, and treatment.",
+      "Maintains patient records and passes data on to the right people.",
       "Follows up with patients by scheduling tests and messaging through the platform.",
-      "Works in tandem with administrative and clinical staff ensuring patient engagement and recall.",
     ],
     interactions: [
       { label: "GPs", description: "For consultations around patient care and required procedures." },
@@ -152,8 +147,8 @@ export const omronPractitioners: OmronPractitioner[] = [
       { label: "Patients", description: "For hypertension monitoring and follow-ups." },
     ],
     visoUsage: [
-      "The VISO platform plays a role in remotely reviewing patients' blood pressure and other relevant data. Instead of traditional methods around readings, tests and symptom questionnaires, they can now rely on digital records from VISO.",
-      "VISO supports record handling and review, reviewing and prioritising readings, assigning tests and appointment scheduling, messaging patients through the platform, and ensuring they respond to app prompts.",
+      "Reviews patients' blood pressure and data through VISO instead of traditional readings and questionnaires.",
+      "Handles records, prioritises readings, and messages patients through the platform.",
     ],
   },
   {
@@ -173,12 +168,11 @@ export const omronPractitioners: OmronPractitioner[] = [
     role: "Admin staff ensure the seamless operation of the primary care practice by managing patient documentation, facilitating communication, and overseeing digital records in systems like OMRON VISO.",
     keyTasks: [
       "Responsible for registration of patients.",
-      "Handle appointment scheduling, document sorting, patient data entry and communications.",
-      "Offer basic tech support related to systems, including the OMRON VISO system.",
+      "Handles appointment scheduling, document sorting, and patient data entry.",
+      "Offers basic tech support for systems like the OMRON VISO platform.",
     ],
     interactions: [
       { label: "GPs", description: "Collaborate on documentation and review." },
-      { label: "Clinical pharmacists", description: "Assist with appointment setups." },
       {
         label: "Nurse practitioners and practice nurses",
         description: "Support remote monitoring setups.",

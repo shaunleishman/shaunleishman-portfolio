@@ -26,7 +26,7 @@ export default function MetricsAudiencePage() {
   return (
     <AdminShell
       title="Audience"
-      description="Track how people engage over time: viewers, project and article reach, depth per session, and shares."
+      description="Track how people engage over time, including viewers, project and article reach, depth per session, and shares."
     >
       <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-[var(--color-border)] bg-white p-5 sm:flex-row sm:items-end">
         <div className="flex-1">

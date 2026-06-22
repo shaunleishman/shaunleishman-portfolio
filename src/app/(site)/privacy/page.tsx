@@ -61,7 +61,7 @@ export default function PrivacyPage() {
         <h2 className="text-h4 font-semibold mb-3">Your choices</h2>
         <p className="text-body-sm text-[var(--color-text-secondary)] leading-relaxed mb-4">
           The cookie banner appears on each visit until you choose Accept all. Rejecting optional cookies
-          only applies to your current visit; we will ask again next time. You can change analytics on or
+          only applies to your current visit, and we will ask again next time. You can change analytics on or
           off later in cookie settings after you have accepted.
         </p>
         <CookieSettingsButton className="text-[var(--color-accent)] font-medium underline-offset-2 hover:underline min-h-[44px] inline-flex items-center" />

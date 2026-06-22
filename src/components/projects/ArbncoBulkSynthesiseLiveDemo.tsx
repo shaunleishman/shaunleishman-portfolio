@@ -8,7 +8,7 @@ type ArbncoBulkSynthesiseLiveDemoProps = {
 };
 
 export function ArbncoBulkSynthesiseLiveDemo({
-  caption = "Example: bulk synthesise and revert flow across the projects list",
+  caption = "Example of the bulk synthesise and revert flow across the projects list",
   className,
 }: ArbncoBulkSynthesiseLiveDemoProps) {
   return (

@@ -11,7 +11,7 @@ export default function SiteMetricsPage() {
   return (
     <AdminShell
       title="Site metrics"
-      description="High-level performance for the last 7 days: traffic, engagement, and what is performing right now."
+      description="High-level performance for the last 7 days, covering traffic, engagement, and what is performing right now."
     >
       {loading && !data ? (
         <p className="text-body-sm text-[var(--color-text-muted)]">Loading dashboard…</p>

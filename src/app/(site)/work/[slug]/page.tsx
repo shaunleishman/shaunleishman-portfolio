@@ -86,7 +86,9 @@ export default async function CaseStudyPage({ params }: Props) {
               {omronCaseStudyMeta.outcomeLine}
             </p>
           )}
-          <p className="text-body-lg text-neutral-300 mb-6">{project.overview}</p>
+          {!isRichCaseStudy && (
+            <p className="text-body-lg text-neutral-300 mb-6">{project.overview}</p>
+          )}
           <TagList tags={project.tags} aria-label="Project tags" />
           {!isRichCaseStudy && (
             <CaseStudyVisualBlocks

@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
-import { getBlogShareImageUrl, getBlogShareImageMeta } from "@/lib/blog-images";
+import { getBlogShareImageUrl, getBlogShareImageMeta, getBlogThumbnailSrc } from "@/lib/blog-images";
 import { getBlogCategory } from "@/lib/blog-categories";
 import { getBlogEngagementForSlug } from "@/lib/blog-engagement";
 import { siteConfig } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CaseStudyFeedback } from "@/components/projects/CaseStudyFeedback";
 import { BlogContent } from "@/components/blog/BlogContent";
+import { ArticleAudioPlayer } from "@/components/blog/ArticleAudioPlayer";
 import {
   BlogPostEngagement,
   BlogPostEngagementStats,
@@ -128,7 +129,19 @@ export default async function BlogPostPage({ params }: Props) {
         </PageHero>
       </section>
 
-      <article className="section-padding bg-white">
+      <article className="bg-white pb-[var(--space-section)] pt-10 sm:pt-12">
+        {post.audioUrl && (
+          <Reveal className="container-site max-w-3xl mb-10">
+            <ArticleAudioPlayer
+              src={post.audioUrl}
+              slug={post.slug}
+              title={post.title}
+              href={`/blog/${post.slug}`}
+              thumbnail={getBlogThumbnailSrc(post)}
+            />
+          </Reveal>
+        )}
+
         <div className="container-site max-w-3xl prose prose-neutral prose-lg">
           <BlogContent content={post.content} />
         </div>

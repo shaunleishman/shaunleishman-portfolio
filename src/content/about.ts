@@ -92,7 +92,7 @@ export const aboutOriginTimeline: readonly AboutOriginStep[] = [
   },
   {
     title: "Now",
-    detail: "Searching for a role where I can grow in a bigger team and push toward senior leadership",
+    detail: "Growing toward senior leadership in a bigger team",
   },
 ] as const;
 
@@ -131,9 +131,9 @@ export const aboutBackgroundViews = {
     label: "Professional",
     heading: "Design informed by user research",
     paragraphs: [
-      "Research-led UX/UI design across discovery interviews, co-design workshops, wireframes, prototypes, and usability testing. Recent work spans healthcare (OMRON, NHS 111) and sustainability (Arbnco), where clarity and trust are non-negotiable.",
+      "I'm a research-led UX/UI designer. I start with discovery interviews and co-design workshops, then turn what I learn into wireframes, prototypes, and usability tests. Recently that's been healthcare with OMRON and NHS 111, and sustainability with Arbnco, where people must trust what they see before acting.",
       siteConfig.quote,
-      "Currently looking for UX/UI design roles where the work spans research, interaction design, and prototyping, helping teams make better decisions with real user evidence, not just polished screens.",
+      "I'm looking for UX/UI design roles across interaction design and prototyping, where I help teams decide with real user evidence, not just polished screens.",
     ],
   },
   personal: {

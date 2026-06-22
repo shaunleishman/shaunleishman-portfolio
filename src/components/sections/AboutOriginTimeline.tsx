@@ -20,8 +20,8 @@ export function AboutOriginTimeline() {
           }
           description={
             <p className="text-body-lg text-[var(--color-text-secondary)] mb-12 max-w-2xl">
-              Design first. Psychology next. Product work after that. Each step added a layer I still use every
-              day.
+              Design came first, then psychology, then product work. Each step added a layer I still use
+              every day.
             </p>
           }
         />

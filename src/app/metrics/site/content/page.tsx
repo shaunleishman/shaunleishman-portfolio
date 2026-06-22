@@ -29,7 +29,7 @@ export default function MetricsContentPage() {
   return (
     <AdminShell
       title="Content"
-      description="Compare projects and articles like a catalogue: sort by views, viewers, likes, shares, or date."
+      description="Compare projects and articles like a catalogue. Sort by views, viewers, likes, shares, or date."
     >
       <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-[var(--color-border)] bg-white p-5 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-wrap gap-2" role="tablist" aria-label="Content type">

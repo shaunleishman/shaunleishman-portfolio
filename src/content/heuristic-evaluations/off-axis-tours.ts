@@ -5,7 +5,7 @@ const offAxisRedesignCallouts: RedesignCallout[] = [
     findingId: "HE-001",
     title: "Hero gives no next step",
     problem: "The hero stated a goal but offered no buttons or clear action.",
-    change: "Hero now leads with two actions: Browse gigs and Join as an artist.",
+    change: "Hero now leads with two actions, Browse gigs and Join as an artist.",
     severity: "high",
   },
   {
@@ -750,7 +750,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         is_accessibility_related: true,
         wcag_principle: "WCAG use of colour and focus visibility (Perceivable and Operable)",
         notes:
-          "Signalling links with colour alone risks WCAG 2.2 SC 1.4.1 Use of Color; ensure a visible focus indicator per SC 2.4.7.",
+          "Signalling links with colour alone risks WCAG 2.2 SC 1.4.1 Use of Color, so ensure a visible focus indicator per SC 2.4.7.",
       },
     },
     {
@@ -1180,7 +1180,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       secondary_heuristics: ["H06", "H04"],
       additional_lenses: ["L02"],
       description:
-        "The header carries two icon-only controls that do not earn their place this early: a £ button and a theme toggle. The £ button has no text, caret, or selected value, so it is unclear whether it switches currency, filters by price, or links somewhere. Since Off Axis prices everything in GBP, it has no real job. A theme toggle is extra surface to build, test, and maintain that is not core to an MVP.",
+        "The header carries two icon-only controls that do not earn their place this early, a £ button and a theme toggle. The £ button has no text, caret, or selected value, so it is unclear whether it switches currency, filters by price, or links somewhere. Since Off Axis prices everything in GBP, it has no real job. A theme toggle is extra surface to build, test, and maintain that is not core to an MVP.",
       evidence: {
         observed_where: "Global header, top-right controls",
         observed_behaviour:

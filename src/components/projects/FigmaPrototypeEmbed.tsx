@@ -208,7 +208,7 @@ export function FigmaPrototypeEmbed({
         target="_blank"
         rel="noopener noreferrer"
         className="group relative block w-full bg-[#f5f6f6]"
-        aria-label={`${title} — open interactive prototype in Figma Make`}
+        aria-label={`${title}, open interactive prototype in Figma Make`}
       >
         {!previewLoaded && <Skeleton className="absolute inset-0 min-h-[12rem] rounded-none" aria-hidden />}
         <Image

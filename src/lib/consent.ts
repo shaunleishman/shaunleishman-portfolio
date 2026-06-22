@@ -157,7 +157,7 @@ export const CONSENT_CATEGORIES = [
     id: "analytics" as const,
     title: "Analytics",
     description:
-      "Helps improve the site by collecting anonymous usage data: pages viewed, scroll depth, section attention, mouse heatmaps, and optional feedback or engagement (likes and shares).",
+      "Helps improve the site by collecting anonymous usage data. That includes pages viewed, scroll depth, section attention, mouse heatmaps, and optional actions like feedback, likes, and shares.",
     required: false,
   },
 ];

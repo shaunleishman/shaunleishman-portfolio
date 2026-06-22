@@ -42,7 +42,7 @@ const designPrincipleIcons = [Eye, Layers, MessageCircle] as const;
 const designReviewFeedback = [
   {
     icon: Bookmark,
-    text: "Save had to feel deliberate. Project info only saved when users clicked save.",
+    text: "Save had to feel deliberate, so project info only saved when users clicked Save.",
   },
   {
     icon: Library,
@@ -78,7 +78,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
       <CaseStudySplitSection
         id="the-challenge"
         title={arbncoSectionTitle("the-challenge")}
-        lead="The business needed finer data. Users needed clarity and trust."
+        lead="The business needed finer data, and users needed clarity they could trust."
         visual={
           <CaseStudyIllustration
             src="/projects/arbnco-synthetic-ai-data/switching-to-synthetic-data.gif"
@@ -93,8 +93,8 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           {arbncoCaseStudyMeta.problemStatement}
         </p>
         <p className="mt-4 text-body-sm text-[var(--color-text-muted)]">
-          When enough readings existed, the platform could estimate missing hours. We designed flows
-          so people could turn it on, see when estimates were running, and trust what they saw.
+          Generated hourly data could fill those gaps, but only if people could tell when estimates
+          were running and trust the numbers behind them.
         </p>
         <div className="mt-8">
           <p className="text-label uppercase tracking-wide text-[var(--color-text-muted)] mb-3">
@@ -155,12 +155,12 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           <CaseStudySubsection
             className="mb-0"
             title="Initial prototype"
-            lead="Figma Make exploration we walked through in design review — project list, eligibility, and synthetic data flows."
+            lead="Figma Make exploration we walked through in design review, covering the project list, eligibility, and synthetic data flows."
           >
             <FigmaPrototypeEmbed
               url={arbncoInitialPrototypeUrl}
               title="Half-hourly project prototype"
-              caption="Figma prototype: compare projects, check eligibility, and explore synthetic hourly data settings"
+              caption="Figma prototype to compare projects, check eligibility, and explore synthetic hourly data settings"
               previewSrc={arbncoInitialPrototypePreview.src}
               previewAlt={arbncoInitialPrototypePreview.alt}
               previewWidth={arbncoInitialPrototypePreview.width}
@@ -183,10 +183,10 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           spacingTop
           className="mb-0"
           title="Interactive prototype"
-          lead="Built prototype for deeper exploration — project list, building settings, and synthetic hourly data."
+          lead="Built prototype for deeper exploration across the project list, building settings, and synthetic hourly data."
         >
           <HalfHourlyPrototypeEmbed
-            caption="Interactive prototype: compare data resolution, enable synthetic hourly data, and explore project settings"
+            caption="Interactive prototype to compare data resolution, enable synthetic hourly data, and explore project settings"
             compactHeader
           />
         </CaseStudySubsection>
@@ -200,7 +200,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
         <div className="not-prose">
           <CaseStudySubsection
             className="mb-0"
-            title="Example: bulk enable across projects"
+            title="Example of bulk enable across projects"
             lead="Checkbox selection and synthesise/revert actions for managing multiple projects at once."
           >
             <ArbncoBulkSynthesiseLiveDemo />
@@ -209,7 +209,7 @@ export function ArbncoCaseStudyContent({ project }: ArbncoCaseStudyContentProps)
           <CaseStudySubsection
             spacingTop
             className="mb-0"
-            title="Example: Edit Project settings"
+            title="Example of Edit Project settings"
             lead="Toggle, status badge, and checklist make eligibility and active state visible in context."
           >
             <ArbncoEditProjectLiveDemo />

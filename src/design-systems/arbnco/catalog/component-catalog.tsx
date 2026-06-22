@@ -64,7 +64,7 @@ export const COMPONENT_CATALOG: ComponentCatalogEntry[] = [
     id: "select",
     name: "Select",
     category: "Forms",
-    description: "Single-select dropdown with label and placeholder: uses the same custom panel as Dropdown.",
+    description: "Single-select dropdown with label and placeholder, using the same custom panel as Dropdown.",
     importName: "Select",
     preview: (
       <Select

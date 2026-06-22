@@ -3,7 +3,7 @@ import type { TutorialGuideStep } from "./TutorialGuide";
 export const PROJECT_TUTORIAL_STEPS: TutorialGuideStep[] = [
   {
     id: "welcome",
-    title: "New: synthetic hourly data",
+    title: "New synthetic hourly data",
     description:
       "You can now turn low-resolution meter data into half-hourly readings. This walkthrough shows where to find it and how to switch it on.",
     mode: "center",

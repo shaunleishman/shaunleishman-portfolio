@@ -3,27 +3,27 @@ import type { FindingPriorityScore } from "@/content/heuristic-evaluations/types
 export const PRIORITY_SCALE = [1, 2, 3, 4, 5] as const;
 
 export const FREQUENCY_LABELS: Record<FindingPriorityScore["frequency"], string> = {
-  1: "Rare — few users would mention it",
-  2: "Uncommon — occasional frustration",
-  3: "Moderate — a noticeable pattern",
-  4: "Common — many users would complain",
-  5: "Very common — almost everyone hits it",
+  1: "Rare, few users would mention it",
+  2: "Uncommon, occasional frustration",
+  3: "Moderate, a noticeable pattern",
+  4: "Common, many users would complain",
+  5: "Very common, almost everyone hits it",
 };
 
 export const IMPACT_LABELS: Record<FindingPriorityScore["impact"], string> = {
-  1: "Minor — small annoyance, task still completes",
-  2: "Noticeable — extra effort or hesitation",
-  3: "Significant — confusion or recoverable mistakes",
-  4: "Major — likely task failure or support call",
-  5: "Severe — blocking or serious harm",
+  1: "Minor, small annoyance, task still completes",
+  2: "Noticeable, extra effort or hesitation",
+  3: "Significant, confusion or recoverable mistakes",
+  4: "Major, likely task failure or support call",
+  5: "Severe, blocking or serious harm",
 };
 
 export const PERSISTENCE_LABELS: Record<FindingPriorityScore["persistence"], string> = {
-  1: "One-time — affects the user once",
-  2: "Occasional — comes up now and then",
-  3: "Repeating — returns on each visit",
-  4: "Session-long — stays in the way throughout a visit",
-  5: "Persistent — follows them across the experience",
+  1: "One-time, affects the user once",
+  2: "Occasional, comes up now and then",
+  3: "Repeating, returns on each visit",
+  4: "Session-long, stays in the way throughout a visit",
+  5: "Persistent, follows them across the experience",
 };
 
 export const MAX_PRIORITY_POINTS = 5 * 5 * 5;

@@ -41,22 +41,22 @@ export const projects: Project[] = [
     tags: ["UI design", "Co-design", "Usability testing", "Interviews"],
     duration: "6 weeks",
     overview:
-      "The platform failed a patient-safety check. We ran co-design with practitioners, built safer assignment flows, and moderated usability testing before handoff.",
+      "We turned practitioner research into safer assignment flows and moderated usability testing before handoff.",
     problem:
-      "The platform failed a risk assessment due to a high risk of human error when assigning patients a medication plan (titration).",
+      "Those errors came from missing records, stale monitoring data, and unclear handovers between practitioners. Together the gaps made routine titration genuinely unsafe.",
     role: [
-      "Facilitated co-design workshops and produced wireframes and prototypes from practitioner sketches",
+      "Facilitated co-design workshops and produced wireframes and prototypes from the sketches we made",
       "Scripted and moderated usability testing, then wrote the findings report for handoff",
       "Translated role-specific clinical workflows into testable assign-and-handover flows",
     ],
     approach: [
       "Interviewed practitioners across primary care roles to understand how each group assigns and monitors patients",
-      "Facilitated co-design workshops where practitioners sketched solutions together",
+      "Facilitated co-design workshops where the product team sketched solutions together",
       "Built a clickable prototype from workshop outputs so we could test critical flows in moderated sessions before build",
       "Moderated usability tests on assignment and handover, documenting findings the product team acted on",
     ],
     approachWhy: [
-      "Workshops kept practitioners involved. We were not designing assignment logic from guesses alone.",
+      "Practitioner research kept us grounded. We were not designing assignment logic from guesses alone.",
       "Testing focused on assign-and-handover because that was where the risk assessment failed.",
       "A working prototype gave stakeholders something concrete to align on, not just static screens.",
     ],
@@ -69,7 +69,7 @@ export const projects: Project[] = [
     metrics: [
       { value: "6 weeks", label: "End-to-end delivery from research to handoff" },
       { value: "4", label: "Key usability findings addressed in the prototype" },
-      { value: "100%", label: "Practitioner involvement through co-design workshops" },
+      { value: "100%", label: "Practitioner involvement through discovery research" },
     ],
     cardStats: {
       team: "Product team + clinicians",
@@ -107,9 +107,9 @@ export const projects: Project[] = [
     tags: ["Interviews", "UX", "Surveys"],
     duration: "4 weeks",
     overview:
-      "Research lead for the NHS product team. We delivered personas and journey maps to improve routing, reassurance, and wait-time updates.",
+      "As research lead for the NHS product team, I delivered personas and journey maps to improve routing, reassurance, and wait-time updates.",
     problem:
-      "Many 111 callers were using the service for the wrong type of support. The team needed to understand who was calling, why they were unsure, and where the triage journey broke down.",
+      "Long waits, repeated questions, and unclear routing wore callers down and added pressure to an already stretched A&E. The strain peaked out of hours, when GP access was limited and callers had nowhere else to turn.",
     role: [
       "Managed recruitment and wrote the survey and interview plan",
       "Moderated interviews with call handlers and recent callers",
@@ -176,13 +176,13 @@ export const projects: Project[] = [
       "Users needed clearer carbon insights, but monthly meter readings limited reporting. Generated hourly data could help only if people understood when it was on and could trust it.",
     role: [
       "Led end-to-end UI/UX for synthetic data visibility, from journey mapping through to final screens",
-      "Designed updates across graphs, tables, filters, reports, and results pages",
+      "Designed updates across the affected surfaces, from graphs and tables to reports and results pages",
       "Ran design reviews and aligned engineering on status patterns, eligibility logic, and handoff specs",
     ],
     approach: [
       "Mapped where synthetic data affected the existing journey before moving into screens",
       "Used established patterns to move quickly, adding plain-language labels where users needed reassurance",
-      "Prioritised project list and settings flows because that is where users decided whether to trust generated data",
+      "Focused on the project list and settings, where users decided whether to trust generated data",
     ],
     approachWhy: [
       "No time for new research. We worked from known customer needs and existing patterns.",
@@ -192,7 +192,7 @@ export const projects: Project[] = [
     keyFindings: [
       "Users need to know when generated data is being used, not just that a toggle exists",
       "Original low-frequency readings still need to feel accessible and reliable alongside generated data",
-      "Plain-language messaging matters: explain the feature without making it feel technical or alarming",
+      "Plain-language messaging matters, so the feature never feels technical or alarming.",
     ],
     metrics: [
       { value: "4", label: "Core user flow stages redesigned end-to-end" },
@@ -205,7 +205,7 @@ export const projects: Project[] = [
       industry: "Energy & sustainability",
     },
     cardHighlights: [
-      "Design lead on a team sprint. Journey map to implementation in 3–4 weeks.",
+      "Design lead on a team sprint, with journey map to implementation in 3–4 weeks.",
       "Made eligibility and active state visible across six platform surfaces.",
       "Aligned engineering on status patterns that cut handoff back-and-forth.",
     ],
@@ -214,9 +214,9 @@ export const projects: Project[] = [
       "Extend status patterns to bulk project management flows",
     ],
     limitations: [
-      "No time for new user research. I relied on existing journey knowledge and design-review feedback.",
+      "With no time for new research, I relied on existing journey knowledge and design-review feedback.",
       "Fixed technical limits shaped what could ship in the sprint window.",
-      "The platform structure predated this sprint. I couldn't redesign where features lived, so eligibility had to be explained within the existing layout.",
+      "Because the platform structure predated this sprint, I couldn't move where features lived and had to explain eligibility within the existing layout.",
     ],
     learnings: [
       "Complex technical features need simple, trustworthy UI, especially when they change how people read their data.",
@@ -246,7 +246,7 @@ export const processSteps = [
     number: "02",
     title: "Define",
     description:
-      "Turn research into clear insights: personas, journey maps, and problem statements so the team shares the same view of user needs.",
+      "Turn research into clear insights like personas, journey maps, and problem statements, so the team shares one view of what users need.",
   },
   {
     number: "03",
@@ -305,7 +305,7 @@ export const valueProps = [
   {
     title: "Research-led, not guess-led",
     description:
-      "I do not design from guesses. Decisions come from user evidence: interviews, testing, and real workflow context, especially in healthcare.",
+      "I do not design from guesses. Decisions come from user evidence like interviews, testing, and real workflow context, especially in healthcare.",
   },
   {
     title: "Collaborative by default",
@@ -320,7 +320,7 @@ export const valueProps = [
   {
     title: "Clear handoffs that cut rework",
     description:
-      "I document what developers and product teams need: states, flows, and rationale, so implementation moves faster with fewer surprises.",
+      "I document what developers and product teams need, covering states, flows, and the reasons behind them, so implementation moves faster with fewer surprises.",
   },
 ];
 
@@ -343,7 +343,7 @@ export const faqs = [
   {
     question: "Can I see detailed case studies?",
     answer:
-      "Each project on the Work page has the full case study: problem, approach, findings, and learnings. Happy to talk through any of them.",
+      "Each project on the Work page has the full case study covering problem, approach, findings, and learnings. Happy to talk through any of them.",
   },
 ];
 
@@ -365,7 +365,7 @@ export const siteConfig = {
     "Mostly B2B products",
   ],
   quote:
-    "It's one thing shaping experiences that improve lives, but to encourage better decision-making is where the true magic happens.",
+    "It's one thing to shape experiences that improve lives. Helping people make better decisions is where the real work happens.",
   email: "postalshaun@outlook.com",
   phone: "07708002642",
   linkedIn: "https://www.linkedin.com/in/shaun-leishman-94a46b130/",

@@ -13,7 +13,7 @@ export default function CaseStudiesGalleryPage() {
   return (
     <AdminShell
       title="Case Studies"
-      description="Heuristic evaluations and UX audit reports. Private — not linked from the public site. Use for job applications and interview prep."
+      description="Heuristic evaluations and UX audit reports. These are private and not linked from the public site. Use them for job applications and interview prep."
     >
       <div className="grid gap-4 sm:grid-cols-2">
         {CASE_STUDY_ENTRIES.map((entry) => (

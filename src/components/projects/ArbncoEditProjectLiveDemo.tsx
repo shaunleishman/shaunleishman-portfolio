@@ -8,7 +8,7 @@ type ArbncoEditProjectLiveDemoProps = {
 };
 
 export function ArbncoEditProjectLiveDemo({
-  caption = "Example: enabling generated hourly data from project settings",
+  caption = "Example of enabling generated hourly data from project settings",
   className,
 }: ArbncoEditProjectLiveDemoProps) {
   return (

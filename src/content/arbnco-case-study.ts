@@ -2,22 +2,22 @@
 
 export const arbncoCaseStudyMeta = {
   outcomeLine:
-    "Clearer paths to trust and turn on synthetic hourly energy data across the platform.",
+    "Clearer ways to trust synthetic hourly energy data, and to turn it on across the platform.",
   problemStatement:
-    "Teams needed hourly carbon data. Most meters only reported once a month.",
+    "Teams needed hourly carbon data, but most meters only reported once a month.",
 };
 
 export const arbncoAtAGlance = {
   summary:
-    "Design lead on a team sprint. Goal, team, and our work below.",
+    "I was the design lead on a short squad sprint to make synthetic hourly data trustworthy.",
   productGoal:
     "Help energy teams get hourly carbon insights from machine-learning estimates they could understand and trust.",
   team:
-    "We worked as a squad with a product manager and engineers. They handled what was technically possible. I led the experience design and handoff.",
+    "We were a squad with a product manager and engineers. They owned what was technically possible, and I led the design and handoff.",
   problem:
-    "Users could not get hourly carbon data without enough meter readings. Generated data could help, but only if the UI made rules, status, and trust easy to see.",
+    "Monthly meter readings were too coarse for the hourly carbon insights teams needed. Without finer data, they could not see or act on hourly patterns.",
   contribution:
-    "I led the UI/UX: mapped the journey, built wireframes and a prototype, ran design reviews, and handed off flows, status patterns, and specs to engineering.",
+    "I led the UI/UX work end to end, from the journey map and wireframes through to the prototype, design reviews, and engineering handoff.",
   highlights: [
     "Eligibility visible before users turn data on",
     "One status pattern PM and engineering shared",
@@ -50,27 +50,27 @@ export function arbncoSectionTitle(id: ArbncoSectionId): string {
 }
 
 export const arbncoMyRole = {
-  lead: "This was a team sprint. Below we split what we did together from what I led.",
+  lead: "This was a squad sprint: the team owned scope and feasibility, and I led the design.",
   impact:
     "Our journey map helped the team agree where users needed clarity before anyone opened Figma. That cut rework when eligibility rules changed late in the sprint.",
 };
 
 export const arbncoTeamTogetherItems = [
   "The PM and engineering set the ML rules, sprint scope, and what could ship.",
-  "In design reviews we shared flows and our reasoning. The squad challenged ideas and agreed which screens to do first.",
+  "In design reviews we shared our flows and reasoning, and the squad agreed which screens to build first.",
 ];
 
 export const arbncoRoleItems = [
-  "We mapped where synthetic data fit, then focused on the project list and settings, where users decide if they trust it.",
-  "We updated graphs, tables, filters, and reports, using plain labels over ML jargon to reassure users.",
-  "We ran design reviews and wrote handoff specs for eligibility logic and status tags, so engineering had one pattern.",
+  "We mapped where synthetic data fit, then focused on the project list and settings where trust is decided.",
+  "We updated graphs, tables, and reports with plain labels instead of ML jargon, to reassure users.",
+  "We ran design reviews and wrote handoff specs for eligibility and status tags, so engineering had one pattern.",
 ];
 
 export const arbncoProjectTimeline = {
   totalWeeks: 4,
-  lead: "3 to 4 weeks from journey map to engineering handoff. I led design throughout.",
+  lead: "3 to 4 weeks from journey map to engineering handoff, with me leading design throughout.",
   intro:
-    "A squad sprint with PM and engineering. I mapped the journey, designed the flows, and handed off specs, while the squad worked out what could ship.",
+    "Over a squad sprint with PM and engineering, I mapped the journey, designed the flows, and handed off specs, while the squad worked out what could ship.",
   phases: [
     {
       label: "Discovery",
@@ -170,12 +170,12 @@ export const arbncoInitialPrototypeUrl =
 /** Static preview for the Make file — external sites cannot iframe Figma Make. */
 export const arbncoInitialPrototypePreview = {
   src: "/projects/arbnco-synthetic-ai-data/initial-prototype-list-preview.png",
-  alt: "Initial prototype — project list with data resolution column and synthetic status tags",
+  alt: "Initial prototype showing the project list with a data resolution column and synthetic status tags",
   width: 1024,
   height: 604,
 } as const;
 
 export const arbncoReflectionItems = [
   "Complex technical features need simple, trustworthy UI, especially when they change how people read their data.",
-  "Clear status tags, labels, tooltips, and icons helped users see what was available, what was missing, and what to do next.",
+  "Clear status tags, labels, and tooltips helped users see what was available, what was missing, and what to do next.",
 ];

@@ -121,9 +121,9 @@ export function InteractiveInputsDemo() {
     inputState === "Selected"
       ? "Focused input"
       : inputState === "Validation"
-        ? "Validation: type a valid email"
+        ? "Validation, type a valid email"
         : inputState === "Warning"
-          ? "Warning: type a short password"
+          ? "Warning, type a short password"
           : inputState;
 
   const hint =
