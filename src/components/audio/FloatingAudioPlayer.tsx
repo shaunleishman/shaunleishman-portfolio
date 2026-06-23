@@ -103,79 +103,79 @@ export function FloatingAudioPlayer() {
   const total = duration || track.duration;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-3 sm:px-4 sm:pb-4">
-      <div className="container-site max-w-3xl px-0">
-        <div className="pointer-events-auto flex items-center gap-2.5 rounded-xl border border-[var(--color-border)] bg-white/95 px-3 py-2 shadow-[0_6px_24px_rgb(0_0_0_/_0.12)] backdrop-blur-sm sm:gap-3 motion-safe:animate-[fade-in_0.2s_ease-out]">
-          <button
-            type="button"
-            onClick={() => player.toggle(track)}
-            aria-label={isPlaying ? "Pause narration" : "Play narration"}
-            aria-pressed={isPlaying}
-            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)] text-white transition-colors hover:bg-[var(--color-accent-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-          >
-            {isPlaying ? (
-              <Pause className="size-4 fill-current" aria-hidden />
-            ) : (
-              <Play className="ml-0.5 size-4 fill-current" aria-hidden />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => player.rewind(15)}
-            aria-label="Rewind 15 seconds"
-            className="hidden size-8 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)]/40 hover:text-[var(--color-text-primary)] sm:flex"
-          >
-            <RotateCcw className="size-3.5" aria-hidden />
-          </button>
-
-          {track.thumbnail && (
-            <Link
-              href={track.href}
-              aria-hidden
-              tabIndex={-1}
-              className="relative hidden size-10 shrink-0 overflow-hidden rounded-lg border border-[var(--color-border)] sm:block"
-            >
-              <Image src={track.thumbnail} alt="" fill className="object-cover" sizes="40px" />
-            </Link>
+    <div
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--color-border)] bg-white/95 backdrop-blur-md shadow-[0_-2px_16px_rgb(0_0_0_/_0.08)] motion-safe:animate-[fade-in_0.2s_ease-out]"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
+      <div className="container-site flex items-center gap-3 py-2.5 sm:gap-4 sm:py-3">
+        <button
+          type="button"
+          onClick={() => player.toggle(track)}
+          aria-label={isPlaying ? "Pause narration" : "Play narration"}
+          aria-pressed={isPlaying}
+          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)] text-white transition-colors hover:bg-[var(--color-accent-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+        >
+          {isPlaying ? (
+            <Pause className="size-4 fill-current" aria-hidden />
+          ) : (
+            <Play className="ml-0.5 size-4 fill-current" aria-hidden />
           )}
+        </button>
 
-          <div className="min-w-0 flex-1">
+        <button
+          type="button"
+          onClick={() => player.rewind(15)}
+          aria-label="Rewind 15 seconds"
+          className="hidden size-9 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)]/40 hover:text-[var(--color-text-primary)] sm:flex"
+        >
+          <RotateCcw className="size-4" aria-hidden />
+        </button>
+
+        {track.thumbnail && (
+          <Link
+            href={track.href}
+            aria-hidden
+            tabIndex={-1}
+            className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-[var(--color-border)]"
+          >
+            <Image src={track.thumbnail} alt="" fill className="object-cover" sizes="40px" />
+          </Link>
+        )}
+
+        <div className="min-w-0 flex-1">
+          <Link href={track.href} className="group block min-w-0">
             <div className="flex items-center justify-between gap-2">
-              <Link
-                href={track.href}
-                className="min-w-0 truncate text-[0.8125rem] font-medium text-[var(--color-text-primary)] hover:text-[var(--color-accent)]"
-              >
+              <span className="min-w-0 truncate text-[0.8125rem] font-medium text-[var(--color-text-primary)] transition-colors group-hover:text-[var(--color-accent)]">
                 {track.title}
-              </Link>
+              </span>
               <span className="shrink-0 text-[0.6875rem] tabular-nums text-[var(--color-text-muted)]">
                 {formatTime(currentTime)} / {formatTime(total)}
               </span>
             </div>
-            <ProgressBar
-              progress={total > 0 ? currentTime / total : 0}
-              onSeek={player.seekToRatio}
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={player.cycleRate}
-            aria-label={`Playback speed ${player.playbackRate} times`}
-            className="hidden min-w-[2.5rem] shrink-0 rounded-full border border-[var(--color-border)] bg-white px-2 py-1 text-[0.6875rem] font-medium tabular-nums text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)]/40 hover:text-[var(--color-text-primary)] sm:block"
-          >
-            {player.playbackRate}&times;
-          </button>
-
-          <button
-            type="button"
-            onClick={player.close}
-            aria-label="Close player"
-            className="flex size-8 shrink-0 items-center justify-center rounded-full text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-primary)]"
-          >
-            <X className="size-3.5" aria-hidden />
-          </button>
+          </Link>
+          <ProgressBar
+            progress={total > 0 ? currentTime / total : 0}
+            onSeek={player.seekToRatio}
+          />
         </div>
+
+        <button
+          type="button"
+          onClick={player.cycleRate}
+          aria-label={`Playback speed ${player.playbackRate} times`}
+          className="hidden min-w-[2.5rem] shrink-0 rounded-full border border-[var(--color-border)] bg-white px-2 py-1 text-[0.6875rem] font-medium tabular-nums text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)]/40 hover:text-[var(--color-text-primary)] sm:block"
+        >
+          {player.playbackRate}&times;
+        </button>
+
+        <button
+          type="button"
+          onClick={player.close}
+          aria-label="Close player"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-primary)]"
+        >
+          <X className="size-4" aria-hidden />
+        </button>
       </div>
     </div>
   );
