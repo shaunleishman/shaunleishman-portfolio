@@ -10,7 +10,7 @@ const featuredStatItems = [
   { key: "team", label: "Team", getValue: (project: (typeof featuredProjects)[number]) => project.cardStats.team },
   { key: "role", label: "Role", getValue: (project: (typeof featuredProjects)[number]) => project.cardStats.role },
   { key: "industry", label: "Industry", getValue: (project: (typeof featuredProjects)[number]) => project.cardStats.industry },
-  { key: "duration", label: "Duration", getValue: (project: (typeof featuredProjects)[number]) => project.duration },
+  { key: "duration", label: "Project duration", getValue: (project: (typeof featuredProjects)[number]) => project.duration },
 ] as const;
 
 export function FeaturedWork() {

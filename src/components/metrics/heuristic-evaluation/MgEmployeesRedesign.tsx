@@ -12,7 +12,7 @@ import {
 } from "./RedesignFindingIndicator";
 
 const ASSETS = {
-  hero: "/metrics/case-studies/mg-employees/redesign/hero-flexing-muscles-swimmer-desktop.jpg",
+  hero: "/metrics/case-studies/mg-employees/redesign/hero-gardeners-planting-vegetables-desktop.jpg",
   logo: "/metrics/case-studies/mg-employees/redesign/pru-logo.svg",
 } as const;
 
@@ -781,17 +781,29 @@ export function MgEmployeesRedesign() {
               </RedesignCalloutRegion>
             </div>
 
-            <div className="w-full">
-              <Image
-                src={ASSETS.hero}
-                alt=""
-                width={1720}
-                height={616}
-                className="block h-auto w-full"
-                priority
-                sizes="100vw"
-              />
-            </div>
+            <RedesignCalloutRegion
+              calloutId="HE-012"
+              callouts={callouts}
+              showMarkers={showCallouts}
+              className="w-full"
+            >
+              <RedesignCalloutRegion
+                calloutId="HE-013"
+                callouts={callouts}
+                showMarkers={showCallouts}
+                markerIndex={1}
+              >
+                <Image
+                  src={ASSETS.hero}
+                  alt="Two gardeners planting and tending vegetables, a nod to growing your pension over time"
+                  width={1720}
+                  height={493}
+                  className="block h-auto w-full"
+                  priority
+                  sizes="100vw"
+                />
+              </RedesignCalloutRegion>
+            </RedesignCalloutRegion>
 
             <div className={cn(PAGE_GUTTER, "pb-12 pt-10")}>
               <RedesignCalloutRegion
@@ -816,7 +828,7 @@ export function MgEmployeesRedesign() {
                     onClick: () => scrollToSection("workplace-pensions"),
                   },
                   {
-                    title: "Apply for extra savings (AVC)",
+                    title: "Apply to make extra savings",
                     text: "Save more on top of your main pension.",
                     action: "Find out more",
                     primary: false,

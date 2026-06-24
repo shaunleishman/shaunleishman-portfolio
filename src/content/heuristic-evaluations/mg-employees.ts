@@ -4,7 +4,7 @@ const mgEmployeesRedesignCallouts: RedesignCallout[] = [
   {
     findingId: "HE-001",
     title: "No clear paths for different tasks",
-    problem: "Learn, log in, register, and AVC were bundled with no clear entry points.",
+    problem: "The hero bundled its main tasks into one line, so people could not tell where to start.",
     change: "Three task cards below the hero for check online, learn, and extra savings.",
     severity: "high",
   },
@@ -64,6 +64,20 @@ const mgEmployeesRedesignCallouts: RedesignCallout[] = [
     change: "Show six items first with Show more / Show less.",
     severity: "medium",
   },
+  {
+    findingId: "HE-012",
+    title: "Hero image does not match the topic",
+    problem: "A flexing-muscles photo filled the hero with no link to pensions.",
+    change: "Swapped in a garden-growth image that reflects saving over time.",
+    severity: "low",
+  },
+  {
+    findingId: "HE-013",
+    title: "Tall hero pushes actions below the fold",
+    problem: "The hero image filled the first view and pushed the task cards off screen.",
+    change: "Cropped the hero about 20% shorter so the task cards sit above the fold.",
+    severity: "medium",
+  },
 ];
 
 const heroAboveFoldAnnotations: ScreenshotAnnotation[] = [
@@ -112,6 +126,27 @@ const heroAboveFoldAnnotations: ScreenshotAnnotation[] = [
     height: 19,
     label: "Cookie bar blocks view",
     labelPosition: "above",
+  },
+];
+
+const heroRoutingAnnotations: ScreenshotAnnotation[] = [
+  {
+    shape: "box",
+    x: 50,
+    y: 24.4,
+    width: 72,
+    height: 4.5,
+    label: "Three goals in one line",
+    labelPosition: "below",
+  },
+  {
+    shape: "box",
+    x: 50,
+    y: 54,
+    width: 75,
+    height: 48,
+    label: "No task cards",
+    labelPosition: "inside",
   },
 ];
 
@@ -203,9 +238,9 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
     whatWasEvaluated:
       "The Employees page at workplacepensions.mandg.com/employees (desktop review, June 2026).",
     usabilityHealth:
-      "Good content, but people struggle to pick their next step. Jargon and weak contrast add friction.",
+      "The content is good, but people struggle to pick their next step. Jargon and weak contrast make it harder.",
     topIssues: [
-      "No clear paths for log in, learning, or extra savings",
+      "No clear paths for checking online, learning, or extra savings",
       "Jargon before plain explanations",
       "Log in and Register sit too low on the page",
       "Hero subtext is hard to read",
@@ -245,8 +280,8 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
   severitySummary: {
     critical: 0,
     high: 4,
-    medium: 6,
-    low: 1,
+    medium: 7,
+    low: 2,
   },
   themes: [
     {
@@ -255,7 +290,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
     },
     {
       label: "Content and language",
-      findingIds: ["HE-002", "HE-005", "HE-010"],
+      findingIds: ["HE-002", "HE-005", "HE-010", "HE-012"],
     },
     {
       label: "Accessibility",
@@ -263,7 +298,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
     },
     {
       label: "Page structure",
-      findingIds: ["HE-006", "HE-008", "HE-011"],
+      findingIds: ["HE-006", "HE-008", "HE-011", "HE-013"],
     },
   ],
   findings: [
@@ -276,24 +311,24 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       secondary_heuristics: ["H08"],
       additional_lenses: ["L02"],
       description:
-        "Learn, log in, register, and AVC are mixed together with no separate entry points.",
+        "The hero bundles its main tasks into one line with no task cards, so people cannot tell where to start.",
       evidence: {
-        observed_where: "Hero and header",
+        observed_where: "Hero",
         observed_behaviour:
-          "Register and Log in sit mid-nav as equal text links, not top right. One subheading bundles three goals. No task cards.",
+          "One subheading bundles three goals into a single line, and there are no task cards to route people to each job.",
         expected_behaviour:
-          "Log in primary at top right. Register secondary beside it. Clear task entry points on first view.",
+          "Clear task cards on first view, each routing to one job like checking online, learning the basics, or extra savings.",
       },
       user_impact: "Unsure users leave without acting.",
       severity: "high",
       confidence: "high",
       recommendation:
-        "Move Log in and Register to the top right. Make Log in the primary button and Register secondary. Add three task cards above the fold.",
+        "Add three task cards above the fold, one for each main job, so people can pick their path on first view.",
       owner: "Design",
       status: "new",
       priority: { frequency: 5, impact: 4, persistence: 5 },
       screenshot_reference: "/metrics/case-studies/mg-employees/hero-above-fold.png",
-      screenshot_annotations: heroAboveFoldAnnotations,
+      screenshot_annotations: heroRoutingAnnotations,
     },
     {
       finding_id: "HE-002",
@@ -303,7 +338,8 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       primary_heuristic: "H02",
       secondary_heuristics: ["H10"],
       additional_lenses: ["L02"],
-      description: "Technical terms appear with no plain-English help. Nav puts AVC Schemes before basics.",
+      description:
+        "Technical terms appear with no plain-English help, and the nav puts AVC Schemes before the basics.",
       evidence: {
         observed_where: "Header nav and body sections",
         observed_behaviour: "AVC, IGC, and trust scheme labels have no glossary.",
@@ -334,7 +370,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
         observed_behaviour:
           "Register and Log in look identical in the nav. The first strong button is Register mid-page, below the cookie bar.",
         expected_behaviour:
-          "Log in primary at top right. Register secondary beside it. One clear order everywhere.",
+          "Log in primary at top right, Register secondary beside it, and one clear order everywhere.",
       },
       user_impact: "Returning users hunt for Log in.",
       severity: "high",
@@ -356,7 +392,8 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       user_task: "Read the page purpose",
       primary_heuristic: "H08",
       additional_lenses: ["L01"],
-      description: "Hero subtext uses light grey on white. Contrast is too weak for body text.",
+      description:
+        "Hero subtext uses light grey on white, so the contrast is too weak for body text.",
       evidence: {
         observed_where: "Hero below the main heading",
         observed_behaviour: "Subtext fades into the background, especially for low-vision users.",
@@ -385,7 +422,8 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       primary_heuristic: "H06",
       secondary_heuristics: ["H08"],
       additional_lenses: ["L02"],
-      description: "FAQ topics sit behind collapsed accordions. Users must open each one to hunt for an answer.",
+      description:
+        "FAQ topics sit behind collapsed accordions, so people open each one to hunt for an answer.",
       evidence: {
         observed_where: "Mid-page accordion grid",
         observed_behaviour: "All panels start closed.",
@@ -406,7 +444,8 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       user_task: "Confirm this is the right site",
       primary_heuristic: "H02",
       secondary_heuristics: ["H04"],
-      description: "URL says M&G, tab title says Prudential, logo says Pru. No line explains how they link.",
+      description:
+        "The URL says M&G, the tab title says Prudential, and the logo says Pru, with no line explaining how they link.",
       evidence: {
         observed_where: "Browser title and header logo",
         observed_behaviour: "Three brand names appear with no explanation.",
@@ -518,19 +557,71 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       primary_heuristic: "H08",
       secondary_heuristics: ["H06"],
       additional_lenses: ["L02"],
-      description: "Twelve tiles render at once with equal visual weight.",
+      description: "Twelve tiles appear at once with equal visual weight.",
       evidence: {
         observed_where: "Supporting information grid",
         observed_behaviour: "All twelve articles show with no collapse option.",
         expected_behaviour: "Show six items first. Let people expand for the rest.",
       },
-      user_impact: "High cognitive load near the page end.",
+      user_impact: "Too much to take in near the page end.",
       severity: "medium",
       confidence: "high",
       recommendation: "Display six items by default with a Show more control.",
       owner: "Design",
       status: "new",
       priority: { frequency: 2, impact: 2, persistence: 2 },
+    },
+    {
+      finding_id: "HE-012",
+      title: "Hero image does not match the topic",
+      screen_or_flow: "Hero",
+      user_task: "Grasp what the page is about",
+      primary_heuristic: "H02",
+      secondary_heuristics: ["H08"],
+      additional_lenses: ["L02"],
+      description:
+        "The hero image shows a flexing swimmer, which says nothing about pensions or saving.",
+      evidence: {
+        observed_where: "Hero banner",
+        observed_behaviour:
+          "A large flexing-muscles photo fills the hero but does not reflect pensions, saving, or the page content.",
+        expected_behaviour:
+          "A hero image that signals the topic, like growth or planning ahead, so the visual supports the message.",
+      },
+      user_impact: "The image adds visual noise and misses a chance to set the topic.",
+      severity: "low",
+      confidence: "high",
+      recommendation:
+        "Use an image that signals growth or long-term saving, or drop the image and keep the space clean.",
+      owner: "Design",
+      status: "new",
+      priority: { frequency: 4, impact: 2, persistence: 2 },
+    },
+    {
+      finding_id: "HE-013",
+      title: "Tall hero image pushes the actions below the fold",
+      screen_or_flow: "Hero",
+      user_task: "See the main actions on first view",
+      primary_heuristic: "H08",
+      secondary_heuristics: ["H06"],
+      additional_lenses: ["L05"],
+      description:
+        "A tall hero image fills the first view, so the task cards below it start off the screen.",
+      evidence: {
+        observed_where: "Hero and first view",
+        observed_behaviour:
+          "The hero image takes up most of the first screen, pushing the task cards below the fold on common laptop heights.",
+        expected_behaviour:
+          "A shorter hero so the main task cards sit within the first view without scrolling.",
+      },
+      user_impact: "People may not see the actions and assume there is nothing to do.",
+      severity: "medium",
+      confidence: "high",
+      recommendation:
+        "Crop the hero shorter so the task cards appear above the fold on a typical laptop.",
+      owner: "Design",
+      status: "new",
+      priority: { frequency: 5, impact: 3, persistence: 4 },
     },
   ],
   actionPlan: [
@@ -565,12 +656,14 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
   ],
   redesignSummary: {
     intro:
-      "The mock keeps the live layout and styles. Changes focus on task routing, plain language, and clearer CTAs.",
+      "The mock keeps the live layout and styles, with changes focused on task routing, plain language, and clearer calls to action.",
     callouts: mgEmployeesRedesignCallouts,
     implemented: [
       "Three task cards so people can pick log in, learn, or extra savings",
       "Log in primary and Register secondary at the top right of the header",
       "Plain-English hero copy with stronger contrast",
+      "Hero image that reflects growth instead of an unrelated photo",
+      "Shorter hero so the task cards sit above the fold",
       "Single-column FAQ accordions with in-panel CTAs",
       "Slimmer cookie bar",
       "Manage online puts Log in before Register with left-aligned buttons",

@@ -79,12 +79,12 @@ export const aboutOriginTimeline: readonly AboutOriginStep[] = [
     detail: "Branding, landing pages, campaigns",
   },
   {
-    title: "Masters in psychology",
+    title: "Masters in Psychology",
     detail: "Accepted at the University of Stirling",
   },
   {
     title: "UX consultancy",
-    detail: "Found the bridge between psychology and design",
+    detail: "Chose consultancy over the Masters, combining psychology and design",
   },
   {
     title: "Startup & product work",

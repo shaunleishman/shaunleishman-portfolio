@@ -157,6 +157,16 @@ const styles = StyleSheet.create({
   jobBlock: {
     marginBottom: 16,
   },
+  jobNote: {
+    marginTop: 6,
+    paddingLeft: 10,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.border,
+    fontSize: type.bodySm,
+    fontFamily: "Helvetica-Oblique",
+    color: colors.muted,
+    lineHeight: 1.45,
+  },
   educationTitle: {
     fontSize: type.body,
     fontFamily: "Helvetica-Bold",
@@ -236,11 +246,13 @@ function JobBlock({
   company,
   period,
   highlights,
+  note,
 }: {
   role: string;
   company: string;
   period: string;
   highlights: string[];
+  note?: string;
 }) {
   return (
     <View style={styles.jobBlock}>
@@ -251,6 +263,7 @@ function JobBlock({
         <Text style={styles.jobPeriod}>{period}</Text>
       </View>
       <BulletList items={highlights} variant="muted" />
+      {note ? <Text style={styles.jobNote}>{note}</Text> : null}
     </View>
   );
 }
@@ -333,6 +346,7 @@ export function CvPdfDocument() {
               company={firstJob.company}
               period={firstJob.period}
               highlights={firstJob.highlights}
+              note={firstJob.note}
             />
           ) : null}
         </Section>
@@ -347,6 +361,7 @@ export function CvPdfDocument() {
               company={job.company}
               period={job.period}
               highlights={job.highlights}
+              note={job.note}
             />
           ))}
         </View>

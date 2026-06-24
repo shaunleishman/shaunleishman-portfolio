@@ -1,10 +1,19 @@
 import { siteConfig } from "@/content/projects";
 
+type CvExperienceItem = {
+  role: string;
+  company: string;
+  period: string;
+  highlights: string[];
+  /** Optional aside shown below the role, e.g. to explain a gap or career change. */
+  note?: string;
+};
+
 export const cvContent = {
   headline: "UX/UI Designer · Edinburgh",
   summary: [
     "I'm a UX/UI Designer with over 5 years' experience helping teams make complex digital products clearer, more usable, and easier to deliver. I've worked across healthcare, SaaS, energy, government, and financial services, often in environments where the subject matter is technical, regulated, or difficult to explain.",
-    "My work spans UX strategy, research, prototyping, design systems, data visualisation, and stakeholder facilitation. I'm good at bringing structure to uncertain projects, helping teams align around user needs, and communicating design decisions in a way that people can understand and act on.",
+    "My work spans UX strategy, research, prototyping, design systems, data visualisation, and stakeholder facilitation. I bring structure to uncertain projects, help teams align around user needs, and communicate design decisions in a way people can understand and act on.",
   ],
   strengths: [
     "UX strategy, discovery, and product planning",
@@ -19,9 +28,9 @@ export const cvContent = {
     {
       role: "Product Designer",
       company: "Arbnco",
-      period: "Mar 2024 to Present",
+      period: "Mar 2024 to Jun 2026",
       highlights: [
-        "Designed product experiences for a decarbonisation platform used in commercial real estate, with a focus on complex data, carbon reporting, consent workflows, and design system structure.",
+        "Designed product experiences for a decarbonisation platform used in commercial real estate, focused on complex data, carbon reporting, and consent workflows.",
         "Helped shape UX strategy and product planning for a platform supporting energy, carbon, and net-zero reporting.",
         "Led the structure and rollout of a shared design system, aligning Figma files with development components to improve consistency and delivery speed.",
         "Designed data-heavy experiences that helped users understand energy performance, carbon impact, consent status, and reporting issues.",
@@ -30,7 +39,7 @@ export const cvContent = {
       ],
     },
     {
-      role: "UX Designer",
+      role: "UX Consultant",
       company: "User Vision",
       period: "Mar 2022 to Mar 2024",
       highlights: [
@@ -40,6 +49,7 @@ export const cvContent = {
         "Turned complex user insight into clear journey improvements, prototypes, reports, and developer-ready recommendations.",
         "Contributed to measurable improvements, including a 40% increase in task success after simplifying a navigation flow.",
       ],
+      note: "After several years in digital design, I decided to change direction towards user experience, with a focus on psychology. I was accepted at the University of Stirling for a Masters in Psychology, but at the same time I was approached for a UX role at User Vision.",
     },
     {
       role: "Digital Designer",
@@ -52,7 +62,7 @@ export const cvContent = {
         "Built brand guidelines, templates, and reusable digital design assets.",
       ],
     },
-  ],
+  ] as CvExperienceItem[],
   leadership:
     "I'm comfortable stepping into a lead role when a project needs clarity, structure, or momentum. I've facilitated workshops, guided stakeholders through UX decisions, supported junior designers, and helped teams stay aligned when the direction is still uncertain. I also use AI-assisted prototyping to explore ideas quickly, while still owning the design thinking, decision-making, and quality of the final outcome.",
   education: [
@@ -66,7 +76,7 @@ export const cvContent = {
     },
     {
       title: "Interaction Design Foundation",
-      detail: "Ongoing courses in emotional design, data-driven UX, usability testing, HCI, and VR/AR",
+      detail: "Completed courses in emotional design, data-driven UX, usability testing, HCI, and VR/AR",
     },
   ],
   skills: [

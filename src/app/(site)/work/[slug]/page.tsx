@@ -117,7 +117,7 @@ export default async function CaseStudyPage({ params }: Props) {
             <Reveal delay={60}>
               <dl className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 pb-16 border-b border-[var(--color-border)]">
                 <div>
-                  <dt className="text-label text-[var(--color-text-muted)] mb-1">Duration</dt>
+                  <dt className="text-label text-[var(--color-text-muted)] mb-1">Project duration</dt>
                   <dd className="text-body font-semibold">{project.duration}</dd>
                 </div>
                 {project.metrics.map((m) => (

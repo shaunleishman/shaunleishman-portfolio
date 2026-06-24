@@ -70,9 +70,9 @@ export default function CvPage() {
         </Reveal>
 
         <CvSection title="Key strengths" delay={40}>
-          <ul className="grid gap-x-6 gap-y-2 sm:grid-cols-2 sm:items-start">
+          <ul className="columns-1 gap-x-6 sm:columns-2">
             {cvContent.strengths.map((item) => (
-              <li key={item} className="flex gap-2 text-body-sm leading-snug text-[#525252]">
+              <li key={item} className="mb-2 flex gap-2 break-inside-avoid text-body-sm leading-snug text-[#525252]">
                 <span className="mt-[0.45em] size-1.5 shrink-0 rounded-full bg-[#3b66f5]" aria-hidden />
                 <span>{item}</span>
               </li>
@@ -98,6 +98,11 @@ export default function CvPage() {
                     </li>
                   ))}
                 </ul>
+                {job.note && (
+                  <p className="mt-3 border-l-2 border-[#e5e5e5] pl-3 text-body-sm italic leading-snug text-[#737373]">
+                    {job.note}
+                  </p>
+                )}
               </article>
             ))}
           </div>
