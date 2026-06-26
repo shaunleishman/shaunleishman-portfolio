@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { DownloadReportPdfButton } from "./DownloadReportPdfButton";
 
 type PublicReportShellProps = {
   title: string;
@@ -7,6 +8,8 @@ type PublicReportShellProps = {
   /** Public destination for the back link. Never points at the gated metrics path. */
   backHref?: string;
   backLabel?: string;
+  /** When set, shows a "Download PDF" action linking to this case study's PDF. */
+  pdfSlug?: string;
   children: ReactNode;
 };
 
@@ -20,6 +23,7 @@ export function PublicReportShell({
   description,
   backHref = "/work",
   backLabel = "Back to portfolio",
+  pdfSlug,
   children,
 }: PublicReportShellProps) {
   return (
@@ -31,13 +35,16 @@ export function PublicReportShell({
             <p className="mt-0.5 text-body-sm text-[var(--color-text-muted)]">{description}</p>
           )}
         </div>
-        <Link
-          href={backHref}
-          className="inline-flex shrink-0 min-h-[44px] items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white px-4 py-2 text-body-sm font-medium transition-colors hover:border-[var(--color-accent)]/40"
-        >
-          <span aria-hidden>←</span>
-          {backLabel}
-        </Link>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {pdfSlug ? <DownloadReportPdfButton slug={pdfSlug} /> : null}
+          <Link
+            href={backHref}
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white px-4 py-2 text-body-sm font-medium transition-colors hover:border-[var(--color-accent)]/40"
+          >
+            <span aria-hidden>←</span>
+            {backLabel}
+          </Link>
+        </div>
       </div>
       <div className="px-1 py-6 sm:p-6">
         <div className="container-site max-w-6xl">{children}</div>

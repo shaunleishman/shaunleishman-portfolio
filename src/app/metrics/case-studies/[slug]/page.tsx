@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { CopyShareLinkButton } from "@/components/case-studies/CopyShareLinkButton";
+import { DownloadReportPdfButton } from "@/components/case-studies/DownloadReportPdfButton";
 import { HeuristicEvaluationReport } from "@/components/metrics/heuristic-evaluation/HeuristicEvaluationReport";
 import { getEvaluationBySlug } from "@/content/heuristic-evaluations";
 import { CASE_STUDY_ENTRIES } from "@/lib/admin-nav";
@@ -25,9 +26,12 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
     <AdminShell title={evaluation.title} description={`Heuristic evaluation for ${evaluation.client}`}>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3">
         <p className="text-body-sm text-[var(--color-text-muted)]">
-          Share the public, unlisted version of this report.
+          Share the public link, or download a PDF to attach where links are blocked.
         </p>
-        <CopyShareLinkButton slug={slug} />
+        <div className="flex flex-wrap items-center gap-2">
+          <DownloadReportPdfButton slug={slug} />
+          <CopyShareLinkButton slug={slug} />
+        </div>
       </div>
       <HeuristicEvaluationReport evaluation={evaluation} />
     </AdminShell>

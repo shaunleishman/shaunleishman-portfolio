@@ -45,6 +45,7 @@ export default async function PublicCaseStudyPage({ params }: PageProps) {
       description={`Heuristic evaluation for ${evaluation.client}`}
       backHref="/work"
       backLabel="Back to portfolio"
+      pdfSlug={slug}
     >
       <HeuristicEvaluationReport evaluation={evaluation} hideBack />
     </PublicReportShell>
