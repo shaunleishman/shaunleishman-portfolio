@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { Document, Link, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Font, Link, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+
+// Wrap whole words to the next line instead of hyphenating across the break.
+Font.registerHyphenationCallback((word) => [word]);
 import { siteConfig } from "@/content/projects";
 import type {
   HeuristicEvaluation,

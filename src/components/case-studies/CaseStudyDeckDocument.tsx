@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import {
   Document,
+  Font,
   Line,
   Link,
   Page,
@@ -10,6 +11,9 @@ import {
   Text,
   View,
 } from "@react-pdf/renderer";
+
+// Wrap whole words to the next line instead of hyphenating across the break.
+Font.registerHyphenationCallback((word) => [word]);
 import { siteConfig } from "@/content/projects";
 import type {
   HeuristicEvaluation,
