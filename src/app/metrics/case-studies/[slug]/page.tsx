@@ -29,7 +29,8 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
           Share the public link, or download a PDF to attach where links are blocked.
         </p>
         <div className="flex flex-wrap items-center gap-2">
-          <DownloadReportPdfButton slug={slug} />
+          <DownloadReportPdfButton slug={slug} kind="deck" />
+          <DownloadReportPdfButton slug={slug} kind="report" />
           <CopyShareLinkButton slug={slug} />
         </div>
       </div>
