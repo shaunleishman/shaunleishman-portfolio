@@ -295,7 +295,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
   scope: {
     evaluatedUrl: "https://offaxistours.com/",
     evaluationDate: "2026-06-18",
-    evaluator: "Shaun Leishman (expert review)",
+    evaluator: "Shaun Leishman (heuristic evaluation)",
     userGroups: [
       "Fans discovering live music",
       "Artists and venues joining the platform",
@@ -362,7 +362,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add a primary and secondary call to action in the hero. Point fans to gigs and creators to sign-up.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 5, impact: 4, persistence: 5 },
+      priority: { frequency: 5, impact: 4, effort: 2 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/hero-no-cta.png",
       screenshot_annotations: heroNoCtaAnnotations,
     },
@@ -390,7 +390,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add a short how-it-works strip with three steps. Explain the swap model in one sentence near the top.",
       owner: "Content",
       status: "new",
-      priority: { frequency: 5, impact: 4, persistence: 4 },
+      priority: { frequency: 5, impact: 4, effort: 3 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/hero-no-cta.png",
       screenshot_annotations: heroNoCtaAnnotations.filter((_, index) => index === 0),
     },
@@ -418,7 +418,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Exclude test and incomplete profiles from public listings. Require a minimum profile before an artist is shown.",
       owner: "Product",
       status: "new",
-      priority: { frequency: 4, impact: 4, persistence: 5 },
+      priority: { frequency: 4, impact: 4, effort: 3 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/hero-no-cta.png",
       screenshot_annotations: heroNoCtaAnnotations.filter((_, index) => index === 2),
     },
@@ -445,7 +445,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add a search field and genre or location filters to the artist directory. Reuse the Gigs search pattern.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 4, impact: 4, persistence: 4 },
+      priority: { frequency: 4, impact: 4, effort: 4 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/gigs-search.png",
       screenshot_annotations: gigsSearchAnnotations.filter((_, index) => index === 0),
     },
@@ -472,7 +472,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add a global footer with key links, contact, social, and legal pages.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 4, impact: 3, persistence: 4 },
+      priority: { frequency: 4, impact: 3, effort: 3 },
     },
     {
       finding_id: "HE-006",
@@ -497,7 +497,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add the artist name to each link text or aria-label so every link is unique.",
       owner: "Engineering",
       status: "new",
-      priority: { frequency: 2, impact: 4, persistence: 4 },
+      priority: { frequency: 2, impact: 4, effort: 2 },
       accessibility_lens: {
         is_accessibility_related: true,
         wcag_principle: "WCAG link purpose (Operable and Understandable)",
@@ -527,7 +527,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Use the artist or event image where available, and a styled branded fallback otherwise.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 4, impact: 2, persistence: 4 },
+      priority: { frequency: 4, impact: 2, effort: 3 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/gigs-search.png",
       screenshot_annotations: gigsSearchAnnotations.filter((_, index) => index === 1),
       screenshot_caption:
@@ -557,7 +557,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Break the home page into curated sections with headings and a featured row, and defer the full list.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 4, impact: 3, persistence: 3 },
+      priority: { frequency: 4, impact: 3, effort: 3 },
     },
     {
       finding_id: "HE-009",
@@ -582,7 +582,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add a Sign up button beside Log in, styled as the primary action for new users.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 4, impact: 3, persistence: 4 },
+      priority: { frequency: 4, impact: 3, effort: 2 },
     },
     {
       finding_id: "HE-010",
@@ -608,7 +608,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Put Sign in directly under the password field, above the social options, and remove the rules line from login.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 3, impact: 2, persistence: 3 },
+      priority: { frequency: 3, impact: 2, effort: 1 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/login-flow.png",
       screenshot_annotations: loginFlowAnnotations,
     },
@@ -635,7 +635,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Align the tab title and visible brand, and decide whether tours is part of the name.",
       owner: "Content",
       status: "new",
-      priority: { frequency: 3, impact: 2, persistence: 2 },
+      priority: { frequency: 3, impact: 2, effort: 1 },
     },
     {
       finding_id: "HE-012",
@@ -661,7 +661,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add a persistent back link or breadcrumb at the top of the profile that returns the user to wherever they came from, whether artists, gigs, or a venue, rather than a hard-coded destination.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 4, impact: 3, persistence: 4 },
+      priority: { frequency: 4, impact: 3, effort: 1 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/artist-profile.png",
     },
     {
@@ -689,7 +689,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Collapse Ended Gigs behind a Show more toggle that reveals one card by default and the rest on demand. Keep Upcoming Gigs fully expanded.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 3, impact: 2, persistence: 3 },
+      priority: { frequency: 3, impact: 2, effort: 2 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/ended-gigs.png",
     },
     {
@@ -716,7 +716,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add a count to each gig section heading and split the header badge into upcoming and ended totals.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 3, impact: 2, persistence: 3 },
+      priority: { frequency: 3, impact: 2, effort: 2 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/ended-gigs.png",
     },
     {
@@ -744,7 +744,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Style Connect entries as clear tappable rows or buttons, each with a platform icon, label, an external-link icon, a visible border or fill, and obvious hover and focus states with an adequate tap target.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 3, impact: 3, persistence: 4 },
+      priority: { frequency: 3, impact: 3, effort: 1 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/connect-links.png",
       accessibility_lens: {
         is_accessibility_related: true,
@@ -778,7 +778,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Render a clean handle or display name as the label, paired with an action verb such as Follow, Listen, or Like. Never show the raw URL as the link text.",
       owner: "Content",
       status: "new",
-      priority: { frequency: 3, impact: 3, persistence: 4 },
+      priority: { frequency: 3, impact: 3, effort: 1 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/instagram-raw-url.png",
     },
     {
@@ -806,7 +806,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Surface genre as a prominent tag near the header, consistent with the directory cards, so it is visible without reading the bio.",
       owner: "Product",
       status: "new",
-      priority: { frequency: 4, impact: 4, persistence: 4 },
+      priority: { frequency: 4, impact: 4, effort: 3 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/profile-no-genre.png",
     },
     {
@@ -834,7 +834,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add a Sounds like row of comparable-artist chips and a set of descriptor tags below a short bio. Make the tags filterable where possible so they also power discovery.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 3, impact: 3, persistence: 3 },
+      priority: { frequency: 3, impact: 3, effort: 3 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/profile-no-genre.png",
     },
     {
@@ -862,7 +862,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Use the artist's profile photo, or a branded initials fallback, in the Artist row, and link it to the artist profile. Keep avatar treatment consistent across the page.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 3, impact: 2, persistence: 3 },
+      priority: { frequency: 3, impact: 2, effort: 2 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/event-artist-icon.png",
     },
     {
@@ -890,7 +890,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Make Off Axis presents a small eyebrow label above the main title, and size the act's name as the primary heading.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 3, impact: 2, persistence: 2 },
+      priority: { frequency: 3, impact: 2, effort: 1 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/event-title.png",
     },
     {
@@ -917,7 +917,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add an 'Add to basket' button on each gig card next to the price, with a + icon so it reads as additive, and keep the card click-through to the detail page for discovery. Reserve 'Buy now' for a true express-checkout action if one is ever introduced.",
       owner: "Product",
       status: "new",
-      priority: { frequency: 4, impact: 3, persistence: 3 },
+      priority: { frequency: 4, impact: 3, effort: 2 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/gig-card-price.png",
     },
     {
@@ -945,7 +945,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add bottom padding equal to the basket bar height, or dismiss the bar on form pages, so content is never covered. Ensure obscured controls remain reachable.",
       owner: "Engineering",
       status: "new",
-      priority: { frequency: 3, impact: 4, persistence: 4 },
+      priority: { frequency: 3, impact: 4, effort: 2 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/account-profile.png",
     },
     {
@@ -973,7 +973,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Add a visible change-photo control on the avatar with an initials fallback, and make the avatar consistent between the header, the nav, and the profile.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 3, impact: 3, persistence: 3 },
+      priority: { frequency: 3, impact: 3, effort: 3 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/account-profile.png",
     },
     {
@@ -1000,7 +1000,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Keep tabs on one row with horizontal scroll or an overflow menu on small screens, rather than wrapping a single tab to a new line.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 2, impact: 2, persistence: 3 },
+      priority: { frequency: 2, impact: 2, effort: 2 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/account-profile.png",
     },
     {
@@ -1028,7 +1028,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Explain the impact of an unverified email in one line and use a single, clearly labelled action such as Resend verification email.",
       owner: "Content",
       status: "new",
-      priority: { frequency: 3, impact: 2, persistence: 3 },
+      priority: { frequency: 3, impact: 2, effort: 2 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/account-profile.png",
     },
     {
@@ -1056,7 +1056,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Spell out the saving in plain language and show the equivalent monthly cost so 2 months free is concrete. Consider a clearer tier ladder so the entry price is not a barrier.",
       owner: "Content",
       status: "new",
-      priority: { frequency: 3, impact: 2, persistence: 3 },
+      priority: { frequency: 3, impact: 2, effort: 2 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/subscriptions.png",
     },
     {
@@ -1084,7 +1084,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Group the checkout into ordered sections (items, discounts, totals, pay). Put the Order Summary heading above the card and list each gig as a row inside it so multiple items read clearly.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 4, impact: 3, persistence: 3 },
+      priority: { frequency: 4, impact: 3, effort: 3 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/checkout.png",
     },
     {
@@ -1112,7 +1112,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Move the postcode out of the payment step, mark it clearly optional, or collect it post-purchase. Explain why it is needed if it stays.",
       owner: "Product",
       status: "new",
-      priority: { frequency: 3, impact: 3, persistence: 3 },
+      priority: { frequency: 3, impact: 3, effort: 2 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/checkout.png",
     },
     {
@@ -1140,7 +1140,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Show all-in pricing, or clearly flag that a booking fee applies, from the first place the price appears (cards and event page). Keep the breakdown at checkout, but never introduce a new mandatory fee there.",
       owner: "Product",
       status: "new",
-      priority: { frequency: 5, impact: 4, persistence: 4 },
+      priority: { frequency: 5, impact: 4, effort: 3 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/booking-fee.png",
     },
     {
@@ -1168,7 +1168,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Reframe the optional donation to support the artist by default, naming the act, and keep it clearly opt-in. Consider letting users choose artist or platform.",
       owner: "Content",
       status: "new",
-      priority: { frequency: 3, impact: 2, persistence: 3 },
+      priority: { frequency: 3, impact: 2, effort: 1 },
       screenshot_reference: "/metrics/case-studies/off-axis-tours/donation.png",
     },
     {
@@ -1196,7 +1196,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
         "Remove the currency control while the platform is GBP-only and drop the theme toggle from the MVP. Revisit a labelled currency selector ('GBP £' with a caret) only if multiple currencies are added, and theming once core flows are validated.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 2, impact: 2, persistence: 3 },
+      priority: { frequency: 2, impact: 2, effort: 1 },
     },
   ],
   actionPlan: [

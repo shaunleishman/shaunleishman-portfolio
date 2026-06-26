@@ -3,34 +3,58 @@ import type { FindingPriorityScore } from "@/content/heuristic-evaluations/types
 export const PRIORITY_SCALE = [1, 2, 3, 4, 5] as const;
 
 export const FREQUENCY_LABELS: Record<FindingPriorityScore["frequency"], string> = {
-  1: "Rare, few users would mention it",
-  2: "Uncommon, occasional frustration",
-  3: "Moderate, a noticeable pattern",
-  4: "Common, many users would complain",
-  5: "Very common, almost everyone hits it",
+  1: "Rare, few would mention it",
+  2: "Uncommon, occasional",
+  3: "Moderate, a clear pattern",
+  4: "Common, many would complain",
+  5: "Very common, nearly everyone",
 };
 
 export const IMPACT_LABELS: Record<FindingPriorityScore["impact"], string> = {
-  1: "Minor, small annoyance, task still completes",
-  2: "Noticeable, extra effort or hesitation",
-  3: "Significant, confusion or recoverable mistakes",
-  4: "Major, likely task failure or support call",
-  5: "Severe, blocking or serious harm",
+  1: "Minor, task still completes",
+  2: "Noticeable, extra effort",
+  3: "Significant, fixable mistakes",
+  4: "Major, likely task failure",
+  5: "Severe, blocking or harmful",
 };
 
-export const PERSISTENCE_LABELS: Record<FindingPriorityScore["persistence"], string> = {
-  1: "One-time, affects the user once",
-  2: "Occasional, comes up now and then",
-  3: "Repeating, returns on each visit",
-  4: "Session-long, stays in the way throughout a visit",
-  5: "Persistent, follows them across the experience",
+export const EFFORT_LABELS: Record<FindingPriorityScore["effort"], string> = {
+  1: "Very quick, under a day",
+  2: "Quick, a day or two",
+  3: "Moderate, about a week",
+  4: "Large, a few weeks",
+  5: "Major, a big project",
 };
 
 export const MAX_PRIORITY_POINTS = 5 * 5 * 5;
 
-/** Composite priority score (1–125) from frequency × impact × persistence */
+/**
+ * Turns the effort rating into a "speed" factor so quicker fixes score higher.
+ * Effort 1 (very quick) → 5, effort 5 (major project) → 1.
+ */
+export function effortSpeedFactor(effort: FindingPriorityScore["effort"]): number {
+  return 6 - effort;
+}
+
+/**
+ * Composite priority score (1–125) from frequency × impact × speed-to-fix.
+ * Speed-to-fix is the inverse of effort, so frequent, high-impact issues that
+ * are quick to fix rise to the top.
+ */
 export function computePriorityPoints(priority: FindingPriorityScore): number {
-  return priority.frequency * priority.impact * priority.persistence;
+  return priority.frequency * priority.impact * effortSpeedFactor(priority.effort);
+}
+
+/** A frequent, high-impact issue that is quick to fix — worth doing first. */
+export function isQuickWin(priority: FindingPriorityScore): boolean {
+  return priority.effort <= 2 && priority.impact >= 3 && priority.frequency >= 3;
+}
+
+/** Quick wins, highest priority first. */
+export function getQuickWins<T extends { priority: FindingPriorityScore }>(
+  findings: readonly T[],
+): T[] {
+  return sortFindingsByPriority(findings.filter((f) => isQuickWin(f.priority)));
 }
 
 /** Highest priority first; ties keep source order */
@@ -66,7 +90,7 @@ export const PRIORITY_TIER_STYLES: Record<
 > = {
   critical: {
     badge: "bg-red-100 text-red-900 border-red-200",
-    bar: "bg-red-500",
+    bar: "bg-red-600",
   },
   high: {
     badge: "bg-amber-100 text-amber-900 border-amber-200",

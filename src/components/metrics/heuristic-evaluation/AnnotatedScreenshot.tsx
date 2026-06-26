@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import type {
   ScreenshotAnnotation,
@@ -476,40 +477,43 @@ export function AnnotatedScreenshot({
         </button>
       </figure>
 
-      {open && (
-        <div
-          id={dialogId}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Enlarged view of ${alt}`}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 md:p-8 motion-safe:animate-[fade-in_0.2s_ease-out]"
-          onClick={() => setOpen(false)}
-        >
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="absolute top-3 right-3 z-10 inline-flex min-h-11 items-center rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 sm:top-4 sm:right-4"
-          >
-            Close
-          </button>
-          <div
-            className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-xl bg-white p-3 pt-14 pb-4 sm:p-4 sm:pt-10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <AnnotatedScreenshotContent
-              src={src}
-              alt={alt}
-              annotations={annotations}
-              density="default"
-            />
-            {caption && (
-              <p className="border-t border-[var(--color-border)] px-4 py-3 text-body-sm text-[var(--color-text-secondary)]">
-                {caption}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
+      {open && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              id={dialogId}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Enlarged view of ${alt}`}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 md:p-8 motion-safe:animate-[fade-in_0.2s_ease-out]"
+              onClick={() => setOpen(false)}
+            >
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="absolute top-3 right-3 z-10 inline-flex min-h-11 items-center rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 sm:top-4 sm:right-4"
+              >
+                Close
+              </button>
+              <div
+                className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-xl bg-white p-3 pt-14 pb-4 sm:p-4 sm:pt-10"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <AnnotatedScreenshotContent
+                  src={src}
+                  alt={alt}
+                  annotations={annotations}
+                  density="default"
+                />
+                {caption && (
+                  <p className="border-t border-[var(--color-border)] px-4 py-3 text-body-sm text-[var(--color-text-secondary)]">
+                    {caption}
+                  </p>
+                )}
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 }

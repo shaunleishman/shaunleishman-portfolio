@@ -44,6 +44,8 @@ export type AnalyticsDashboard = {
   activeNow: {
     count: number;
     visitors: ActiveVisitor[];
+    /** Timestamp of the most recent event overall, or null if there is none. */
+    lastSeen: string | null;
   };
   topProjects: ContentRow[];
   topArticles: ContentRow[];
@@ -91,6 +93,43 @@ export function parseAudienceMetric(value: string | null | undefined): AudienceM
     return value;
   }
   return "active_viewers";
+}
+
+/**
+ * Fills a trend series so there is one point per bucket across the whole period,
+ * inserting zeros for buckets with no events. Keys match the server bucketing
+ * (hourly for 24h, monthly for 12m, daily otherwise). "all" is returned sorted.
+ */
+export function expandTrendBuckets(
+  points: TimeSeriesPoint[],
+  period: AnalyticsPeriod,
+  now: Date = new Date(),
+): TimeSeriesPoint[] {
+  const valueByKey = new Map(points.map((p) => [p.date, p.value]));
+
+  if (period === "all") {
+    return [...points].sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  const keys: string[] = [];
+  if (period === "24h") {
+    for (let i = 23; i >= 0; i--) {
+      keys.push(new Date(now.getTime() - i * 3_600_000).toISOString().slice(0, 13));
+    }
+  } else if (period === "12m") {
+    for (let i = 11; i >= 0; i--) {
+      keys.push(
+        new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1)).toISOString().slice(0, 7),
+      );
+    }
+  } else {
+    const days = period === "7d" ? 7 : 28;
+    for (let i = days - 1; i >= 0; i--) {
+      keys.push(new Date(now.getTime() - i * 86_400_000).toISOString().slice(0, 10));
+    }
+  }
+
+  return keys.map((date) => ({ date, value: valueByKey.get(date) ?? 0 }));
 }
 
 export function formatBucketLabel(key: string, period: AnalyticsPeriod): string {

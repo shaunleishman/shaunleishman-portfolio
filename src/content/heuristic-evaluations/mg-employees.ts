@@ -31,9 +31,9 @@ const mgEmployeesRedesignCallouts: RedesignCallout[] = [
   },
   {
     findingId: "HE-005",
-    title: "Key answers sit inside closed panels",
-    problem: "Useful answers were hidden behind collapsed accordions.",
-    change: "Single-column FAQs with in-panel CTAs.",
+    title: "FAQ accordions split across two columns",
+    problem: "The FAQs sat in two columns, so opening one pushed only its column down and left the layout lopsided.",
+    change: "Stacked the FAQs in one column so opening an item pushes the page down evenly.",
     severity: "medium",
   },
   {
@@ -236,13 +236,13 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
   accent: "#E85D04",
   executiveSummary: {
     whatWasEvaluated:
-      "The Employees page at workplacepensions.mandg.com/employees (desktop review, June 2026).",
+      "The Employees page at workplacepensions.mandg.com/employees (heuristic evaluation, June 2026).",
     usabilityHealth:
       "The content is good, but people struggle to pick their next step. Jargon and weak contrast make it harder.",
     topIssues: [
       "No clear paths for checking online, learning, or extra savings",
       "Jargon before plain explanations",
-      "Log in and Register sit too low on the page",
+      "Log in is hard to find and looks the same as Register",
       "Hero subtext is hard to read",
     ],
     mainRisks: [
@@ -260,7 +260,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
   scope: {
     evaluatedUrl: "https://workplacepensions.mandg.com/employees/",
     evaluationDate: "2026-06-15",
-    evaluator: "Shaun Leishman (expert review)",
+    evaluator: "Shaun Leishman (heuristic evaluation)",
     userGroups: [
       "Workplace pension members",
       "New and returning online users",
@@ -273,9 +273,10 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
     heuristicsUsed: ["Nielsen Norman Group H01–H10"],
     additionalLenses: ["Accessibility", "Content clarity", "Responsive behaviour"],
     limitations: [
-      "One reviewer, desktop only. Mobile and logged-in flows were not tested.",
-      "A cookie banner on first visit may change what people see first.",
+      "Reviewed on desktop and mobile. Logged-in flows were not tested.",
+      "On a first visit, a cookie consent banner covers part of the page until it is dismissed, so a new visitor's first view differs from the screenshots in this report.",
     ],
+    timeSpent: "Around 8 hours across the review, write-up, and interactive prototype.",
   },
   severitySummary: {
     critical: 0,
@@ -290,7 +291,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
     },
     {
       label: "Content and language",
-      findingIds: ["HE-002", "HE-005", "HE-010", "HE-012"],
+      findingIds: ["HE-002", "HE-010", "HE-012"],
     },
     {
       label: "Accessibility",
@@ -298,7 +299,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
     },
     {
       label: "Page structure",
-      findingIds: ["HE-006", "HE-008", "HE-011", "HE-013"],
+      findingIds: ["HE-005", "HE-006", "HE-008", "HE-011", "HE-013"],
     },
   ],
   findings: [
@@ -326,7 +327,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
         "Add three task cards above the fold, one for each main job, so people can pick their path on first view.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 5, impact: 4, persistence: 5 },
+      priority: { frequency: 5, impact: 4, effort: 3 },
       screenshot_reference: "/metrics/case-studies/mg-employees/hero-above-fold.png",
       screenshot_annotations: heroRoutingAnnotations,
     },
@@ -351,7 +352,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       recommendation: "Add a plain-English summary at the top. Explain AVC and IGC in simple terms.",
       owner: "Content",
       status: "new",
-      priority: { frequency: 4, impact: 4, persistence: 4 },
+      priority: { frequency: 4, impact: 4, effort: 3 },
       screenshot_reference: "/metrics/case-studies/mg-employees/content-jargon.png",
       screenshot_annotations: contentJargonAnnotations,
     },
@@ -360,8 +361,8 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       title: "Log in and Register lack hierarchy",
       screen_or_flow: "Header and CTAs across page",
       user_task: "Log in or register",
-      primary_heuristic: "H08",
-      secondary_heuristics: ["H06"],
+      primary_heuristic: "H04",
+      secondary_heuristics: ["H08", "H06"],
       additional_lenses: ["L04"],
       description:
         "Register and Log in use the same text-link style mid-nav. Neither reads as primary or secondary, and neither sits in the usual top-right spot.",
@@ -379,7 +380,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
         "Group Log in and Register at the top right. Style Log in as primary and Register as secondary.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 5, impact: 4, persistence: 5 },
+      priority: { frequency: 5, impact: 4, effort: 2 },
       screenshot_reference: "/metrics/case-studies/mg-employees/cta-hierarchy.png",
       screenshot_annotations: ctaHierarchyAnnotations,
       screenshot_caption:
@@ -405,7 +406,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       recommendation: "Darken the subtext and check contrast with a tool.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 5, impact: 3, persistence: 4 },
+      priority: { frequency: 5, impact: 3, effort: 1 },
       accessibility_lens: {
         is_accessibility_related: true,
         wcag_principle: "WCAG Perceivable, minimum contrast",
@@ -416,26 +417,26 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
     },
     {
       finding_id: "HE-005",
-      title: "Key answers sit inside closed panels",
+      title: "FAQ accordions split across two columns",
       screen_or_flow: "FAQ accordions",
       user_task: "Find answers without calling",
-      primary_heuristic: "H06",
-      secondary_heuristics: ["H08"],
-      additional_lenses: ["L02"],
+      primary_heuristic: "H08",
+      secondary_heuristics: ["H04"],
+      additional_lenses: ["L04"],
       description:
-        "FAQ topics sit behind collapsed accordions, so people open each one to hunt for an answer.",
+        "The FAQ accordions sit in two columns, so opening one item pushes only that column down and the two sides fall out of line.",
       evidence: {
-        observed_where: "Mid-page accordion grid",
-        observed_behaviour: "All panels start closed.",
-        expected_behaviour: "Show top questions openly. Use accordions for rare topics only.",
+        observed_where: "Mid-page FAQ grid",
+        observed_behaviour: "Accordions sit in two columns. Opening one expands only its column, so the layout turns uneven.",
+        expected_behaviour: "A single column of accordions, so opening one pushes everything below it down evenly.",
       },
-      user_impact: "People miss useful guidance and call support.",
+      user_impact: "The lopsided, jumpy layout feels unpolished and makes the FAQs harder to scan.",
       severity: "medium",
       confidence: "high",
-      recommendation: "Show the three most common questions as visible text or quick links.",
-      owner: "Content",
+      recommendation: "Stack the FAQ accordions in a single column so opening one pushes the content below it down evenly.",
+      owner: "Design",
       status: "new",
-      priority: { frequency: 3, impact: 3, persistence: 3 },
+      priority: { frequency: 3, impact: 3, effort: 2 },
     },
     {
       finding_id: "HE-006",
@@ -457,7 +458,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       recommendation: "Match the page title to the visible brand.",
       owner: "Content",
       status: "new",
-      priority: { frequency: 2, impact: 2, persistence: 2 },
+      priority: { frequency: 2, impact: 2, effort: 1 },
     },
     {
       finding_id: "HE-007",
@@ -478,7 +479,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       recommendation: "Add clear link text or aria-labels with the destination name.",
       owner: "Engineering",
       status: "new",
-      priority: { frequency: 2, impact: 4, persistence: 4 },
+      priority: { frequency: 2, impact: 4, effort: 2 },
       accessibility_lens: {
         is_accessibility_related: true,
         wcag_principle: "WCAG link purpose (Operable and Understandable)",
@@ -504,7 +505,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       recommendation: "Use a slim bottom bar. Track scroll depth before and after.",
       owner: "Product",
       status: "new",
-      priority: { frequency: 5, impact: 3, persistence: 1 },
+      priority: { frequency: 5, impact: 3, effort: 3 },
     },
     {
       finding_id: "HE-009",
@@ -525,7 +526,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       recommendation: "Use one main Register button labelled Register for online access.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 3, impact: 3, persistence: 4 },
+      priority: { frequency: 3, impact: 3, effort: 2 },
     },
     {
       finding_id: "HE-010",
@@ -547,7 +548,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
         "Lead with Most UK employees earning over £10,000 are enrolled automatically.",
       owner: "Content",
       status: "new",
-      priority: { frequency: 2, impact: 3, persistence: 2 },
+      priority: { frequency: 2, impact: 3, effort: 2 },
     },
     {
       finding_id: "HE-011",
@@ -569,7 +570,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       recommendation: "Display six items by default with a Show more control.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 2, impact: 2, persistence: 2 },
+      priority: { frequency: 2, impact: 2, effort: 2 },
     },
     {
       finding_id: "HE-012",
@@ -595,7 +596,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
         "Use an image that signals growth or long-term saving, or drop the image and keep the space clean.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 4, impact: 2, persistence: 2 },
+      priority: { frequency: 4, impact: 2, effort: 2 },
     },
     {
       finding_id: "HE-013",
@@ -621,16 +622,17 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
         "Crop the hero shorter so the task cards appear above the fold on a typical laptop.",
       owner: "Design",
       status: "new",
-      priority: { frequency: 5, impact: 3, persistence: 4 },
+      priority: { frequency: 5, impact: 3, effort: 2 },
     },
   ],
   actionPlan: [
-    { priority: "fix_now", action: "Add task cards and clear Log in / Register order" },
-    { priority: "fix_now", action: "Add a plain-English pension summary before jargon" },
+    { priority: "fix_now", action: "Add task cards so people can choose their path" },
+    { priority: "fix_now", action: "Make Log in the primary action over Register" },
+    { priority: "fix_now", action: "Add a plain-English pension summary before the jargon" },
     { priority: "fix_next", action: "Fix hero subtext contrast to WCAG AA" },
-    { priority: "fix_next", action: "Show six supporting information items with Show more" },
+    { priority: "fix_next", action: "Order supporting information by importance and show six with Show more" },
     { priority: "fix_next", action: "Give external links clear accessible names" },
-    { priority: "monitor", action: "Track cookie banner impact on scroll and CTA clicks" },
+    { priority: "monitor", action: "Check the slimmer cookie banner does not block scrolling or key actions" },
     { priority: "validate", action: "Run a five-user card sort on task labels" },
   ],
   screenshots: [
@@ -664,16 +666,16 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       "Plain-English hero copy with stronger contrast",
       "Hero image that reflects growth instead of an unrelated photo",
       "Shorter hero so the task cards sit above the fold",
-      "Single-column FAQ accordions with in-panel CTAs",
+      "Single-column FAQ accordions that stay balanced as they open",
       "Slimmer cookie bar",
       "Manage online puts Log in before Register with left-aligned buttons",
-      "Supporting information shows six items first, then Show more",
+      "Supporting information ordered by importance, showing six items first then Show more",
     ],
     planned: [
       "Full content pass to replace remaining jargon",
       "WCAG AA contrast check on all text and buttons",
       "Accessible names on external links",
-      "Cookie banner tested for scroll and conversion",
+      "Check the slimmer cookie banner does not block scrolling or stop people completing key actions",
       "Five-user card sort on task labels",
       "Mobile and tablet layout review",
     ],

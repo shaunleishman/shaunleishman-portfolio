@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { MetricsBarChart, MetricsKpiCard } from "@/components/metrics/metrics-ui";
 import { MetricsPeriodSelect } from "@/components/metrics/MetricsPeriodSelect";
+import { MetricsSelect } from "@/components/metrics/MetricsSelect";
 import { useMetricsDashboard } from "@/hooks/useMetricsDashboard";
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
 import type { AudienceMetricKey } from "@/lib/analytics-metrics-types";
@@ -33,18 +34,17 @@ export default function MetricsAudiencePage() {
           <label htmlFor="audience-metric" className="mb-1.5 block text-label text-[var(--color-text-muted)]">
             Metric
           </label>
-          <select
+          <MetricsSelect
             id="audience-metric"
             value={metric}
             onChange={(e) => setMetric(e.target.value as AudienceMetricKey)}
-            className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3 py-2.5 text-body-sm min-h-[44px]"
           >
             {METRIC_OPTIONS.map((key) => (
               <option key={key} value={key}>
                 {getAudienceMetricLabel(key)}
               </option>
             ))}
-          </select>
+          </MetricsSelect>
         </div>
         <MetricsPeriodSelect value={period} onChange={setPeriod} id="audience-period" />
       </div>

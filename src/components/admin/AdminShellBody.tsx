@@ -1,8 +1,29 @@
 "use client";
 
+import { useState } from "react";
+import { PanelLeftOpen } from "lucide-react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { useMetricsAuth } from "@/hooks/useMetricsAuth";
 import { cn } from "@/lib/utils";
+
+const NAV_HIDDEN_KEY = "admin-nav-hidden";
+
+function ShowNavButton({ onClick, className }: { onClick: () => void; className?: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="Show navigation"
+      title="Show navigation"
+      className={cn(
+        "flex size-9 shrink-0 items-center justify-center rounded-lg border border-[var(--color-border)] bg-white text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-accent)]/40 hover:text-[var(--color-text-primary)]",
+        className,
+      )}
+    >
+      <PanelLeftOpen className="size-4" aria-hidden />
+    </button>
+  );
+}
 
 type AdminShellBodyProps = {
   title: string;
@@ -20,6 +41,20 @@ export function AdminShellBody({
   hideHeader = false,
 }: AdminShellBodyProps) {
   const auth = useMetricsAuth();
+  // AdminShellBody only renders client-side (dynamic import, ssr: false), so reading
+  // localStorage during init is safe and avoids a setState-in-effect flash.
+  const [navHidden, setNavHidden] = useState<boolean>(
+    () => typeof window !== "undefined" && window.localStorage.getItem(NAV_HIDDEN_KEY) === "1",
+  );
+
+  const setNavHiddenPersisted = (hidden: boolean) => {
+    setNavHidden(hidden);
+    try {
+      window.localStorage.setItem(NAV_HIDDEN_KEY, hidden ? "1" : "0");
+    } catch {
+      // Ignore storage failures (private mode, quota); state still updates for this session.
+    }
+  };
 
   if (auth.authenticated === null || (auth.loading && auth.authenticated !== false)) {
     return (
@@ -85,15 +120,18 @@ export function AdminShellBody({
 
   return (
     <div className="flex min-h-0 flex-1 overflow-hidden">
-      <AdminSidebar />
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      {!navHidden && <AdminSidebar onHide={() => setNavHiddenPersisted(true)} />}
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         {!hideHeader && (
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] bg-white px-6 py-4">
-            <div className="min-w-0">
-              <h1 className="text-h4 font-semibold">{title}</h1>
-              {description && (
-                <p className="mt-0.5 text-body-sm text-[var(--color-text-muted)]">{description}</p>
-              )}
+            <div className="flex min-w-0 items-center gap-3">
+              {navHidden && <ShowNavButton onClick={() => setNavHiddenPersisted(false)} />}
+              <div className="min-w-0">
+                <h1 className="text-h4 font-semibold">{title}</h1>
+                {description && (
+                  <p className="mt-0.5 text-body-sm text-[var(--color-text-muted)]">{description}</p>
+                )}
+              </div>
             </div>
             <button
               type="button"
@@ -103,6 +141,13 @@ export function AdminShellBody({
               Sign out
             </button>
           </div>
+        )}
+
+        {hideHeader && navHidden && (
+          <ShowNavButton
+            onClick={() => setNavHiddenPersisted(false)}
+            className="absolute left-3 top-3 z-20 shadow-sm"
+          />
         )}
 
         <div

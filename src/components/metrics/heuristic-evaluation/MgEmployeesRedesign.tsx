@@ -149,38 +149,17 @@ const FAQ_ITEMS: FaqItem[] = [
   },
 ];
 
+// Ordered by likely usefulness to an employer: orientation and duties first,
+// then practical tasks and contact, with niche or dated items last.
 const SUPPORTING_INFO_ITEMS = [
-  {
-    title: "Understand your obligations",
-    description:
-      "The Government has created an employer responsibility to automatically enrol eligible jobholders into a good pension plan, and to make contributions to it.",
-  },
-  {
-    title: "Jargon buster",
-    description: "Bite-sized explanations of terms used.",
-  },
   {
     title: "The basics",
     description: "Answers to common questions about automatic enrolment.",
   },
   {
-    title: "A Guide to administering your payroll",
+    title: "Understand your obligations",
     description:
-      "Hints and tips to help make your payroll file submissions and payments a success every time.",
-  },
-  {
-    title: "Prudential Corporate Pensions Trustee Limited (PCPTL)",
-    description:
-      "To make sure we offer customers value for money, like all who offer workplace contract-based plans, we answer to an independent group called the PCPTL",
-  },
-  {
-    title: "Things to think about",
-    description:
-      "The rules are now in place and there are a number of issues you will need to consider to practically implement the regulations.",
-  },
-  {
-    title: "Checklist",
-    description: "There's a lot to do, our checklist could help you.",
+      "The Government has created an employer responsibility to automatically enrol eligible jobholders into a good pension plan, and to make contributions to it.",
   },
   {
     title: "Automatic enrolment & qualifying workplace pensions",
@@ -188,14 +167,32 @@ const SUPPORTING_INFO_ITEMS = [
       "The law on workplace pensions has changed. Every employer with at least one member of staff now has new duties.",
   },
   {
-    title: "New look simpler annual benefit statements",
-    description:
-      "Our updated statements have a simpler layout that highlights the most important information you need to know about your pension savings.",
-  },
-  {
     title: "Contact us",
     description:
       "If you are an Employer and want to discuss how we can work together or to find out more details about our corporate solutions, please contact us.",
+  },
+  {
+    title: "Checklist",
+    description: "There's a lot to do, our checklist could help you.",
+  },
+  {
+    title: "Things to think about",
+    description:
+      "The rules are now in place and there are a number of issues you will need to consider to practically implement the regulations.",
+  },
+  {
+    title: "Jargon buster",
+    description: "Bite-sized explanations of terms used.",
+  },
+  {
+    title: "A Guide to administering your payroll",
+    description:
+      "Hints and tips to help make your payroll file submissions and payments a success every time.",
+  },
+  {
+    title: "New look simpler annual benefit statements",
+    description:
+      "Our updated statements have a simpler layout that highlights the most important information you need to know about your pension savings.",
   },
   {
     title: "Would you like to use your Prudential plan for qualifying purposes?",
@@ -206,6 +203,11 @@ const SUPPORTING_INFO_ITEMS = [
     title: "Better Workplace Pensions - we're here to help",
     description:
       "On the 6th April 2015, the Government introduced additional requirements for workplace pensions.",
+  },
+  {
+    title: "Prudential Corporate Pensions Trustee Limited (PCPTL)",
+    description:
+      "To make sure we offer customers value for money, like all who offer workplace contract-based plans, we answer to an independent group called the PCPTL",
   },
 ] as const;
 

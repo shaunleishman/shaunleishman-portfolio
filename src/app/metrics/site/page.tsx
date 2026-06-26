@@ -1,25 +1,48 @@
 "use client";
 
+import { useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { MetricsBarChart, MetricsKpiCard, MetricsRankedList } from "@/components/metrics/metrics-ui";
+import { MetricsPeriodSelect } from "@/components/metrics/MetricsPeriodSelect";
 import { useMetricsDashboard } from "@/hooks/useMetricsDashboard";
-import { METRICS_HOME_PERIOD } from "@/lib/analytics-period";
+import { METRICS_HOME_PERIOD, type AnalyticsPeriod } from "@/lib/analytics-period";
+
+const RELATIVE = new Intl.RelativeTimeFormat("en-GB", { numeric: "auto" });
+
+function formatLastSeen(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const seconds = Math.round(diffMs / 1000);
+  if (seconds < 60) return "just now";
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) return RELATIVE.format(-minutes, "minute");
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return RELATIVE.format(-hours, "hour");
+  const days = Math.round(hours / 24);
+  if (days < 30) return RELATIVE.format(-days, "day");
+  const months = Math.round(days / 30);
+  if (months < 12) return RELATIVE.format(-months, "month");
+  return RELATIVE.format(-Math.round(months / 12), "year");
+}
 
 export default function SiteMetricsPage() {
-  const { data, loading } = useMetricsDashboard({ period: METRICS_HOME_PERIOD });
+  const [period, setPeriod] = useState<AnalyticsPeriod>(METRICS_HOME_PERIOD);
+  const { data, loading } = useMetricsDashboard({ period });
 
   return (
     <AdminShell
       title="Site metrics"
-      description="High-level performance for the last 7 days, covering traffic, engagement, and what is performing right now."
+      description="High-level performance covering traffic, engagement, and what is performing right now."
     >
       {loading && !data ? (
         <p className="text-body-sm text-[var(--color-text-muted)]">Loading dashboard…</p>
       ) : data ? (
         <>
-          <p className="mb-6 text-body-sm text-[var(--color-text-muted)]">
-            Overview for <strong className="text-[var(--color-text-primary)]">{data.periodLabel}</strong>
-          </p>
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <p className="text-body-sm text-[var(--color-text-muted)]">
+              Overview for <strong className="text-[var(--color-text-primary)]">{data.periodLabel}</strong>
+            </p>
+            <MetricsPeriodSelect value={period} onChange={setPeriod} id="site-period" />
+          </div>
 
           <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricsKpiCard label="Pageviews" value={String(data.overview.pageviews)} />
@@ -41,7 +64,11 @@ export default function SiteMetricsPage() {
               </p>
               <p className="text-h2 font-semibold tabular-nums mb-4">{data.activeNow.count}</p>
               {data.activeNow.visitors.length === 0 ? (
-                <p className="text-body-sm text-[var(--color-text-muted)]">No active visitors right now.</p>
+                <p className="text-body-sm text-[var(--color-text-muted)]">
+                  {data.activeNow.lastSeen
+                    ? `No active visitors right now. Last active ${formatLastSeen(data.activeNow.lastSeen)}.`
+                    : "No activity recorded yet."}
+                </p>
               ) : (
                 <ul className="space-y-2 text-body-sm">
                   {data.activeNow.visitors.map((visitor) => (

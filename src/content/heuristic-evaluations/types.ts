@@ -68,8 +68,8 @@ export type FindingPriorityScore = {
   frequency: 1 | 2 | 3 | 4 | 5;
   /** How much the issue affects the user — 1 minor, 5 severe */
   impact: 1 | 2 | 3 | 4 | 5;
-  /** Whether the issue is one-time or keeps affecting the user — 1 once, 5 persistent */
-  persistence: 1 | 2 | 3 | 4 | 5;
+  /** How long the fix takes to build and test — 1 very quick, 5 a major project */
+  effort: 1 | 2 | 3 | 4 | 5;
 };
 
 export type HeuristicFinding = {
@@ -88,7 +88,7 @@ export type HeuristicFinding = {
   recommendation: string;
   owner: FindingOwner;
   status: FindingStatus;
-  /** Frequency, impact and persistence scores used to derive priority points */
+  /** Frequency, impact and effort scores used to derive priority points */
   priority: FindingPriorityScore;
   screenshot_reference?: string;
   screenshot_annotations?: ScreenshotAnnotation[];
@@ -138,6 +138,8 @@ export type EvaluationScope = {
   heuristicsUsed: string[];
   additionalLenses: string[];
   limitations: string[];
+  /** Rough time invested in the review and write-up, e.g. "Around 8 hours". */
+  timeSpent?: string;
 };
 
 export type ExecutiveSummary = {

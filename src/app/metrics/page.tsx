@@ -1,16 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight, BookOpen, Layers, LineChart, Palette } from "lucide-react";
+import { useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { MetricsKpiCard } from "@/components/metrics/metrics-ui";
+import { MetricsKpiCard, MetricsLineChart } from "@/components/metrics/metrics-ui";
+import { MetricsPeriodSelect } from "@/components/metrics/MetricsPeriodSelect";
 import { useMetricsDashboard } from "@/hooks/useMetricsDashboard";
-import { useAdminBase } from "@/hooks/useAdminBase";
-import { METRICS_HOME_PERIOD } from "@/lib/analytics-period";
+import { METRICS_HOME_PERIOD, type AnalyticsPeriod } from "@/lib/analytics-period";
 
 export default function AdminOverviewPage() {
-  const base = useAdminBase();
-  const { data, loading } = useMetricsDashboard({ period: METRICS_HOME_PERIOD });
+  const [period, setPeriod] = useState<AnalyticsPeriod>(METRICS_HOME_PERIOD);
+  const { data, loading } = useMetricsDashboard({ period });
 
   return (
     <AdminShell
@@ -21,10 +20,13 @@ export default function AdminOverviewPage() {
         <p className="text-body-sm text-[var(--color-text-muted)]">Loading overview…</p>
       ) : data ? (
         <>
-          <p className="mb-6 text-body-sm text-[var(--color-text-muted)]">
-            Snapshot for{" "}
-            <strong className="text-[var(--color-text-primary)]">{data.periodLabel}</strong>
-          </p>
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <p className="text-body-sm text-[var(--color-text-muted)]">
+              Snapshot for{" "}
+              <strong className="text-[var(--color-text-primary)]">{data.periodLabel}</strong>
+            </p>
+            <MetricsPeriodSelect value={period} onChange={setPeriod} id="overview-period" />
+          </div>
 
           <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricsKpiCard label="Pageviews" value={String(data.overview.pageviews)} />
@@ -33,75 +35,10 @@ export default function AdminOverviewPage() {
             <MetricsKpiCard label="Feedback" value={String(data.overview.feedbackSubmissions)} />
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
-            <Link
-              href={`${base}/site`}
-              className="group rounded-2xl border border-[var(--color-border)] bg-white p-6 transition-colors hover:border-[var(--color-accent)]/40"
-            >
-              <div className="mb-4 flex size-10 items-center justify-center rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
-                <LineChart className="size-5" aria-hidden />
-              </div>
-              <h2 className="text-h4 font-semibold">Site metrics</h2>
-              <p className="mt-2 text-body-sm text-[var(--color-text-secondary)]">
-                Traffic, content performance, audience trends, heatmaps, and feedback breakdowns.
-              </p>
-              <span className="mt-4 inline-flex items-center gap-1 text-body-sm font-medium text-[var(--color-accent)]">
-                Open metrics
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-              </span>
-            </Link>
-
-            <Link
-              href={`${base}/prototypes`}
-              className="group rounded-2xl border border-[var(--color-border)] bg-white p-6 transition-colors hover:border-[var(--color-accent)]/40"
-            >
-              <div className="mb-4 flex size-10 items-center justify-center rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
-                <Layers className="size-5" aria-hidden />
-              </div>
-              <h2 className="text-h4 font-semibold">Prototypes</h2>
-              <p className="mt-2 text-body-sm text-[var(--color-text-secondary)]">
-                Interactive demos from past projects. Embed in case studies without linking to Figma.
-              </p>
-              <span className="mt-4 inline-flex items-center gap-1 text-body-sm font-medium text-[var(--color-accent)]">
-                Browse prototypes
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-              </span>
-            </Link>
-
-            <Link
-              href={`${base}/design-systems`}
-              className="group rounded-2xl border border-[var(--color-border)] bg-white p-6 transition-colors hover:border-[var(--color-accent)]/40"
-            >
-              <div className="mb-4 flex size-10 items-center justify-center rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
-                <Palette className="size-5" aria-hidden />
-              </div>
-              <h2 className="text-h4 font-semibold">Design systems</h2>
-              <p className="mt-2 text-body-sm text-[var(--color-text-secondary)]">
-                Token libraries and component showcases from design systems you have built or maintained.
-              </p>
-              <span className="mt-4 inline-flex items-center gap-1 text-body-sm font-medium text-[var(--color-accent)]">
-                Browse design systems
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-              </span>
-            </Link>
-
-            <Link
-              href={`${base}/case-studies`}
-              className="group rounded-2xl border border-[var(--color-border)] bg-white p-6 transition-colors hover:border-[var(--color-accent)]/40"
-            >
-              <div className="mb-4 flex size-10 items-center justify-center rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
-                <BookOpen className="size-5" aria-hidden />
-              </div>
-              <h2 className="text-h4 font-semibold">Case studies</h2>
-              <p className="mt-2 text-body-sm text-[var(--color-text-secondary)]">
-                Heuristic evaluations and UX audit reports for job applications. Hidden from the public site.
-              </p>
-              <span className="mt-4 inline-flex items-center gap-1 text-body-sm font-medium text-[var(--color-accent)]">
-                Browse case studies
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-              </span>
-            </Link>
-          </div>
+          <section className="rounded-2xl border border-[var(--color-border)] bg-white p-6">
+            <h2 className="text-h4 font-semibold mb-4">Traffic trend</h2>
+            <MetricsLineChart points={data.trend} period={data.period} />
+          </section>
         </>
       ) : null}
     </AdminShell>

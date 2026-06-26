@@ -312,6 +312,10 @@ export async function getAnalyticsDashboard(options: {
 
   const audience = computeAudienceSeries(events, period, audienceMetric);
   const activeVisitors = getActiveVisitors(allEvents);
+  const lastSeen = allEvents.reduce<string | null>(
+    (latest, event) => (latest === null || event.timestamp > latest ? event.timestamp : latest),
+    null,
+  );
 
   return {
     period,
@@ -330,6 +334,7 @@ export async function getAnalyticsDashboard(options: {
     activeNow: {
       count: activeVisitors.length,
       visitors: activeVisitors.slice(0, 8),
+      lastSeen,
     },
     topProjects: sortContentRows(projectRows, "views").slice(0, 5),
     topArticles: sortContentRows(articleRows, "views").slice(0, 5),

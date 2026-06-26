@@ -6,7 +6,7 @@ import type { HeuristicEvaluation, Severity } from "@/content/heuristic-evaluati
 import { useAdminHref } from "@/hooks/useAdminBase";
 import { cn } from "@/lib/utils";
 import { MetricsKpiCard } from "@/components/metrics/metrics-ui";
-import { HeuristicFindingCard, SeverityBadge } from "./HeuristicFindingCard";
+import { HeuristicFindingCard, HeuristicPill, SeverityBadge, SeverityLevelsGuide } from "./HeuristicFindingCard";
 import { CollapsiblePanel, CollapsibleTeaserCard, ReportSection, scrollIntoReportViewport } from "./CollapsibleReportSection";
 import { AnnotatedScreenshot } from "./AnnotatedScreenshot";
 import { FullscreenPagePreview } from "./FullscreenPagePreview";
@@ -18,11 +18,18 @@ import {
   countFindingsBySeverity,
   filterFindingsBySeverity,
 } from "./FindingsSeverityFilter";
-import { FindingPriorityBreakdown, PriorityRankBadge } from "./FindingPriorityDisplay";
-import { buildPriorityRankMap, sortFindingsByPriority } from "./finding-priority";
+import { FindingPriorityBreakdown, PriorityRankBadge, PriorityScoringGuide } from "./FindingPriorityDisplay";
+import { buildPriorityRankMap, EFFORT_LABELS, getQuickWins, sortFindingsByPriority } from "./finding-priority";
 
 const FINDINGS_INITIAL_VISIBLE = 6;
-const PRIORITY_PROBLEMS_COUNT = 2;
+const SEVERE_PROBLEMS_COUNT = 2;
+
+const SEVERITY_RANK: Record<Severity, number> = {
+  critical: 3,
+  high: 2,
+  medium: 1,
+  low: 0,
+};
 
 const SEVERITY_KPI_OPTIONS: { key: Severity; label: string }[] = [
   { key: "critical", label: "Critical" },
@@ -62,6 +69,21 @@ const REDESIGN_MOCKS: Record<
   },
 };
 
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+/** Format an ISO date (YYYY-MM-DD) as a UK-style date, e.g. "15 June 2026". */
+function formatUkDate(iso: string): string {
+  const match = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return iso;
+  const [, year, month, day] = match;
+  const monthName = MONTH_NAMES[Number(month) - 1];
+  if (!monthName) return iso;
+  return `${Number(day)} ${monthName} ${year}`;
+}
+
 type HeuristicEvaluationReportProps = {
   evaluation: HeuristicEvaluation;
   /** Override the "Back to case studies" destination. Defaults to the secret metrics case-studies path. */
@@ -86,10 +108,22 @@ export function HeuristicEvaluationReport({
   const firstRevealedFindingRef = useRef<HTMLDivElement>(null);
   const findingsSectionRef = useRef<HTMLElement>(null);
   const priorityRankById = useMemo(() => buildPriorityRankMap(findings), [findings]);
-  const topPriorityFindings = useMemo(
-    () => sortFindingsByPriority(findings).slice(0, PRIORITY_PROBLEMS_COUNT),
+  const topSevereFindings = useMemo(
+    () =>
+      [...findings]
+        .sort((a, b) => {
+          const bySeverity = SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity];
+          if (bySeverity !== 0) return bySeverity;
+          // Tie-break on reach (frequency × impact), independent of how quick the fix is.
+          return (
+            b.priority.frequency * b.priority.impact -
+            a.priority.frequency * a.priority.impact
+          );
+        })
+        .slice(0, SEVERE_PROBLEMS_COUNT),
     [findings],
   );
+  const quickWins = useMemo(() => getQuickWins(findings), [findings]);
   const filteredFindings = useMemo(
     () => sortFindingsByPriority(filterFindingsBySeverity(findings, severityFilter)),
     [findings, severityFilter],
@@ -143,81 +177,107 @@ export function HeuristicEvaluationReport({
       </div>
 
       <ReportSection title="Summary">
-        <CollapsiblePanel
-          headline={executiveSummary.usabilityHealth}
-          teaser={executiveSummary.whatWasEvaluated}
-        >
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <h3 className="text-body-sm font-semibold mb-2">Top issues</h3>
-              <ul className="space-y-1.5">
-                {executiveSummary.topIssues.map((issue) => (
-                  <li key={issue} className="text-body-sm text-[var(--color-text-secondary)] flex gap-2">
-                    <span className="text-[var(--color-accent)] shrink-0">•</span>
-                    {issue}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-body-sm font-semibold mb-2">Next steps</h3>
-              <ol className="space-y-1.5 list-decimal list-inside">
-                {executiveSummary.recommendedNextSteps.map((step) => (
-                  <li key={step} className="text-body-sm text-[var(--color-text-secondary)]">
-                    {step}
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-        </CollapsiblePanel>
-      </ReportSection>
-
-      <ReportSection title="Scope">
-        <CollapsiblePanel
-          label="Method"
-          headline={`${scope.evaluationDate} · ${scope.evaluator}`}
-          teaser={scope.limitations[0]}
-        >
-          <dl className="grid gap-4 sm:grid-cols-2 text-body-sm">
-            <div>
-              <dt className="text-label text-[var(--color-text-muted)]">Date</dt>
-              <dd>{scope.evaluationDate}</dd>
-            </div>
-            <div>
-              <dt className="text-label text-[var(--color-text-muted)]">Reviewer</dt>
-              <dd>{scope.evaluator}</dd>
-            </div>
-            <div className="sm:col-span-2">
-              <dt className="text-label text-[var(--color-text-muted)] mb-1">Tasks reviewed</dt>
-              <dd>
-                <ul className="space-y-1">
-                  {scope.tasksEvaluated.map((t) => (
-                    <li key={t} className="text-[var(--color-text-secondary)]">• {t}</li>
+        <div className="space-y-3">
+          <CollapsiblePanel
+            label="Overview"
+            headline={executiveSummary.usabilityHealth}
+            teaser={executiveSummary.whatWasEvaluated}
+          >
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <h3 className="text-body-sm font-semibold mb-2">Top issues</h3>
+                <ul className="space-y-1.5">
+                  {executiveSummary.topIssues.map((issue) => (
+                    <li key={issue} className="text-body-sm text-[var(--color-text-secondary)] flex gap-2">
+                      <span className="text-[var(--color-accent)] shrink-0">•</span>
+                      {issue}
+                    </li>
                   ))}
                 </ul>
-              </dd>
-            </div>
-            <div className="sm:col-span-2">
-              <dt className="text-label text-[var(--color-text-muted)] mb-1">Limitations</dt>
-              <dd>
-                <ul className="space-y-1">
-                  {scope.limitations.map((l) => (
-                    <li key={l} className="text-[var(--color-text-secondary)]">• {l}</li>
+              </div>
+              <div>
+                <h3 className="text-body-sm font-semibold mb-2">Next steps</h3>
+                <ol className="space-y-1.5 list-decimal list-inside">
+                  {executiveSummary.recommendedNextSteps.map((step) => (
+                    <li key={step} className="text-body-sm text-[var(--color-text-secondary)]">
+                      {step}
+                    </li>
                   ))}
-                </ul>
-              </dd>
+                </ol>
+              </div>
             </div>
-          </dl>
-        </CollapsiblePanel>
+          </CollapsiblePanel>
+
+          <CollapsiblePanel
+            label="Method"
+            headline={`${formatUkDate(scope.evaluationDate)} · ${scope.evaluator}`}
+            teaser={scope.limitations[0]}
+          >
+            <dl className="grid gap-4 sm:grid-cols-2 text-body-sm">
+              <div>
+                <dt className="text-label text-[var(--color-text-muted)]">Date</dt>
+                <dd>{formatUkDate(scope.evaluationDate)}</dd>
+              </div>
+              <div>
+                <dt className="text-label text-[var(--color-text-muted)]">Reviewer</dt>
+                <dd>{scope.evaluator}</dd>
+              </div>
+              {scope.timeSpent ? (
+                <div className="sm:col-span-2">
+                  <dt className="text-label text-[var(--color-text-muted)]">Time spent</dt>
+                  <dd>{scope.timeSpent}</dd>
+                </div>
+              ) : null}
+              <div className="sm:col-span-2">
+                <dt className="text-label text-[var(--color-text-muted)] mb-1">Tasks reviewed</dt>
+                <dd>
+                  <ul className="space-y-1">
+                    {scope.tasksEvaluated.map((t) => (
+                      <li key={t} className="text-[var(--color-text-secondary)]">• {t}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-label text-[var(--color-text-muted)] mb-1">Limitations</dt>
+                <dd>
+                  <ul className="space-y-1">
+                    {scope.limitations.map((l) => (
+                      <li key={l} className="text-[var(--color-text-secondary)]">• {l}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            </dl>
+          </CollapsiblePanel>
+        </div>
       </ReportSection>
 
-      <ReportSection title="Priority problems">
+      <ReportSection title="How findings are scored">
+        <div className="space-y-3">
+          <CollapsiblePanel
+            label="Severity levels"
+            headline="How badly an issue affects the task"
+            teaser="What critical, high, medium, and low mean for the user."
+          >
+            <SeverityLevelsGuide />
+          </CollapsiblePanel>
+          <CollapsiblePanel
+            label="Priority score"
+            headline="Frequency × impact × speed to fix"
+            teaser="What each 1 to 5 rating means and how the scores set the fix order."
+          >
+            <PriorityScoringGuide />
+          </CollapsiblePanel>
+        </div>
+      </ReportSection>
+
+      <ReportSection title="Most severe problems">
         <p className="mb-4 text-body-sm text-[var(--color-text-muted)]">
-          Top {PRIORITY_PROBLEMS_COUNT} findings by priority rank, in the same order as the list below.
+          The {SEVERE_PROBLEMS_COUNT} most severe findings — the issues most likely to block people or cause harm, by how badly they affect the task and how many people they reach. Each one is covered in full in the findings list below.
         </p>
         <div className="space-y-3">
-          {topPriorityFindings.map((finding) => {
+          {topSevereFindings.map((finding) => {
             const rank = priorityRankById.get(finding.finding_id) ?? 0;
             return (
               <CollapsibleTeaserCard
@@ -229,9 +289,7 @@ export function HeuristicEvaluationReport({
                 teaser={finding.description}
                 meta={
                   <>
-                    <span className="font-mono text-[0.75rem] text-[var(--color-text-muted)]">
-                      {finding.finding_id}
-                    </span>
+                    <HeuristicPill heuristic={finding.primary_heuristic} />
                     <PriorityRankBadge
                       rank={rank}
                       priority={finding.priority}
@@ -242,34 +300,38 @@ export function HeuristicEvaluationReport({
                 }
               >
                 <div className="space-y-3 text-body-sm">
-                  <FindingPriorityBreakdown
-                    rank={rank}
-                    priority={finding.priority}
-                    totalFindings={findings.length}
-                  />
-                  <div>
-                    <p className="font-medium mb-1">What I saw</p>
-                    <p className="text-[var(--color-text-secondary)]">
-                      {finding.evidence.observed_behaviour}
-                    </p>
-                  </div>
-                  {finding.user_impact && (
-                    <div>
-                      <p className="font-medium mb-1">User impact</p>
-                      <p className="text-[var(--color-text-secondary)]">{finding.user_impact}</p>
+                  <FindingPriorityBreakdown priority={finding.priority} />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-xl border border-[var(--color-border)] bg-white p-4">
+                      <p className="font-medium text-[var(--color-text-primary)] mb-1">My observation</p>
+                      <p className="text-[var(--color-text-secondary)]">
+                        {finding.evidence.observed_behaviour}
+                      </p>
+                      {finding.user_impact && (
+                        <p className="mt-2 text-[var(--color-text-secondary)]">
+                          <span className="font-medium text-[var(--color-text-primary)]">Impact: </span>
+                          {finding.user_impact}
+                        </p>
+                      )}
                     </div>
-                  )}
-                  <div className="rounded-xl border border-[var(--color-accent)]/20 bg-white p-4">
-                    <p className="font-medium text-[var(--color-accent)] mb-1">My recommendation</p>
-                    <p>{finding.recommendation}</p>
+                    <div className="rounded-xl border border-[var(--color-border)] bg-white p-4">
+                      <p className="font-medium text-[var(--color-text-primary)] mb-1">My recommendation</p>
+                      <p>{finding.recommendation}</p>
+                    </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => {
                       const el = document.getElementById(finding.finding_id);
-                      if (el) scrollIntoReportViewport(el);
+                      if (!el) return;
+                      const toggle = el.querySelector<HTMLButtonElement>("button[aria-expanded]");
+                      if (toggle?.getAttribute("aria-expanded") === "false") {
+                        toggle.click();
+                      } else {
+                        scrollIntoReportViewport(el);
+                      }
                     }}
-                    className="text-body-sm font-medium text-[var(--color-accent)] hover:underline"
+                    className="text-body-sm font-medium text-[var(--color-text-primary)] underline underline-offset-2"
                   >
                     Jump to full finding →
                   </button>
@@ -346,7 +408,7 @@ export function HeuristicEvaluationReport({
         <FindingsSeverityFilter findings={findings} value={severityFilter} onChange={setSeverityFilter} />
         <p className="mb-4 text-body-sm text-[var(--color-text-muted)]">
           Severity reflects how blocking an issue is. Priority points on each card reflect fix order from
-          frequency, impact, and persistence, which is separate from the severity filter above.
+          frequency, impact, and how quick the fix is, which is separate from the severity filter above.
         </p>
         {severityFilter !== "all" && (
           <p className="mb-4 text-body-sm text-[var(--color-text-muted)]">
@@ -416,25 +478,57 @@ export function HeuristicEvaluationReport({
       </ReportSection>
 
       <ReportSection title="Action plan">
-        <CollapsiblePanel
-          label="Priorities"
-          headline={`${fixNowCount} to fix now`}
-          teaser={`${actionPlan.length} actions in total`}
-        >
-          <div className="space-y-3">
-            {actionPlan.map((item) => (
-              <div
-                key={item.action}
-                className={`flex flex-col gap-2 rounded-xl border p-4 sm:flex-row sm:items-start sm:gap-4 ${ACTION_PRIORITY_STYLES[item.priority]}`}
-              >
-                <span className="w-max shrink-0 rounded-full bg-white border border-current/20 px-2.5 py-0.5 text-[0.75rem] font-semibold">
-                  {ACTION_PRIORITY_LABELS[item.priority]}
-                </span>
-                <p className="text-body-sm">{item.action}</p>
+        <div className="space-y-3">
+          <CollapsiblePanel
+            label="Priorities"
+            headline="What to fix and in what order"
+            teaser={`${fixNowCount} to fix now · ${actionPlan.length} actions in total`}
+          >
+            <div className="space-y-3">
+              {actionPlan.map((item) => (
+                <div
+                  key={item.action}
+                  className={`flex flex-col gap-2 rounded-xl border p-4 sm:flex-row sm:items-start sm:gap-4 ${ACTION_PRIORITY_STYLES[item.priority]}`}
+                >
+                  <span className="w-max shrink-0 rounded-full bg-white border border-current/20 px-2.5 py-0.5 text-[0.75rem] font-semibold">
+                    {ACTION_PRIORITY_LABELS[item.priority]}
+                  </span>
+                  <p className="text-body-sm">{item.action}</p>
+                </div>
+              ))}
+            </div>
+          </CollapsiblePanel>
+
+          {quickWins.length > 0 && (
+            <CollapsiblePanel
+              label="Quick wins"
+              headline="High payoff for low effort"
+              teaser={`${quickWins.length} fast ${quickWins.length === 1 ? "fix" : "fixes"} · frequent, high-impact issues that ship quickly`}
+            >
+              <div className="space-y-3">
+                {quickWins.map((finding) => (
+                  <div
+                    key={finding.finding_id}
+                    className="rounded-xl border border-[var(--color-border)] bg-white p-4"
+                  >
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <HeuristicPill heuristic={finding.primary_heuristic} />
+                      <span className="w-max rounded-full border border-[var(--color-border)] bg-[var(--color-bg-muted)] px-2.5 py-0.5 text-[0.75rem] font-medium text-[var(--color-text-secondary)]">
+                        {EFFORT_LABELS[finding.priority.effort]}
+                      </span>
+                    </div>
+                    <p className="mt-1.5 text-body-sm font-medium text-[var(--color-text-primary)]">
+                      {finding.title}
+                    </p>
+                    <p className="mt-1 text-body-sm text-[var(--color-text-secondary)]">
+                      {finding.recommendation}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </CollapsiblePanel>
+            </CollapsiblePanel>
+          )}
+        </div>
       </ReportSection>
 
       {redesignMock && (
@@ -455,14 +549,16 @@ export function HeuristicEvaluationReport({
             {evaluation.redesignSummary && (
               <div className="mt-6 grid gap-6 sm:grid-cols-2">
                 <div>
-                  <h3 className="text-body-sm font-semibold">In the mock</h3>
+                  <h3 className="text-body-sm font-semibold">Top changes in the mock</h3>
                   <ul className="mt-2 space-y-1.5">
-                    {evaluation.redesignSummary.implemented.map((item) => (
-                      <li key={item} className="flex gap-2 text-body-sm text-[var(--color-text-secondary)]">
-                        <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--color-accent)]" aria-hidden />
-                        {item}
-                      </li>
-                    ))}
+                    {evaluation.redesignSummary.implemented
+                      .slice(0, evaluation.redesignSummary.planned.length)
+                      .map((item) => (
+                        <li key={item} className="flex gap-2 text-body-sm text-[var(--color-text-secondary)]">
+                          <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--color-accent)]" aria-hidden />
+                          {item}
+                        </li>
+                      ))}
                   </ul>
                 </div>
                 <div>

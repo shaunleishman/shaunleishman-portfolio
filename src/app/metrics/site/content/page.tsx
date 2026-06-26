@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { MetricsContentTable } from "@/components/metrics/metrics-ui";
 import { MetricsPeriodSelect } from "@/components/metrics/MetricsPeriodSelect";
+import { MetricsSelect } from "@/components/metrics/MetricsSelect";
 import { useMetricsDashboard } from "@/hooks/useMetricsDashboard";
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
 import type { ContentSortKey } from "@/lib/analytics-metrics-types";
@@ -55,18 +56,18 @@ export default function MetricsContentPage() {
             <label htmlFor="content-sort" className="mb-1.5 block text-label text-[var(--color-text-muted)]">
               Sort by
             </label>
-            <select
+            <MetricsSelect
               id="content-sort"
               value={sort}
               onChange={(e) => setSort(e.target.value as ContentSortKey)}
-              className="w-full min-w-[10rem] rounded-lg border border-[var(--color-border)] bg-white px-3 py-2.5 text-body-sm min-h-[44px]"
+              className="min-w-[10rem]"
             >
               {SORT_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
-            </select>
+            </MetricsSelect>
           </div>
           <MetricsPeriodSelect value={period} onChange={setPeriod} id="content-period" />
         </div>

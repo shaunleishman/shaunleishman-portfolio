@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LineChart, Layers, Palette, BookOpen, LogOut } from "lucide-react";
+import { LayoutDashboard, LineChart, Layers, Palette, BookOpen, LogOut, PanelLeftClose } from "lucide-react";
 import { buildAdminNav } from "@/lib/admin-nav";
 import { useAdminBase } from "@/hooks/useAdminBase";
 import { useMetricsAuth } from "@/hooks/useMetricsAuth";
@@ -16,7 +16,7 @@ const SECTION_ICONS = {
   "case-studies": BookOpen,
 } as const;
 
-export function AdminSidebar() {
+export function AdminSidebar({ onHide }: { onHide?: () => void }) {
   const pathname = usePathname();
   const base = useAdminBase();
   const nav = buildAdminNav(base);
@@ -29,9 +29,22 @@ export function AdminSidebar() {
 
   return (
     <aside className="flex h-full w-56 shrink-0 flex-col overflow-hidden border-r border-[var(--color-border)] bg-white">
-      <div className="shrink-0 border-b border-[var(--color-border)] px-4 py-4">
-        <p className="text-label text-[var(--color-text-muted)]">Admin</p>
-        <p className="text-body-sm font-semibold text-[var(--color-text-primary)]">Dashboard</p>
+      <div className="flex shrink-0 items-center justify-between gap-2 border-b border-[var(--color-border)] px-4 py-4">
+        <div className="min-w-0">
+          <p className="text-label text-[var(--color-text-muted)]">Admin</p>
+          <p className="text-body-sm font-semibold text-[var(--color-text-primary)]">Dashboard</p>
+        </div>
+        {onHide && (
+          <button
+            type="button"
+            onClick={onHide}
+            aria-label="Hide navigation"
+            title="Hide navigation"
+            className="-mr-1 shrink-0 rounded-lg p-2 text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-primary)]"
+          >
+            <PanelLeftClose className="size-4" aria-hidden />
+          </button>
+        )}
       </div>
 
       <nav aria-label="Admin sections" className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
