@@ -111,6 +111,11 @@ export async function readBlogEngagementStore(): Promise<BlogEngagementStore> {
 async function writeBlogEngagementStore(store: BlogEngagementStore) {
   const wroteBlob = await writeStoreToBlob(store);
   if (!wroteBlob) {
+    if (hasBlobStorage() && process.env.VERCEL) {
+      console.warn(
+        "[blog-engagement] Blob write failed; falling back to ephemeral /tmp storage",
+      );
+    }
     writeStoreToLocalSync(store);
   }
 }

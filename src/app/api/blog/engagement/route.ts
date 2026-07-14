@@ -25,6 +25,8 @@ async function mirrorToAnalytics(
   slug: string,
 ) {
   try {
+    // Views become pageviews here so the dashboard counts them once. AnalyticsProvider
+    // skips article pageviews to avoid a second write for consenting visitors.
     const type = action === "like" ? "blog_like" : action === "share" ? "blog_share" : "pageview";
     await writeEventAsync({
       id: crypto.randomUUID(),

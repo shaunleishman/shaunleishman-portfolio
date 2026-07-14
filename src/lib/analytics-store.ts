@@ -95,6 +95,11 @@ async function writeAnalyticsEvents(events: AnalyticsEvent[]) {
   const trimmed = trimEvents(events);
   const wroteBlob = await writeStoreToBlob(trimmed);
   if (!wroteBlob) {
+    if (hasBlobStorage() && process.env.VERCEL) {
+      console.warn(
+        "[analytics] Blob write failed; falling back to ephemeral /tmp storage",
+      );
+    }
     writeStoreToLocalSync(trimmed);
   }
 }

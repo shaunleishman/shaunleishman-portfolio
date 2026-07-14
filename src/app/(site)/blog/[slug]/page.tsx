@@ -9,6 +9,7 @@ import { siteConfig } from "@/content/projects";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CaseStudyFeedback } from "@/components/projects/CaseStudyFeedback";
 import { BlogContent } from "@/components/blog/BlogContent";
+import { BlogCollaboration } from "@/components/blog/BlogCollaboration";
 import { ArticleAudioPlayer } from "@/components/blog/ArticleAudioPlayer";
 import {
   BlogPostEngagement,
@@ -124,6 +125,9 @@ export default async function BlogPostPage({ params }: Props) {
           </SectionLabel>
           <h1 className="text-h1 font-semibold mb-4">{post.title}</h1>
           <p className="text-body-lg text-neutral-300 mb-6">{post.description}</p>
+          {post.collaboration ? (
+            <BlogCollaboration collaborator={post.collaboration} className="mb-6" />
+          ) : null}
           <BlogPostEngagementStats variant="dark" className="mb-5" />
           <BlogPostEngagementToolbar variant="dark" />
         </PageHero>

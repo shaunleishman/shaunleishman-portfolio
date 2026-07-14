@@ -5,7 +5,7 @@ import { useCallback, useId, useState } from "react";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FeedbackSubmittedNotice } from "@/components/ui/FeedbackSubmittedNotice";
 import { FeedbackProximityPopover } from "@/components/feedback/FeedbackProximityPopover";
-import { isPassiveAnalyticsAllowed } from "@/lib/analytics-client";
+import { getAnalyticsSessionId, isPassiveAnalyticsAllowed } from "@/lib/analytics-client";
 import { cn } from "@/lib/utils";
 
 const SCORE_LABELS: Record<number, string> = {
@@ -87,13 +87,12 @@ function SiteFeedbackForm() {
     }
 
     try {
-      const sessionId =
-        sessionStorage.getItem("portfolio_session") ??
-        (() => {
-          const id = crypto.randomUUID();
-          sessionStorage.setItem("portfolio_session", id);
-          return id;
-        })();
+      const sessionId = getAnalyticsSessionId();
+      if (!sessionId) {
+        setSubmitted(true);
+        setSubmitting(false);
+        return;
+      }
 
       await fetch("/api/analytics", {
         method: "POST",
@@ -103,6 +102,8 @@ function SiteFeedbackForm() {
           type: "click",
           path: pathname,
           metadata: {
+            // `feedback` is required for the admin Feedback KPI to count this event.
+            feedback: sentiment,
             feedbackType: "usefulness",
             score,
             sentiment,

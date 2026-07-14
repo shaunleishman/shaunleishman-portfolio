@@ -10,6 +10,7 @@ import {
   METRICS_PREVIEW_PARAM,
   SCROLL_BAND_COUNT,
 } from "@/lib/analytics-heatmap-types";
+import { isArticlePath } from "@/lib/analytics-paths";
 
 function getSessionId(): string {
   if (typeof window === "undefined") return "";
@@ -108,7 +109,12 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     lastSampleRef.current = 0;
     pageMetaSent.current = false;
 
-    track("pageview");
+    // Blog article pageviews are recorded once via /api/blog/engagement and
+    // mirrored into the analytics store. Skip here so consenting visitors are
+    // not counted twice.
+    if (!isArticlePath(pathname)) {
+      track("pageview");
+    }
 
     const sendPageMeta = () => {
       if (pageMetaSent.current) return;

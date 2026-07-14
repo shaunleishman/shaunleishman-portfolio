@@ -6,6 +6,10 @@ published: true
 category: product-thinking
 tags: ["Enterprise", "Product strategy", "Complexity"]
 thumbnail: "/images/blog/the-problem-with-saying-yes-to-every-client-request.png"
+collaboration:
+  name: "Arron Leishman"
+  role: "Product Designer at Dayshape"
+  image: "/images/blog/arron-leishman.png"
 ---
 
 If you work on an enterprise product, you have probably felt this pressure before. A client asks for something. The request sounds fair. Someone in the room wants to protect the relationship, keep the sale moving, or look flexible, and the answer arrives a little too quickly.
