@@ -60,9 +60,9 @@ export default function CvPage() {
         <CvQuote>{siteConfig.quote}</CvQuote>
 
         <Reveal delay={120} variant="fade">
-          <section className="mb-10 space-y-4 print:mb-8">
+          <section className="mb-10 space-y-3 print:mb-8">
             {cvContent.summary.map((paragraph) => (
-              <p key={paragraph.slice(0, 24)} className="text-body text-[#525252] leading-relaxed">
+              <p key={paragraph.slice(0, 24)} className="text-body text-[#525252] leading-[1.5]">
                 {paragraph}
               </p>
             ))}
@@ -72,7 +72,7 @@ export default function CvPage() {
         <CvSection title="Key strengths" delay={40}>
           <ul className="columns-1 gap-x-6 sm:columns-2">
             {cvContent.strengths.map((item) => (
-              <li key={item} className="mb-2 flex gap-2 break-inside-avoid text-body-sm leading-snug text-[#525252]">
+              <li key={item} className="mb-2 flex gap-2 break-inside-avoid text-body-sm leading-[1.5] text-[#525252]">
                 <span className="mt-[0.45em] size-1.5 shrink-0 rounded-full bg-[#3b66f5]" aria-hidden />
                 <span>{item}</span>
               </li>
@@ -90,15 +90,15 @@ export default function CvPage() {
                   </h3>
                   <p className="text-body-sm text-[#737373] shrink-0">{job.period}</p>
                 </div>
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   {job.paragraphs.map((paragraph) => (
-                    <p key={paragraph.slice(0, 32)} className="text-body-sm leading-snug text-[#525252]">
+                    <p key={paragraph.slice(0, 32)} className="text-body-sm leading-[1.5] text-[#525252]">
                       {paragraph}
                     </p>
                   ))}
                 </div>
                 {job.note && (
-                  <p className="mt-3 border-l-2 border-[#e5e5e5] pl-3 text-body-sm italic leading-snug text-[#737373]">
+                  <p className="mt-3 border-l-2 border-[#e5e5e5] pl-3 text-body-sm italic leading-[1.5] text-[#737373]">
                     {job.note}
                   </p>
                 )}
@@ -108,29 +108,29 @@ export default function CvPage() {
         </CvSection>
 
         <CvSection title="Education" delay={40}>
-          <ul className="space-y-3">
+          <ul className="space-y-2">
             {cvContent.education.map((item) => (
               <li key={item.title}>
-                <p className="font-medium text-body">{item.title}</p>
-                <p className="text-body-sm text-[#737373]">{item.detail}</p>
+                <p className="font-medium text-body leading-[1.5]">{item.title}</p>
+                <p className="text-body-sm text-[#737373] leading-[1.5]">{item.detail}</p>
               </li>
             ))}
           </ul>
         </CvSection>
 
         <CvSection title="Skills" delay={40}>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {cvContent.skills.map((group) => (
               <div key={group.label}>
-                <p className="text-body-sm font-semibold mb-1">{group.label}</p>
-                <p className="text-body-sm text-[#525252] leading-relaxed">{group.items}</p>
+                <p className="text-body-sm font-semibold mb-1 leading-[1.5]">{group.label}</p>
+                <p className="text-body-sm text-[#525252] leading-[1.5]">{group.items}</p>
               </div>
             ))}
           </div>
         </CvSection>
 
         <CvSection title="Interests" delay={40}>
-          <p className="text-body-sm text-[#525252] leading-relaxed">{cvContent.interests}</p>
+          <p className="text-body-sm text-[#525252] leading-[1.5]">{cvContent.interests}</p>
         </CvSection>
 
         <Reveal delay={60}>

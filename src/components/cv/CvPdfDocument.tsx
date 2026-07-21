@@ -11,20 +11,26 @@ import { cvContent } from "@/content/cv";
 import { siteConfig } from "@/content/projects";
 
 /**
- * One-page A4 CV. Spacing is tight, but type stays at readable print sizes.
- * Do not drop below these sizes to chase fit.
+ * One-page A4 CV with one shared leading and paragraph rhythm.
+ * Hierarchy comes from weight and section gaps, not mixed line heights.
  */
 const type = {
   label: 8,
   name: 17,
   headline: 11,
   contact: 9,
-  quote: 9,
-  body: 9.25,
-  bodySm: 8.75,
+  body: 9,
   section: 7.5,
   jobTitle: 10,
-  jobPeriod: 8.75,
+} as const;
+
+const leading = 1.4;
+
+const space = {
+  xs: 3,
+  sm: 5,
+  md: 8,
+  lg: 10,
 } as const;
 
 const colors = {
@@ -43,35 +49,38 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     fontSize: type.body,
     color: colors.text,
-    lineHeight: 1.38,
+    lineHeight: leading,
   },
   label: {
     fontSize: type.label,
     letterSpacing: 1.3,
     textTransform: "uppercase",
     color: colors.muted,
-    marginBottom: 5,
+    marginBottom: space.xs,
   },
   name: {
     fontSize: type.name,
     fontFamily: "Helvetica-Bold",
     color: colors.dark,
     marginBottom: 2,
+    lineHeight: 1.2,
   },
   headline: {
     fontSize: type.headline,
     color: colors.text,
-    marginBottom: 6,
+    marginBottom: space.sm,
+    lineHeight: 1.3,
   },
   contactRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
-    marginBottom: 10,
+    marginBottom: space.lg,
   },
   contactItem: {
     fontSize: type.contact,
     color: colors.text,
+    lineHeight: leading,
   },
   link: {
     color: colors.accent,
@@ -81,24 +90,23 @@ const styles = StyleSheet.create({
     borderLeftWidth: 3,
     borderLeftColor: colors.accent,
     paddingLeft: 10,
-    paddingVertical: 1,
-    marginBottom: 10,
-    fontSize: type.quote,
+    marginBottom: space.lg,
+    fontSize: type.body,
     fontFamily: "Helvetica-Oblique",
     color: colors.text,
-    lineHeight: 1.35,
+    lineHeight: leading,
   },
   summaryBlock: {
-    marginBottom: 8,
+    marginBottom: space.md,
   },
   paragraph: {
-    marginBottom: 5,
+    marginBottom: space.sm,
     fontSize: type.body,
     color: colors.text,
-    lineHeight: 1.38,
+    lineHeight: leading,
   },
   section: {
-    marginBottom: 8,
+    marginBottom: space.md,
   },
   sectionTitle: {
     fontSize: type.section,
@@ -106,7 +114,8 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     color: colors.accent,
     fontFamily: "Helvetica-Bold",
-    marginBottom: 5,
+    marginBottom: space.sm,
+    lineHeight: 1.3,
   },
   strengthsGrid: {
     flexDirection: "row",
@@ -118,19 +127,19 @@ const styles = StyleSheet.create({
   bulletRow: {
     flexDirection: "row",
     gap: 6,
-    marginBottom: 2,
+    marginBottom: space.xs,
   },
   bulletAccent: {
     width: 3.5,
     height: 3.5,
     borderRadius: 1.75,
     backgroundColor: colors.accent,
-    marginTop: 4,
+    marginTop: 4.5,
   },
   bulletText: {
     flex: 1,
-    fontSize: type.bodySm,
-    lineHeight: 1.32,
+    fontSize: type.body,
+    lineHeight: leading,
     color: colors.text,
   },
   jobHeader: {
@@ -138,70 +147,53 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     gap: 10,
-    marginBottom: 3,
+    marginBottom: space.xs,
   },
   jobTitle: {
     flex: 1,
     fontSize: type.jobTitle,
     fontFamily: "Helvetica-Bold",
     color: colors.dark,
-    lineHeight: 1.25,
+    lineHeight: 1.3,
   },
   jobPeriod: {
-    fontSize: type.jobPeriod,
+    fontSize: type.body,
     color: colors.muted,
     flexShrink: 0,
+    lineHeight: 1.3,
   },
   jobBlock: {
-    marginBottom: 7,
+    marginBottom: space.md,
   },
   jobParagraph: {
-    marginBottom: 2,
-    fontSize: type.bodySm,
+    marginBottom: space.sm,
+    fontSize: type.body,
     color: colors.text,
-    lineHeight: 1.32,
+    lineHeight: leading,
   },
   jobNote: {
-    marginTop: 2,
     paddingLeft: 7,
     borderLeftWidth: 2,
     borderLeftColor: colors.border,
-    fontSize: 8.25,
+    fontSize: type.body,
     fontFamily: "Helvetica-Oblique",
     color: colors.muted,
-    lineHeight: 1.3,
+    lineHeight: leading,
   },
-  educationRow: {
-    marginBottom: 2,
+  listRow: {
+    marginBottom: space.xs,
   },
-  educationLine: {
-    fontSize: type.bodySm,
+  listLine: {
+    fontSize: type.body,
     color: colors.text,
-    lineHeight: 1.32,
+    lineHeight: leading,
   },
-  educationTitle: {
+  listStrong: {
     fontFamily: "Helvetica-Bold",
     color: colors.dark,
   },
-  educationDetail: {
+  listMuted: {
     color: colors.muted,
-  },
-  skillRow: {
-    marginBottom: 2,
-  },
-  skillLine: {
-    fontSize: type.bodySm,
-    color: colors.text,
-    lineHeight: 1.32,
-  },
-  skillLabel: {
-    fontFamily: "Helvetica-Bold",
-    color: colors.dark,
-  },
-  interestsLine: {
-    fontSize: type.bodySm,
-    color: colors.text,
-    lineHeight: 1.32,
   },
   footer: {
     position: "absolute",
@@ -216,12 +208,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   footerBrand: {
-    fontSize: type.bodySm,
+    fontSize: type.body,
     fontFamily: "Helvetica-Bold",
     color: colors.dark,
   },
   footerUrl: {
-    fontSize: 8.25,
+    fontSize: type.body,
     color: colors.muted,
   },
 });
@@ -352,10 +344,10 @@ export function CvPdfDocument() {
 
         <Section title="Education">
           {cvContent.education.map((item) => (
-            <View key={item.title} style={styles.educationRow}>
-              <Text style={styles.educationLine}>
-                <Text style={styles.educationTitle}>{item.title}</Text>
-                <Text style={styles.educationDetail}> · {item.detail}</Text>
+            <View key={item.title} style={styles.listRow}>
+              <Text style={styles.listLine}>
+                <Text style={styles.listStrong}>{item.title}</Text>
+                <Text style={styles.listMuted}> · {item.detail}</Text>
               </Text>
             </View>
           ))}
@@ -363,9 +355,9 @@ export function CvPdfDocument() {
 
         <Section title="Skills">
           {cvContent.skills.map((group) => (
-            <View key={group.label} style={styles.skillRow}>
-              <Text style={styles.skillLine}>
-                <Text style={styles.skillLabel}>{group.label}. </Text>
+            <View key={group.label} style={styles.listRow}>
+              <Text style={styles.listLine}>
+                <Text style={styles.listStrong}>{group.label}. </Text>
                 {group.items}
               </Text>
             </View>
@@ -373,7 +365,7 @@ export function CvPdfDocument() {
         </Section>
 
         <Section title="Interests">
-          <Text style={styles.interestsLine}>{cvContent.interests}</Text>
+          <Text style={styles.listLine}>{cvContent.interests}</Text>
         </Section>
 
         <View style={styles.footer} fixed>
