@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getMetricsPath } from "@/lib/metrics-config";
-import { applySecurityHeaders } from "@/lib/security-headers";
-
-function withSecurityHeaders(response: NextResponse) {
-  applySecurityHeaders(response.headers);
-  return response;
-}
+import {
+  applyFixedSecurityHeaders,
+  buildContentSecurityPolicy,
+} from "@/lib/security-headers";
 
 export function middleware(request: NextRequest) {
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const csp = buildContentSecurityPolicy(nonce);
   const { pathname } = request.nextUrl;
   const metricsPath = getMetricsPath();
 
@@ -17,27 +17,46 @@ export function middleware(request: NextRequest) {
   const isSecretMetrics = pathname === metricsPath || pathname.startsWith(`${metricsPath}/`);
 
   if (isLegacyAdmin || isDirectMetrics) {
-    return withSecurityHeaders(new NextResponse("Not Found", { status: 404 }));
+    const response = new NextResponse("Not Found", { status: 404 });
+    applyFixedSecurityHeaders(response.headers);
+    response.headers.set("Content-Security-Policy", csp);
+    return response;
   }
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", csp);
 
   if (isSecretMetrics) {
     const suffix = pathname.slice(metricsPath.length);
     const url = request.nextUrl.clone();
     url.pathname = `/metrics${suffix}`;
-
-    const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-metrics-access", "1");
 
-    return withSecurityHeaders(
-      NextResponse.rewrite(url, {
-        request: { headers: requestHeaders },
-      }),
-    );
+    const response = NextResponse.rewrite(url, {
+      request: { headers: requestHeaders },
+    });
+    applyFixedSecurityHeaders(response.headers);
+    response.headers.set("Content-Security-Policy", csp);
+    return response;
   }
 
-  return withSecurityHeaders(NextResponse.next());
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+  applyFixedSecurityHeaders(response.headers);
+  response.headers.set("Content-Security-Policy", csp);
+  return response;
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"],
+  matcher: [
+    {
+      source: "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+  ],
 };

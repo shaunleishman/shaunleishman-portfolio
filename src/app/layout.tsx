@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Inter } from "next/font/google";
+import { connection } from "next/server";
 import "./globals.css";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { MetricsTrackingExclusionWarmup } from "@/components/analytics/MetricsTrackingExclusionWarmup";
@@ -29,11 +30,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Nonce-based CSP requires a request. Wait for the connection so Next can
+  // attach the middleware nonce to framework scripts.
+  await connection();
+
   return (
     <html lang="en-GB" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col font-sans">

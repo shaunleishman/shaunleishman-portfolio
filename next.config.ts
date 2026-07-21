@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { SECURITY_HEADERS } from "./src/lib/security-headers";
+import { FIXED_SECURITY_HEADERS } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -8,12 +8,17 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts"],
+    // Build-time integrity hashes on scripts (Observatory SRI bonus).
+    sri: {
+      algorithm: "sha256",
+    },
   },
   async headers() {
     return [
       {
+        // Static assets still get fixed headers; CSP is set per-request in middleware.
         source: "/:path*",
-        headers: SECURITY_HEADERS,
+        headers: FIXED_SECURITY_HEADERS,
       },
       {
         source: "/:folder(companies|projects|brand|images)/:path*",
