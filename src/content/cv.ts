@@ -4,7 +4,8 @@ type CvExperienceItem = {
   role: string;
   company: string;
   period: string;
-  highlights: string[];
+  /** Short uneven paragraphs, not a verb-parade bullet stack. */
+  paragraphs: string[];
   /** Optional aside shown below the role, e.g. to explain a gap or career change. */
   note?: string;
 };
@@ -12,59 +13,50 @@ type CvExperienceItem = {
 export const cvContent = {
   headline: "UX/UI Designer · Edinburgh",
   summary: [
-    "I'm a UX/UI Designer with over 5 years' experience helping teams make complex digital products clearer, more usable, and easier to deliver. I've worked across healthcare, SaaS, energy, government, and financial services, often in environments where the subject matter is technical, regulated, or difficult to explain.",
-    "My work spans UX strategy, research, prototyping, design systems, data visualisation, and stakeholder facilitation. I bring structure to uncertain projects, help teams align around user needs, and communicate design decisions in a way people can understand and act on.",
+    "I'm a UX/UI Designer in Edinburgh with over five years spent making complex digital products easier to use and easier to ship.",
+    "Most of my work sits in places that are hard to explain, like healthcare, SaaS, energy, government, and financial services. These are products where people have to trust what they see before they act, so a confusing screen is not just untidy. It can stop someone making a decision that matters.",
+    "I bring structure to messy problems. Research, prototyping, design systems, data-heavy screens, and the stakeholder conversations that keep a team moving when the direction is still uncertain.",
   ],
   strengths: [
-    "UX strategy, discovery, and product planning",
-    "Healthcare, SaaS, energy, government, and financial services experience",
-    "Translating complex content and data into clear user journeys",
-    "Wireframing, prototyping, usability testing, and research planning",
-    "Design systems, UX standards, and design-to-development workflows",
-    "Workshop facilitation, stakeholder alignment, and design storytelling",
-    "AI-assisted prototyping and product exploration",
+    "Making dense technical and regulated products clearer to use",
+    "Research, prototyping, and design systems with engineering",
+    "Workshops and stakeholder work when the direction is still messy",
   ],
   experience: [
     {
       role: "Product Designer",
       company: "Arbnco",
       period: "Mar 2024 to Jun 2026",
-      highlights: [
-        "Designed product experiences for a decarbonisation platform used in commercial real estate, focused on complex data, carbon reporting, and consent workflows.",
-        "Helped shape UX strategy and product planning for a platform supporting energy, carbon, and net-zero reporting.",
-        "Led the structure and rollout of a shared design system, aligning Figma files with development components to improve consistency and delivery speed.",
-        "Designed data-heavy experiences that helped users understand energy performance, carbon impact, consent status, and reporting issues.",
-        "Facilitated workshops and design reviews with product, development, and stakeholder teams to define problems and agree practical solutions.",
-        "Worked closely with developers to improve handover, reduce ambiguity, and build a working design system in under 6 months.",
+      paragraphs: [
+        "The product helps commercial buildings with energy and carbon reporting. Most of my work was making dense, technical stuff readable so people could trust it.",
+        "I designed flows around energy performance, carbon impact, consent, and reporting. I also ran the design system work with the engineering team. We got Figma and the live components matching properly in under 6 months.",
+        "One sprint I remember well was the synthetic hourly data work. Meter readings were often monthly, but teams needed hourly views. I designed how people could turn generated estimates on, see which buildings were eligible, and tell estimated hours apart from real readings.",
       ],
     },
     {
       role: "UX Consultant",
       company: "User Vision",
       period: "Mar 2022 to Mar 2024",
-      highlights: [
-        "Delivered UX research and design projects for clients across healthcare, SaaS, government, and public-facing services.",
-        "Planned and ran interviews, usability tests, surveys, workshops, and occasional focus groups with hundreds of participants.",
-        "Managed UX research tasks from planning through to reporting, including scripts, analysis, recommendations, and stakeholder playback sessions.",
-        "Turned complex user insight into clear journey improvements, prototypes, reports, and developer-ready recommendations.",
-        "Contributed to measurable improvements, including a 40% increase in task success after simplifying a navigation flow.",
+      paragraphs: [
+        "Client work, mostly. Healthcare, SaaS, government, and public services. Research took up a big chunk of my week. Interviews, usability tests, surveys, workshops, the odd focus group. Hundreds of people across those projects.",
+        "I usually ran the research myself from start to finish. Scripts, sessions, analysis, then the report and the playback. The useful bit was turning what people said into journey changes, prototypes, and recommendations a client could actually give to developers.",
+        "One change that stuck with me was a navigation flow that was getting in people's way. We simplified it. Task success went up by about 40%.",
       ],
-      note: "After several years in digital design, I decided to change direction towards user experience, with a focus on psychology. I was accepted at the University of Stirling for a Masters in Psychology, but at the same time I was approached for a UX role at User Vision.",
+      note: "After a few years in digital design I wanted to move into UX, with more of a psychology focus. I had a place on a psychology masters at Stirling lined up, but User Vision approached me at the same time and I took the role.",
     },
     {
       role: "Digital Designer",
       company: "The&Partnership",
       period: "Oct 2019 to Sept 2021",
-      highlights: [
-        "Designed digital content across email, web, social, and advertising campaigns for major financial services clients.",
-        "Created work for major banking clients including RBS, NatWest, and Ulster Bank.",
-        "Led creative work on a Scottish Rugby campaign that reached over 11 million interactions.",
-        "Built brand guidelines, templates, and reusable digital design assets.",
+      paragraphs: [
+        "Most of the work was for big financial services clients. Email, web, social, and advertising. A lot of it sat with banks like RBS, NatWest, and Ulster Bank, where the brand rules were tight and the assets had to hold up across a lot of channels.",
+        "Day to day I was making campaign work and keeping it consistent. Brand guidelines, templates, reusable bits the team could pick up without starting from scratch every time.",
+        "One piece that stuck with me was a Scottish Rugby campaign. I led the creative side of the digital work, and it reached over 11 million interactions.",
       ],
     },
   ] as CvExperienceItem[],
   leadership:
-    "I'm comfortable stepping into a lead role when a project needs clarity, structure, or momentum. I've facilitated workshops, guided stakeholders through UX decisions, supported junior designers, and helped teams stay aligned when the direction is still uncertain. I also use AI-assisted prototyping to explore ideas quickly, while still owning the design thinking, decision-making, and quality of the final outcome.",
+    "I'm happy to step into a lead role when a project needs clarity or momentum. That usually means running workshops, helping stakeholders make a call, supporting junior designers, and keeping the team pointed at the same problem. I use AI-assisted prototyping to explore ideas quickly, but I still own the thinking and the quality of what ships.",
   education: [
     {
       title: "BDes (Hons) Graphic Design, Edinburgh Napier University",

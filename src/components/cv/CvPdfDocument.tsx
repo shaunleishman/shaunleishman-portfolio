@@ -157,6 +157,12 @@ const styles = StyleSheet.create({
   jobBlock: {
     marginBottom: 16,
   },
+  jobParagraph: {
+    marginBottom: 6,
+    fontSize: type.bodySm,
+    color: colors.text,
+    lineHeight: 1.45,
+  },
   jobNote: {
     marginTop: 6,
     paddingLeft: 10,
@@ -245,13 +251,13 @@ function JobBlock({
   role,
   company,
   period,
-  highlights,
+  paragraphs,
   note,
 }: {
   role: string;
   company: string;
   period: string;
-  highlights: string[];
+  paragraphs: string[];
   note?: string;
 }) {
   return (
@@ -262,7 +268,11 @@ function JobBlock({
         </Text>
         <Text style={styles.jobPeriod}>{period}</Text>
       </View>
-      <BulletList items={highlights} variant="muted" />
+      {paragraphs.map((paragraph) => (
+        <Text key={paragraph.slice(0, 32)} style={styles.jobParagraph}>
+          {paragraph}
+        </Text>
+      ))}
       {note ? <Text style={styles.jobNote}>{note}</Text> : null}
     </View>
   );
@@ -345,7 +355,7 @@ export function CvPdfDocument() {
               role={firstJob.role}
               company={firstJob.company}
               period={firstJob.period}
-              highlights={firstJob.highlights}
+              paragraphs={firstJob.paragraphs}
               note={firstJob.note}
             />
           ) : null}
@@ -360,7 +370,7 @@ export function CvPdfDocument() {
               role={job.role}
               company={job.company}
               period={job.period}
-              highlights={job.highlights}
+              paragraphs={job.paragraphs}
               note={job.note}
             />
           ))}

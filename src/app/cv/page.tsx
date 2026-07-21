@@ -90,14 +90,13 @@ export default function CvPage() {
                   </h3>
                   <p className="text-body-sm text-[#737373] shrink-0">{job.period}</p>
                 </div>
-                <ul className="space-y-2">
-                  {job.highlights.map((item) => (
-                    <li key={item.slice(0, 32)} className="flex gap-2 text-body-sm leading-snug text-[#525252]">
-                      <span className="mt-[0.45em] size-1.5 shrink-0 rounded-full bg-[#737373]" aria-hidden />
-                      <span>{item}</span>
-                    </li>
+                <div className="space-y-2.5">
+                  {job.paragraphs.map((paragraph) => (
+                    <p key={paragraph.slice(0, 32)} className="text-body-sm leading-snug text-[#525252]">
+                      {paragraph}
+                    </p>
                   ))}
-                </ul>
+                </div>
                 {job.note && (
                   <p className="mt-3 border-l-2 border-[#e5e5e5] pl-3 text-body-sm italic leading-snug text-[#737373]">
                     {job.note}
