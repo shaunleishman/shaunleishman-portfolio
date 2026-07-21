@@ -4,6 +4,7 @@ import { normalizeAnalyticsPath } from "@/lib/analytics-paths";
 import { METRICS_COOKIE_NAME } from "@/lib/metrics-config";
 import { verifyMetricsPassword, verifyMetricsSessionToken } from "@/lib/metrics-auth";
 import { isMetricsOwnerRequest } from "@/lib/metrics-tracking-exclusion";
+import { clientIpFromRequest, rateLimit } from "@/lib/rate-limit";
 import crypto from "crypto";
 
 const VALID_TYPES = [
@@ -41,6 +42,11 @@ function normalizeEvent(raw: Record<string, unknown>) {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = clientIpFromRequest(request);
+    if (!rateLimit(`analytics:${ip}`, 120, 60_000)) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     if (isMetricsOwnerRequest(request)) {
       return NextResponse.json({ ok: true, skipped: true, reason: "metrics_owner" });
     }

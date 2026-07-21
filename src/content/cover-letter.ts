@@ -15,6 +15,20 @@ export const COVER_LETTER_SECTORS = [
 
 export type CoverLetterSectorId = (typeof COVER_LETTER_SECTORS)[number]["id"];
 
+/**
+ * Application outcomes. Update these on each letter as you hear back,
+ * and use `learningNote` to capture what to keep or change next time.
+ */
+export const COVER_LETTER_OUTCOMES = [
+  { id: "in-progress", label: "In progress", tone: "neutral" },
+  { id: "interviewing", label: "Interviewing", tone: "active" },
+  { id: "offered", label: "Offered", tone: "success" },
+  { id: "rejected", label: "Unsuccessful", tone: "danger" },
+  { id: "withdrawn", label: "Withdrawn", tone: "muted" },
+] as const;
+
+export type CoverLetterOutcomeId = (typeof COVER_LETTER_OUTCOMES)[number]["id"];
+
 export type CoverLetter = {
   /** URL and PDF key, e.g. lloyds-ux-designer-ftc */
   slug: string;
@@ -26,8 +40,15 @@ export type CoverLetter = {
   sectorId: CoverLetterSectorId;
   /** Short line under the job title, e.g. location and contract */
   roleMeta: string;
+  /** Where the application stands right now */
+  outcomeId: CoverLetterOutcomeId;
   /** Optional date the letter was written, ISO date */
   writtenOn?: string;
+  /**
+   * What you learned after the outcome. What worked, what to change,
+   * or what you would do differently on the next application.
+   */
+  learningNote?: string;
   greeting: string;
   paragraphs: string[];
   closing: string;
@@ -55,6 +76,7 @@ export const coverLetters: CoverLetter[] = [
     jobTitle: "UX Designer",
     sectorId: "financial-services",
     roleMeta: "12-month FTC · Edinburgh · Hybrid",
+    outcomeId: "in-progress",
     writtenOn: "2026-07-21",
     greeting: "Dear Hiring Manager,",
     paragraphs: [
@@ -71,6 +93,10 @@ export const coverLetters: CoverLetter[] = [
 
 export function getCoverLetterSector(sectorId: CoverLetterSectorId) {
   return COVER_LETTER_SECTORS.find((sector) => sector.id === sectorId);
+}
+
+export function getCoverLetterOutcome(outcomeId: CoverLetterOutcomeId) {
+  return COVER_LETTER_OUTCOMES.find((outcome) => outcome.id === outcomeId);
 }
 
 export function getCoverLetterBySlug(slug: string) {

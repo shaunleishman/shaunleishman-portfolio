@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getMetricsPath } from "@/lib/metrics-config";
+import { applySecurityHeaders } from "@/lib/security-headers";
+
+function withSecurityHeaders(response: NextResponse) {
+  applySecurityHeaders(response.headers);
+  return response;
+}
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -10,24 +16,26 @@ export function middleware(request: NextRequest) {
   const isDirectMetrics = pathname === "/metrics" || pathname.startsWith("/metrics/");
   const isSecretMetrics = pathname === metricsPath || pathname.startsWith(`${metricsPath}/`);
 
-  if (!isLegacyAdmin && !isDirectMetrics && !isSecretMetrics) {
-    return NextResponse.next();
-  }
-
   if (isLegacyAdmin || isDirectMetrics) {
-    return new NextResponse("Not Found", { status: 404 });
+    return withSecurityHeaders(new NextResponse("Not Found", { status: 404 }));
   }
 
-  const suffix = pathname.slice(metricsPath.length);
-  const url = request.nextUrl.clone();
-  url.pathname = `/metrics${suffix}`;
+  if (isSecretMetrics) {
+    const suffix = pathname.slice(metricsPath.length);
+    const url = request.nextUrl.clone();
+    url.pathname = `/metrics${suffix}`;
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-metrics-access", "1");
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-metrics-access", "1");
 
-  return NextResponse.rewrite(url, {
-    request: { headers: requestHeaders },
-  });
+    return withSecurityHeaders(
+      NextResponse.rewrite(url, {
+        request: { headers: requestHeaders },
+      }),
+    );
+  }
+
+  return withSecurityHeaders(NextResponse.next());
 }
 
 export const config = {

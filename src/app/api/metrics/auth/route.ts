@@ -5,6 +5,7 @@ import {
   getMetricsPassword,
 } from "@/lib/metrics-config";
 import { createMetricsSessionToken, verifyMetricsPassword, verifyMetricsSessionToken } from "@/lib/metrics-auth";
+import { clientIpFromRequest, rateLimit } from "@/lib/rate-limit";
 
 function cookieOptions(secure: boolean) {
   return {
@@ -17,6 +18,11 @@ function cookieOptions(secure: boolean) {
 }
 
 export async function POST(request: NextRequest) {
+  const ip = clientIpFromRequest(request);
+  if (!rateLimit(`metrics-auth:${ip}`, 10, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   if (!getMetricsPassword()) {
     return NextResponse.json({ error: "Metrics password not configured" }, { status: 503 });
   }

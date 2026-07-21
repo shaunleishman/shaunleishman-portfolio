@@ -11,6 +11,7 @@ import {
   type BlogEngagementAction,
 } from "@/lib/blog-engagement-store";
 import { isMetricsOwnerRequest } from "@/lib/metrics-tracking-exclusion";
+import { clientIpFromRequest, rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = clientIpFromRequest(request);
+    if (!rateLimit(`blog-engagement:${ip}`, 60, 60_000)) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const body = await request.json();
     const slug = typeof body.slug === "string" ? body.slug : null;
     const action = body.action;

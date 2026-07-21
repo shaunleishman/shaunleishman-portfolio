@@ -23,10 +23,32 @@ const VIZ_MARKERS: Record<string, ReactNode> = {
   "grouping-connectedness": <ConnectednessExplorer />,
 };
 
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function isSafeHref(href: string) {
+  return (
+    href.startsWith("/") ||
+    href.startsWith("#") ||
+    href.startsWith("https://") ||
+    href.startsWith("http://") ||
+    href.startsWith("mailto:")
+  );
+}
+
 function renderMarkdownBlock(block: string, key: number) {
   const imageMatch = block.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
   if (imageMatch) {
     const [, alt, src] = imageMatch;
+    if (!src.startsWith("/")) {
+      return null;
+    }
     return (
       <Reveal key={key} variant="fade">
         <figure className="my-8 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)]">
@@ -64,10 +86,17 @@ function renderMarkdownBlock(block: string, key: number) {
       </Reveal>
     );
   }
-  const withLinks = block.replace(
-    /\[([^\]]+)\]\(([^)]+)\)/g,
-    '<a href="$2" class="text-[var(--color-accent)] hover:underline">$1</a>',
-  ).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  const withLinks = escapeHtml(block)
+    .replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      (_match, label: string, href: string) => {
+        if (!isSafeHref(href)) {
+          return label;
+        }
+        return `<a href="${escapeHtml(href)}" class="text-[var(--color-accent)] hover:underline" rel="noopener noreferrer">${label}</a>`;
+      },
+    )
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   return (
     <Reveal key={key} variant="fade">
       <p
@@ -104,7 +133,8 @@ export function BlogContent({ content }: { content: string }) {
     text.split("\n\n").forEach((block) => {
       const trimmed = block.trim();
       if (!trimmed) return;
-      nodes.push(renderMarkdownBlock(trimmed, key++));
+      const node = renderMarkdownBlock(trimmed, key++);
+      if (node) nodes.push(node);
     });
   }
 

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { CoverLetterOutcomeBadge } from "@/components/cv/CoverLetterOutcomeBadge";
 import { DownloadCoverLetterButton } from "@/components/cv/DownloadCoverLetterButton";
 import {
   coverLetterShared,
@@ -44,6 +45,9 @@ export default async function CoverLetterDetailPage({ params }: PageProps) {
             <ArrowLeft className="size-3.5" aria-hidden />
             All cover letters
           </Link>
+          <div className="mb-2">
+            <CoverLetterOutcomeBadge outcomeId={letter.outcomeId} />
+          </div>
           <p className="text-body-sm font-medium text-[var(--color-text-primary)]">
             {letter.company}
           </p>
@@ -54,6 +58,24 @@ export default async function CoverLetterDetailPage({ params }: PageProps) {
         </div>
         <DownloadCoverLetterButton slug={letter.slug} />
       </div>
+
+      {letter.learningNote ? (
+        <section className="mb-6 rounded-2xl border border-[var(--color-border)] bg-white px-5 py-4">
+          <p className="text-label text-[var(--color-text-muted)]">Learning note</p>
+          <p className="mt-2 text-body-sm leading-relaxed text-[var(--color-text-secondary)]">
+            {letter.learningNote}
+          </p>
+        </section>
+      ) : (
+        <section className="mb-6 rounded-2xl border border-dashed border-[var(--color-border)] bg-white px-5 py-4">
+          <p className="text-label text-[var(--color-text-muted)]">Learning note</p>
+          <p className="mt-2 text-body-sm text-[var(--color-text-muted)]">
+            When you hear back, add a <code>learningNote</code> on this letter in{" "}
+            <code>src/content/cover-letter.ts</code> so the next application can use what you
+            learned.
+          </p>
+        </section>
+      )}
 
       <article className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-sm">
         <div className="border-b border-[var(--color-border)] px-6 py-8 sm:px-10">

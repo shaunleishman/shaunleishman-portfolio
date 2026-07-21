@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMetricsGateKey, getMetricsPath } from "@/lib/metrics-config";
+import { clientIpFromRequest, rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = clientIpFromRequest(request);
+    if (!rateLimit(`metrics-gate:${ip}`, 20, 60_000)) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
     const body = (await request.json()) as { key?: string; gesture?: string };
 
     const keyMatch =
