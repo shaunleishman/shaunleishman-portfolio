@@ -6,7 +6,30 @@ import {
   buildContentSecurityPolicy,
 } from "@/lib/security-headers";
 
+const APEX_HOST = "shaunleishmanportfolio.com";
+const WWW_HOST = "www.shaunleishmanportfolio.com";
+
+function requestHost(request: NextRequest) {
+  return request.headers.get("host")?.split(":")[0]?.toLowerCase() ?? "";
+}
+
+/** Apex → www with the full HSTS preload header on the redirect response. */
+function redirectApexToWww(request: NextRequest) {
+  const url = request.nextUrl.clone();
+  url.protocol = "https:";
+  url.hostname = WWW_HOST;
+  const response = NextResponse.redirect(url, 308);
+  applyFixedSecurityHeaders(response.headers);
+  return response;
+}
+
 export function middleware(request: NextRequest) {
+  // Must run before Vercel’s incomplete apex redirect. In the Vercel dashboard,
+  // set the apex domain to “No Redirect” so this middleware handles it.
+  if (requestHost(request) === APEX_HOST) {
+    return redirectApexToWww(request);
+  }
+
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const csp = buildContentSecurityPolicy(nonce);
   const { pathname } = request.nextUrl;
@@ -52,7 +75,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     {
-      source: "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
+      source: "/((?!_next/static|_next/image).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },
