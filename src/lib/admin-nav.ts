@@ -46,6 +46,12 @@ export function buildAdminNav(base: string): AdminNavItem[] {
       href: `${base}/case-studies`,
       description: "Heuristic evaluations and UX audit reports",
     },
+    {
+      id: "cover-letter",
+      label: "Cover letter",
+      href: `${base}/cover-letter`,
+      description: "One-page cover letter PDF for applications",
+    },
   ];
 }
 

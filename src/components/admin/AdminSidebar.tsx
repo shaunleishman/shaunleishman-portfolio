@@ -2,7 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LineChart, Layers, Palette, BookOpen, LogOut, PanelLeftClose } from "lucide-react";
+import {
+  LayoutDashboard,
+  LineChart,
+  Layers,
+  Palette,
+  BookOpen,
+  FileText,
+  LogOut,
+  PanelLeftClose,
+} from "lucide-react";
 import { buildAdminNav } from "@/lib/admin-nav";
 import { useAdminBase } from "@/hooks/useAdminBase";
 import { useMetricsAuth } from "@/hooks/useMetricsAuth";
@@ -14,6 +23,7 @@ const SECTION_ICONS = {
   prototypes: Layers,
   "design-systems": Palette,
   "case-studies": BookOpen,
+  "cover-letter": FileText,
 } as const;
 
 export function AdminSidebar({ onHide }: { onHide?: () => void }) {

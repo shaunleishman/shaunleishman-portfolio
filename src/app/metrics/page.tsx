@@ -14,7 +14,7 @@ export default function AdminOverviewPage() {
   return (
     <AdminShell
       title="Overview"
-      description="Your admin home. Quick health checks and shortcuts to site metrics, prototypes, design systems, and case studies."
+      description="Your admin home. Quick health checks and shortcuts to site metrics, prototypes, design systems, case studies, and cover letter."
     >
       {loading && !data ? (
         <p className="text-body-sm text-[var(--color-text-muted)]">Loading overview…</p>

@@ -107,10 +107,6 @@ export default function CvPage() {
           </div>
         </CvSection>
 
-        <CvSection title="Leadership, communication and AI" delay={40}>
-          <p className="text-body-sm text-[#525252] leading-relaxed">{cvContent.leadership}</p>
-        </CvSection>
-
         <CvSection title="Education" delay={40}>
           <ul className="space-y-3">
             {cvContent.education.map((item) => (
