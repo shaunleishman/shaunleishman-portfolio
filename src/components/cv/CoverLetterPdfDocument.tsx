@@ -6,7 +6,10 @@ import {
   Text,
   View,
 } from "@react-pdf/renderer";
-import { coverLetterContent } from "@/content/cover-letter";
+import {
+  coverLetterShared,
+  type CoverLetter,
+} from "@/content/cover-letter";
 import { siteConfig } from "@/content/projects";
 
 /** Matches CV PDF typography and colour so both documents feel like one set. */
@@ -83,6 +86,11 @@ const styles = StyleSheet.create({
     color: colors.dark,
     marginBottom: 4,
   },
+  roleCompany: {
+    fontSize: type.meta,
+    color: colors.dark,
+    marginBottom: 2,
+  },
   roleMeta: {
     fontSize: type.meta,
     color: colors.muted,
@@ -132,15 +140,22 @@ const styles = StyleSheet.create({
   },
 });
 
-export function CoverLetterPdfDocument() {
-  const { contact } = coverLetterContent;
+type CoverLetterPdfDocumentProps = {
+  letter: CoverLetter;
+};
+
+export function CoverLetterPdfDocument({ letter }: CoverLetterPdfDocumentProps) {
+  const { contact } = coverLetterShared;
 
   return (
-    <Document title={`${siteConfig.name} Cover Letter`} author={siteConfig.name}>
+    <Document
+      title={`${siteConfig.name} Cover Letter · ${letter.company}`}
+      author={siteConfig.name}
+    >
       <Page size="A4" style={styles.page}>
-        <Text style={styles.label}>{coverLetterContent.label}</Text>
+        <Text style={styles.label}>{coverLetterShared.label}</Text>
         <Text style={styles.name}>{siteConfig.name}</Text>
-        <Text style={styles.headline}>{coverLetterContent.headline}</Text>
+        <Text style={styles.headline}>{coverLetterShared.headline}</Text>
 
         <View style={styles.contactRow}>
           <Link src={`mailto:${contact.email}`} style={[styles.contactItem, styles.link]}>
@@ -156,20 +171,21 @@ export function CoverLetterPdfDocument() {
         </View>
 
         <View style={styles.roleBand}>
-          <Text style={styles.roleTitle}>{coverLetterContent.roleTitle}</Text>
-          <Text style={styles.roleMeta}>{coverLetterContent.roleMeta}</Text>
+          <Text style={styles.roleTitle}>{letter.jobTitle}</Text>
+          <Text style={styles.roleCompany}>{letter.company}</Text>
+          <Text style={styles.roleMeta}>{letter.roleMeta}</Text>
         </View>
 
-        <Text style={styles.greeting}>{coverLetterContent.greeting}</Text>
+        <Text style={styles.greeting}>{letter.greeting}</Text>
 
-        {coverLetterContent.paragraphs.map((paragraph) => (
+        {letter.paragraphs.map((paragraph) => (
           <Text key={paragraph.slice(0, 40)} style={styles.paragraph}>
             {paragraph}
           </Text>
         ))}
 
-        <Text style={styles.closing}>{coverLetterContent.closing}</Text>
-        <Text style={styles.signOff}>{coverLetterContent.signOff}</Text>
+        <Text style={styles.closing}>{letter.closing}</Text>
+        <Text style={styles.signOff}>{coverLetterShared.signOff}</Text>
 
         <View style={styles.footer} fixed>
           <Text style={styles.footerBrand}>{siteConfig.brand}</Text>

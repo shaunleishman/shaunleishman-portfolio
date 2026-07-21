@@ -48,9 +48,9 @@ export function buildAdminNav(base: string): AdminNavItem[] {
     },
     {
       id: "cover-letter",
-      label: "Cover letter",
+      label: "Cover letters",
       href: `${base}/cover-letter`,
-      description: "One-page cover letter PDF for applications",
+      description: "Application cover letters by job and sector",
     },
   ];
 }
