@@ -8,10 +8,8 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts"],
-    // Build-time integrity hashes on scripts (Observatory SRI bonus).
-    sri: {
-      algorithm: "sha256",
-    },
+    // SRI disabled: Next/Turbopack emits a mismatched hash on the runtime
+    // chunk, which blocks all client JS and leaves the site blank.
   },
   async headers() {
     return [
