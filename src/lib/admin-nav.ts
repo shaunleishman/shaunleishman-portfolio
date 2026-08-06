@@ -109,6 +109,17 @@ export const CASE_STUDY_ENTRIES: CaseStudyEntry[] = [
     evaluationDate: "2026-06-18",
   },
   {
+    slug: "off-axis-dashboards",
+    title: "Off Axis dashboards heuristic evaluation",
+    client: "Off Axis · Artist and admin dashboards",
+    description:
+      "Expert UX review of logged-in artist account flows and the super-admin dashboard. Text-only findings covering profile, orders, support, and operations.",
+    accent: "#A855F7",
+    tags: ["Heuristic evaluation", "Dashboard", "Admin"],
+    evaluatedUrl: "https://offaxistours.com/",
+    evaluationDate: "2026-08-06",
+  },
+  {
     slug: "mg-employees",
     title: "M&G Employees heuristic evaluation",
     client: "M&G / Prudential Workplace Pensions",

@@ -11,6 +11,7 @@ const ADMIN_SUFFIXES = [
   "/site/insights",
   "/site",
   "/case-studies/off-axis-tours",
+  "/case-studies/off-axis-dashboards",
   "/case-studies/mg-employees",
   "/case-studies",
   "/design-systems/showcase",

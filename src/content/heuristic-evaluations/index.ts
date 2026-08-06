@@ -1,10 +1,12 @@
 import type { HeuristicEvaluation } from "./types";
 import { mgEmployeesEvaluation } from "./mg-employees";
+import { offAxisDashboardsEvaluation } from "./off-axis-dashboards";
 import { offAxisToursEvaluation } from "./off-axis-tours";
 
 /** All heuristic evaluations, keyed by slug. Add new studies here. */
 export const HEURISTIC_EVALUATIONS: Record<string, HeuristicEvaluation> = {
   [mgEmployeesEvaluation.slug]: mgEmployeesEvaluation,
+  [offAxisDashboardsEvaluation.slug]: offAxisDashboardsEvaluation,
   [offAxisToursEvaluation.slug]: offAxisToursEvaluation,
 };
 
