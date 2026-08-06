@@ -266,7 +266,7 @@ const loginFlowAnnotations: ScreenshotAnnotation[] = [
 
 export const offAxisToursEvaluation: HeuristicEvaluation = {
   slug: "off-axis-tours",
-  title: "Off Axis heuristic evaluation",
+  title: "Off Axis heuristic evaluation · Part 1",
   client: "Off Axis · Live music gig-swap platform",
   accent: "#A855F7",
   executiveSummary: {

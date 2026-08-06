@@ -99,23 +99,23 @@ export type CaseStudyEntry = {
 export const CASE_STUDY_ENTRIES: CaseStudyEntry[] = [
   {
     slug: "off-axis-tours",
-    title: "Off Axis heuristic evaluation",
+    title: "Off Axis heuristic evaluation · Part 1",
     client: "Off Axis · Live music gig-swap platform",
     description:
-      "Expert UX review of the public marketplace for a live-music gig-swap startup. Covers first impression, action paths, directory search, and trust signals.",
+      "Part 1. Expert UX review of the public marketplace for a live-music gig-swap startup. Covers first impression, action paths, directory search, and trust signals.",
     accent: "#A855F7",
-    tags: ["Heuristic evaluation", "Marketplace", "First impression"],
+    tags: ["Heuristic evaluation", "Part 1", "Marketplace"],
     evaluatedUrl: "https://offaxistours.com/",
     evaluationDate: "2026-06-18",
   },
   {
     slug: "off-axis-dashboards",
-    title: "Off Axis dashboards heuristic evaluation",
+    title: "Off Axis heuristic evaluation · Part 2",
     client: "Off Axis · Artist and admin dashboards",
     description:
-      "Expert UX review of logged-in artist account flows and the super-admin dashboard. Text-only findings covering profile, orders, support, and operations.",
+      "Part 2. Expert UX review of logged-in artist account flows and the super-admin dashboard. Text-only findings covering profile, orders, support, and operations.",
     accent: "#A855F7",
-    tags: ["Heuristic evaluation", "Dashboard", "Admin"],
+    tags: ["Heuristic evaluation", "Part 2", "Dashboard"],
     evaluatedUrl: "https://offaxistours.com/",
     evaluationDate: "2026-08-06",
   },

@@ -198,15 +198,15 @@ const findings: HeuristicFinding[] = [
   },
   {
     finding_id: "HE-009",
-    title: "Referrals hide pending status and the reward",
+    title: "Artist referrals hide pending status and the reward",
     screen_or_flow: "Artist profile · referrals",
     user_task: "Invite artists and claim rewards",
     primary_heuristic: "H01" as const,
     secondary_heuristics: ["H10" as const, "H06" as const],
     description:
-      "Invite copy is clear, but the section does not show pending referrals, what qualifies, or how redemption works. Manual claim adds jargon when automatic credit would do.",
+      "On the artist profile Referrals tab, invite copy is clear, but the section does not show pending referrals, what qualifies, or how redemption works. Manual claim adds jargon when automatic credit would do.",
     evidence: {
-      observed_where: "Referrals tab",
+      observed_where: "Artist profile · Referrals tab",
       observed_behaviour:
         "Claim referral appears without a clear count of pending or completed referrals, and without a plain reward explanation.",
       expected_behaviour:
@@ -216,7 +216,7 @@ const findings: HeuristicFinding[] = [
     severity: "high" as const,
     confidence: "medium" as const,
     recommendation:
-      "Add pending and completed counts, spell out the reward in one line, and auto-credit when criteria are met.",
+      "Add pending and completed counts on the Referrals tab, spell out the reward in one line, and auto-credit when criteria are met.",
     owner: "Product" as const,
     status: "new" as const,
     priority: { frequency: 3 as const, impact: 4 as const, effort: 3 as const },
@@ -229,63 +229,63 @@ const findings: HeuristicFinding[] = [
     primary_heuristic: "H03" as const,
     secondary_heuristics: ["H04" as const],
     description:
-      "Opening an order accordion shows some detail, but an Order details control suggests another page for the same job. The depth of the order breakdown is also thin.",
+      "On My orders, the accordion already opens the order, but an Order details control sends people somewhere else for the same job. That second path adds effort with no gain. The full line-item breakdown should live inside the accordion.",
     evidence: {
       observed_where: "My orders list",
       observed_behaviour:
-        "Accordion and Order details both claim to reveal the order. The expanded panel does not show a full line-item breakdown.",
+        "Accordion and Order details both claim to reveal the order. Order details takes the user away instead of expanding the row in place.",
       expected_behaviour:
-        "One control expands the accordion in place with the full order breakdown. No separate details journey for the same content.",
+        "Order details only toggles the accordion. The expanded accordion shows the full order breakdown. There is no separate details destination.",
     },
     user_impact: "Extra clicks and confusion about where the real order lives.",
     severity: "medium" as const,
     confidence: "high" as const,
     recommendation:
-      "Make Order details toggle the accordion. Put the full breakdown inside the expanded panel.",
+      "Drop the separate Order details journey. Use one control to expand the accordion and put the full breakdown there.",
     owner: "Design" as const,
     status: "new" as const,
     priority: { frequency: 4 as const, impact: 3 as const, effort: 2 as const },
   },
   {
     finding_id: "HE-011",
-    title: "Receipt and tickets download never finishes",
+    title: "Receipt download never finishes",
     screen_or_flow: "My orders",
-    user_task: "Download receipt or tickets",
+    user_task: "Download a receipt",
     primary_heuristic: "H01" as const,
     secondary_heuristics: ["H09" as const],
     description:
-      "Receipt and tickets stay on Preparing your download and never complete. That is a functional bug with no recovery path.",
+      "On My orders, the receipt download stays on Preparing your download and never completes. That is a functional bug with no recovery path.",
     evidence: {
-      observed_where: "Order download actions",
+      observed_where: "My orders · receipt download",
       observed_behaviour: "The preparing state starts and never ends. No file arrives and no error shows.",
       expected_behaviour:
         "Download completes, or the UI shows a clear failure with a retry path.",
     },
-    user_impact: "Artists cannot get tickets or proof of purchase when they need them.",
+    user_impact: "Artists cannot get proof of purchase when they need it.",
     severity: "critical" as const,
     confidence: "high" as const,
     recommendation:
-      "Fix the download pipeline. Add a timeout, an error message, and a retry control if the file fails.",
+      "Fix the receipt download pipeline. Add a timeout, an error message, and a retry control if the file fails.",
     owner: "Engineering" as const,
     status: "new" as const,
     priority: { frequency: 4 as const, impact: 5 as const, effort: 3 as const },
   },
   {
     finding_id: "HE-012",
-    title: "Dashboard ticket sales lack context",
+    title: "Artist dashboard ticket total has no scope",
     screen_or_flow: "Artist dashboard",
     user_task: "Understand performance at a glance",
     primary_heuristic: "H01" as const,
     secondary_heuristics: ["H06" as const],
     description:
-      "Ticket sales appear as a headline number with no scope. It is unclear whether the figure covers all gigs or the next one.",
+      "On the artist dashboard, ticket sales appear as a headline number with no scope. It is unclear whether the figure covers every gig on Off Axis or only the next show.",
     evidence: {
       observed_where: "Artist dashboard overview",
       observed_behaviour: "A ticket sales total sits as a primary metric without a date range or gig scope.",
       expected_behaviour:
         "Lead with gigs played on Off Axis, with headlining versus support counts. Put tickets sold on each gig card.",
     },
-    user_impact: "Artists cannot judge whether the number is useful or current.",
+    user_impact: "Artists cannot tell if the number is lifetime, recent, or for one upcoming gig.",
     severity: "medium" as const,
     confidence: "high" as const,
     recommendation:
@@ -367,13 +367,13 @@ const findings: HeuristicFinding[] = [
   },
   {
     finding_id: "HE-016",
-    title: "Support inbox and find support sit apart",
+    title: "Artist support inbox and find support sit apart",
     screen_or_flow: "Artist support flows",
     user_task: "Fill a bill or respond to invites",
     primary_heuristic: "H02" as const,
     secondary_heuristics: ["H06" as const, "H04" as const],
     description:
-      "Support inbox and find support slots are separate destinations for one job family. Invitations received and finding support should live together, with genre fit in mind.",
+      "In the artist account, support inbox and find support slots are separate destinations for one job family. Invitations received and finding support should live together, with genre fit in mind.",
     evidence: {
       observed_where: "Artist account navigation",
       observed_behaviour:
@@ -418,17 +418,17 @@ const findings: HeuristicFinding[] = [
   },
   {
     finding_id: "HE-018",
-    title: "Venue language drifts between hall and venue",
+    title: "Venue language drifts between hall, venue, and space",
     screen_or_flow: "Admin · venue management",
     user_task: "Add or approve venues",
     primary_heuristic: "H04" as const,
     secondary_heuristics: ["H02" as const],
     description:
-      "Copy mixes venue, hall, and space. Schedule management under venue approvals is ambiguous, and Add new hall puts fields before a clear action.",
+      "Admin copy mixes venue, hall, and space. Schedule management under venue approvals is ambiguous, and Add new hall puts fields before a clear action.",
     evidence: {
       observed_where: "Venue approvals and add hall",
       observed_behaviour:
-        "Section titles and buttons switch between venue and hall. Inputs appear before a clear Add new venue action.",
+        "Section titles and buttons switch between venue, hall, and space. Inputs appear before a clear Add new venue action.",
       expected_behaviour:
         "One word, venue, everywhere. Clear Add new venue action, then fields. Rename schedule management to match venue management.",
     },
@@ -468,16 +468,16 @@ const findings: HeuristicFinding[] = [
   },
   {
     finding_id: "HE-020",
-    title: "Create user placeholders sound personal",
+    title: "Create user input field placeholders sound personal",
     screen_or_flow: "Admin · user management",
     user_task: "Create a user",
     primary_heuristic: "H02" as const,
     description:
-      "Name fields use phrasing that sounds like the admin typing their own name, not an example person.",
+      "On the create user form, name field placeholders sound like the admin typing their own name, not an example person.",
     evidence: {
-      observed_where: "Create user form",
+      observed_where: "Admin · create user form",
       observed_behaviour: "Placeholders read like your name rather than an example such as John.",
-      expected_behaviour: "Neutral examples like First name, e.g. John.",
+      expected_behaviour: "Neutral examples like First name, for example John.",
     },
     user_impact: "Small friction and a less polished admin form.",
     severity: "low" as const,
@@ -489,17 +489,17 @@ const findings: HeuristicFinding[] = [
   },
   {
     finding_id: "HE-021",
-    title: "Artist rows hide behind a kebab menu",
+    title: "Artist rows hide behind a kebab menu (dotted menu)",
     screen_or_flow: "Admin · artist management",
     user_task: "Open an artist record",
     primary_heuristic: "H07" as const,
     secondary_heuristics: ["H03" as const],
     description:
-      "View details lives in a kebab menu. Rows and names are not clickable. Search and a main genre column are missing for promoter-style filtering.",
+      "View details lives in a kebab menu (the dotted menu button). Rows and names are not clickable. Search and a main genre column are missing for promoter-style filtering.",
     evidence: {
-      observed_where: "Artist management table",
+      observed_where: "Admin · artist management table",
       observed_behaviour:
-        "Opening a record needs the dotted menu. There is no search and no genre tag column.",
+        "Opening a record needs the dotted menu button. There is no search and no genre tag column.",
       expected_behaviour:
         "Click the row or name to open details. Add search and a primary genre column for filter and scan.",
     },
@@ -507,7 +507,7 @@ const findings: HeuristicFinding[] = [
     severity: "medium" as const,
     confidence: "high" as const,
     recommendation:
-      "Make rows clickable. Add search and a primary genre column. Keep the menu for secondary actions only.",
+      "Make rows clickable. Add search and a primary genre column. Keep the dotted menu for secondary actions only.",
     owner: "Design" as const,
     status: "new" as const,
     priority: { frequency: 4 as const, impact: 3 as const, effort: 2 as const },
@@ -657,29 +657,29 @@ const findings: HeuristicFinding[] = [
 
 export const offAxisDashboardsEvaluation: HeuristicEvaluation = {
   slug: "off-axis-dashboards",
-  title: "Off Axis dashboards heuristic evaluation",
+  title: "Off Axis heuristic evaluation · Part 2",
   client: "Off Axis · Artist and admin dashboards",
   accent: "#A855F7",
   executiveSummary: {
     whatWasEvaluated:
-      "Logged-in artist account flows and the super-admin dashboard for Off Axis, reviewed on desktop from a Glasgow test artist account and a super-admin account.",
+      "Part 2 of the Off Axis review. Logged-in artist account flows and the super-admin dashboard, reviewed on desktop from a Glasgow test artist account and a super-admin account.",
     usabilityHealth:
-      "The admin side feels further along than the artist side, but both share consistency gaps. The sharpest risk is a stuck ticket download. Referrals, support discovery, and dashboard metrics need clearer status and scope.",
+      "The admin side is more developed than the artist side, with more features and functionality in place. Both still share concrete consistency gaps, including profile tabs that wrap, activity and transaction cards that use different list patterns, and venue copy that mixes hall, venue, and space. The sharpest risk is a stuck receipt download on My orders. On the artist profile Referrals tab, pending status and the reward stay unclear. Support inbox and find support sit apart in the artist nav, and the artist dashboard ticket total has no time or gig scope.",
     topIssues: [
-      "Receipt and tickets download never finishes",
-      "Referrals hide pending status and the reward",
-      "Support inbox and find support sit apart",
+      "My orders receipt download never finishes",
+      "Artist profile referrals hide pending status and the reward",
+      "Artist support inbox and find support sit apart",
       "Profile tabs wrap onto a second line",
-      "Dashboard ticket sales lack context",
+      "Artist dashboard ticket total has no time or gig scope",
     ],
     mainRisks: [
-      "Artists cannot retrieve tickets or receipts when a download hangs",
+      "Artists cannot retrieve a receipt when the download hangs on My orders",
       "Support booking and referrals lose trust without status and genre fit",
       "Admin triage stays slow while cards and nav duplicate work",
     ],
     recommendedNextSteps: [
-      "Fix order downloads and add a failure path",
-      "Clarify referrals with pending counts and automatic credit",
+      "Fix the My orders receipt download and add a failure path",
+      "Clarify artist referrals with pending counts and automatic credit",
       "Merge support inbox and find support, and surface genre fit",
       "Tighten profile tabs and shared list components",
     ],
@@ -691,7 +691,7 @@ export const offAxisDashboardsEvaluation: HeuristicEvaluation = {
     userGroups: ["Artists", "Super admins"],
     tasksEvaluated: [
       "Edit artist profile, activity, transactions, referrals, and security",
-      "Review orders and download tickets",
+      "Review orders and download a receipt",
       "Use the artist dashboard, credits, merchandise, and create a gig",
       "Navigate support inbox and find support",
       "Use the admin dashboard, users, artists, venues, subscriptions, support, onboarding, and all gigs",
@@ -713,7 +713,7 @@ export const offAxisDashboardsEvaluation: HeuristicEvaluation = {
       "No screenshots or interactive redesign in this write-up",
       "Findings follow observed behaviour in session notes, not analytics",
     ],
-    timeSpent: "Around 4 hours across review and write-up",
+    timeSpent: "Around 8 hours across review and write-up",
   },
   severitySummary: countSeverity(findings),
   themes: [
@@ -744,12 +744,12 @@ export const offAxisDashboardsEvaluation: HeuristicEvaluation = {
   ],
   findings,
   actionPlan: [
-    { priority: "fix_now", action: "Fix receipt and tickets download, with timeout and retry" },
-    { priority: "fix_now", action: "Show referral pending and completed state, and auto-credit rewards" },
+    { priority: "fix_now", action: "Fix My orders receipt download, with timeout and retry" },
+    { priority: "fix_now", action: "Show referral pending and completed state on the artist Referrals tab, and auto-credit rewards" },
     { priority: "fix_now", action: "Merge support inbox and find support into one section" },
     { priority: "fix_next", action: "Keep profile tabs on one line or move them to a left rail" },
     { priority: "fix_next", action: "Share one history card pattern across activity and transactions" },
-    { priority: "fix_next", action: "Replace orphan ticket totals with gig counts and per-gig sales" },
+    { priority: "fix_next", action: "Replace the artist dashboard orphan ticket total with gig counts and per-gig sales" },
     { priority: "fix_next", action: "Standardise venue language and clickable admin summary cards" },
     { priority: "monitor", action: "Watch merch multi-gig linking after the model change" },
     { priority: "validate", action: "Test support genre-fit messaging with a small artist set" },
