@@ -653,6 +653,281 @@ const findings: HeuristicFinding[] = [
     status: "new" as const,
     priority: { frequency: 3 as const, impact: 2 as const, effort: 2 as const },
   },
+  {
+    finding_id: "HE-028",
+    title: "Vouchers and contracts labels fight each other",
+    screen_or_flow: "Admin · vouchers",
+    user_task: "Manage discount codes and vouchers",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H04" as const],
+    description:
+      "The side nav says vouchers and discounts, while the page mixes contract, voucher contracts, and Add contract. Admins cannot tell whether they are managing vouchers, discount codes, or contracts.",
+    evidence: {
+      observed_where: "Admin · vouchers and discounts",
+      observed_behaviour:
+        "Heading, tab, and primary button use contract language inside a vouchers section. Discount codes are implied but not named consistently.",
+      expected_behaviour:
+        "One clear product language. Prefer discounts and vouchers as types in one list, with Add new opening a choice of discount or voucher. Or rename the whole section to Discount codes if that is the only object.",
+    },
+    user_impact: "Admins hesitate before creating anything, and search for the wrong words later.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Pick one vocabulary. Use Discount codes as the page title if that is the job, change Add contract to Add discount code or Add new, and add a type column so vouchers and discount codes can share the list with filters.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 4 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-029",
+    title: "Create voucher modal scrolls instead of stepping",
+    screen_or_flow: "Admin · vouchers · create modal",
+    user_task: "Add a discount code or voucher",
+    primary_heuristic: "H08" as const,
+    secondary_heuristics: ["H06" as const, "H07" as const],
+    description:
+      "The create modal packs name, discount type, value, usage type, generation settings, and optional gig limits into one scrolling panel. Modals work best when the content fits the view. A stepper would split the job without the inner scroll.",
+    evidence: {
+      observed_where: "Add contract or create voucher modal",
+      observed_behaviour:
+        "Content is visually separated inside the modal, but users still scroll within it. The primary button says create rather than add discount code. Restrict to gig is a dense dropdown for an optional link.",
+      expected_behaviour:
+        "Step 1 covers name, discount type, discount value, and usage type. Step 2 covers code settings and max usages. Optional gig linking uses a Link to gig control, not a heavy dropdown. The final button reads Add discount code.",
+    },
+    user_impact: "Creating a code feels heavier than it is, and optional fields compete with the required ones.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Replace the scrolling modal with a short stepper. Keep usage type. Make gig restriction an optional Link to gig action. Match the submit label to Add discount code or Add voucher.",
+    owner: "Design" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 3 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-030",
+    title: "Voucher table actions lack space and hover labels",
+    screen_or_flow: "Admin · vouchers table",
+    user_task: "Act on a voucher or discount row",
+    primary_heuristic: "H01" as const,
+    secondary_heuristics: ["H04" as const],
+    description:
+      "Icon actions in the voucher contracts table sit with no spacing between them, and hover does not explain what each icon does. One control downloads a CSV, but that is not obvious from the glyph alone.",
+    evidence: {
+      observed_where: "Admin · voucher contracts table · actions",
+      observed_behaviour:
+        "Action icons sit tight with no gap and no tooltip. A download icon exports a CSV without a visible label on hover.",
+      expected_behaviour:
+        "Comfortable spacing between icons, and a hover or focus label for each action, including download CSV.",
+    },
+    user_impact: "Admins risk hitting the wrong action and cannot learn the icons without trial and error.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Add spacing between action icons and tooltips that name each action in plain language.",
+    owner: "Design" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 2 as const, effort: 1 as const },
+  },
+  {
+    finding_id: "HE-031",
+    title: "Side menu scroll jumps when changing section",
+    screen_or_flow: "Admin · side navigation",
+    user_task: "Move between admin sections",
+    primary_heuristic: "H03" as const,
+    secondary_heuristics: ["H01" as const],
+    description:
+      "Clicking the next item in the side menu resets the menu scroll position. That makes it feel like the admin left the area they were in, even when they only moved one section down.",
+    evidence: {
+      observed_where: "Admin side panel",
+      observed_behaviour:
+        "After selecting a lower nav item, the side menu scroll snaps back instead of keeping the active item in view.",
+      expected_behaviour:
+        "The side menu keeps its scroll position, or scrolls only enough to keep the active item visible.",
+    },
+    user_impact: "Orientation breaks and finding the next item takes another hunt through the list.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Preserve side nav scroll across route changes, and keep the active item in view without resetting to the top.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 5 as const, impact: 3 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-032",
+    title: "Reports sign-ups over time uses the wrong chart",
+    screen_or_flow: "Admin · reports · users",
+    user_task: "Read sign-ups over time",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H06" as const],
+    description:
+      "Sign-ups over time is shown as a bar chart. Over-time metrics need a line so change is visible across the window. The same axis labelling issues from the admin dashboard charts apply here.",
+    evidence: {
+      observed_where: "Admin · reports · users · sign-ups over time",
+      observed_behaviour:
+        "Bars stand in for a trend. X-axis labels crowd the middle instead of showing start and end of the filtered range.",
+      expected_behaviour:
+        "A line chart for over-time series. Start and end dates on the axis, with detail on hover. Period filters match the rest of admin analytics.",
+    },
+    user_impact: "Admins misread growth and cannot compare periods cleanly.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Switch sign-ups over time to a line chart. Reuse the period filter pattern and simplify axis labels.",
+    owner: "Design" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 3 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-033",
+    title: "Reports date filter is cramped and hard to use",
+    screen_or_flow: "Admin · reports",
+    user_task: "Choose a reporting window",
+    primary_heuristic: "H07" as const,
+    secondary_heuristics: ["H08" as const],
+    description:
+      "The reports filter sits squeezed into the layout with little structure. A from and to date pair takes more space than a single period control with an optional custom range.",
+    evidence: {
+      observed_where: "Admin · reports filter strip",
+      observed_behaviour:
+        "Date controls feel bolted on. There is no clear preset for past 24 hours, 7 days, 28 days, or 12 months.",
+      expected_behaviour:
+        "One period dropdown with those presets plus Custom. Custom opens a calendar modal to pick a range, then returns to the page.",
+    },
+    user_impact: "Filtering feels fiddly and slows every report check.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Replace the cramped date pair with one period dropdown and a custom range modal.",
+    owner: "Design" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 3 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-034",
+    title: "Report export icons are inconsistent",
+    screen_or_flow: "Admin · reports",
+    user_task: "Export a report",
+    primary_heuristic: "H04" as const,
+    secondary_heuristics: ["H08" as const],
+    description:
+      "Excel and PDF exports sit as separate controls with mismatched icons. PDF shows a download glyph and Excel does not. One Export action with a choice modal would be cleaner.",
+    evidence: {
+      observed_where: "Admin · reports export controls",
+      observed_behaviour:
+        "XL and PDF appear as parallel actions with uneven icon treatment.",
+      expected_behaviour:
+        "One Export button opens a modal with Excel and PDF rows, each with a file icon and its own Download button.",
+    },
+    user_impact: "The export strip looks unfinished and harder to scan than it needs to be.",
+    severity: "low" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Collapse Excel and PDF into one Export entry point with a simple format picker modal.",
+    owner: "Design" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 2 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-035",
+    title: "Content management feels unfinished",
+    screen_or_flow: "Admin · content management",
+    user_task: "Manage static pages or CMS content",
+    primary_heuristic: "H10" as const,
+    secondary_heuristics: ["H02" as const],
+    description:
+      "Content management does not explain what belongs there. There is no clear path to create or edit a static page, and the use case for a CMS on this platform is not obvious from the UI.",
+    evidence: {
+      observed_where: "Admin · content management",
+      observed_behaviour:
+        "The section feels incomplete. Static page creation is not offered in a discoverable way.",
+      expected_behaviour:
+        "Either ship a clear create and edit path for the pages admins actually own, or remove the section until the use case is defined.",
+    },
+    user_impact: "Admins open the page and leave without knowing what to do.",
+    severity: "medium" as const,
+    confidence: "medium" as const,
+    recommendation:
+      "Define the CMS job in product terms, then either finish the create and edit flows or hide the nav item until ready.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 2 as const, impact: 3 as const, effort: 4 as const },
+  },
+  {
+    finding_id: "HE-036",
+    title: "Email queue gives no usable context",
+    screen_or_flow: "Admin · email queue",
+    user_task: "Understand and act on queued email",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H10" as const, "H06" as const],
+    description:
+      "Email queue and dead letter email queue are labelled without explaining what they are. Table rows show order ID, user ID, retry count, created, and actions, but not what the email is for or why it is waiting.",
+    evidence: {
+      observed_where: "Admin · email queue",
+      observed_behaviour:
+        "Technical column names sit without a page intro or row-level subject, template, or failure reason.",
+      expected_behaviour:
+        "A short plain explanation of the queue. Rows show who it is for, what message, status, and why a dead letter item failed.",
+    },
+    user_impact: "Admins cannot triage mail problems without asking engineering.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Add page-level context and human columns such as recipient, template or subject, status, and failure reason. Rename dead letter in plain language.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 4 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-037",
+    title: "Access control lists features without place or meaning",
+    screen_or_flow: "Admin · access control",
+    user_task: "Set permissions for a role",
+    primary_heuristic: "H06" as const,
+    secondary_heuristics: ["H08" as const, "H10" as const],
+    description:
+      "Access control shows the same long toggle list for every role tab, with labels like View venues and little sense of where that feature lives or who it is for. The page is dense and hard to reason about.",
+    evidence: {
+      observed_where: "Admin · access control",
+      observed_behaviour:
+        "Role tabs for super admin, admin, venue manager, gig manager, artist, check-in assistant, and fan share identical looking permission lists without location or product-area context.",
+      expected_behaviour:
+        "Group permissions by product area, name the real feature, and show whether it sits in the admin portal, artist login, or elsewhere. Prefer clearer checkbox patterns where roles are predefined.",
+    },
+    user_impact: "Wrong permissions are easy to grant, and unused toggles are hard to spot.",
+    severity: "high" as const,
+    confidence: "medium" as const,
+    recommendation:
+      "Restructure by product area with feature name and where it lives. Audit whether every toggle is needed before shipping more of them.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 4 as const, effort: 4 as const },
+  },
+  {
+    finding_id: "HE-038",
+    title: "Approvals cards and tabs do the same job",
+    screen_or_flow: "Admin · approvals",
+    user_task: "Review items that need attention",
+    primary_heuristic: "H08" as const,
+    secondary_heuristics: ["H04" as const],
+    description:
+      "On Approvals, top cards already filter venues, artists, gig reviews, gig support, and email verification. Tabs under them copy the same type split. That is duplicate chrome.",
+    evidence: {
+      observed_where: "Admin · approvals",
+      observed_behaviour:
+        "Cards filter the list by item type. Tabs underneath repeat that type navigation.",
+      expected_behaviour:
+        "Keep the cards for type filtering. If tabs stay, use them for workflow status such as All, Pending, and Approved.",
+    },
+    user_impact: "Extra controls with no new capability slow triage.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Remove the type tabs under the cards, or repurpose tabs for status workflow only.",
+    owner: "Design" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 2 as const, effort: 2 as const },
+  },
 ];
 
 export const offAxisDashboardsEvaluation: HeuristicEvaluation = {
@@ -664,24 +939,24 @@ export const offAxisDashboardsEvaluation: HeuristicEvaluation = {
     whatWasEvaluated:
       "Part 2 of the Off Axis review. Logged-in artist account flows and the super-admin dashboard, reviewed on desktop from a Glasgow test artist account and a super-admin account.",
     usabilityHealth:
-      "The admin side is more developed than the artist side, with more features and functionality in place. Both still share concrete consistency gaps, including profile tabs that wrap, activity and transaction cards that use different list patterns, and venue copy that mixes hall, venue, and space. The sharpest risk is a stuck receipt download on My orders. On the artist profile Referrals tab, pending status and the reward stay unclear. Support inbox and find support sit apart in the artist nav, and the artist dashboard ticket total has no time or gig scope.",
+      "The admin side is more developed than the artist side, with more features and functionality in place. Both still share concrete consistency gaps, including profile tabs that wrap, activity and transaction cards that use different list patterns, and venue copy that mixes hall, venue, and space. Later admin sections add more of the same pattern problems. Vouchers mix contract language with discount codes, reports reuse the weak chart and filter patterns, and email queue and access control lack plain context. The sharpest artist-side risk remains a stuck receipt download on My orders.",
     topIssues: [
       "My orders receipt download never finishes",
+      "Vouchers and contracts labels fight each other",
+      "Email queue gives no usable context",
+      "Access control lists features without place or meaning",
       "Artist profile referrals hide pending status and the reward",
-      "Artist support inbox and find support sit apart",
-      "Profile tabs wrap onto a second line",
-      "Artist dashboard ticket total has no time or gig scope",
     ],
     mainRisks: [
       "Artists cannot retrieve a receipt when the download hangs on My orders",
+      "Admins misconfigure discounts, mail, or permissions because the language and context are unclear",
       "Support booking and referrals lose trust without status and genre fit",
-      "Admin triage stays slow while cards and nav duplicate work",
     ],
     recommendedNextSteps: [
       "Fix the My orders receipt download and add a failure path",
-      "Clarify artist referrals with pending counts and automatic credit",
-      "Merge support inbox and find support, and surface genre fit",
-      "Tighten profile tabs and shared list components",
+      "Rename vouchers and discounts so contract language is gone",
+      "Explain email queue rows in plain language",
+      "Restructure access control by product area and where each feature lives",
     ],
   },
   scope: {
@@ -695,6 +970,8 @@ export const offAxisDashboardsEvaluation: HeuristicEvaluation = {
       "Use the artist dashboard, credits, merchandise, and create a gig",
       "Navigate support inbox and find support",
       "Use the admin dashboard, users, artists, venues, subscriptions, support, onboarding, and all gigs",
+      "Manage vouchers and discount codes",
+      "Read reports, content management, email queue, access control, approvals, and system settings",
     ],
     heuristicsUsed: [
       "H01 Visibility of system status",
@@ -712,6 +989,7 @@ export const offAxisDashboardsEvaluation: HeuristicEvaluation = {
       "Desktop review only from supplied test accounts",
       "No screenshots or interactive redesign in this write-up",
       "Findings follow observed behaviour in session notes, not analytics",
+      "System settings looked serviceable in this pass and were not written up as findings",
     ],
     timeSpent: "Around 8 hours across review and write-up",
   },
@@ -741,17 +1019,34 @@ export const offAxisDashboardsEvaluation: HeuristicEvaluation = {
         "HE-027",
       ],
     },
+    {
+      label: "Admin vouchers, reports, and platform tools",
+      findingIds: [
+        "HE-028",
+        "HE-029",
+        "HE-030",
+        "HE-031",
+        "HE-032",
+        "HE-033",
+        "HE-034",
+        "HE-035",
+        "HE-036",
+        "HE-037",
+        "HE-038",
+      ],
+    },
   ],
   findings,
   actionPlan: [
     { priority: "fix_now", action: "Fix My orders receipt download, with timeout and retry" },
+    { priority: "fix_now", action: "Rename vouchers and discounts so contract language is gone" },
+    { priority: "fix_now", action: "Add plain context and human columns to email queue" },
     { priority: "fix_now", action: "Show referral pending and completed state on the artist Referrals tab, and auto-credit rewards" },
-    { priority: "fix_now", action: "Merge support inbox and find support into one section" },
-    { priority: "fix_next", action: "Keep profile tabs on one line or move them to a left rail" },
-    { priority: "fix_next", action: "Share one history card pattern across activity and transactions" },
-    { priority: "fix_next", action: "Replace the artist dashboard orphan ticket total with gig counts and per-gig sales" },
-    { priority: "fix_next", action: "Standardise venue language and clickable admin summary cards" },
-    { priority: "monitor", action: "Watch merch multi-gig linking after the model change" },
+    { priority: "fix_next", action: "Turn the create voucher modal into a short stepper" },
+    { priority: "fix_next", action: "Preserve admin side nav scroll and fix reports charts and period filters" },
+    { priority: "fix_next", action: "Restructure access control by product area and where each feature lives" },
+    { priority: "fix_next", action: "Remove duplicate approvals type tabs or use tabs for status only" },
+    { priority: "monitor", action: "Decide whether content management ships finished flows or leaves the nav" },
     { priority: "validate", action: "Test support genre-fit messaging with a small artist set" },
   ],
 };
