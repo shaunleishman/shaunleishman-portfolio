@@ -100,13 +100,14 @@ const styles = StyleSheet.create({
   metaRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
+    alignItems: "center",
     marginBottom: 18,
     paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  metaItem: { fontSize: type.meta, color: colors.muted },
+  metaItem: { fontSize: type.meta, color: colors.muted, marginRight: 10, marginBottom: 2 },
+  metaDot: { fontSize: type.meta, color: colors.border, marginRight: 10, marginBottom: 2 },
   metaItemStrong: { fontSize: type.meta, color: colors.text, fontFamily: "Helvetica-Bold" },
   section: { marginBottom: 18 },
   sectionTitle: {
@@ -124,25 +125,31 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   paragraph: { fontSize: type.body, color: colors.text, lineHeight: 1.5, marginBottom: 8 },
-  bulletRow: { flexDirection: "row", gap: 7, marginBottom: 5 },
+  bulletRow: { flexDirection: "row", marginBottom: 6, paddingRight: 4 },
+  bulletDotWrap: {
+    width: 12,
+    flexShrink: 0,
+    paddingTop: 5,
+  },
   bulletDot: {
     width: 4,
     height: 4,
     borderRadius: 2,
     backgroundColor: colors.accent,
-    marginTop: 5.5,
   },
   bulletText: { flex: 1, fontSize: type.body, lineHeight: 1.45, color: colors.text },
-  severityGrid: { flexDirection: "row", gap: 8, marginBottom: 16 },
+  severityGrid: { flexDirection: "row", marginBottom: 16 },
   severityCard: {
     flex: 1,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 6,
     paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     alignItems: "center",
+    marginRight: 8,
   },
+  severityCardLast: { marginRight: 0 },
   severityCount: { fontSize: 16, fontFamily: "Helvetica-Bold", color: colors.dark },
   severityLabel: {
     fontSize: type.small,
@@ -151,17 +158,28 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
     marginTop: 2,
   },
-  chipRow: { flexDirection: "row", flexWrap: "wrap", gap: 6, alignItems: "center", marginBottom: 7 },
-  chip: { borderRadius: 8, paddingVertical: 2, paddingHorizontal: 7, fontSize: type.chip },
-  pill: {
+  // Chips must be Views. Text with backgroundColor overlaps when the row wraps.
+  chipRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  chip: {
     borderRadius: 8,
-    paddingVertical: 2,
-    paddingHorizontal: 7,
-    fontSize: type.chip,
-    backgroundColor: colors.faint,
-    color: colors.text,
-    borderWidth: 1,
-    borderColor: colors.border,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    marginRight: 8,
+    marginBottom: 4,
+    maxWidth: "100%",
+  },
+  chipText: { fontSize: type.chip, lineHeight: 1.2 },
+  locationText: {
+    fontSize: type.small,
+    color: colors.muted,
+    marginTop: 2,
+    marginBottom: 8,
+    lineHeight: 1.35,
   },
   finding: {
     borderWidth: 1,
@@ -170,17 +188,27 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 10,
   },
-  findingHead: { flexDirection: "row", gap: 8, alignItems: "flex-start", marginBottom: 6 },
+  findingHead: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 8,
+  },
   rank: {
     width: 18,
     height: 18,
     borderRadius: 9,
     backgroundColor: colors.faint,
-    color: colors.dark,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
+    marginTop: 1,
+    flexShrink: 0,
+  },
+  rankText: {
     fontSize: type.small,
     fontFamily: "Helvetica-Bold",
-    textAlign: "center",
-    paddingTop: 3,
+    color: colors.dark,
+    lineHeight: 1,
   },
   findingTitle: {
     flex: 1,
@@ -189,39 +217,42 @@ const styles = StyleSheet.create({
     color: colors.dark,
     lineHeight: 1.35,
   },
-  findingBody: { fontSize: type.body, color: colors.text, lineHeight: 1.45, marginBottom: 7 },
-  evidenceRow: { flexDirection: "row", gap: 6, marginBottom: 4 },
+  findingBody: { fontSize: type.body, color: colors.text, lineHeight: 1.45, marginBottom: 8 },
+  evidenceRow: { flexDirection: "row", marginBottom: 5, alignItems: "flex-start" },
   evidenceLabel: {
-    width: 78,
+    width: 92,
     fontSize: type.small,
     fontFamily: "Helvetica-Bold",
     color: colors.muted,
     textTransform: "uppercase",
     letterSpacing: 0.4,
+    marginRight: 8,
+    flexShrink: 0,
   },
   evidenceValue: { flex: 1, fontSize: type.small, color: colors.text, lineHeight: 1.4 },
   priorityLine: {
-    marginTop: 7,
-    paddingTop: 7,
+    marginTop: 8,
+    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: colors.faint,
     fontSize: type.small,
     color: colors.muted,
+    lineHeight: 1.4,
   },
   quickWin: {
     borderLeftWidth: 2,
     borderLeftColor: colors.accent,
     paddingLeft: 10,
-    marginBottom: 7,
+    marginBottom: 8,
   },
   quickWinTitle: { fontSize: type.body, fontFamily: "Helvetica-Bold", color: colors.dark },
-  quickWinMeta: { fontSize: type.small, color: colors.muted, marginTop: 1 },
+  quickWinMeta: { fontSize: type.small, color: colors.muted, marginTop: 2 },
   actionGroup: { marginBottom: 12 },
   actionGroupTitle: {
     fontSize: type.body,
     fontFamily: "Helvetica-Bold",
     color: colors.dark,
-    marginBottom: 5,
+    marginBottom: 6,
   },
   footer: {
     position: "absolute",
@@ -244,7 +275,9 @@ function Bullets({ items }: { items: string[] }) {
     <>
       {items.map((item, i) => (
         <View key={`${i}-${item.slice(0, 24)}`} style={styles.bulletRow} wrap={false}>
-          <View style={styles.bulletDot} />
+          <View style={styles.bulletDotWrap}>
+            <View style={styles.bulletDot} />
+          </View>
           <Text style={styles.bulletText}>{item}</Text>
         </View>
       ))}
@@ -263,7 +296,25 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 function SeverityChip({ severity }: { severity: Severity }) {
   const s = SEVERITY_STYLE[severity];
-  return <Text style={[styles.chip, { backgroundColor: s.bg, color: s.fg }]}>{s.label}</Text>;
+  return (
+    <View style={[styles.chip, { backgroundColor: s.bg }]} wrap={false}>
+      <Text style={[styles.chipText, { color: s.fg }]}>{s.label}</Text>
+    </View>
+  );
+}
+
+function MetaChip({ children }: { children: string }) {
+  return (
+    <View
+      style={[
+        styles.chip,
+        { backgroundColor: colors.faint, borderWidth: 1, borderColor: colors.border },
+      ]}
+      wrap={false}
+    >
+      <Text style={[styles.chipText, { color: colors.text }]}>{children}</Text>
+    </View>
+  );
 }
 
 function Evidence({ label, value }: { label: string; value: string }) {
@@ -292,24 +343,26 @@ function FindingBlock({ finding, rank }: { finding: HeuristicFinding; rank: numb
   const { frequency, impact, effort } = finding.priority;
 
   return (
-    <View style={styles.finding} wrap={false}>
-      <View style={styles.findingHead}>
-        <Text style={styles.rank}>{rank}</Text>
+    <View style={styles.finding} minPresenceAhead={80}>
+      <View style={styles.findingHead} wrap={false}>
+        <View style={styles.rank}>
+          <Text style={styles.rankText}>{rank}</Text>
+        </View>
         <Text style={styles.findingTitle}>{finding.title}</Text>
       </View>
-      <View style={styles.chipRow}>
+      <View style={styles.chipRow} wrap={false}>
         <SeverityChip severity={finding.severity} />
-        <Text style={styles.pill}>{HEURISTIC_ONE_WORD[finding.primary_heuristic]}</Text>
-        <Text style={styles.metaItem}>{finding.screen_or_flow}</Text>
+        <MetaChip>{HEURISTIC_ONE_WORD[finding.primary_heuristic]}</MetaChip>
       </View>
+      <Text style={styles.locationText}>{finding.screen_or_flow}</Text>
       <Text style={styles.findingBody}>{finding.description}</Text>
       <Evidence label="Observed" value={finding.evidence.observed_behaviour} />
       <Evidence label="Expected" value={finding.evidence.expected_behaviour} />
       <Evidence label="Impact" value={finding.user_impact} />
-      <Evidence label="Recommendation" value={finding.recommendation} />
+      <Evidence label="Fix" value={finding.recommendation} />
       <Text style={styles.priorityLine}>
-        Frequency {frequency}/5 · Impact {impact}/5 · Effort {effort}/5 ({EFFORT_LABELS[effort]}) ·
-        Priority score {points} ({TIER_LABEL[tier]})
+        Frequency {frequency}/5 · Impact {impact}/5 · Effort {effort}/5 (
+        {EFFORT_LABELS[effort]}) · Priority score {points} ({TIER_LABEL[tier]})
       </Text>
     </View>
   );
@@ -335,7 +388,7 @@ export function CaseStudyPdfDocument({ evaluation }: { evaluation: HeuristicEval
     .slice(0, 2);
 
   return (
-    <Document title={`${evaluation.title} — Heuristic evaluation`} author={siteConfig.name}>
+    <Document title={`${evaluation.title} - Heuristic evaluation`} author={siteConfig.name}>
       <Page size="A4" style={styles.page}>
         <Text style={styles.label}>Heuristic evaluation</Text>
         <Text style={styles.title}>{evaluation.title}</Text>
@@ -344,8 +397,14 @@ export function CaseStudyPdfDocument({ evaluation }: { evaluation: HeuristicEval
           <Text style={styles.metaItem}>
             Evaluated <Text style={styles.metaItemStrong}>{scope.evaluationDate}</Text>
           </Text>
+          <Text style={styles.metaDot}>·</Text>
           <Text style={styles.metaItem}>{scope.evaluator}</Text>
-          {scope.timeSpent ? <Text style={styles.metaItem}>{scope.timeSpent}</Text> : null}
+          {scope.timeSpent ? (
+            <>
+              <Text style={styles.metaDot}>·</Text>
+              <Text style={styles.metaItem}>{scope.timeSpent}</Text>
+            </>
+          ) : null}
         </View>
 
         <Section title="Executive summary">
@@ -354,8 +413,11 @@ export function CaseStudyPdfDocument({ evaluation }: { evaluation: HeuristicEval
         </Section>
 
         <View style={styles.severityGrid}>
-          {(["critical", "high", "medium", "low"] as Severity[]).map((sev) => (
-            <View key={sev} style={styles.severityCard}>
+          {(["critical", "high", "medium", "low"] as Severity[]).map((sev, index, list) => (
+            <View
+              key={sev}
+              style={[styles.severityCard, index === list.length - 1 ? styles.severityCardLast : {}]}
+            >
               <Text style={[styles.severityCount, { color: SEVERITY_STYLE[sev].fg }]}>
                 {severitySummary[sev]}
               </Text>
