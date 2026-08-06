@@ -71,7 +71,7 @@ const TIER_LABEL: Record<ReturnType<typeof getPriorityTier>, string> = {
 const styles = StyleSheet.create({
   page: {
     paddingTop: 42,
-    paddingBottom: 48,
+    paddingBottom: 56,
     paddingHorizontal: 42,
     fontFamily: "Helvetica",
     fontSize: type.body,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   chip: {
     borderRadius: 8,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   locationText: {
     fontSize: type.small,
     color: colors.muted,
-    marginTop: 2,
+    marginTop: 4,
     marginBottom: 8,
     lineHeight: 1.35,
   },
@@ -343,7 +343,7 @@ function FindingBlock({ finding, rank }: { finding: HeuristicFinding; rank: numb
   const { frequency, impact, effort } = finding.priority;
 
   return (
-    <View style={styles.finding} minPresenceAhead={80}>
+    <View style={styles.finding} wrap={false}>
       <View style={styles.findingHead} wrap={false}>
         <View style={styles.rank}>
           <Text style={styles.rankText}>{rank}</Text>
