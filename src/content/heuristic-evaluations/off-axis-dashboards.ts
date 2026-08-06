@@ -939,7 +939,7 @@ export const offAxisDashboardsEvaluation: HeuristicEvaluation = {
     whatWasEvaluated:
       "Part 2 of the Off Axis review. Logged-in artist account flows and the super-admin dashboard, reviewed on desktop from a Glasgow test artist account and a super-admin account.",
     usabilityHealth:
-      "The admin side is more developed than the artist side, with more features and functionality in place. Both still share concrete consistency gaps, including profile tabs that wrap, activity and transaction cards that use different list patterns, and venue copy that mixes hall, venue, and space. Later admin sections add more of the same pattern problems. Vouchers mix contract language with discount codes, reports reuse the weak chart and filter patterns, and email queue and access control lack plain context. The sharpest artist-side risk remains a stuck receipt download on My orders.",
+      "The admin side is more developed than the artist side, but both still have consistency and clarity gaps. The sharpest risk is a stuck receipt download on My orders.",
     topIssues: [
       "My orders receipt download never finishes",
       "Vouchers and contracts labels fight each other",
