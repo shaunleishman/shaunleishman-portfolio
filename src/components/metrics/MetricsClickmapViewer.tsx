@@ -14,15 +14,14 @@ type ClickmapResponse = {
   clickmap: PageClickmapData | null;
 };
 
-export function MetricsClickmapViewer({ path, period = "all" }: { path: string; period?: AnalyticsPeriod }) {
+export function MetricsClickmapViewer({ path, period = "12m" }: { path: string; period?: AnalyticsPeriod }) {
   const [clickmap, setClickmap] = useState<PageClickmapData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadClickmap = useCallback(async (pagePath: string, periodFilter: AnalyticsPeriod) => {
     setLoading(true);
 
-    const params = new URLSearchParams({ path: pagePath });
-    if (periodFilter !== "all") params.set("period", periodFilter);
+    const params = new URLSearchParams({ path: pagePath, period: periodFilter });
 
     const res = await fetch(`/api/metrics/clickmap?${params.toString()}`, {
       credentials: "include",

@@ -23,10 +23,10 @@ export function MetricsMapsPage({ title, description, children }: MetricsMapsPag
     setLoading(true);
     const params = new URLSearchParams();
     if (filterPath !== "all") params.set("path", filterPath);
-    if (filterPeriod !== "all") params.set("period", filterPeriod);
+    params.set("period", filterPeriod);
     const query = params.toString();
 
-    const res = await fetch(`/api/metrics/summary${query ? `?${query}` : ""}`, {
+    const res = await fetch(`/api/metrics/summary?${query}`, {
       credentials: "include",
     });
     if (res.ok) {

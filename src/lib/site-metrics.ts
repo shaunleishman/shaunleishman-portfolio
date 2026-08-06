@@ -22,7 +22,6 @@ import {
 const ACTIVE_WINDOW_MS = 5 * 60 * 1000;
 
 function filterByPeriod(events: AnalyticsEvent[], period: AnalyticsPeriod): AnalyticsEvent[] {
-  if (period === "all") return events;
   return events.filter((e) => eventInPeriod(e.timestamp, period));
 }
 
@@ -104,7 +103,7 @@ function sortContentRows(rows: ContentRow[], sort: ContentSortKey): ContentRow[]
 
 function bucketKey(timestamp: string, period: AnalyticsPeriod): string {
   if (period === "24h") return timestamp.slice(0, 13);
-  if (period === "12m" || period === "all") return timestamp.slice(0, 7);
+  if (period === "12m") return timestamp.slice(0, 7);
   return timestamp.slice(0, 10);
 }
 

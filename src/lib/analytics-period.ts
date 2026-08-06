@@ -1,4 +1,4 @@
-export const ANALYTICS_PERIODS = ["24h", "7d", "28d", "12m", "all"] as const;
+export const ANALYTICS_PERIODS = ["24h", "7d", "28d", "12m"] as const;
 export type AnalyticsPeriod = (typeof ANALYTICS_PERIODS)[number];
 
 /** Home dashboard always uses this window. */
@@ -7,6 +7,8 @@ export const METRICS_HOME_PERIOD: AnalyticsPeriod = "7d";
 const LEGACY_PERIOD_MAP: Record<string, AnalyticsPeriod> = {
   month: "28d",
   year: "12m",
+  /** Former unbounded "all time" — use a 12-month window so charts match KPIs. */
+  all: "12m",
 };
 
 export function parseAnalyticsPeriod(value: string | null | undefined): AnalyticsPeriod {
@@ -16,12 +18,10 @@ export function parseAnalyticsPeriod(value: string | null | undefined): Analytic
   if (value && ANALYTICS_PERIODS.includes(value as AnalyticsPeriod)) {
     return value as AnalyticsPeriod;
   }
-  return "all";
+  return "12m";
 }
 
-export function getPeriodStart(period: AnalyticsPeriod, now = new Date()): Date | null {
-  if (period === "all") return null;
-
+export function getPeriodStart(period: AnalyticsPeriod, now = new Date()): Date {
   const start = new Date(now);
 
   if (period === "24h") {
@@ -53,13 +53,10 @@ export function getPeriodLabel(period: AnalyticsPeriod): string {
       return "Last 28 days";
     case "12m":
       return "Last 12 months";
-    default:
-      return "All time";
   }
 }
 
 export function eventInPeriod(timestamp: string, period: AnalyticsPeriod, now = new Date()): boolean {
   const start = getPeriodStart(period, now);
-  if (!start) return true;
   return timestamp >= start.toISOString();
 }

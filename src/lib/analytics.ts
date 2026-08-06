@@ -42,12 +42,9 @@ export const writeEvents = writeEventsAsync;
 function filterEvents(
   events: AnalyticsEvent[],
   filterPath?: string | null,
-  filterPeriod: AnalyticsPeriod = "all",
+  filterPeriod: AnalyticsPeriod = "12m",
 ) {
-  let filtered = events;
-  if (filterPeriod !== "all") {
-    filtered = filtered.filter((event) => eventInPeriod(event.timestamp, filterPeriod));
-  }
+  let filtered = events.filter((event) => eventInPeriod(event.timestamp, filterPeriod));
   if (filterPath) {
     filtered = filtered.filter((event) => event.path === filterPath);
   }
@@ -57,7 +54,7 @@ function filterEvents(
 export function buildAnalyticsSummary(
   allEvents: AnalyticsEvent[],
   filterPath?: string | null,
-  filterPeriod: AnalyticsPeriod = "all",
+  filterPeriod: AnalyticsPeriod = "12m",
 ): AnalyticsSummary {
   const events = filterEvents(allEvents, filterPath, filterPeriod);
   const periodEvents = filterEvents(allEvents, null, filterPeriod);
@@ -212,8 +209,6 @@ export function buildAnalyticsSummary(
     dailyPageviews = [...monthly.entries()]
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([date, count]) => ({ date, count }));
-  } else if (filterPeriod === "all") {
-    dailyPageviews = dailyPageviews.slice(-14);
   } else if (filterPeriod === "24h") {
     dailyPageviews = dailyPageviews.slice(-1);
   }
@@ -272,7 +267,7 @@ export function buildAnalyticsSummary(
 
 export async function getAnalyticsSummary(
   filterPath?: string | null,
-  filterPeriod: AnalyticsPeriod = "all",
+  filterPeriod: AnalyticsPeriod = "12m",
 ): Promise<AnalyticsSummary> {
   const allEvents = await readAnalyticsEvents();
   return buildAnalyticsSummary(allEvents, filterPath, filterPeriod);

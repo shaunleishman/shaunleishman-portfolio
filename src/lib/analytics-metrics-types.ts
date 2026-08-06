@@ -98,7 +98,7 @@ export function parseAudienceMetric(value: string | null | undefined): AudienceM
 /**
  * Fills a trend series so there is one point per bucket across the whole period,
  * inserting zeros for buckets with no events. Keys match the server bucketing
- * (hourly for 24h, monthly for 12m, daily otherwise). "all" is returned sorted.
+ * (hourly for 24h, monthly for 12m, daily otherwise).
  */
 export function expandTrendBuckets(
   points: TimeSeriesPoint[],
@@ -106,10 +106,6 @@ export function expandTrendBuckets(
   now: Date = new Date(),
 ): TimeSeriesPoint[] {
   const valueByKey = new Map(points.map((p) => [p.date, p.value]));
-
-  if (period === "all") {
-    return [...points].sort((a, b) => a.date.localeCompare(b.date));
-  }
 
   const keys: string[] = [];
   if (period === "24h") {

@@ -14,15 +14,14 @@ type HeatmapResponse = {
   heatmap: PageHeatmapData | null;
 };
 
-export function MetricsHeatmapViewer({ path, period = "all" }: { path: string; period?: AnalyticsPeriod }) {
+export function MetricsHeatmapViewer({ path, period = "12m" }: { path: string; period?: AnalyticsPeriod }) {
   const [heatmap, setHeatmap] = useState<PageHeatmapData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadHeatmap = useCallback(async (pagePath: string, periodFilter: AnalyticsPeriod) => {
     setLoading(true);
 
-    const params = new URLSearchParams({ path: pagePath });
-    if (periodFilter !== "all") params.set("period", periodFilter);
+    const params = new URLSearchParams({ path: pagePath, period: periodFilter });
 
     const res = await fetch(`/api/metrics/heatmap?${params.toString()}`, {
       credentials: "include",

@@ -59,15 +59,17 @@ export function MetricsBarChart({
   period: AnalyticsPeriod;
   emptyLabel?: string;
 }) {
-  if (points.length === 0) {
+  const series = useMemo(() => expandTrendBuckets(points, period), [points, period]);
+
+  if (series.length === 0) {
     return <p className="text-body-sm text-[var(--color-text-muted)]">{emptyLabel}</p>;
   }
 
-  const max = Math.max(...points.map((p) => p.value), 1);
+  const max = Math.max(...series.map((p) => p.value), 1);
 
   return (
     <div className="space-y-2">
-      {points.map((point) => {
+      {series.map((point) => {
         const width = Math.round((point.value / max) * 100);
         return (
           <div key={point.date} className="grid grid-cols-[4.5rem_1fr_2.5rem] items-center gap-3 text-body-sm">

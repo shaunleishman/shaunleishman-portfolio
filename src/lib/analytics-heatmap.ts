@@ -45,11 +45,8 @@ export function getHeatmapPagePaths(events: AnalyticsEvent[]): string[] {
   return getMapPagePaths(events);
 }
 
-function filterEvents(events: AnalyticsEvent[], path?: string | null, period: AnalyticsPeriod = "all") {
-  let filtered = events;
-  if (period !== "all") {
-    filtered = filtered.filter((event) => eventInPeriod(event.timestamp, period));
-  }
+function filterEvents(events: AnalyticsEvent[], path?: string | null, period: AnalyticsPeriod = "12m") {
+  let filtered = events.filter((event) => eventInPeriod(event.timestamp, period));
   if (path) {
     filtered = filtered.filter((event) => event.path === path);
   }
@@ -59,7 +56,7 @@ function filterEvents(events: AnalyticsEvent[], path?: string | null, period: An
 export function getPageHeatmapData(
   events: AnalyticsEvent[],
   path: string,
-  period: AnalyticsPeriod = "all",
+  period: AnalyticsPeriod = "12m",
 ): PageHeatmapData {
   const filtered = filterEvents(events, path, period);
 
@@ -159,7 +156,7 @@ export function getPageHeatmapData(
 export function getPageClickmapData(
   events: AnalyticsEvent[],
   path: string,
-  period: AnalyticsPeriod = "all",
+  period: AnalyticsPeriod = "12m",
 ): PageClickmapData {
   const filtered = filterEvents(events, path, period);
 
@@ -225,7 +222,7 @@ export function getPageClickmapData(
 export function getHourlyActivity(
   events: AnalyticsEvent[],
   path?: string | null,
-  period: AnalyticsPeriod = "all",
+  period: AnalyticsPeriod = "12m",
 ): HourlyActivity[] {
   const filtered = filterEvents(events, path, period);
   const counts = new Map<string, number>();
@@ -236,15 +233,14 @@ export function getHourlyActivity(
   });
 
   const sorted = [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-  const limited = period === "all" ? sorted.slice(-48) : sorted;
 
-  return limited.map(([hour, count]) => ({ hour: `${hour}:00`, count }));
+  return sorted.map(([hour, count]) => ({ hour: `${hour}:00`, count }));
 }
 
 export function getEventTypeBreakdown(
   events: AnalyticsEvent[],
   path?: string | null,
-  period: AnalyticsPeriod = "all",
+  period: AnalyticsPeriod = "12m",
 ): EventTypeBreakdown[] {
   const filtered = filterEvents(events, path, period);
   const counts = new Map<string, number>();
@@ -261,7 +257,7 @@ export function getEventTypeBreakdown(
 export function getTotalDwellMs(
   events: AnalyticsEvent[],
   path?: string | null,
-  period: AnalyticsPeriod = "all",
+  period: AnalyticsPeriod = "12m",
 ): number {
   return filterEvents(events, path, period)
     .filter((event) => event.type === "heatmap_dwell")
