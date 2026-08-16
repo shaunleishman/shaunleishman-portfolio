@@ -59,16 +59,16 @@ const DENSITY: Record<CvPdfDensity, DensityTokens> = {
   compact: {
     type: {
       label: 7.5,
-      name: 15,
-      headline: 10,
+      name: 16,
+      headline: 10.5,
       contact: 8.5,
-      body: 8.5,
-      section: 7,
-      jobTitle: 9.5,
+      body: 8.75,
+      section: 7.25,
+      jobTitle: 9.75,
     },
-    leading: 1.32,
-    space: { xs: 2, sm: 3.5, md: 5.5, lg: 7 },
-    page: { paddingTop: 20, paddingBottom: 26, paddingHorizontal: 28 },
+    leading: 1.35,
+    space: { xs: 2.5, sm: 4, md: 6.5, lg: 8 },
+    page: { paddingTop: 22, paddingBottom: 28, paddingHorizontal: 28 },
   },
 };
 
