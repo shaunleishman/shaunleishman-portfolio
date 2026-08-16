@@ -23,7 +23,9 @@ export async function GET(_request: Request, context: RouteContext) {
   }
 
   try {
-    const buffer = await renderToBuffer(<CvPdfDocument content={content} />);
+    const buffer = await renderToBuffer(
+      <CvPdfDocument content={content} density="compact" />,
+    );
 
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
