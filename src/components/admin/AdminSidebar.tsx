@@ -23,7 +23,7 @@ const SECTION_ICONS = {
   prototypes: Layers,
   "design-systems": Palette,
   "case-studies": BookOpen,
-  "cover-letter": FileText,
+  applications: FileText,
 } as const;
 
 export function AdminSidebar({ onHide }: { onHide?: () => void }) {

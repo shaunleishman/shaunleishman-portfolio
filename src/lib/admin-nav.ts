@@ -47,10 +47,10 @@ export function buildAdminNav(base: string): AdminNavItem[] {
       description: "Heuristic evaluations and UX audit reports",
     },
     {
-      id: "cover-letter",
-      label: "Cover letters",
-      href: `${base}/cover-letter`,
-      description: "Application cover letters by job and sector",
+      id: "applications",
+      label: "Applications",
+      href: `${base}/applications`,
+      description: "Tailored CV and cover letter packs by job",
     },
   ];
 }

@@ -8,8 +8,8 @@ import {
 } from "@react-pdf/renderer";
 import {
   coverLetterShared,
-  type CoverLetter,
-} from "@/content/cover-letter";
+  type Application,
+} from "@/content/applications";
 import { siteConfig } from "@/content/projects";
 
 /** Matches CV PDF typography and colour so both documents feel like one set. */
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
 });
 
 type CoverLetterPdfDocumentProps = {
-  letter: CoverLetter;
+  letter: Application;
 };
 
 export function CoverLetterPdfDocument({ letter }: CoverLetterPdfDocumentProps) {
@@ -178,7 +178,7 @@ export function CoverLetterPdfDocument({ letter }: CoverLetterPdfDocumentProps) 
 
         <Text style={styles.greeting}>{letter.greeting}</Text>
 
-        {letter.paragraphs.map((paragraph) => (
+        {(letter.paragraphs ?? []).map((paragraph) => (
           <Text key={paragraph.slice(0, 40)} style={styles.paragraph}>
             {paragraph}
           </Text>

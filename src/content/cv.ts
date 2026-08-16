@@ -1,6 +1,6 @@
 import { siteConfig } from "@/content/projects";
 
-type CvExperienceItem = {
+export type CvExperienceItem = {
   role: string;
   company: string;
   period: string;
@@ -10,7 +10,24 @@ type CvExperienceItem = {
   note?: string;
 };
 
-export const cvContent = {
+export type CvContent = {
+  headline: string;
+  summary: string[];
+  strengths: string[];
+  experience: CvExperienceItem[];
+  education: { title: string; detail: string }[];
+  skills: { label: string; items: string }[];
+  interests: string;
+  contact: {
+    email: string;
+    phone: string;
+    linkedIn: string;
+    portfolio: string;
+    portfolioLabel: string;
+  };
+};
+
+export const cvContent: CvContent = {
   headline: "UX/UI Designer · Edinburgh",
   summary: [
     "I'm a UX/UI Designer in Edinburgh with over five years making complex digital products easier to use and easier to ship. Most of that sits in healthcare, SaaS, energy, government, and financial services, where people have to trust what they see before they act.",

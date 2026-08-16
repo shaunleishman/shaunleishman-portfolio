@@ -20,12 +20,22 @@ const ADMIN_SUFFIXES = [
   "/prototypes/half-hourly",
   "/prototypes/enhance",
   "/prototypes",
+  "/applications",
+  "/cover-letter",
 ] as const;
 
 function stripProjectSuffix(pathname: string): string | null {
   const projectMatch = pathname.match(/(\/prototypes\/half-hourly\/project\/[^/]+(?:\/edit)?)$/);
   if (projectMatch) {
     return pathname.slice(0, -projectMatch[1].length);
+  }
+  return null;
+}
+
+function stripApplicationSuffix(pathname: string): string | null {
+  const applicationMatch = pathname.match(/(\/(?:applications|cover-letter)\/[^/]+)$/);
+  if (applicationMatch) {
+    return pathname.slice(0, -applicationMatch[1].length);
   }
   return null;
 }
@@ -45,6 +55,9 @@ export function useAdminBase(): string {
 
   const projectBase = stripProjectSuffix(pathname);
   if (projectBase) return projectBase;
+
+  const applicationBase = stripApplicationSuffix(pathname);
+  if (applicationBase) return applicationBase;
 
   for (const suffix of [...ADMIN_SUFFIXES].sort((a, b) => b.length - a.length)) {
     if (pathname.endsWith(suffix)) {

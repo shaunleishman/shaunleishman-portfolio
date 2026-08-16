@@ -1,8 +1,8 @@
-import { getCoverLetterBySlug, getCoverLetterPdfFilename } from "@/content/cover-letter";
+import { getApplicationBySlug, getCoverLetterPdfFilename } from "@/content/applications";
 
 export async function downloadCoverLetterPdf(slug: string) {
-  const letter = getCoverLetterBySlug(slug);
-  if (!letter) {
+  const application = getApplicationBySlug(slug);
+  if (!application?.hasCoverLetter) {
     throw new Error("Cover letter not found");
   }
 
@@ -16,7 +16,7 @@ export async function downloadCoverLetterPdf(slug: string) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = getCoverLetterPdfFilename(letter);
+  link.download = getCoverLetterPdfFilename(application);
   document.body.appendChild(link);
   link.click();
   link.remove();

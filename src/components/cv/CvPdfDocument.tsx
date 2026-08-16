@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "@react-pdf/renderer";
-import { cvContent } from "@/content/cv";
+import { cvContent, type CvContent } from "@/content/cv";
 import { siteConfig } from "@/content/projects";
 
 /**
@@ -271,32 +271,32 @@ function JobBlock({
   );
 }
 
-function CvHeader() {
+function CvHeader({ content }: { content: CvContent }) {
   return (
     <View>
       <Text style={styles.label}>CV</Text>
       <Text style={styles.name}>{siteConfig.name}</Text>
-      <Text style={styles.headline}>{cvContent.headline}</Text>
+      <Text style={styles.headline}>{content.headline}</Text>
       <View style={styles.contactRow}>
-        <Link src={`mailto:${cvContent.contact.email}`} style={[styles.contactItem, styles.link]}>
-          <Text>{cvContent.contact.email}</Text>
+        <Link src={`mailto:${content.contact.email}`} style={[styles.contactItem, styles.link]}>
+          <Text>{content.contact.email}</Text>
         </Link>
-        <Text style={styles.contactItem}>{cvContent.contact.phone}</Text>
-        <Link src={cvContent.contact.linkedIn} style={[styles.contactItem, styles.link]}>
+        <Text style={styles.contactItem}>{content.contact.phone}</Text>
+        <Link src={content.contact.linkedIn} style={[styles.contactItem, styles.link]}>
           <Text>LinkedIn</Text>
         </Link>
-        <Link src={cvContent.contact.portfolio} style={[styles.contactItem, styles.link]}>
-          <Text>{cvContent.contact.portfolioLabel}</Text>
+        <Link src={content.contact.portfolio} style={[styles.contactItem, styles.link]}>
+          <Text>{content.contact.portfolioLabel}</Text>
         </Link>
       </View>
     </View>
   );
 }
 
-function StrengthsSection() {
-  const midpoint = Math.ceil(cvContent.strengths.length / 2);
-  const left = cvContent.strengths.slice(0, midpoint);
-  const right = cvContent.strengths.slice(midpoint);
+function StrengthsSection({ content }: { content: CvContent }) {
+  const midpoint = Math.ceil(content.strengths.length / 2);
+  const left = content.strengths.slice(0, midpoint);
+  const right = content.strengths.slice(midpoint);
 
   return (
     <Section title="Key strengths">
@@ -312,25 +312,29 @@ function StrengthsSection() {
   );
 }
 
-export function CvPdfDocument() {
+type CvPdfDocumentProps = {
+  content?: CvContent;
+};
+
+export function CvPdfDocument({ content = cvContent }: CvPdfDocumentProps) {
   return (
     <Document title={`${siteConfig.name} CV`} author={siteConfig.name}>
       <Page size="A4" style={styles.page}>
-        <CvHeader />
+        <CvHeader content={content} />
         <Text style={styles.quote}>{siteConfig.quote}</Text>
 
         <View style={styles.summaryBlock}>
-          {cvContent.summary.map((paragraph) => (
+          {content.summary.map((paragraph) => (
             <Text key={paragraph.slice(0, 24)} style={styles.paragraph}>
               {paragraph}
             </Text>
           ))}
         </View>
 
-        <StrengthsSection />
+        <StrengthsSection content={content} />
 
         <Section title="Experience">
-          {cvContent.experience.map((job) => (
+          {content.experience.map((job) => (
             <JobBlock
               key={`${job.company}-${job.period}`}
               role={job.role}
@@ -343,7 +347,7 @@ export function CvPdfDocument() {
         </Section>
 
         <Section title="Education">
-          {cvContent.education.map((item) => (
+          {content.education.map((item) => (
             <View key={item.title} style={styles.listRow}>
               <Text style={styles.listLine}>
                 <Text style={styles.listStrong}>{item.title}</Text>
@@ -354,7 +358,7 @@ export function CvPdfDocument() {
         </Section>
 
         <Section title="Skills">
-          {cvContent.skills.map((group) => (
+          {content.skills.map((group) => (
             <View key={group.label} style={styles.listRow}>
               <Text style={styles.listLine}>
                 <Text style={styles.listStrong}>{group.label}. </Text>
@@ -365,13 +369,13 @@ export function CvPdfDocument() {
         </Section>
 
         <Section title="Interests">
-          <Text style={styles.listLine}>{cvContent.interests}</Text>
+          <Text style={styles.listLine}>{content.interests}</Text>
         </Section>
 
         <View style={styles.footer} fixed>
           <Text style={styles.footerBrand}>{siteConfig.brand}</Text>
-          <Link src={cvContent.contact.portfolio} style={styles.footerUrl}>
-            <Text>{cvContent.contact.portfolioLabel}</Text>
+          <Link src={content.contact.portfolio} style={styles.footerUrl}>
+            <Text>{content.contact.portfolioLabel}</Text>
           </Link>
         </View>
       </Page>
