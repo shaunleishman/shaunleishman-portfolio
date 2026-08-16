@@ -137,7 +137,7 @@ export const applications: Application[] = [
     hasCv: true,
     cvMode: "tailored",
     learningNote:
-      "Recruiter asked for hybrid UX/UI/Product positioning, Figma and design systems forward, Aberdeen research detail, FS digital vs research distinction, and stakeholder presentation made explicit. Public site CV left unchanged.",
+      "Recruiter asked for hybrid UX/UI/Product positioning, Figma and design systems forward, Abrdn research detail, FS digital vs research distinction, and stakeholder presentation made explicit. Public site CV left unchanged.",
   },
 ];
 

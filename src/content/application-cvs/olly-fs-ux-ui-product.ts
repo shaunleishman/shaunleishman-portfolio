@@ -33,7 +33,7 @@ export const ollyFsUxUiProductCv: CvContent = {
       company: "User Vision",
       period: "Mar 2022 to Mar 2024",
       paragraphs: [
-        "Client work across healthcare, SaaS, government, and public services, with a clear financial-services strand for Aberdeen. That engagement was research-led. Personas and behavioural archetypes, journey maps, interviews, usability testing, and a retirement calculator. I turned the findings into recommendations and proposed designs, then presented research, designs, and rationale in client and board-style meetings for non-technical stakeholders.",
+        "Client work across healthcare, SaaS, government, and public services, with a clear financial-services strand for Abrdn. That engagement was research-led. Personas and behavioural archetypes, journey maps, interviews, usability testing, and a retirement calculator. I turned the findings into recommendations and proposed designs, then presented research, designs, and rationale in client and board-style meetings for non-technical stakeholders.",
         "Elsewhere I ran research end to end and moved findings into journey changes and prototypes developers could ship. One navigation change that was getting in people's way went up by about 40% in task success after we simplified it.",
       ],
       note: "I was shifting from digital design into UX, with a psychology masters place at Stirling lined up, when User Vision approached me and I took the role.",
@@ -43,7 +43,7 @@ export const ollyFsUxUiProductCv: CvContent = {
       company: "The&Partnership",
       period: "Oct 2019 to Sept 2021",
       paragraphs: [
-        "Digital and visual design for financial services clients including NatWest, RBS, and Ulster Bank. Emails, landing pages, campaigns, and animation under tight brand rules. Templates and reusable assets that had to hold up across web, social, and advertising. Different work from the Aberdeen research strand, but the same need for clarity with regulated audiences.",
+        "Digital and visual design for financial services clients including NatWest, RBS, and Ulster Bank. Emails, landing pages, campaigns, and animation under tight brand rules. Templates and reusable assets that had to hold up across web, social, and advertising. Same need for clarity with regulated audiences, just through campaign and brand work rather than research-led product UX.",
         "On a Scottish Rugby campaign I led the creative side of the digital work. It reached over 11 million interactions.",
       ],
     },
