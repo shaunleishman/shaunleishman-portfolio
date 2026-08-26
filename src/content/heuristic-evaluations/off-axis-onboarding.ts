@@ -704,49 +704,175 @@ const findings: HeuristicFinding[] = [
     status: "new" as const,
     priority: { frequency: 3 as const, impact: 2 as const, effort: 1 as const },
   },
+  {
+    finding_id: "HE-029",
+    title: "Accessibility reads as a bare No",
+    screen_or_flow: "Gig · ticketing",
+    user_task: "Understand venue accessibility before buying",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H06" as const],
+    description:
+      "Accessibility is shown as No. That is too blunt and does not say what is missing for someone who needs wheelchair access.",
+    evidence: {
+      observed_where: "Gig ticketing or venue accessibility line",
+      observed_behaviour:
+        "The field reads No without explaining facilities.",
+      expected_behaviour:
+        "Plain sentence such as There are no wheelchair facilities at this venue, or a short list of what is and is not available.",
+    },
+    user_impact: "Buyers who need access information cannot decide with confidence.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Replace Yes or No with a short plain statement about wheelchair and related access at the venue.",
+    owner: "Content" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 4 as const, effort: 1 as const },
+  },
+  {
+    finding_id: "HE-030",
+    title: "Checkout personal details sit in a cramped side column",
+    screen_or_flow: "Checkout · details",
+    user_task: "Enter personal details to buy a ticket",
+    primary_heuristic: "H08" as const,
+    secondary_heuristics: ["H04" as const],
+    description:
+      "On the first checkout step, personal details sit in a narrow column on the right and look badly cramped next to the order summary.",
+    evidence: {
+      observed_where: "Checkout details stepper",
+      observed_behaviour:
+        "Personal details are squeezed beside the order summary instead of sitting in the same column underneath it.",
+      expected_behaviour:
+        "Order summary and personal details stack in one readable column on common desktop widths.",
+    },
+    user_impact: "Forms feel hard to scan and fill, especially on smaller laptops.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Move personal details under the order summary in one column. Avoid a cramped side panel for required fields.",
+    owner: "Design" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 3 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-031",
+    title: "Ticket quantity total sticks after counting back down",
+    screen_or_flow: "Checkout · ticket quantity",
+    user_task: "Set ticket quantity and trust the total",
+    primary_heuristic: "H01" as const,
+    secondary_heuristics: ["H09" as const],
+    description:
+      "Raising quantity high then returning to one ticket left the displayed total stuck at a large amount instead of the discounted single-ticket price.",
+    evidence: {
+      observed_where: "Checkout ticket counter and total",
+      observed_behaviour:
+        "Quantity went up toward 50 and showed about £434.35. Back down to one ticket still showed about £434.75. Payment later charged the correct £1.25 with the test discount.",
+      expected_behaviour:
+        "Displayed total always matches quantity and active discount. UI and payment amount never disagree.",
+    },
+    user_impact: "Buyers think the price is wrong and may abandon checkout even when payment would be correct.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Recalculate the visible total on every quantity change. Add a regression test for count up then down with a discount code.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 4 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-032",
+    title: "No ticket confirmation email after purchase",
+    screen_or_flow: "Checkout · after payment",
+    user_task: "Receive proof of purchase by email",
+    primary_heuristic: "H01" as const,
+    secondary_heuristics: ["H02" as const],
+    description:
+      "After a successful Apple Pay purchase and order details view, no ticket email arrived in the review session.",
+    evidence: {
+      observed_where: "Post-payment inbox and order details",
+      observed_behaviour:
+        "Order details and ticket were available in product. No email confirmation came through during the session.",
+      expected_behaviour:
+        "A confirmation email with the ticket or a clear download link arrives promptly after payment.",
+    },
+    user_impact: "Buyers worry the purchase failed and have no inbox copy for the door.",
+    severity: "high" as const,
+    confidence: "medium" as const,
+    recommendation:
+      "Send a ticket confirmation email on successful payment. Surface a resend action on order details if delivery fails.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 4 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-033",
+    title: "Ticket PDF should lead with the QR code",
+    screen_or_flow: "Order details · ticket PDF",
+    user_task: "Open the ticket ready to scan at the door",
+    primary_heuristic: "H07" as const,
+    secondary_heuristics: ["H02" as const],
+    description:
+      "The ticket is a PDF, but the QR code is not the first thing on the page. Door staff and fans need the scan target immediately.",
+    evidence: {
+      observed_where: "Downloaded or viewed ticket PDF",
+      observed_behaviour:
+        "QR is present for door scan but not leading the layout.",
+      expected_behaviour:
+        "QR code is the first large element on the ticket, with event details below.",
+    },
+    user_impact: "Extra scrolling or hunting at the door slows entry.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Put the QR code first and large on the ticket PDF. Keep supporting details underneath.",
+    owner: "Design" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 3 as const, effort: 2 as const },
+  },
 ];
 
 export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
   slug: "off-axis-onboarding",
   title: "Off Axis heuristic evaluation · Part 3",
-  client: "Off Axis · Artist signup, first gig, and support",
+  client: "Off Axis · Artist signup, first gig, support, and ticketing",
   accent: "#A855F7",
   executiveSummary: {
     whatWasEvaluated:
-      "Part 3 of the Off Axis review. Artist signup and pending approval, create first gig, admin venue setup, and support invite flows, reviewed on desktop from artist and super-admin test accounts.",
+      "Part 3 of the Off Axis review. Artist signup and pending approval, create first gig, admin venue setup, support invites, and fan ticketing checkout, reviewed on desktop from artist, super-admin, and buyer test paths.",
     usabilityHealth:
-      "Signup and first-gig creation still fight the artist. The sharpest risks are missing venue propose, venues not appearing for artists, Gig not found after create, and street addresses shown when picking support.",
+      "Signup and first-gig creation still fight the artist, and checkout has trust gaps. The sharpest risks are street addresses on support lists, venue and create-gig failures, a stuck ticket total, and missing purchase email.",
     topIssues: [
-      "No artist path to propose a missing venue",
-      "Admin venues not appearing in artist create gig",
-      "Create gig ends on Gig not found",
       "Support candidate list exposes street addresses",
-      "Pending approval locks artists out of the product",
+      "No artist path to propose a missing venue",
+      "Create gig ends on Gig not found",
+      "Ticket quantity total sticks after counting down",
+      "No ticket confirmation email after purchase",
     ],
     mainRisks: [
-      "Artists cannot create a first gig when the venue list is incomplete",
       "Personal addresses leak between artists",
-      "Successful creates look like failures after Gig not found",
-      "Onboarding lockdown and heavy signup fields drive drop-off before first value",
+      "Artists cannot create a first gig when the venue list is incomplete",
+      "Buyers abandon checkout when the on-screen total is wrong",
+      "Successful ticket buys feel incomplete without email proof",
     ],
     recommendedNextSteps: [
       "Remove street addresses from artist-to-artist discovery",
-      "Fix post-create redirect and venue list refresh for artists",
+      "Fix create-gig redirect, venue list refresh, and checkout total recalculation",
+      "Send ticket confirmation email after payment",
       "Add artist venue propose with admin review and duplicate checks",
-      "Shorten signup and allow limited access while pending approval",
     ],
   },
   scope: {
     evaluatedUrl: "https://offaxistours.com/",
     evaluationDate: "2026-08-26",
     evaluator: "Shaun Leishman",
-    userGroups: ["Artists", "Super admins"],
+    userGroups: ["Artists", "Super admins", "Ticket buyers"],
     tasksEvaluated: [
       "Sign up as an artist and complete mandatory profile fields",
       "Wait through under-review gating and admin approval",
       "Add a venue as admin and create a first gig as an artist",
       "Publish a gig and invite support from another artist account",
       "Accept a support invitation and review filled slots",
+      "Buy a ticket with discount and Apple Pay, then open the ticket PDF",
     ],
     heuristicsUsed: [
       "H01 Visibility of system status",
@@ -765,8 +891,9 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
       "No screenshots or interactive redesign in this write-up",
       "Findings follow observed behaviour in session notes, not analytics",
       "Admin approve then successful re-login after email verify worked in this pass and is not listed as a finding",
+      "Ticket sale count on My gigs updated correctly after purchase and is not listed as a finding",
     ],
-    timeSpent: "Around 4 hours across signup and first-gig review sessions",
+    timeSpent: "Around 5 hours across signup, first-gig, and ticketing review sessions",
   },
   severitySummary: countSeverity(findings),
   themes: [
@@ -786,18 +913,22 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
       label: "Support invites, privacy, and navigation",
       findingIds: ["HE-021", "HE-022", "HE-023", "HE-024", "HE-025", "HE-026", "HE-027", "HE-028"],
     },
+    {
+      label: "Ticketing and checkout",
+      findingIds: ["HE-029", "HE-030", "HE-031", "HE-032", "HE-033"],
+    },
   ],
   findings,
   actionPlan: [
     { priority: "fix_now", action: "Remove street addresses from support candidate discovery" },
     { priority: "fix_now", action: "Fix create-gig redirect so new gigs do not land on Gig not found" },
     { priority: "fix_now", action: "Make newly approved venues appear in artist create-gig lists by city" },
-    { priority: "fix_now", action: "Add artist venue propose with admin review and duplicate prevention" },
+    { priority: "fix_now", action: "Recalculate checkout totals when quantity changes, and send ticket confirmation email" },
+    { priority: "fix_next", action: "Add artist venue propose with admin review and duplicate prevention" },
     { priority: "fix_next", action: "Shorten signup fields and make avatar optional" },
     { priority: "fix_next", action: "Allow limited access while accounts are pending approval" },
-    { priority: "fix_next", action: "Clarify draft vs published before support invite, and email on publish" },
-    { priority: "fix_next", action: "Simplify My gigs cards and add artist secondary navigation" },
-    { priority: "monitor", action: "Rename cover image to gig poster and clarify early bird and discount labels" },
+    { priority: "fix_next", action: "Lead ticket PDFs with a large QR code and uncramp checkout details" },
+    { priority: "monitor", action: "Rewrite accessibility from Yes or No into plain venue facility copy" },
     { priority: "validate", action: "Test support invite confirm and decline reasons with a small artist set" },
   ],
 };
