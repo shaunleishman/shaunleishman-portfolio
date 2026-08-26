@@ -781,28 +781,29 @@ const findings: HeuristicFinding[] = [
   },
   {
     finding_id: "HE-032",
-    title: "No ticket confirmation email after purchase",
-    screen_or_flow: "Checkout · after payment",
-    user_task: "Receive proof of purchase by email",
-    primary_heuristic: "H01" as const,
-    secondary_heuristics: ["H02" as const],
+    title: "Ticket email looks like a receipt and hides the QR in a PDF",
+    screen_or_flow: "Checkout · confirmation email",
+    user_task: "Open the ticket from email ready for the door",
+    primary_heuristic: "H06" as const,
+    secondary_heuristics: ["H02" as const, "H01" as const],
     description:
-      "After a successful Apple Pay purchase and order details view, no ticket email arrived in the review session.",
+      "A confirmation email does arrive, but the scannable ticket only lives in a PDF attachment. The message itself reads like a receipt, so people may not realise where the ticket is.",
     evidence: {
-      observed_where: "Post-payment inbox and order details",
+      observed_where: "Post-purchase ticket confirmation email",
       observed_behaviour:
-        "Order details and ticket were available in product. No email confirmation came through during the session.",
+        "Email looks like payment confirmation. QR and ticket detail are only inside an attached PDF, not in the email body.",
       expected_behaviour:
-        "A confirmation email with the ticket or a clear download link arrives promptly after payment.",
+        "Email body leads with the QR code and clear ticket framing, with the PDF as a backup download, not the only place the ticket exists.",
     },
-    user_impact: "Buyers worry the purchase failed and have no inbox copy for the door.",
+    user_impact:
+      "Buyers treat the mail as a receipt, miss the attachment, and turn up without a scannable ticket.",
     severity: "high" as const,
-    confidence: "medium" as const,
+    confidence: "high" as const,
     recommendation:
-      "Send a ticket confirmation email on successful payment. Surface a resend action on order details if delivery fails.",
-    owner: "Engineering" as const,
+      "Put the QR code in the email body as a must-have. Label the message as your ticket, not only a receipt. Keep the PDF as an optional download.",
+    owner: "Product" as const,
     status: "new" as const,
-    priority: { frequency: 4 as const, impact: 4 as const, effort: 3 as const },
+    priority: { frequency: 5 as const, impact: 4 as const, effort: 3 as const },
   },
   {
     finding_id: "HE-033",
@@ -812,7 +813,7 @@ const findings: HeuristicFinding[] = [
     primary_heuristic: "H07" as const,
     secondary_heuristics: ["H02" as const],
     description:
-      "The ticket is a PDF, but the QR code is not the first thing on the page. Door staff and fans need the scan target immediately.",
+      "When the ticket is opened as a PDF, the QR code is not the first thing on the page. Door staff and fans need the scan target immediately.",
     evidence: {
       observed_where: "Downloaded or viewed ticket PDF",
       observed_behaviour:
@@ -840,24 +841,24 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
     whatWasEvaluated:
       "Part 3 of the Off Axis review. Artist signup and pending approval, create first gig, admin venue setup, support invites, and fan ticketing checkout, reviewed on desktop from artist, super-admin, and buyer test paths.",
     usabilityHealth:
-      "Signup and first-gig creation still fight the artist, and checkout has trust gaps. The sharpest risks are street addresses on support lists, venue and create-gig failures, a stuck ticket total, and missing purchase email.",
+      "Signup and first-gig creation still fight the artist, and checkout has trust gaps. The sharpest risks are street addresses on support lists, venue and create-gig failures, a stuck ticket total, and a receipt-like ticket email that hides the QR in a PDF.",
     topIssues: [
       "Support candidate list exposes street addresses",
       "No artist path to propose a missing venue",
       "Create gig ends on Gig not found",
       "Ticket quantity total sticks after counting down",
-      "No ticket confirmation email after purchase",
+      "Ticket email looks like a receipt and hides the QR in a PDF",
     ],
     mainRisks: [
       "Personal addresses leak between artists",
       "Artists cannot create a first gig when the venue list is incomplete",
       "Buyers abandon checkout when the on-screen total is wrong",
-      "Successful ticket buys feel incomplete without email proof",
+      "Buyers miss the door ticket because the email reads as a receipt with a PDF attachment",
     ],
     recommendedNextSteps: [
       "Remove street addresses from artist-to-artist discovery",
       "Fix create-gig redirect, venue list refresh, and checkout total recalculation",
-      "Send ticket confirmation email after payment",
+      "Put the QR code in the ticket email body and frame the message as the ticket",
       "Add artist venue propose with admin review and duplicate checks",
     ],
   },
@@ -892,6 +893,7 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
       "Findings follow observed behaviour in session notes, not analytics",
       "Admin approve then successful re-login after email verify worked in this pass and is not listed as a finding",
       "Ticket sale count on My gigs updated correctly after purchase and is not listed as a finding",
+      "A ticket confirmation email did arrive after purchase. The finding is about QR placement and receipt framing, not delivery failure",
     ],
     timeSpent: "Around 5 hours across signup, first-gig, and ticketing review sessions",
   },
@@ -923,7 +925,8 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
     { priority: "fix_now", action: "Remove street addresses from support candidate discovery" },
     { priority: "fix_now", action: "Fix create-gig redirect so new gigs do not land on Gig not found" },
     { priority: "fix_now", action: "Make newly approved venues appear in artist create-gig lists by city" },
-    { priority: "fix_now", action: "Recalculate checkout totals when quantity changes, and send ticket confirmation email" },
+    { priority: "fix_now", action: "Recalculate checkout totals when quantity changes" },
+    { priority: "fix_now", action: "Put the QR code in the ticket email body and frame the mail as the ticket, not only a receipt" },
     { priority: "fix_next", action: "Add artist venue propose with admin review and duplicate prevention" },
     { priority: "fix_next", action: "Shorten signup fields and make avatar optional" },
     { priority: "fix_next", action: "Allow limited access while accounts are pending approval" },
