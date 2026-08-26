@@ -880,36 +880,286 @@ const findings: HeuristicFinding[] = [
     status: "new" as const,
     priority: { frequency: 5 as const, impact: 4 as const, effort: 3 as const },
   },
+  {
+    finding_id: "HE-036",
+    title: "Sold out never appears on the gig or list",
+    screen_or_flow: "Gig page and listings · availability",
+    user_task: "See whether tickets are still available",
+    primary_heuristic: "H01" as const,
+    secondary_heuristics: ["H02" as const, "H05" as const],
+    description:
+      "A full room still shows Buy Tickets. Fans add tickets, reach checkout, and only then learn there are none left. That is a late failure at the most expensive moment.",
+    evidence: {
+      observed_where: "Gig list and gig detail when capacity is gone",
+      observed_behaviour:
+        "Buy Tickets stays visible. Sold out is not shown upfront. Failure arrives at pay.",
+      expected_behaviour:
+        "When no seats remain, list and gig say Sold Out and Buy Tickets goes away. When only a few remain, say so on the gig before checkout.",
+    },
+    user_impact: "Fans waste time in checkout for a night they cannot join.",
+    severity: "critical" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Design a real sold-out state on list and gig. Surface low availability before checkout.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 5 as const, impact: 5 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-037",
+    title: "One buyer can put the whole room in their basket",
+    screen_or_flow: "Gig · basket · per-person limit",
+    user_task: "Buy tickets without emptying the room for everyone else",
+    primary_heuristic: "H05" as const,
+    secondary_heuristics: ["H04" as const],
+    description:
+      "One person can hold every seat. On a ten-seat gig that was all ten. The error still talks about a third of the room, which is not what happened. A guest can start again and take another full room.",
+    evidence: {
+      observed_where: "Ticket add and basket on small-capacity gigs",
+      observed_behaviour:
+        "No effective per-person cap stops one buyer clearing the room. Error copy does not match the rule. Guest restart can bypass intent.",
+      expected_behaviour:
+        "One clear personal limit applies on the gig, in the basket, and at pay. Copy names the number, such as a third of the room or a simple max of eight.",
+    },
+    user_impact: "One fan can block the whole night. Other buyers only discover that at pay.",
+    severity: "critical" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Enforce one per-person limit everywhere with matching copy. Close guest loopholes that reset the cap.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 5 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-038",
+    title: "Payment holds can lock seats forever",
+    screen_or_flow: "Checkout · inventory hold",
+    user_task: "Buy a ticket when someone else abandoned pay",
+    primary_heuristic: "H01" as const,
+    secondary_heuristics: ["H03" as const],
+    description:
+      "Holding the last tickets while someone pays is right. The hold can last forever if they close the tab. Other fans still see Buy Tickets and only hit the wall at pay.",
+    evidence: {
+      observed_where: "Gig availability during abandoned checkout",
+      observed_behaviour:
+        "Seats stay held after payment is started but not finished. The gig still looks buyable.",
+      expected_behaviour:
+        "Keep the hold, then release it after a short wait and as soon as payment is abandoned. Returned seats show as available on the gig.",
+    },
+    user_impact: "Ghost holds make a gig look open when it is not.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Time-box checkout holds and release on abandon. Refresh gig availability when seats return.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 4 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-039",
+    title: "Basket and checkout disagree on ticket limits",
+    screen_or_flow: "Basket and checkout · quantity",
+    user_task: "Trust how many tickets they can still buy",
+    primary_heuristic: "H04" as const,
+    secondary_heuristics: ["H01" as const],
+    description:
+      "The basket stops at seats still free. Checkout plus can climb toward the whole room size. If eight of ten are gone, the basket should stop at two but checkout can still tap toward ten.",
+    evidence: {
+      observed_where: "Basket quantity cap vs checkout plus control",
+      observed_behaviour:
+        "Same task, two different maximums. The number jumps between steps.",
+      expected_behaviour:
+        "One limit everywhere. How many this person can take is the smaller of seats left and their personal cap. Gig, basket, and checkout all stop at that number.",
+    },
+    user_impact: "Trust drops when the allowed count changes mid-flow.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Share one limit calculation across gig, basket, and checkout. Never raise the cap at pay.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 4 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-040",
+    title: "Early bird tickets vanish before anyone has paid",
+    screen_or_flow: "Early bird pricing · checkout hold",
+    user_task: "Buy at the early bird price fairly",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H05" as const],
+    description:
+      "Early bird is a promise that the first tickets are cheaper. That cheaper pile can shrink as soon as someone reaches checkout, even if they never pay. Other fans then see full price for a sale that did not happen.",
+    evidence: {
+      observed_where: "Early bird pool during checkout starts",
+      observed_behaviour:
+        "Checkout entry consumes early bird allocation before payment completes.",
+      expected_behaviour:
+        "Only count an early bird as sold when money has landed. Abandoned pay should not use up cheap tickets.",
+    },
+    user_impact: "Fans lose the deal through no fault of their own.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Reserve early bird on pay start if needed, but return it on abandon until payment succeeds.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 4 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-041",
+    title: "Buy Tickets stays silent at the cap",
+    screen_or_flow: "Gig page · Buy Tickets",
+    user_task: "Understand why they cannot add more tickets",
+    primary_heuristic: "H01" as const,
+    secondary_heuristics: ["H09" as const],
+    description:
+      "Buy Tickets can be tapped again and again at the personal cap. Nothing happens and nothing is said on the gig. Checkout at least shows a message. A tap at a full room can even add an empty line to the basket. The button never changes state.",
+    evidence: {
+      observed_where: "Gig page Buy Tickets at cap or sold out",
+      observed_behaviour:
+        "Repeat taps with no feedback. Empty basket lines possible. Button label unchanged.",
+      expected_behaviour:
+        "If tickets are in the basket, say so and offer Checkout. If the night is full, say Sold Out. Never add zero tickets. The control always shows what happens next.",
+    },
+    user_impact: "People keep tapping because the product looks broken or unresponsive.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Give Buy Tickets clear next states for in basket, at cap, and sold out. Block zero-quantity adds.",
+    owner: "Design" as const,
+    status: "new" as const,
+    priority: { frequency: 5 as const, impact: 3 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-042",
+    title: "Ticket money and credits are blurred in product language",
+    screen_or_flow: "Homepage and artist journey · credits vs pounds",
+    user_task: "Understand what fans pay and what artists earn or spend",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H06" as const],
+    description:
+      "Fans pay in pounds. Credits are tokens artists use on each other's bills. The homepage talks as if offering an opening slot earns credits, and as if keeping ticket sales is the same pile. A designer cannot sketch the right states if those two currencies are mixed.",
+    evidence: {
+      observed_where: "Homepage and artist-facing copy about credits and ticket money",
+      observed_behaviour:
+        "Pounds and credits read as one economy in places.",
+      expected_behaviour:
+        "Ticket money is what fans pay and goes through payout. Credits are earned by selling enough tickets and spent to take a main support slot. Say that in the artist journey, not only in fine print.",
+    },
+    user_impact: "Artists misread what they earn, spend, and owe.",
+    severity: "medium" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Separate pounds and credits in all primary product language and key artist screens.",
+    owner: "Content" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 3 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-043",
+    title: "Support credits can be taken at the wrong time",
+    screen_or_flow: "Support slots · credit spend",
+    user_task: "Take a main support slot without losing a credit early",
+    primary_heuristic: "H05" as const,
+    secondary_heuristics: ["H02" as const],
+    description:
+      "Main support should cost one credit. Opening should cost nothing. The product checks balance at apply, which is good. The credit can then be taken when the gig ends with no sales, or when ticket sales hit forty a week before the night. An artist can lose a credit before they play, or for a gig that never happened.",
+    evidence: {
+      observed_where: "Support credit deduction timing",
+      observed_behaviour:
+        "Credits leave on sales thresholds or gig end even when the show did not happen as planned.",
+      expected_behaviour:
+        "Check balance at apply. Only take the credit after the gig has actually happened. If the gig is cancelled, do not take it. Use one moment for night complete for both awarding headline credits and taking support credits.",
+    },
+    user_impact: "Artists lose credits on gigs they never played.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Deduct support credits only after the gig completes. Refund on cancellation.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 4 as const, effort: 4 as const },
+  },
+  {
+    finding_id: "HE-044",
+    title: "Admin credit rule edits do not reach the live job",
+    screen_or_flow: "Admin · credit rules",
+    user_task: "Change credit rules and trust artists see them",
+    primary_heuristic: "H04" as const,
+    secondary_heuristics: ["H01" as const],
+    description:
+      "Someone can edit credit rules in admin and believe the live product will follow. The job that awards and takes credits looks for different names, so it ignores those edits and uses hidden defaults. Admin numbers and artist-facing numbers will not match.",
+    evidence: {
+      observed_where: "Admin credit rules vs runtime credit job",
+      observed_behaviour:
+        "Edited rule names do not match what the live job reads. Defaults win silently.",
+      expected_behaviour:
+        "One set of names and numbers. Whatever admin shows as one credit for forty tickets or one credit to play main support is what artists get and spend.",
+    },
+    user_impact: "Support and ops cannot trust admin as source of truth.",
+    severity: "high" as const,
+    confidence: "medium" as const,
+    recommendation:
+      "Wire admin credit rules directly to the award and spend job. Remove hidden defaults.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 2 as const, impact: 5 as const, effort: 4 as const },
+  },
+  {
+    finding_id: "HE-045",
+    title: "Leftover path treats tickets as payable with credits",
+    screen_or_flow: "Product copy and flows · credits",
+    user_task: "Understand how fans and artists pay",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H08" as const],
+    description:
+      "There is leftover thinking that a ticket might be bought with credits. Live fans pay in pounds. Leaving that idea in the product makes credits feel like money, and money feel like tokens.",
+    evidence: {
+      observed_where: "Legacy copy or flows referencing credits for ticket purchase",
+      observed_behaviour:
+        "Credits and pounds blur in older paths or helper text.",
+      expected_behaviour:
+        "Credits buy a support slot. Pounds buy a ticket. Every button, empty state, and help line follows that split.",
+    },
+    user_impact: "Both fans and artists misunderstand what each currency does.",
+    severity: "medium" as const,
+    confidence: "medium" as const,
+    recommendation:
+      "Remove pay for a ticket with credits from live UI and docs. Audit buttons and empty states.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 3 as const, effort: 2 as const },
+  },
 ];
 
 export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
   slug: "off-axis-onboarding",
   title: "Off Axis heuristic evaluation · Part 3",
-  client: "Off Axis · Artist signup, first gig, support, and ticketing",
+  client: "Off Axis · Signup, gigs, support, ticketing, and credits",
   accent: "#A855F7",
   executiveSummary: {
     whatWasEvaluated:
-      "Part 3 of the Off Axis review. Artist signup and pending approval, create first gig, admin venue setup, support invites, and fan ticketing checkout, reviewed on desktop from artist, super-admin, and buyer test paths.",
+      "Part 3 of the Off Axis review. Artist signup, first gig, support invites, fan checkout, ticket inventory, and credits, reviewed from artist, admin, and buyer test paths.",
     usabilityHealth:
-      "Signup and first-gig creation still fight the artist. Guest checkout is fragile. The sharpest risks are basket loss on refresh, street addresses on support lists, and tickets that are hard to recover after payment.",
+      "Guest checkout and inventory rules are the weak spots. Sold out is hidden until pay, one buyer can empty a small room, and pounds versus credits are blurred in the product story.",
     topIssues: [
+      "Sold out never appears on the gig or list",
+      "One buyer can put the whole room in their basket",
       "Guest basket empties after refresh or a new tab",
+      "Basket and checkout disagree on ticket limits",
       "Hard to get the ticket back after paying",
-      "Support candidate list exposes street addresses",
-      "Buy Tickets adds one ticket with no count on the gig page",
-      "Checkout layout hides what blocks Continue as Guest",
     ],
     mainRisks: [
-      "Guest buyers lose tickets mid-checkout and abandon",
-      "Buyers miss the door ticket because email and Find Order recovery are weak",
-      "Personal addresses leak between artists",
-      "People cannot buy multiple tickets where they decide to buy",
+      "Fans reach checkout for gigs that are already full",
+      "One person can block an entire small-capacity night",
+      "Early bird and hold logic consume tickets before payment lands",
+      "Artists lose or misunderstand credits because rules and language do not match live behaviour",
     ],
     recommendedNextSteps: [
-      "Persist guest basket across refresh until payment or clear",
-      "Put QR in the email body, simplify Find Order, and keep ticket recovery in the header",
-      "Remove street addresses from artist-to-artist discovery",
-      "Add ticket quantity on the gig page and fix checkout validation messaging",
+      "Show sold out and low availability before checkout",
+      "Enforce one per-person limit and matching caps in basket and checkout",
+      "Release checkout holds and early bird only on successful payment",
+      "Separate pounds and credits in UI and wire admin credit rules to the live job",
     ],
   },
   scope: {
@@ -925,6 +1175,8 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
       "Accept a support invitation and review filled slots",
       "Buy tickets as a guest, including basket persistence and checkout",
       "Recover a ticket after payment via email and Find Order",
+      "Hit sold-out, per-person limits, holds, and early bird behaviour on small gigs",
+      "Review credits versus ticket money in admin and artist-facing copy",
     ],
     heuristicsUsed: [
       "H01 Visibility of system status",
@@ -946,7 +1198,7 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
       "Ticket sale count on My gigs updated correctly after purchase and is not listed as a finding",
       "A ticket confirmation email did arrive after purchase. The finding is about QR placement and receipt framing, not delivery failure",
     ],
-    timeSpent: "Around 6 hours across signup, first-gig, and ticketing review sessions",
+    timeSpent: "Around 7 hours across signup, first-gig, ticketing, and inventory review sessions",
   },
   severitySummary: countSeverity(findings),
   themes: [
@@ -978,19 +1230,27 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
         "HE-035",
       ],
     },
+    {
+      label: "Ticket inventory and limits",
+      findingIds: ["HE-036", "HE-037", "HE-038", "HE-039", "HE-040", "HE-041"],
+    },
+    {
+      label: "Credits and product language",
+      findingIds: ["HE-042", "HE-043", "HE-044", "HE-045"],
+    },
   ],
   findings,
   actionPlan: [
+    { priority: "fix_now", action: "Show sold out and low availability before checkout" },
+    { priority: "fix_now", action: "Enforce one per-person limit across gig, basket, and checkout" },
     { priority: "fix_now", action: "Persist guest basket across refresh until payment or clear" },
     { priority: "fix_now", action: "Put QR in the email body, simplify Find Order, and keep ticket recovery in the header" },
-    { priority: "fix_now", action: "Remove street addresses from support candidate discovery" },
-    { priority: "fix_now", action: "Add ticket quantity on the gig page and align Buy Tickets with Get Tickets" },
-    { priority: "fix_now", action: "Fix checkout Continue as Guest validation and explain what is still missing" },
-    { priority: "fix_next", action: "Fix create-gig redirect and venue list refresh for artists" },
-    { priority: "fix_next", action: "Recalculate checkout totals when quantity changes" },
-    { priority: "fix_next", action: "Add artist venue propose with admin review and duplicate prevention" },
-    { priority: "fix_next", action: "Lead ticket PDFs with a large QR code" },
-    { priority: "monitor", action: "Rewrite accessibility from Yes or No into plain venue facility copy" },
-    { priority: "validate", action: "Test guest basket persistence and ticket recovery on mobile" },
+    { priority: "fix_now", action: "Release checkout holds and early bird allocation when payment is abandoned" },
+    { priority: "fix_next", action: "Give Buy Tickets clear states for in basket, at cap, and sold out" },
+    { priority: "fix_next", action: "Wire admin credit rules to the live award and spend job" },
+    { priority: "fix_next", action: "Deduct support credits only after the gig completes" },
+    { priority: "fix_next", action: "Separate pounds and credits in primary product language" },
+    { priority: "monitor", action: "Remove legacy pay for a ticket with credits copy and flows" },
+    { priority: "validate", action: "Test small-capacity gigs for hold release and early bird fairness" },
   ],
 };
