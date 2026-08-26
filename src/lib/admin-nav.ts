@@ -120,6 +120,17 @@ export const CASE_STUDY_ENTRIES: CaseStudyEntry[] = [
     evaluationDate: "2026-08-06",
   },
   {
+    slug: "off-axis-onboarding",
+    title: "Off Axis heuristic evaluation · Part 3",
+    client: "Off Axis · Artist signup, first gig, and support",
+    description:
+      "Part 3. Expert UX review of artist signup, pending approval, create first gig, venues, and support invites. Text-only findings.",
+    accent: "#A855F7",
+    tags: ["Heuristic evaluation", "Part 3", "Onboarding"],
+    evaluatedUrl: "https://offaxistours.com/",
+    evaluationDate: "2026-08-26",
+  },
+  {
     slug: "mg-employees",
     title: "M&G Employees heuristic evaluation",
     client: "M&G / Prudential Workplace Pensions",
