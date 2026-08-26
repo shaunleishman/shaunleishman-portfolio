@@ -1130,36 +1130,211 @@ const findings: HeuristicFinding[] = [
     status: "new" as const,
     priority: { frequency: 3 as const, impact: 3 as const, effort: 2 as const },
   },
+  {
+    finding_id: "HE-046",
+    title: "Artists are told they keep 100 percent but settlement takes more",
+    screen_or_flow: "Homepage, onboarding, checkout, and settlement PDF",
+    user_task: "Trust what they will earn from ticket sales",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H01" as const],
+    description:
+      "Artists are told they keep ticket sales and pay no ticketing commission on the homepage, in onboarding, and at checkout. After the gig the sum still takes about 5 percent, 20p, and PRS. Ten £8 tickets become about £72.44 before venue or support. Trust breaks the first time someone opens the PDF.",
+    evidence: {
+      observed_where: "Public commission promise vs post-gig settlement PDF",
+      observed_behaviour:
+        "Zero commission messaging sits alongside platform percent, flat fees, and PRS on the statement.",
+      expected_behaviour:
+        "Match the story to the sum, or change the sum. Either name every cut in the public promise, or stop taking them off tickets. Do not leave both live.",
+    },
+    user_impact: "The first settlement feels like a broken promise.",
+    severity: "critical" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Align marketing and checkout copy with the real settlement rules, or remove those deductions from ticket payouts.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 5 as const, impact: 5 as const, effort: 4 as const },
+  },
+  {
+    finding_id: "HE-047",
+    title: "Donations go to the wrong person in the story",
+    screen_or_flow: "Checkout donation · settlement · admin reports",
+    user_task: "Understand who receives a checkout donation",
+    primary_heuristic: "H04" as const,
+    secondary_heuristics: ["H02" as const],
+    description:
+      "Checkout asks fans to donate to Off Axis. Settlement then puts that money in the artist pot. Admin reports treat the same donations as Off Axis income. Fan, artist, and admin each see a different owner.",
+    evidence: {
+      observed_where: "Checkout donation prompt, settlement allocation, admin reporting",
+      observed_behaviour:
+        "Donation owner changes between checkout, artist net, and admin income.",
+      expected_behaviour:
+        "Pick one owner and use it everywhere. If it is for Off Axis, keep it out of artist net. If it is for the artist, say so at checkout. Admin reports follow the same rule.",
+    },
+    user_impact: "Everyone reports a different truth for the same pound.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Define donation ownership once. Align checkout copy, settlement, and admin reporting to that rule.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 4 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-048",
+    title: "PRS and platform percent run on the wrong revenue pile",
+    screen_or_flow: "Settlement · fee calculation",
+    user_task: "Understand what platform and PRS fees apply to",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H06" as const],
+    description:
+      "PRS and platform percents run on tickets plus donations plus merch. Real PRS is usually ticket sales for the show. A t-shirt or a platform donation should not swell that line. A 5 percent commission on merch sits badly next to zero commissions.",
+    evidence: {
+      observed_where: "Settlement percent fee base",
+      observed_behaviour:
+        "Percent fees use a combined revenue total instead of ticket sales alone.",
+      expected_behaviour:
+        "Point percent fees at ticket money only, unless a fee is meant for something else. Name that something else in the breakdown.",
+    },
+    user_impact: "Artists cannot reconcile the PDF against what they think they sold.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Calculate percent fees on the correct base per line item. Label each fee and what it applies to.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 4 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-049",
+    title: "Support fee can deduct from an empty main support slot",
+    screen_or_flow: "Settlement · support fee",
+    user_task: "Receive payout when no main support played",
+    primary_heuristic: "H05" as const,
+    secondary_heuristics: ["H02" as const],
+    description:
+      "If the gig has a support fee set, it is deducted even when no main support artist actually played. A quiet night with the usual £75 fee can wipe the payout or go negative.",
+    evidence: {
+      observed_where: "Settlement support fee line",
+      observed_behaviour:
+        "Support fee applies from gig settings without checking a confirmed main support artist on the bill.",
+      expected_behaviour:
+        "Only deduct when a main support artist is confirmed on the bill. If the slot is empty, the fee stays at zero.",
+    },
+    user_impact: "Artists lose money for support that never happened.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Gate support fee deduction on a confirmed main support artist for that gig.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 5 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-050",
+    title: "Settled does not mean paid",
+    screen_or_flow: "Post-gig settlement status",
+    user_task: "Know whether money has actually left the platform",
+    primary_heuristic: "H01" as const,
+    secondary_heuristics: ["H02" as const],
+    description:
+      "After curfew the product writes a number, can email a PDF, and the dashboard can say Settled. Nothing in the product sends money. Status stays calculated.",
+    evidence: {
+      observed_where: "Artist dashboard and settlement PDF status",
+      observed_behaviour:
+        "Settled reads as money received. No payout action or paid date is shown.",
+      expected_behaviour:
+        "Call it a statement until someone marks it paid, or until a real payout exists. Show the date and amount as an estimate until then.",
+    },
+    user_impact: "Artists think they have been paid when they have only been calculated.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Rename Settled to Statement or Calculated until payout completes. Show paid date when money actually moves.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 4 as const, effort: 2 as const },
+  },
+  {
+    finding_id: "HE-051",
+    title: "Live settlement and the PDF use different sums",
+    screen_or_flow: "Artist dashboard vs settlement PDF",
+    user_task: "Trust one payout number",
+    primary_heuristic: "H04" as const,
+    secondary_heuristics: ["H01" as const, "H06" as const],
+    description:
+      "The stored settlement includes extra costs admin typed in. The live estimate does not. Gross revenue on the dashboard is labelled as ticket sales, but the number also includes donations and merch.",
+    evidence: {
+      observed_where: "Dashboard live estimate vs emailed PDF",
+      observed_behaviour:
+        "Two totals for the same gig. Revenue labels do not match what is inside the number.",
+      expected_behaviour:
+        "Use one sum in both places. Split revenue lines so tickets, merch, and donations each have their own row.",
+    },
+    user_impact: "Artists cannot tell which number is real.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Single calculation path for live view and PDF. Separate ticket, merch, and donation rows with honest labels.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 4 as const, impact: 4 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-052",
+    title: "Card fees are shown but not applied consistently",
+    screen_or_flow: "Settlement · Stripe and booking fees",
+    user_task: "See who pays card processing",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H04" as const],
+    description:
+      "Stripe cost is shown and not taken off the artist. Booking fees are meant to cover it. That can work on a simple ticket order. It is weaker when donations or merch make the card charge bigger than the booking-fee pot, and a mixed basket can hang another gig's card fee on this one.",
+    evidence: {
+      observed_where: "Settlement card fee lines and booking fee logic",
+      observed_behaviour:
+        "Card fees appear on the statement but do not follow a clear rule for who pays. Cross-gig attribution can bleed in.",
+      expected_behaviour:
+        "Decide who eats the card fee and write that into the sum. Attribute Stripe cost to this gig's lines only.",
+    },
+    user_impact: "The statement hides who actually paid processing.",
+    severity: "medium" as const,
+    confidence: "medium" as const,
+    recommendation:
+      "Define card fee ownership in the settlement model and attribute costs per gig line.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 3 as const, impact: 3 as const, effort: 4 as const },
+  },
 ];
 
 export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
   slug: "off-axis-onboarding",
   title: "Off Axis heuristic evaluation · Part 3",
-  client: "Off Axis · Signup, gigs, support, ticketing, and credits",
+  client: "Off Axis · Signup, gigs, support, ticketing, credits, and settlement",
   accent: "#A855F7",
   executiveSummary: {
     whatWasEvaluated:
-      "Part 3 of the Off Axis review. Artist signup, first gig, support invites, fan checkout, ticket inventory, and credits, reviewed from artist, admin, and buyer test paths.",
+      "Part 3 of the Off Axis review. Artist signup, first gig, support invites, fan checkout, ticket inventory, credits, and post-gig settlement, reviewed from artist, admin, and buyer test paths.",
     usabilityHealth:
-      "Guest checkout and inventory rules are the weak spots. Sold out is hidden until pay, one buyer can empty a small room, and pounds versus credits are blurred in the product story.",
+      "Settlement breaks trust fastest. Artists are promised 100 percent, then the PDF tells a different story with the wrong labels, the wrong fee base, and no actual payout behind Settled.",
     topIssues: [
+      "Artists are told they keep 100 percent but settlement takes more",
       "Sold out never appears on the gig or list",
-      "One buyer can put the whole room in their basket",
-      "Guest basket empties after refresh or a new tab",
-      "Basket and checkout disagree on ticket limits",
-      "Hard to get the ticket back after paying",
+      "Donations go to the wrong person in the story",
+      "Live settlement and the PDF use different sums",
+      "Settled does not mean paid",
     ],
     mainRisks: [
+      "Artists lose trust the first time they open a settlement PDF",
+      "Fans, artists, and admin report different owners for the same donation",
+      "Percent fees and support fees apply to the wrong money or empty slots",
       "Fans reach checkout for gigs that are already full",
-      "One person can block an entire small-capacity night",
-      "Early bird and hold logic consume tickets before payment lands",
-      "Artists lose or misunderstand credits because rules and language do not match live behaviour",
     ],
     recommendedNextSteps: [
-      "Show sold out and low availability before checkout",
-      "Enforce one per-person limit and matching caps in basket and checkout",
-      "Release checkout holds and early bird only on successful payment",
-      "Separate pounds and credits in UI and wire admin credit rules to the live job",
+      "Align the 100 percent promise with settlement rules or change the deductions",
+      "Unify donation ownership across checkout, settlement, and admin reports",
+      "Use one settlement calculation for live view and PDF with honest revenue rows",
+      "Rename Settled until payout exists and fix fee bases and support fee gates",
     ],
   },
   scope: {
@@ -1177,6 +1352,7 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
       "Recover a ticket after payment via email and Find Order",
       "Hit sold-out, per-person limits, holds, and early bird behaviour on small gigs",
       "Review credits versus ticket money in admin and artist-facing copy",
+      "Open post-gig settlement PDFs and compare live dashboard figures",
     ],
     heuristicsUsed: [
       "H01 Visibility of system status",
@@ -1198,7 +1374,7 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
       "Ticket sale count on My gigs updated correctly after purchase and is not listed as a finding",
       "A ticket confirmation email did arrive after purchase. The finding is about QR placement and receipt framing, not delivery failure",
     ],
-    timeSpent: "Around 7 hours across signup, first-gig, ticketing, and inventory review sessions",
+    timeSpent: "Around 8 hours across signup, ticketing, inventory, and settlement review sessions",
   },
   severitySummary: countSeverity(findings),
   themes: [
@@ -1238,19 +1414,22 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
       label: "Credits and product language",
       findingIds: ["HE-042", "HE-043", "HE-044", "HE-045"],
     },
+    {
+      label: "Settlement and payouts",
+      findingIds: ["HE-046", "HE-047", "HE-048", "HE-049", "HE-050", "HE-051", "HE-052"],
+    },
   ],
   findings,
   actionPlan: [
+    { priority: "fix_now", action: "Align the 100 percent promise with settlement deductions or remove those cuts" },
+    { priority: "fix_now", action: "Unify donation ownership across checkout, settlement, and admin reports" },
+    { priority: "fix_now", action: "Use one settlement calculation for live view and PDF with split revenue rows" },
     { priority: "fix_now", action: "Show sold out and low availability before checkout" },
-    { priority: "fix_now", action: "Enforce one per-person limit across gig, basket, and checkout" },
-    { priority: "fix_now", action: "Persist guest basket across refresh until payment or clear" },
-    { priority: "fix_now", action: "Put QR in the email body, simplify Find Order, and keep ticket recovery in the header" },
-    { priority: "fix_now", action: "Release checkout holds and early bird allocation when payment is abandoned" },
-    { priority: "fix_next", action: "Give Buy Tickets clear states for in basket, at cap, and sold out" },
-    { priority: "fix_next", action: "Wire admin credit rules to the live award and spend job" },
-    { priority: "fix_next", action: "Deduct support credits only after the gig completes" },
-    { priority: "fix_next", action: "Separate pounds and credits in primary product language" },
-    { priority: "monitor", action: "Remove legacy pay for a ticket with credits copy and flows" },
-    { priority: "validate", action: "Test small-capacity gigs for hold release and early bird fairness" },
+    { priority: "fix_next", action: "Rename Settled until payout exists and gate support fees on confirmed main support" },
+    { priority: "fix_next", action: "Calculate percent fees on the correct base and attribute card costs per gig" },
+    { priority: "fix_next", action: "Enforce one per-person limit across gig, basket, and checkout" },
+    { priority: "fix_next", action: "Persist guest basket across refresh until payment or clear" },
+    { priority: "monitor", action: "Wire admin credit rules to the live award and spend job" },
+    { priority: "validate", action: "Walk a ten-ticket settlement example with artists before changing public commission copy" },
   ],
 };

@@ -124,7 +124,7 @@ export const CASE_STUDY_ENTRIES: CaseStudyEntry[] = [
     title: "Off Axis heuristic evaluation · Part 3",
     client: "Off Axis · Artist signup, first gig, and support",
     description:
-      "Part 3. Expert UX review of artist signup, first gig, support invites, fan checkout, ticket inventory, and credits. Text-only findings.",
+      "Part 3. Expert UX review of artist signup, first gig, support, fan checkout, inventory, credits, and settlement. Text-only findings.",
     accent: "#A855F7",
     tags: ["Heuristic evaluation", "Part 3", "Onboarding"],
     evaluatedUrl: "https://offaxistours.com/",
