@@ -731,28 +731,28 @@ const findings: HeuristicFinding[] = [
   },
   {
     finding_id: "HE-030",
-    title: "Checkout personal details sit in a cramped side column",
-    screen_or_flow: "Checkout · details",
-    user_task: "Enter personal details to buy a ticket",
-    primary_heuristic: "H08" as const,
-    secondary_heuristics: ["H04" as const],
+    title: "Checkout layout hides what blocks Continue as Guest",
+    screen_or_flow: "Checkout · guest details",
+    user_task: "Complete checkout as a guest and pay",
+    primary_heuristic: "H01" as const,
+    secondary_heuristics: ["H08" as const, "H09" as const],
     description:
-      "On the first checkout step, personal details sit in a narrow column on the right and look badly cramped next to the order summary.",
+      "Personal details sit in a cramped side column beside the order summary. Continue as Guest stays grey until first name, email, matching confirm email, and terms are done, but that control sits far down the page under donation, discount, phone, and tick boxes. Mobile number is required yet does not grey the button, so people think they are ready and then get stopped.",
     evidence: {
-      observed_where: "Checkout details stepper",
+      observed_where: "Checkout details step and Order Total card",
       observed_behaviour:
-        "Personal details are squeezed beside the order summary instead of sitting in the same column underneath it.",
+        "Required fields and the pay action are split across a narrow column and a long scroll. Phone can block progress without showing on the button state. Terms and email sit below other blocks.",
       expected_behaviour:
-        "Order summary and personal details stack in one readable column on common desktop widths.",
+        "Name and email stack under the order summary in one readable column. The pay action stays in view. The UI names what is still missing, such as Agree to terms to continue. Phone is checked before they tap.",
     },
-    user_impact: "Forms feel hard to scan and fill, especially on smaller laptops.",
-    severity: "medium" as const,
+    user_impact: "Guest checkout feels like a hunt. People abandon when they cannot see why the button will not move.",
+    severity: "high" as const,
     confidence: "high" as const,
     recommendation:
-      "Move personal details under the order summary in one column. Avoid a cramped side panel for required fields.",
+      "Move personal details under the order summary. Keep Continue as Guest visible and explain missing requirements inline. Validate phone before the button enables.",
     owner: "Design" as const,
     status: "new" as const,
-    priority: { frequency: 4 as const, impact: 3 as const, effort: 2 as const },
+    priority: { frequency: 5 as const, impact: 4 as const, effort: 3 as const },
   },
   {
     finding_id: "HE-031",
@@ -781,29 +781,29 @@ const findings: HeuristicFinding[] = [
   },
   {
     finding_id: "HE-032",
-    title: "Ticket email looks like a receipt and hides the QR in a PDF",
-    screen_or_flow: "Checkout · confirmation email",
-    user_task: "Open the ticket from email ready for the door",
+    title: "Hard to get the ticket back after paying",
+    screen_or_flow: "Post-purchase · email and Find Order",
+    user_task: "Open the door ticket after the success screen is gone",
     primary_heuristic: "H06" as const,
-    secondary_heuristics: ["H02" as const, "H01" as const],
+    secondary_heuristics: ["H02" as const, "H01" as const, "H03" as const],
     description:
-      "A confirmation email does arrive, but the scannable ticket only lives in a PDF attachment. The message itself reads like a receipt, so people may not realise where the ticket is.",
+      "The confirmation email arrives but reads as a receipt. The scannable QR only lives in a PDF attachment, not the message body. Find Your Order sits behind Find Order in the footer and asks for two of four details including an order reference most people will not have kept. Once the success screen has gone, getting a ticket for the door is harder than it should be.",
     evidence: {
-      observed_where: "Post-purchase ticket confirmation email",
+      observed_where: "Confirmation email and Find Your Order",
       observed_behaviour:
-        "Email looks like payment confirmation. QR and ticket detail are only inside an attached PDF, not in the email body.",
+        "Email looks like payment confirmation with a PDF ticket attached. Find Order is footer-only. Lookup expects an order reference alongside email. No simple path back to tickets from the mail itself.",
       expected_behaviour:
-        "Email body leads with the QR code and clear ticket framing, with the PDF as a backup download, not the only place the ticket exists.",
+        "Email body leads with a large QR and is framed as your ticket, with a simple link to open tickets online. PDF is backup only. After a guest buy, Find Order stays in the header and email plus name is enough to recover the ticket.",
     },
     user_impact:
-      "Buyers treat the mail as a receipt, miss the attachment, and turn up without a scannable ticket.",
+      "Buyers treat the mail as a receipt, miss the attachment, or fail lookup and turn up without a scannable ticket.",
     severity: "high" as const,
     confidence: "high" as const,
     recommendation:
-      "Put the QR code in the email body as a must-have. Label the message as your ticket, not only a receipt. Keep the PDF as an optional download.",
+      "Put the QR in the email body and label the message as your ticket. Add a one-tap link to tickets in the mail. Keep Find Order in the header for guests and allow email plus name lookup.",
     owner: "Product" as const,
     status: "new" as const,
-    priority: { frequency: 5 as const, impact: 4 as const, effort: 3 as const },
+    priority: { frequency: 5 as const, impact: 5 as const, effort: 3 as const },
   },
   {
     finding_id: "HE-033",
@@ -830,6 +830,56 @@ const findings: HeuristicFinding[] = [
     status: "new" as const,
     priority: { frequency: 4 as const, impact: 3 as const, effort: 2 as const },
   },
+  {
+    finding_id: "HE-034",
+    title: "Guest basket empties after refresh or a new tab",
+    screen_or_flow: "Checkout · guest basket",
+    user_task: "Return to checkout with tickets still in the basket",
+    primary_heuristic: "H01" as const,
+    secondary_heuristics: ["H03" as const, "H09" as const],
+    description:
+      "As a guest, the basket clears after a refresh, opening a new tab, or coming back to checkout. The screen says Your Basket is Empty even though tickets were just added. Checkout cannot continue and the buyer must find the gig again.",
+    evidence: {
+      observed_where: "Checkout after refresh, new tab, or return visit",
+      observed_behaviour:
+        "Previously added tickets disappear. Empty basket blocks progress.",
+      expected_behaviour:
+        "Guest basket persists on that device until payment completes or the user clears it. Refresh restores the same tickets.",
+    },
+    user_impact: "Buyers lose their place mid-purchase and may not start again.",
+    severity: "critical" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Persist guest basket in session or local storage until checkout completes or the user empties it.",
+    owner: "Engineering" as const,
+    status: "new" as const,
+    priority: { frequency: 5 as const, impact: 5 as const, effort: 3 as const },
+  },
+  {
+    finding_id: "HE-035",
+    title: "Buy Tickets adds one ticket with no count on the gig page",
+    screen_or_flow: "Gig page · Buy Tickets",
+    user_task: "Choose how many tickets to buy before checkout",
+    primary_heuristic: "H02" as const,
+    secondary_heuristics: ["H04" as const, "H07" as const],
+    description:
+      "Buy Tickets on the gig page does not say what will happen. Browse Events uses Get Tickets for the same job. Tapping Buy Tickets adds one ticket and stays on the gig. There is no way to pick two or three upfront. A second tap can add another with no message. Quantity only appears later on a bottom bar or at checkout.",
+    evidence: {
+      observed_where: "Gig page primary ticket action",
+      observed_behaviour:
+        "Inconsistent labels between Buy Tickets and Get Tickets. No ticket count control on the gig. Repeat taps add tickets silently.",
+      expected_behaviour:
+        "Ticket count sits on the gig beside a clear action such as Add to basket. After add, confirm it is in the basket and offer Checkout. Plus and minus stay on checkout for changes.",
+    },
+    user_impact: "People buying two for a night out cannot set quantity where they decide to buy.",
+    severity: "high" as const,
+    confidence: "high" as const,
+    recommendation:
+      "Add quantity on the gig page. Align button labels. Confirm basket add and surface Checkout. Keep quantity controls at checkout too.",
+    owner: "Product" as const,
+    status: "new" as const,
+    priority: { frequency: 5 as const, impact: 4 as const, effort: 3 as const },
+  },
 ];
 
 export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
@@ -841,39 +891,40 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
     whatWasEvaluated:
       "Part 3 of the Off Axis review. Artist signup and pending approval, create first gig, admin venue setup, support invites, and fan ticketing checkout, reviewed on desktop from artist, super-admin, and buyer test paths.",
     usabilityHealth:
-      "Signup and first-gig creation still fight the artist, and checkout has trust gaps. The sharpest risks are street addresses on support lists, venue and create-gig failures, a stuck ticket total, and a receipt-like ticket email that hides the QR in a PDF.",
+      "Signup and first-gig creation still fight the artist. Guest checkout is fragile. The sharpest risks are basket loss on refresh, street addresses on support lists, and tickets that are hard to recover after payment.",
     topIssues: [
+      "Guest basket empties after refresh or a new tab",
+      "Hard to get the ticket back after paying",
       "Support candidate list exposes street addresses",
-      "No artist path to propose a missing venue",
-      "Create gig ends on Gig not found",
-      "Ticket quantity total sticks after counting down",
-      "Ticket email looks like a receipt and hides the QR in a PDF",
+      "Buy Tickets adds one ticket with no count on the gig page",
+      "Checkout layout hides what blocks Continue as Guest",
     ],
     mainRisks: [
+      "Guest buyers lose tickets mid-checkout and abandon",
+      "Buyers miss the door ticket because email and Find Order recovery are weak",
       "Personal addresses leak between artists",
-      "Artists cannot create a first gig when the venue list is incomplete",
-      "Buyers abandon checkout when the on-screen total is wrong",
-      "Buyers miss the door ticket because the email reads as a receipt with a PDF attachment",
+      "People cannot buy multiple tickets where they decide to buy",
     ],
     recommendedNextSteps: [
+      "Persist guest basket across refresh until payment or clear",
+      "Put QR in the email body, simplify Find Order, and keep ticket recovery in the header",
       "Remove street addresses from artist-to-artist discovery",
-      "Fix create-gig redirect, venue list refresh, and checkout total recalculation",
-      "Put the QR code in the ticket email body and frame the message as the ticket",
-      "Add artist venue propose with admin review and duplicate checks",
+      "Add ticket quantity on the gig page and fix checkout validation messaging",
     ],
   },
   scope: {
     evaluatedUrl: "https://offaxistours.com/",
     evaluationDate: "2026-08-26",
     evaluator: "Shaun Leishman",
-    userGroups: ["Artists", "Super admins", "Ticket buyers"],
+    userGroups: ["Artists", "Super admins", "Ticket buyers", "Guest checkout"],
     tasksEvaluated: [
       "Sign up as an artist and complete mandatory profile fields",
       "Wait through under-review gating and admin approval",
       "Add a venue as admin and create a first gig as an artist",
       "Publish a gig and invite support from another artist account",
       "Accept a support invitation and review filled slots",
-      "Buy a ticket with discount and Apple Pay, then open the ticket PDF",
+      "Buy tickets as a guest, including basket persistence and checkout",
+      "Recover a ticket after payment via email and Find Order",
     ],
     heuristicsUsed: [
       "H01 Visibility of system status",
@@ -895,7 +946,7 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
       "Ticket sale count on My gigs updated correctly after purchase and is not listed as a finding",
       "A ticket confirmation email did arrive after purchase. The finding is about QR placement and receipt framing, not delivery failure",
     ],
-    timeSpent: "Around 5 hours across signup, first-gig, and ticketing review sessions",
+    timeSpent: "Around 6 hours across signup, first-gig, and ticketing review sessions",
   },
   severitySummary: countSeverity(findings),
   themes: [
@@ -917,21 +968,29 @@ export const offAxisOnboardingEvaluation: HeuristicEvaluation = {
     },
     {
       label: "Ticketing and checkout",
-      findingIds: ["HE-029", "HE-030", "HE-031", "HE-032", "HE-033"],
+      findingIds: [
+        "HE-029",
+        "HE-030",
+        "HE-031",
+        "HE-032",
+        "HE-033",
+        "HE-034",
+        "HE-035",
+      ],
     },
   ],
   findings,
   actionPlan: [
+    { priority: "fix_now", action: "Persist guest basket across refresh until payment or clear" },
+    { priority: "fix_now", action: "Put QR in the email body, simplify Find Order, and keep ticket recovery in the header" },
     { priority: "fix_now", action: "Remove street addresses from support candidate discovery" },
-    { priority: "fix_now", action: "Fix create-gig redirect so new gigs do not land on Gig not found" },
-    { priority: "fix_now", action: "Make newly approved venues appear in artist create-gig lists by city" },
-    { priority: "fix_now", action: "Recalculate checkout totals when quantity changes" },
-    { priority: "fix_now", action: "Put the QR code in the ticket email body and frame the mail as the ticket, not only a receipt" },
+    { priority: "fix_now", action: "Add ticket quantity on the gig page and align Buy Tickets with Get Tickets" },
+    { priority: "fix_now", action: "Fix checkout Continue as Guest validation and explain what is still missing" },
+    { priority: "fix_next", action: "Fix create-gig redirect and venue list refresh for artists" },
+    { priority: "fix_next", action: "Recalculate checkout totals when quantity changes" },
     { priority: "fix_next", action: "Add artist venue propose with admin review and duplicate prevention" },
-    { priority: "fix_next", action: "Shorten signup fields and make avatar optional" },
-    { priority: "fix_next", action: "Allow limited access while accounts are pending approval" },
-    { priority: "fix_next", action: "Lead ticket PDFs with a large QR code and uncramp checkout details" },
+    { priority: "fix_next", action: "Lead ticket PDFs with a large QR code" },
     { priority: "monitor", action: "Rewrite accessibility from Yes or No into plain venue facility copy" },
-    { priority: "validate", action: "Test support invite confirm and decline reasons with a small artist set" },
+    { priority: "validate", action: "Test guest basket persistence and ticket recovery on mobile" },
   ],
 };
