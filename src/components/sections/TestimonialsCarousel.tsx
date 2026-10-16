@@ -57,6 +57,16 @@ function TestimonialSlide({
   );
 }
 
+/** Controls that already use arrow keys. The carousel must not move as well. */
+function ownsArrowKeys(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  const tag = target.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  const role = target.getAttribute("role");
+  return role === "slider" || role === "tab" || role === "textbox" || role === "combobox";
+}
+
 export function TestimonialsCarousel() {
   const [active, setActive] = useState(0);
   const touchStartX = useRef<number | null>(null);
@@ -74,6 +84,7 @@ export function TestimonialsCarousel() {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || ownsArrowKeys(event.target)) return;
       if (event.key === "ArrowLeft") goPrev();
       if (event.key === "ArrowRight") goNext();
     };
