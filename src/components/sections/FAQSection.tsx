@@ -16,7 +16,6 @@ export function FAQSection() {
           label={<SectionLabel>FAQ</SectionLabel>}
           title={
             <h2 id="faq-heading" className="text-h2 font-semibold mb-12">
-              <span className="sr-only">Frequently asked </span>
               Frequently asked questions
             </h2>
           }
