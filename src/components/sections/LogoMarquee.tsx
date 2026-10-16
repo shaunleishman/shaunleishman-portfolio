@@ -21,6 +21,12 @@ const LOGO_GAP = 96;
 const AUTO_SCROLL_PX_PER_SEC = 40;
 const MAX_VELOCITY_PX_PER_SEC = 1200;
 const VELOCITY_RETURN_MS = 1800;
+/**
+ * Cap the clock step so a paused tab cannot fast-forward the strip.
+ * requestAnimationFrame stops in the background; the next timestamp would
+ * otherwise cover the whole hidden interval and jump the logos.
+ */
+const MAX_FRAME_MS = 48;
 
 type DragState = {
   active: boolean;
@@ -95,9 +101,16 @@ export function LogoMarquee() {
   const lastTimeRef = useRef<number | null>(null);
   const rafRef = useRef<number>(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [offset, setOffset] = useState(0);
 
   const tripled = [...companies, ...companies, ...companies];
+
+  // Write the translate straight to the track. A React state update here would
+  // reconcile every logo on each frame without changing the motion.
+  const applyOffset = useCallback((value: number) => {
+    offsetRef.current = value;
+    const track = trackRef.current;
+    if (track) track.style.transform = `translateX(${value}px)`;
+  }, []);
 
   const measureSetWidth = useCallback(() => {
     const track = trackRef.current;
@@ -121,16 +134,12 @@ export function LogoMarquee() {
   }, [measureSetWidth]);
 
   useEffect(() => {
-    offsetRef.current = offset;
-  }, [offset]);
-
-  useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reducedMotion) return;
 
     const tick = (time: number) => {
       if (lastTimeRef.current !== null && !dragRef.current.active) {
-        const delta = time - lastTimeRef.current;
+        const delta = Math.min(MAX_FRAME_MS, time - lastTimeRef.current);
         const deltaSec = delta / 1000;
 
         let next = offsetRef.current + velocityRef.current * deltaSec;
@@ -141,8 +150,7 @@ export function LogoMarquee() {
         const returnStrength = 1 - Math.exp(-delta / VELOCITY_RETURN_MS);
         velocityRef.current += (baseline - velocityRef.current) * returnStrength;
 
-        offsetRef.current = next;
-        setOffset(next);
+        applyOffset(next);
       }
       lastTimeRef.current = time;
       rafRef.current = requestAnimationFrame(tick);
@@ -150,7 +158,7 @@ export function LogoMarquee() {
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, []);
+  }, [applyOffset]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const now = performance.now();
@@ -163,7 +171,11 @@ export function LogoMarquee() {
       velocity: velocityRef.current,
     };
     setIsDragging(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // The pointer can already be inactive. Moves over the strip still drag.
+    }
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -186,8 +198,7 @@ export function LogoMarquee() {
     const setWidth = setWidthRef.current;
     const next = wrapOffset(dragRef.current.startOffset + dragDelta, setWidth);
 
-    offsetRef.current = next;
-    setOffset(next);
+    applyOffset(next);
   };
 
   const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -226,7 +237,7 @@ export function LogoMarquee() {
             "flex w-max items-center px-12 md:px-16",
             isDragging ? "cursor-grabbing" : "cursor-grab",
           )}
-          style={{ gap: LOGO_GAP, minHeight: LOGO_ROW_HEIGHT, transform: `translateX(${offset}px)` }}
+          style={{ gap: LOGO_GAP, minHeight: LOGO_ROW_HEIGHT }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
