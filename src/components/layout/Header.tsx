@@ -14,6 +14,10 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+function isNavActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 function MobileMenuIcon({ open }: { open: boolean }) {
   return (
     <span className="relative flex h-6 w-6 flex-col items-center justify-center" aria-hidden="true">
@@ -50,26 +54,61 @@ export function Header() {
     pathname.startsWith("/blog") ||
     pathname === "/contact";
 
+  // Close during render so a navigation cannot leave the menu open for a frame.
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
     setMenuOpen(false);
   }
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [menuOpen]);
+    if (!menuOpen) return;
 
-  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const previous = {
+      htmlOverflow: html.style.overflow,
+      bodyOverflow: body.style.overflow,
+    };
+    const scrollbarGap = window.innerWidth - html.clientWidth;
+
+    body.style.overflow = "hidden";
+    // Overlay scrollbars have no gap, so locking the root does not shift the page.
+    // Classic scrollbars stay visible; the wheel listener blocks the background instead.
+    if (scrollbarGap === 0) html.style.overflow = "hidden";
+
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        return;
+      }
+
+      const scrollKeys = [" ", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"];
+      if (!scrollKeys.includes(event.key)) return;
+      const target = event.target;
+      if (target instanceof Element && target.closest("#mobile-menu, button, a, input, textarea, select")) {
+        return;
+      }
+      event.preventDefault();
+    };
+
+    const preventBackgroundWheel = (event: WheelEvent) => {
+      const menu = document.getElementById("mobile-menu");
+      if (menu && event.target instanceof Node && menu.contains(event.target)) return;
+      event.preventDefault();
     };
 
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+    window.addEventListener("wheel", preventBackgroundWheel, { passive: false });
+
+    return () => {
+      body.style.overflow = previous.bodyOverflow;
+      html.style.overflow = previous.htmlOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("wheel", preventBackgroundWheel);
+    };
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <header
@@ -81,36 +120,33 @@ export function Header() {
       )}
     >
       <div className="container-site flex h-16 items-center justify-between lg:h-[4.5rem]">
-        <SiteLogoLink ariaCurrent={pathname === "/"} className="text-body" />
+        <SiteLogoLink ariaCurrent={pathname === "/"} className="text-body" onClick={closeMenu} />
 
         <nav aria-label="Main navigation" className="hidden lg:block">
           <ul className="flex items-center gap-8">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={cn(
-                    "relative text-body-sm font-medium transition-colors hover:opacity-80 min-h-[44px] inline-flex items-center",
-                    pathname === link.href || pathname.startsWith(`${link.href}/`)
-                      ? "opacity-100"
-                      : "opacity-70",
-                  )}
-                  aria-current={
-                    pathname === link.href || pathname.startsWith(`${link.href}/`)
-                      ? "page"
-                      : undefined
-                  }
-                >
-                  {link.label}
-                  {(pathname === link.href || pathname.startsWith(`${link.href}/`)) && (
-                    <span
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full bg-[var(--color-accent)] motion-safe:animate-[scale-in_0.2s_ease-out]"
-                      aria-hidden
-                    />
-                  )}
-                </Link>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const current = isNavActive(pathname, link.href);
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className={cn(
+                      "relative text-body-sm font-medium transition-colors hover:opacity-80 min-h-[44px] inline-flex items-center",
+                      current ? "opacity-100" : "opacity-70",
+                    )}
+                    aria-current={current ? "page" : undefined}
+                  >
+                    {link.label}
+                    {current && (
+                      <span
+                        className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full bg-[var(--color-accent)] motion-safe:animate-[scale-in_0.2s_ease-out]"
+                        aria-hidden
+                      />
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
@@ -146,7 +182,7 @@ export function Header() {
             "fixed inset-0 top-16 z-40 bg-black/50 motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out",
             menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
           )}
-          onClick={() => setMenuOpen(false)}
+          onClick={closeMenu}
         />
 
         <nav
@@ -154,7 +190,7 @@ export function Header() {
           aria-label="Mobile navigation"
           inert={menuOpen ? undefined : true}
           className={cn(
-            "fixed inset-x-0 top-16 z-50 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b shadow-lg motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
+            "fixed inset-x-0 top-16 z-50 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-none border-b shadow-lg motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
             menuOpen
               ? "pointer-events-auto translate-y-0 opacity-100"
               : "pointer-events-none -translate-y-2 opacity-0",
@@ -164,26 +200,29 @@ export function Header() {
           )}
         >
           <ul className="container-site flex flex-col py-4">
-            {navLinks.map((link, index) => (
-              <li
-                key={link.href}
-                className={cn(
-                  "motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
-                  menuOpen ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0",
-                )}
-                style={menuOpen ? { transitionDelay: `${80 + index * 40}ms` } : undefined}
-              >
-                <Link
-                  href={link.href}
-                  tabIndex={menuOpen ? 0 : -1}
-                  className="block py-3 text-body font-medium min-h-[44px]"
-                  aria-current={pathname === link.href ? "page" : undefined}
-                  onClick={() => setMenuOpen(false)}
+            {navLinks.map((link, index) => {
+              const current = isNavActive(pathname, link.href);
+              return (
+                <li
+                  key={link.href}
+                  className={cn(
+                    "motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
+                    menuOpen ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0",
+                  )}
+                  style={menuOpen ? { transitionDelay: `${80 + index * 40}ms` } : undefined}
                 >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+                  <Link
+                    href={link.href}
+                    tabIndex={menuOpen ? 0 : -1}
+                    className="block py-3 text-body font-medium min-h-[44px]"
+                    aria-current={current ? "page" : undefined}
+                    onClick={closeMenu}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
             <li
               className={cn(
                 "pt-2 motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
@@ -191,7 +230,12 @@ export function Header() {
               )}
               style={menuOpen ? { transitionDelay: `${80 + navLinks.length * 40}ms` } : undefined}
             >
-              <Button href="/contact" variant={isDarkHero ? "inverse" : "primary"}>
+              <Button
+                href="/contact"
+                variant={isDarkHero ? "inverse" : "primary"}
+                tabIndex={menuOpen ? 0 : -1}
+                onClick={closeMenu}
+              >
                 Let&apos;s talk
               </Button>
             </li>

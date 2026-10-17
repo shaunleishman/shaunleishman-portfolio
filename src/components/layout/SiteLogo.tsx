@@ -38,6 +38,7 @@ export function SiteLogo({ className, asImage = false, variant = "default" }: Si
 type SiteLogoLinkProps = SiteLogoProps & {
   href?: string;
   ariaCurrent?: boolean;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
 export function SiteLogoLink({
@@ -46,6 +47,7 @@ export function SiteLogoLink({
   variant,
   href = "/",
   ariaCurrent,
+  onClick,
 }: SiteLogoLinkProps) {
   return (
     <Link
@@ -54,6 +56,7 @@ export function SiteLogoLink({
       className={cn("inline-flex shrink-0 items-center min-h-[44px] focus-visible:outline-offset-4", className)}
       aria-current={ariaCurrent ? "page" : undefined}
       aria-label={`${siteConfig.brand} home`}
+      onClick={onClick}
     >
       <SiteLogo asImage={asImage} variant={variant} />
     </Link>

@@ -1,47 +1,63 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
-/** Thin progress bar — shows reading position on long pages */
+/**
+ * Reading position along the page.
+ * Scale (not width) avoids layout work while scrolling, and the value is
+ * clamped so rubber-band overscroll cannot draw the bar past the track.
+ * Scroll listeners stay mounted across navigations; the bar is corrected
+ * before paint when the route changes.
+ */
+const useClientLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
+
+function readScrollRatio() {
+  const scrolling = document.scrollingElement ?? document.documentElement;
+  const viewport = scrolling.clientHeight;
+  const height = Math.max(scrolling.scrollHeight, document.body?.scrollHeight ?? 0);
+  const scrollable = height - viewport;
+  if (scrollable <= 0) return 0;
+  return Math.min(1, Math.max(0, scrolling.scrollTop / scrollable));
+}
+
+function paintScrollProgress(node: HTMLDivElement | null) {
+  if (!node) return;
+  node.style.transform = `scaleX(${readScrollRatio()})`;
+}
+
 export function ScrollProgress() {
   const pathname = usePathname();
   const barRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
 
+  useClientLayoutEffect(() => {
+    paintScrollProgress(barRef.current);
+  }, [pathname]);
+
   useEffect(() => {
-    function updateProgress() {
-      rafRef.current = null;
-      const node = barRef.current;
-      if (!node) return;
-
-      const doc = document.documentElement;
-      const scrollable = doc.scrollHeight - doc.clientHeight;
-      const ratio = scrollable > 0 ? doc.scrollTop / scrollable : 0;
-      node.style.transform = `scaleX(${ratio})`;
+    function schedule() {
+      if (rafRef.current !== null) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
+        paintScrollProgress(barRef.current);
+      });
     }
 
-    function scheduleUpdate() {
-      if (rafRef.current === null) {
-        rafRef.current = requestAnimationFrame(updateProgress);
-      }
-    }
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
 
-    scheduleUpdate();
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleUpdate, { passive: true });
-
-    const resizeObserver = new ResizeObserver(scheduleUpdate);
+    const resizeObserver = new ResizeObserver(schedule);
     resizeObserver.observe(document.documentElement);
     resizeObserver.observe(document.body);
 
     return () => {
-      window.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", scheduleUpdate);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
       resizeObserver.disconnect();
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
-  }, [pathname]);
+  }, []);
 
   return (
     <div
@@ -50,7 +66,7 @@ export function ScrollProgress() {
     >
       <div
         ref={barRef}
-        className="h-full w-full origin-left bg-[var(--color-accent)] will-change-transform motion-reduce:transition-none"
+        className="h-full w-full origin-left bg-[var(--color-accent)] will-change-transform"
         style={{ transform: "scaleX(0)" }}
       />
     </div>

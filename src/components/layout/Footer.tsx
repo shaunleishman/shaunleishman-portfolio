@@ -72,6 +72,7 @@ export function Footer() {
                       >
                         {icon}
                         {link.label}
+                        <span className="sr-only"> (opens in a new tab)</span>
                       </a>
                     ) : (
                       <Link href={link.href} className={className}>
@@ -97,10 +98,11 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between gap-4 text-body-sm text-neutral-500">
           <p>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
-          <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          {/* Div, not p: a button cannot be a descendant of a paragraph. */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span>Built for accessibility and performance.</span>
             <CookieSettingsButton />
-          </p>
+          </div>
         </div>
       </div>
     </footer>

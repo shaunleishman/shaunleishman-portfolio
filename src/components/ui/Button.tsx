@@ -18,6 +18,8 @@ type ButtonProps = {
   variant?: keyof typeof variants;
   className?: string;
   external?: boolean;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+  tabIndex?: number;
 };
 
 export function Button({
@@ -26,6 +28,8 @@ export function Button({
   variant = "primary",
   className,
   external,
+  onClick,
+  tabIndex,
 }: ButtonProps) {
   const classes = cn(
     "inline-flex items-center justify-center rounded-full px-6 py-3 text-body-sm font-medium transition-colors duration-200 min-h-[44px] min-w-[44px]",
@@ -40,6 +44,8 @@ export function Button({
         className={classes}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={onClick}
+        tabIndex={tabIndex}
       >
         {children}
       </a>
@@ -47,7 +53,7 @@ export function Button({
   }
 
   return (
-    <Link href={href} className={classes}>
+    <Link href={href} className={classes} onClick={onClick} tabIndex={tabIndex}>
       {children}
     </Link>
   );
