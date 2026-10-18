@@ -48,10 +48,11 @@ export function Reveal({
     const el = ref.current;
     if (!el) return;
 
+    let timeoutId = 0;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          window.setTimeout(() => setVisible(true), delay);
+          timeoutId = window.setTimeout(() => setVisible(true), delay);
           observer.disconnect();
         }
       },
@@ -59,14 +60,17 @@ export function Reveal({
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(timeoutId);
+    };
   }, [delay, immediate]);
 
   return (
     <div
       ref={ref}
       className={cn(
-        "motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-out",
+        "reveal motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-out",
         "print:opacity-100 print:translate-none print:scale-100",
         visible ? visibleByVariant[variant] : hiddenByVariant[variant],
         className,

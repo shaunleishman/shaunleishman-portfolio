@@ -1,60 +1,55 @@
-"use client";
-
-import Image from "next/image";
-import { useState } from "react";
 import type { Project } from "@/content/projects";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/utils";
 
 type ProjectThumbnailProps = {
   project: Project;
   priority?: boolean;
   className?: string;
+  /** Passed through to next/image for still thumbnails. */
+  sizes?: string;
 };
 
-export function ProjectThumbnail({ project, priority, className }: ProjectThumbnailProps) {
-  const isGif = project.thumbnail.endsWith(".gif");
+function stillSrc(thumbnail: string): string {
+  return thumbnail.replace(/\.gif$/i, "-still.jpg");
+}
 
-  if (isGif) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
+/**
+ * GIF thumbnails stay on a plain img. next/image does not keep GIF animation.
+ * Reduced-motion visitors get the first frame instead, and skip the GIF download.
+ */
+function GifThumbnail({ project, priority, className }: ProjectThumbnailProps) {
+  return (
+    <picture className="absolute inset-0 block h-full w-full">
+      <source srcSet={stillSrc(project.thumbnail)} type="image/jpeg" media="(prefers-reduced-motion: reduce)" />
       <img
         src={project.thumbnail}
         alt=""
         loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : "auto"}
         decoding="async"
-        className={cn(
-          "absolute inset-0 h-full w-full object-cover object-center",
-          className,
-        )}
+        className={cn("h-full w-full object-cover object-center", className)}
       />
-    );
-  }
-
-  return (
-    <StaticThumbnail project={project} priority={priority} className={className} />
+    </picture>
   );
 }
 
-function StaticThumbnail({ project, priority, className }: ProjectThumbnailProps) {
-  const [loaded, setLoaded] = useState(false);
+export async function ProjectThumbnail({
+  project,
+  priority,
+  className,
+  sizes,
+}: ProjectThumbnailProps) {
+  if (project.thumbnail.endsWith(".gif")) {
+    return <GifThumbnail project={project} priority={priority} className={className} />;
+  }
 
+  const { StaticProjectThumbnail } = await import("@/components/projects/StaticProjectThumbnail");
   return (
-    <>
-      {!loaded && <Skeleton className="absolute inset-0 rounded-none" aria-hidden />}
-      <Image
-        src={project.thumbnail}
-        alt=""
-        fill
-        priority={priority}
-        onLoad={() => setLoaded(true)}
-        className={cn(
-          "object-cover object-center transition-opacity duration-300",
-          loaded ? "opacity-100" : "opacity-0",
-          className,
-        )}
-        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px"
-      />
-    </>
+    <StaticProjectThumbnail
+      project={project}
+      priority={priority}
+      className={className}
+      sizes={sizes}
+    />
   );
 }

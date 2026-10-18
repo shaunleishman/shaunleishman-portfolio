@@ -1,6 +1,7 @@
 "use client";
 
 import { Reveal } from "@/components/ui/Reveal";
+import { sectionDomId } from "@/lib/section-id";
 
 type CaseStudyBlockProps = {
   title: string;
@@ -9,7 +10,7 @@ type CaseStudyBlockProps = {
 };
 
 export function CaseStudyBlock({ title, children, delay = 0 }: CaseStudyBlockProps) {
-  const id = title.replace(/\s/g, "-").toLowerCase();
+  const id = sectionDomId(title);
 
   return (
     <Reveal delay={delay} variant="up">

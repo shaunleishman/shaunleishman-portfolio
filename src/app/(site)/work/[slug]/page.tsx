@@ -1,39 +1,48 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProject, projects } from "@/content/projects";
+import { getProject, projects, type Project } from "@/content/projects";
 import { arbncoCaseStudyMeta } from "@/content/arbnco-case-study";
 import { nhsCaseStudyMeta } from "@/content/nhs-case-study";
 import { omronCaseStudyMeta } from "@/content/omron-case-study";
-import { getIntroVisualBlocks } from "@/content/project-images";
+import { excerpt } from "@/lib/excerpt";
+import { isRichCaseStudySlug, RichCaseStudyBody } from "@/components/projects/RichCaseStudyBody";
 import { TagList } from "@/components/ui/Tag";
-import { Button } from "@/components/ui/Button";
-import { ProjectThumbnail } from "@/components/projects/ProjectThumbnail";
-import { CaseStudyVisualBlocks } from "@/components/projects/CaseStudyVisualBlock";
-import { CaseStudyListWithVisuals } from "@/components/projects/CaseStudyListWithVisuals";
-import { RichCaseStudyBody } from "@/components/projects/RichCaseStudyBody";
-import { CaseStudyBlock } from "@/components/projects/CaseStudyBlock";
-import { CaseStudyTextSection } from "@/components/projects/CaseStudyTextSection";
 import { CTASection } from "@/components/sections/CTASection";
 import { PageHero } from "@/components/layout/PageHero";
-import { Reveal } from "@/components/ui/Reveal";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
+  return projects.map((project) => ({ slug: project.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) return { title: "Project not found" };
+
+  const description = excerpt(project.overview, 160);
+  const path = `/work/${project.slug}`;
+
   return {
     title: project.title,
-    description: project.overview.slice(0, 160),
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title: project.title,
+      description,
+      url: path,
+      type: "website",
+    },
   };
+}
+
+async function SimpleCaseStudySlot({ project }: { project: Project }) {
+  const { SimpleCaseStudyBody } = await import("@/components/projects/SimpleCaseStudyBody");
+  return <SimpleCaseStudyBody project={project} />;
 }
 
 export default async function CaseStudyPage({ params }: Props) {
@@ -44,7 +53,7 @@ export default async function CaseStudyPage({ params }: Props) {
   const isArbnco = slug === "arbnco-synthetic-ai-data";
   const isNhs = slug === "nhs-111-waiting-times";
   const isOmron = slug === "omron-patient-monitoring";
-  const isRichCaseStudy = isArbnco || isNhs || isOmron;
+  const isRichCaseStudy = isRichCaseStudySlug(slug);
 
   return (
     <>
@@ -91,113 +100,30 @@ export default async function CaseStudyPage({ params }: Props) {
           )}
           <TagList tags={project.tags} aria-label="Project tags" />
           {!isRichCaseStudy && (
-            <CaseStudyVisualBlocks
-              blocks={getIntroVisualBlocks(slug, "overview")}
-              className="mt-10"
-            />
+            <CaseStudyVisualBlocksSlot slug={slug} />
           )}
         </PageHero>
       </section>
 
-      {!isRichCaseStudy && (
-        <Reveal variant="fade">
-          <div
-            className="relative aspect-[16/10] max-h-80 md:max-h-96 w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-neutral-100"
-            role="img"
-            aria-label={`${project.title} project thumbnail`}
-          >
-            <ProjectThumbnail project={project} priority />
-          </div>
-        </Reveal>
-      )}
-
-      <article className="section-padding bg-white">
-        <div className={`container-site ${isRichCaseStudy ? "max-w-4xl" : "max-w-3xl"}`}>
-          {!isRichCaseStudy && (
-            <Reveal delay={60}>
-              <dl className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 pb-16 border-b border-[var(--color-border)]">
-                <div>
-                  <dt className="text-label text-[var(--color-text-muted)] mb-1">Project duration</dt>
-                  <dd className="text-body font-semibold">{project.duration}</dd>
-                </div>
-                {project.metrics.map((m) => (
-                  <div key={m.label}>
-                    <dt className="text-h4 font-semibold tabular-nums text-[var(--color-text-primary)] mb-1">
-                      {m.value}
-                    </dt>
-                    <dd className="text-body-sm text-[var(--color-text-muted)]">{m.label}</dd>
-                  </div>
-                ))}
-              </dl>
-            </Reveal>
-          )}
-
-          {isRichCaseStudy ? (
+      {isRichCaseStudy ? (
+        <article className="section-padding bg-white">
+          <div className="container-site max-w-4xl">
             <RichCaseStudyBody slug={slug} project={project} />
-          ) : (
-            <>
-              <CaseStudyTextSection title="What was the problem?" slug={slug} section="problem">
-                <p>{project.problem}</p>
-              </CaseStudyTextSection>
-
-              <CaseStudyBlock title="What was my role?" delay={40}>
-                <ul className="list-disc pl-5 space-y-2">
-                  {project.role.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </CaseStudyBlock>
-
-              <CaseStudyBlock title="What was our approach?" delay={40}>
-                <CaseStudyListWithVisuals slug={slug} section="approach" items={project.approach} />
-                <h3 className="text-h4 font-semibold mb-3 mt-8">Why this method?</h3>
-                <ul className="list-disc pl-5 space-y-2">
-                  {project.approachWhy.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </CaseStudyBlock>
-
-              <CaseStudyBlock title="Key findings" delay={40}>
-                <CaseStudyListWithVisuals slug={slug} section="findings" items={project.keyFindings} />
-              </CaseStudyBlock>
-
-              <CaseStudyBlock title="What did I learn?" delay={40}>
-                <ul className="space-y-4">
-                  {project.learnings.map((item) => (
-                    <li key={item} className="text-[var(--color-text-secondary)]">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </CaseStudyBlock>
-
-              <CaseStudyBlock title="Limitations" delay={40}>
-                <CaseStudyVisualBlocks
-                  blocks={getIntroVisualBlocks(slug, "limitations")}
-                  className="mb-8"
-                />
-                <ul className="list-disc pl-5 space-y-2">
-                  {project.limitations.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </CaseStudyBlock>
-
-              <Reveal delay={60}>
-                <div className="mt-16 flex flex-col gap-4 border-t border-[var(--color-border)] pt-12 sm:flex-row">
-                  <Button href="/work">← All projects</Button>
-                  <Button href="/contact" variant="secondary">
-                    Discuss this project
-                  </Button>
-                </div>
-              </Reveal>
-            </>
-          )}
-        </div>
-      </article>
+          </div>
+        </article>
+      ) : (
+        <SimpleCaseStudySlot project={project} />
+      )}
 
       <CTASection dark={false} />
     </>
+  );
+}
+
+async function CaseStudyVisualBlocksSlot({ slug }: { slug: string }) {
+  const { getIntroVisualBlocks } = await import("@/content/project-images");
+  const { CaseStudyVisualBlocks } = await import("@/components/projects/CaseStudyVisualBlock");
+  return (
+    <CaseStudyVisualBlocks blocks={getIntroVisualBlocks(slug, "overview")} className="mt-10" />
   );
 }

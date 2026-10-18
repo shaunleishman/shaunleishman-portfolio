@@ -544,6 +544,14 @@
   }
 }
 
+/* Reveal starts hidden until JS runs. Without scripting, show the content. */
+@media (scripting: none) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 @keyframes marquee {
   from {
     transform: translateX(0);

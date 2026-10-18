@@ -3,6 +3,7 @@
 import { getIntroVisualBlocks } from "@/content/project-images";
 import { CaseStudyVisualBlocks } from "@/components/projects/CaseStudyVisualBlock";
 import { Reveal } from "@/components/ui/Reveal";
+import { sectionDomId } from "@/lib/section-id";
 
 type CaseStudyTextSectionProps = {
   title: string;
@@ -19,7 +20,7 @@ export function CaseStudyTextSection({
   children,
   delay = 0,
 }: CaseStudyTextSectionProps) {
-  const id = title.replace(/\s/g, "-").toLowerCase();
+  const id = sectionDomId(title);
   const introVisuals = getIntroVisualBlocks(slug, section);
 
   return (

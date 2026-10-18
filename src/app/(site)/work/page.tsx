@@ -1,14 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { projects } from "@/content/projects";
+import { excerpt } from "@/lib/excerpt";
 import { TagList } from "@/components/ui/Tag";
 import { ProjectThumbnail } from "@/components/projects/ProjectThumbnail";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 
+const description =
+  "UX/UI design case studies covering research, co-design, and usability testing.";
+
 export const metadata: Metadata = {
   title: "Work",
-  description: "UX/UI design case studies covering research, co-design, and usability testing.",
+  description,
+  alternates: { canonical: "/work" },
+  openGraph: {
+    title: "Work",
+    description,
+    url: "/work",
+    type: "website",
+  },
 };
 
 export default function WorkPage() {
@@ -45,11 +56,13 @@ export default function WorkPage() {
                 <article className="group flex flex-col">
                   <Link
                     href={`/work/${project.slug}`}
-                    className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-[var(--color-border)] bg-neutral-100 mb-5 focus-visible:outline-offset-4 group block motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:scale-[1.02]"
+                    className="group mb-5 block rounded-2xl focus-visible:outline-offset-4 motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:scale-[1.02]"
                     aria-label={`View case study: ${project.title}`}
                   >
-                    <ProjectThumbnail project={project} />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-neutral-100">
+                      <ProjectThumbnail project={project} priority={index === 0} />
+                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
+                    </div>
                   </Link>
                   <h2 className="text-h4 font-semibold mb-2">
                     <Link
@@ -60,7 +73,7 @@ export default function WorkPage() {
                     </Link>
                   </h2>
                   <p className="mb-4 text-body-sm text-[var(--color-text-secondary)]">
-                    {project.overview.slice(0, 120)}…
+                    {excerpt(project.overview, 120)}
                   </p>
                   <TagList tags={project.tags} aria-label="Project tags" />
                 </article>
