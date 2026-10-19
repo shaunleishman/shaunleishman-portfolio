@@ -11,6 +11,11 @@ type AdminShellProps = {
   fullWidth?: boolean;
   /** Hide page title bar (e.g. embedded prototypes with their own chrome). */
   hideHeader?: boolean;
+  /**
+   * When false, the title bar uses plain text so a nested report can keep
+   * the only h1. Defaults to true. Does not change the title styling.
+   */
+  titleAsHeading?: boolean;
 };
 
 function AdminShellLoading() {

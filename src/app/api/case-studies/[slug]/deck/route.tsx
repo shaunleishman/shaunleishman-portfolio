@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { CaseStudyDeckDocument } from "@/components/case-studies/CaseStudyDeckDocument";
 import { getEvaluationBySlug } from "@/content/heuristic-evaluations";
+import { caseStudyDownloadFilename } from "@/lib/case-study-report";
 
 export const runtime = "nodejs";
 
@@ -22,7 +23,7 @@ export async function GET(
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${slug}-summary-deck.pdf"`,
+        "Content-Disposition": `attachment; filename="${caseStudyDownloadFilename(slug, "deck")}"`,
         "Cache-Control": "private, no-cache",
       },
     });

@@ -1,14 +1,36 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { CopyShareLinkButton } from "@/components/case-studies/CopyShareLinkButton";
+import { siteConfig } from "@/content/projects";
 import { CASE_STUDY_ENTRIES } from "@/lib/admin-nav";
-import { useAdminBase } from "@/hooks/useAdminBase";
+import { getMetricsPath } from "@/lib/metrics-config";
+
+const galleryTitle = "Case studies";
+const galleryDescription =
+  "Heuristic evaluations and UX audit reports. Private, and not linked from the public site.";
+
+export const metadata: Metadata = {
+  // The metrics layout sets a string title, which stops the root title template
+  // from applying to this page. Set the full tab title directly.
+  title: { absolute: `${galleryTitle} | ${siteConfig.name}` },
+  description: galleryDescription,
+  robots: { index: false, follow: false },
+  openGraph: {
+    title: galleryTitle,
+    description: galleryDescription,
+    siteName: siteConfig.name,
+  },
+  twitter: {
+    card: "summary",
+    title: galleryTitle,
+    description: galleryDescription,
+  },
+};
 
 export default function CaseStudiesGalleryPage() {
-  const base = useAdminBase();
+  const base = getMetricsPath();
 
   return (
     <AdminShell

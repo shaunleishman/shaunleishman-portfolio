@@ -1,10 +1,13 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { CopyShareLinkButton } from "@/components/case-studies/CopyShareLinkButton";
 import { DownloadReportPdfButton } from "@/components/case-studies/DownloadReportPdfButton";
 import { HeuristicEvaluationReport } from "@/components/metrics/heuristic-evaluation/HeuristicEvaluationReport";
 import { getEvaluationBySlug } from "@/content/heuristic-evaluations";
+import { siteConfig } from "@/content/projects";
 import { CASE_STUDY_ENTRIES } from "@/lib/admin-nav";
+import { caseStudyDocumentTitle, caseStudyShareDescription } from "@/lib/case-study-report";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -12,6 +15,39 @@ type PageProps = {
 
 export function generateStaticParams() {
   return CASE_STUDY_ENTRIES.map((entry) => ({ slug: entry.slug }));
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const evaluation = getEvaluationBySlug(slug);
+
+  if (!evaluation) {
+    return {
+      title: "Case study not found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = caseStudyDocumentTitle(evaluation);
+  const description = caseStudyShareDescription(evaluation);
+
+  return {
+    // The metrics layout sets a string title, which stops the root title template
+    // from applying here. Set the full tab title directly.
+    title: { absolute: `${title} | ${siteConfig.name}` },
+    description,
+    robots: { index: false, follow: false },
+    openGraph: {
+      title,
+      description,
+      siteName: siteConfig.name,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+  };
 }
 
 export default async function CaseStudyDetailPage({ params }: PageProps) {
@@ -23,7 +59,11 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
   }
 
   return (
-    <AdminShell title={evaluation.title} description={`Heuristic evaluation for ${evaluation.client}`}>
+    <AdminShell
+      title={evaluation.title}
+      description={`Heuristic evaluation for ${evaluation.client}`}
+      titleAsHeading={false}
+    >
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3">
         <p className="text-body-sm text-[var(--color-text-muted)]">
           Share the public link, or download a PDF to attach where links are blocked.

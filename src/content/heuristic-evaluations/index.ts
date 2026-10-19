@@ -12,6 +12,7 @@ export const HEURISTIC_EVALUATIONS: Record<string, HeuristicEvaluation> = {
   [offAxisToursEvaluation.slug]: offAxisToursEvaluation,
 };
 
+/** Resolve a report by slug. This is the only lookup; content files do not export one. */
 export function getEvaluationBySlug(slug: string): HeuristicEvaluation | undefined {
   return HEURISTIC_EVALUATIONS[slug];
 }

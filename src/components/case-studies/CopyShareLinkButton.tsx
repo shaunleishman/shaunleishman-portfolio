@@ -25,17 +25,25 @@ function buildShareUrl(slug: string): string {
   return `${origin}/case-studies/${slug}`;
 }
 
-/** Last-resort clipboard copy for insecure contexts where `navigator.clipboard` is unavailable. */
+/**
+ * Last-resort clipboard copy for insecure contexts where `navigator.clipboard`
+ * is unavailable. The field stays on screen (invisible) so mobile browsers
+ * will actually select it; an off-screen field often copies nothing.
+ */
 function legacyCopy(text: string): boolean {
   if (typeof document === "undefined") return false;
   const input = document.createElement("textarea");
   input.value = text;
   input.setAttribute("readonly", "");
   input.style.position = "fixed";
-  input.style.top = "-9999px";
+  input.style.left = "0";
+  input.style.top = "0";
   input.style.opacity = "0";
+  input.style.pointerEvents = "none";
   document.body.appendChild(input);
+  input.focus();
   input.select();
+  input.setSelectionRange(0, text.length);
   let ok = false;
   try {
     ok = document.execCommand("copy");
@@ -48,7 +56,8 @@ function legacyCopy(text: string): boolean {
 
 /**
  * Google-Drive-style "Copy link" button. Copies the public report URL to the
- * clipboard and shows a transient "Copied!" confirmation. Self-contained:
+ * clipboard and shows a transient "Copied!" confirmation. If copying fails,
+ * the URL stays visible so it can be copied by hand. Self-contained:
  * React state + lucide-react only, no tokens/API.
  */
 export function CopyShareLinkButton({
@@ -93,16 +102,15 @@ export function CopyShareLinkButton({
       if (copied) {
         setState("copied");
         setCopiedUrl(null);
+        timeoutRef.current = setTimeout(() => {
+          setState("idle");
+          setCopiedUrl(null);
+        }, RESET_DELAY_MS);
       } else {
-        // Surface the URL so the user can copy it manually.
+        // Keep the URL on screen. A short timeout hid it before it could be copied.
         setState("error");
         setCopiedUrl(url);
       }
-
-      timeoutRef.current = setTimeout(() => {
-        setState("idle");
-        setCopiedUrl(null);
-      }, RESET_DELAY_MS);
     },
     [slug],
   );
@@ -115,7 +123,7 @@ export function CopyShareLinkButton({
   const isCompact = variant === "compact";
 
   return (
-    <div className={cn("inline-flex flex-col items-start gap-1", className)}>
+    <div className={cn("inline-flex flex-col items-start gap-1", className)} aria-live="polite">
       <button
         type="button"
         onClick={handleCopy}

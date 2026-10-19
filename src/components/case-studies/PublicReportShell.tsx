@@ -30,7 +30,8 @@ export function PublicReportShell({
     <div className="bg-[var(--color-bg-muted)] text-[var(--color-text-primary)]">
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-[var(--color-border)] bg-white px-[var(--container-padding)] py-3 sm:py-4">
         <div className="min-w-0 flex-1">
-          <h1 className="text-h4 font-semibold truncate">{title}</h1>
+          {/* The report body owns the page h1. This bar repeats the title as text. */}
+          <p className="text-h4 font-semibold truncate">{title}</p>
           {description && (
             <p className="mt-0.5 text-body-sm text-[var(--color-text-muted)]">{description}</p>
           )}

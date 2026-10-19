@@ -31,6 +31,8 @@ type AdminShellBodyProps = {
   children: React.ReactNode;
   fullWidth?: boolean;
   hideHeader?: boolean;
+  /** When false, the title is plain text so a nested report keeps the only h1. */
+  titleAsHeading?: boolean;
 };
 
 export function AdminShellBody({
@@ -39,6 +41,7 @@ export function AdminShellBody({
   children,
   fullWidth = false,
   hideHeader = false,
+  titleAsHeading = true,
 }: AdminShellBodyProps) {
   const auth = useMetricsAuth();
   // AdminShellBody only renders client-side (dynamic import, ssr: false), so reading
@@ -127,7 +130,11 @@ export function AdminShellBody({
             <div className="flex min-w-0 items-center gap-3">
               {navHidden && <ShowNavButton onClick={() => setNavHiddenPersisted(false)} />}
               <div className="min-w-0">
-                <h1 className="text-h4 font-semibold">{title}</h1>
+                {titleAsHeading ? (
+                  <h1 className="text-h4 font-semibold">{title}</h1>
+                ) : (
+                  <p className="text-h4 font-semibold">{title}</p>
+                )}
                 {description && (
                   <p className="mt-0.5 text-body-sm text-[var(--color-text-muted)]">{description}</p>
                 )}

@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { HeuristicEvaluationReport } from "@/components/metrics/heuristic-evaluation/HeuristicEvaluationReport";
 import { PublicReportShell } from "@/components/case-studies/PublicReportShell";
-import { CASE_STUDY_ENTRIES } from "@/lib/admin-nav";
 import { getEvaluationBySlug } from "@/content/heuristic-evaluations";
+import { siteConfig } from "@/content/projects";
+import { CASE_STUDY_ENTRIES } from "@/lib/admin-nav";
+import { caseStudyDocumentTitle, caseStudyShareDescription } from "@/lib/case-study-report";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -24,10 +26,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const title = caseStudyDocumentTitle(evaluation);
+  const description = caseStudyShareDescription(evaluation);
+  const url = `${siteConfig.siteUrl}/case-studies/${slug}`;
+
   return {
-    title: `${evaluation.title} · Case study`,
-    description: evaluation.executiveSummary.whatWasEvaluated.slice(0, 160),
+    title,
+    description,
     robots: { index: false, follow: false },
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      url,
+      siteName: siteConfig.name,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 

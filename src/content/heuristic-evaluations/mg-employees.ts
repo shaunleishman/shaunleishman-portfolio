@@ -682,9 +682,4 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
   },
 };
 
-export function getEvaluationBySlug(slug: string): HeuristicEvaluation | undefined {
-  if (slug === "mg-employees") return mgEmployeesEvaluation;
-  return undefined;
-}
-
 export { mgEmployeesRedesignCallouts };
