@@ -1,4 +1,5 @@
 import { Download, Presentation } from "lucide-react";
+import { caseStudyDownloadFilename } from "@/lib/case-study-report";
 import { cn } from "@/lib/utils";
 
 type DownloadReportPdfButtonProps = {
@@ -31,7 +32,7 @@ export function DownloadReportPdfButton({
   return (
     <a
       href={href}
-      download
+      download={caseStudyDownloadFilename(slug, isDeck ? "deck" : "report")}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white font-medium text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)]/40 hover:text-[var(--color-accent)]",
         isCompact ? "px-3 py-1.5 text-[0.75rem]" : "min-h-[44px] px-4 py-2 text-body-sm",

@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { CaseStudyDeckDocument } from "@/components/case-studies/CaseStudyDeckDocument";
 import { getEvaluationBySlug } from "@/content/heuristic-evaluations";
+import { respondWithCaseStudyPdf } from "@/lib/case-study-pdf-response";
 
 export const runtime = "nodejs";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
@@ -16,17 +17,11 @@ export async function GET(
     return NextResponse.json({ error: "Case study not found" }, { status: 404 });
   }
 
-  try {
-    const buffer = await renderToBuffer(<CaseStudyDeckDocument evaluation={evaluation} />);
-
-    return new NextResponse(new Uint8Array(buffer), {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${slug}-summary-deck.pdf"`,
-        "Cache-Control": "private, no-cache",
-      },
-    });
-  } catch {
-    return NextResponse.json({ error: "Deck generation failed" }, { status: 500 });
-  }
+  return respondWithCaseStudyPdf({
+    request,
+    kind: "deck",
+    evaluation,
+    errorMessage: "Deck generation failed",
+    render: () => renderToBuffer(<CaseStudyDeckDocument evaluation={evaluation} />),
+  });
 }

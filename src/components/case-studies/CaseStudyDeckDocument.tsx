@@ -12,8 +12,6 @@ import {
   View,
 } from "@react-pdf/renderer";
 
-// Wrap whole words to the next line instead of hyphenating across the break.
-Font.registerHyphenationCallback((word) => [word]);
 import { siteConfig } from "@/content/projects";
 import type {
   HeuristicEvaluation,
@@ -23,6 +21,14 @@ import {
   EFFORT_LABELS,
   getQuickWins,
 } from "@/components/metrics/heuristic-evaluation/finding-priority";
+import {
+  caseStudyDeckApproachLine,
+  caseStudyPublicReportUrl,
+} from "@/lib/case-study-report";
+
+// Keep whole words together. react-pdf's hyphenation callback is process-global;
+// this matches the library default so a future default cannot split these slides.
+Font.registerHyphenationCallback((word) => [word]);
 
 /* A4 landscape in points */
 const PAGE_W = 841.89;
@@ -413,10 +419,7 @@ export function CaseStudyDeckDocument({ evaluation }: { evaluation: HeuristicEva
               {scope.userGroups.join(", ")}
             </Text>
             <Text style={styles.problemLabel}>Approach</Text>
-            <Text style={styles.bulletText}>
-              {scope.heuristicsUsed.length} usability heuristics across desktop and mobile
-              {scope.timeSpent ? `, ${scope.timeSpent.toLowerCase()}` : ""}.
-            </Text>
+            <Text style={styles.bulletText}>{caseStudyDeckApproachLine(scope)}</Text>
           </View>
           <View style={styles.col}>
             <Text style={styles.problemLabel}>Tasks evaluated</Text>
@@ -511,7 +514,10 @@ export function CaseStudyDeckDocument({ evaluation }: { evaluation: HeuristicEva
         <View style={{ maxWidth: 660 }}>
           <Bullets items={exec.recommendedNextSteps.slice(0, 4)} dark />
         </View>
-        <Link src={siteConfig.siteUrl} style={styles.ctaButton}>
+        <Link
+          src={caseStudyPublicReportUrl(siteConfig.siteUrl, evaluation.slug)}
+          style={styles.ctaButton}
+        >
           <Text>View the full interactive report</Text>
         </Link>
         <Footer tone="dark" label={`${siteConfig.name} · ${siteConfig.domain}`} />

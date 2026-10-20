@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 import { Document, Font, Link, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
-// Wrap whole words to the next line instead of hyphenating across the break.
-Font.registerHyphenationCallback((word) => [word]);
 import { siteConfig } from "@/content/projects";
 import type {
   HeuristicEvaluation,
@@ -17,6 +15,10 @@ import {
   getQuickWins,
   sortFindingsByPriority,
 } from "@/components/metrics/heuristic-evaluation/finding-priority";
+
+// Keep whole words together. react-pdf's hyphenation callback is process-global;
+// this matches the library default so a future default cannot split report text.
+Font.registerHyphenationCallback((word) => [word]);
 
 const type = {
   label: 8.5,
