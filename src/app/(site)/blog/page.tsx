@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts, toBlogPostSummary } from "@/lib/blog";
 import { getBlogEngagementMap } from "@/lib/blog-engagement";
 import { BlogPostList } from "@/components/blog/BlogPostList";
 import { PageHero } from "@/components/layout/PageHero";
@@ -41,7 +41,7 @@ export default function BlogPage() {
 
       <section className="section-padding bg-white">
         <div className="container-site max-w-3xl">
-          <BlogPostList posts={posts} engagement={engagement} />
+          <BlogPostList posts={posts.map(toBlogPostSummary)} engagement={engagement} />
         </div>
       </section>
     </>

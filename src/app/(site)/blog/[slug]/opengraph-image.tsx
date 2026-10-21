@@ -1,53 +1,63 @@
-import { readFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { getPostBySlug } from "@/lib/blog";
+import { readBlogShareImage } from "@/lib/blog-share-image";
 import { siteConfig } from "@/content/projects";
 
-export const alt = "Blog article preview";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
+const GENERATED_SIZE = { width: 1200, height: 630 };
+
+type MetadataProps = {
+  params: { slug: string };
+};
 
 type Props = {
   params: Promise<{ slug: string }>;
+  id: Promise<string | number>;
 };
 
-function thumbnailContentType(thumbnailPath: string, data: Buffer): string {
-  if (data.length >= 3 && data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff) {
-    return "image/jpeg";
+/**
+ * Report the real file's type and size. Card images are often JPEGs with a
+ * `.png` name, and a static `contentType = "image/png"` made the meta tags
+ * disagree with the bytes.
+ */
+export async function generateImageMetadata({ params }: MetadataProps) {
+  const post = getPostBySlug(params.slug);
+  const image = post?.published && post.thumbnail ? readBlogShareImage(post.thumbnail) : null;
+
+  if (post?.published && image) {
+    return [
+      {
+        id: "share",
+        alt: post.title,
+        size: { width: image.width, height: image.height },
+        contentType: image.mime,
+      },
+    ];
   }
 
-  if (
-    data.length >= 8 &&
-    data[0] === 0x89 &&
-    data[1] === 0x50 &&
-    data[2] === 0x4e &&
-    data[3] === 0x47
-  ) {
-    return "image/png";
-  }
-
-  if (thumbnailPath.toLowerCase().match(/\.jpe?g$/)) return "image/jpeg";
-  if (thumbnailPath.toLowerCase().endsWith(".png")) return "image/png";
-  return "application/octet-stream";
+  return [
+    {
+      id: "share",
+      alt: post?.title ?? "Blog article preview",
+      size: GENERATED_SIZE,
+      contentType: "image/png",
+    },
+  ];
 }
 
 export default async function Image({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
 
-  if (!post) {
+  if (!post || !post.published) {
     return new Response("Not found", { status: 404 });
   }
 
   if (post.thumbnail) {
-    const filePath = join(process.cwd(), "public", post.thumbnail.replace(/^\//, ""));
-    if (existsSync(filePath)) {
-      const data = await readFile(filePath);
-      return new Response(data, {
+    const image = readBlogShareImage(post.thumbnail);
+    if (image) {
+      return new Response(new Uint8Array(image.data), {
         headers: {
-          "Content-Type": thumbnailContentType(post.thumbnail, data),
+          "Content-Type": image.mime,
           "Cache-Control": "public, max-age=31536000, immutable",
         },
       });
@@ -110,12 +120,10 @@ export default async function Image({ params }: Props) {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ fontSize: 24, color: "#94a3b8" }}>{siteConfig.name}</span>
-          {tagLine ? (
-            <span style={{ fontSize: 22, color: "#64748b" }}>{tagLine}</span>
-          ) : null}
+          {tagLine ? <span style={{ fontSize: 22, color: "#64748b" }}>{tagLine}</span> : null}
         </div>
       </div>
     ),
-    { ...size },
+    { ...GENERATED_SIZE },
   );
 }

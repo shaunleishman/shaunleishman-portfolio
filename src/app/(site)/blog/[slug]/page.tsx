@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
-import { getBlogShareImageUrl, getBlogShareImageMeta, getBlogThumbnailSrc } from "@/lib/blog-images";
+import { getBlogShareImageUrl, getBlogThumbnailSrc } from "@/lib/blog-images";
+import { getBlogShareImageMeta } from "@/lib/blog-share-image";
+import { formatBlogDate, formatBlogReadingTime } from "@/lib/blog-display";
 import { getBlogCategory } from "@/lib/blog-categories";
 import { getBlogEngagementForSlug } from "@/lib/blog-engagement";
 import { siteConfig } from "@/content/projects";
@@ -30,7 +32,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug(slug);
-  if (!post) return { title: "Post not found" };
+  if (!post || !post.published) return { title: "Post not found" };
 
   const imageUrl = getBlogShareImageUrl(post, siteConfig.siteUrl);
   const imageMeta = getBlogShareImageMeta(post);
@@ -114,14 +116,10 @@ export default async function BlogPostPage({ params }: Props) {
             {category.label}
             {" · "}
             <time dateTime={post.date}>
-              {new Date(post.date).toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
+              {formatBlogDate(post.date)}
             </time>
             {" · "}
-            {post.readingTime}
+            {formatBlogReadingTime(post.readingTime)}
           </SectionLabel>
           <h1 className="text-h1 font-semibold mb-4">{post.title}</h1>
           <p className="text-body-lg text-neutral-300 mb-6">{post.description}</p>

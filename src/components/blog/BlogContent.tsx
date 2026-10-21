@@ -1,45 +1,49 @@
-"use client";
-
 import type { ReactNode } from "react";
 import Image from "next/image";
-import { KanoCategoryOverview } from "./kano/KanoCategoryOverview";
-import { KanoCurveExplorer } from "./kano/KanoCurveExplorer";
-import { KanoExpectationShift } from "./kano/KanoExpectationShift";
-import { RouteCheckCalculator } from "./route-check/RouteCheckCalculator";
-import { ProximityExplorer } from "./grouping/ProximityExplorer";
-import { SimilarityExplorer } from "./grouping/SimilarityExplorer";
-import { CommonRegionExplorer } from "./grouping/CommonRegionExplorer";
-import { ConnectednessExplorer } from "./grouping/ConnectednessExplorer";
+import { renderInlineHtml } from "@/lib/blog-markdown";
 import { Reveal } from "@/components/ui/Reveal";
+import { BlogViz } from "./BlogViz";
+import { isBlogVizId } from "./blog-viz-ids";
 
-const VIZ_MARKERS: Record<string, ReactNode> = {
-  "kano-overview": <KanoCategoryOverview />,
-  "kano-curve": <KanoCurveExplorer />,
-  "kano-shift": <KanoExpectationShift />,
-  "route-check": <RouteCheckCalculator />,
-  "grouping-proximity": <ProximityExplorer />,
-  "grouping-similarity": <SimilarityExplorer />,
-  "grouping-common-region": <CommonRegionExplorer />,
-  "grouping-connectedness": <ConnectednessExplorer />,
-};
+/**
+ * Renders article markdown on the server.
+ *
+ * Blocks are split on blank lines. A line `<!-- viz:id -->` mounts one
+ * interactive section (see `blog-viz-ids.ts`). Headings are `## `, lists are
+ * lines that start with `- `, and images are `![alt](/path)`.
+ */
+export function BlogContent({ content }: { content: string }) {
+  const segments = content.split(/<!--\s*viz:([\w-]+)\s*-->/);
+  const nodes: ReactNode[] = [];
+  let key = 0;
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
+  for (let i = 0; i < segments.length; i++) {
+    if (i % 2 === 1) {
+      const vizId = segments[i];
+      if (isBlogVizId(vizId)) {
+        nodes.push(
+          <Reveal key={`viz-${key++}`} variant="scale" delay={40}>
+            <div>
+              <BlogViz id={vizId} />
+            </div>
+          </Reveal>,
+        );
+      }
+      continue;
+    }
 
-function isSafeHref(href: string) {
-  return (
-    href.startsWith("/") ||
-    href.startsWith("#") ||
-    href.startsWith("https://") ||
-    href.startsWith("http://") ||
-    href.startsWith("mailto:")
-  );
+    const text = segments[i].trim();
+    if (!text) continue;
+
+    text.split("\n\n").forEach((block) => {
+      const trimmed = block.trim();
+      if (!trimmed) return;
+      const node = renderMarkdownBlock(trimmed, key++);
+      if (node) nodes.push(node);
+    });
+  }
+
+  return <>{nodes}</>;
 }
 
 function renderMarkdownBlock(block: string, key: number) {
@@ -66,77 +70,45 @@ function renderMarkdownBlock(block: string, key: number) {
   }
 
   if (block.startsWith("## ")) {
+    const heading = block.replace(/^## /, "");
     return (
       <Reveal key={key} variant="up">
         <h2 className="text-h3 font-semibold text-[var(--color-text-primary)] mt-10 mb-4">
-          {block.replace("## ", "")}
+          {heading}
         </h2>
       </Reveal>
     );
   }
+
   if (block.startsWith("- ")) {
-    const items = block.split("\n").filter((l) => l.startsWith("- "));
+    const items = block.split("\n").filter((line) => line.startsWith("- "));
     return (
       <Reveal key={key} variant="up">
         <ul className="list-disc pl-5 space-y-2 my-4">
-          {items.map((item, j) => (
-            <li key={j}>{item.replace("- ", "")}</li>
-          ))}
+          {items.map((item, itemIndex) => {
+            const text = item.replace(/^- /, "");
+            const html = renderInlineHtml(text);
+            return (
+              <li key={itemIndex}>
+                {html === text ? (
+                  text
+                ) : (
+                  <span dangerouslySetInnerHTML={{ __html: html }} />
+                )}
+              </li>
+            );
+          })}
         </ul>
       </Reveal>
     );
   }
-  const withLinks = escapeHtml(block)
-    .replace(
-      /\[([^\]]+)\]\(([^)]+)\)/g,
-      (_match, label: string, href: string) => {
-        if (!isSafeHref(href)) {
-          return label;
-        }
-        return `<a href="${escapeHtml(href)}" class="text-[var(--color-accent)] hover:underline" rel="noopener noreferrer">${label}</a>`;
-      },
-    )
-    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+
   return (
     <Reveal key={key} variant="fade">
       <p
         className="text-body-lg text-[var(--color-text-secondary)] my-4"
-        dangerouslySetInnerHTML={{ __html: withLinks }}
+        dangerouslySetInnerHTML={{ __html: renderInlineHtml(block) }}
       />
     </Reveal>
   );
-}
-
-/** Renders markdown with optional <!-- viz:id --> embed markers */
-export function BlogContent({ content }: { content: string }) {
-  const segments = content.split(/<!--\s*viz:([\w-]+)\s*-->/);
-  const nodes: ReactNode[] = [];
-  let key = 0;
-
-  for (let i = 0; i < segments.length; i++) {
-    if (i % 2 === 1) {
-      const vizId = segments[i];
-      const viz = VIZ_MARKERS[vizId];
-      if (viz) {
-        nodes.push(
-          <Reveal key={`viz-${key++}`} variant="scale" delay={40}>
-            <div>{viz}</div>
-          </Reveal>,
-        );
-      }
-      continue;
-    }
-
-    const text = segments[i].trim();
-    if (!text) continue;
-
-    text.split("\n\n").forEach((block) => {
-      const trimmed = block.trim();
-      if (!trimmed) return;
-      const node = renderMarkdownBlock(trimmed, key++);
-      if (node) nodes.push(node);
-    });
-  }
-
-  return <>{nodes}</>;
 }

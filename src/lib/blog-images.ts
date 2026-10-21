@@ -1,5 +1,11 @@
 import type { BlogPost } from "@/lib/blog";
 
+/**
+ * Dimensions and MIME type for og:image meta tags.
+ * The values are measured from the file the share route sends
+ * (`getBlogShareImageMeta` in `blog-share-image.ts`). That module is
+ * server-only so the blog index does not import it.
+ */
 export type BlogShareImageMeta = {
   width: number;
   height: number;
@@ -18,21 +24,8 @@ export function getBlogShareImageUrl(post: BlogPost, siteUrl: string): string {
   return `${base}/blog/${post.slug}/opengraph-image`;
 }
 
-/** Dimensions and MIME type for og:image meta tags. */
-export function getBlogShareImageMeta(post: BlogPost): BlogShareImageMeta {
-  if (post.thumbnail?.match(/-og\.jpe?g$/i) || post.thumbnail?.match(/\.jpe?g$/i)) {
-    return { width: 1200, height: 627, type: "image/jpeg" };
-  }
-
-  if (post.thumbnail?.match(/\.png$/i)) {
-    return { width: 1200, height: 630, type: "image/png" };
-  }
-
-  return { width: 1200, height: 630, type: "image/png" };
-}
-
-/** Path used in the blog index and cards. */
-export function getBlogThumbnailSrc(post: BlogPost): string {
+/** Path used in the blog index and cards. This stays the card image, not the share crop. */
+export function getBlogThumbnailSrc(post: { slug: string; thumbnail?: string }): string {
   if (post.thumbnail) return post.thumbnail;
   return `/blog/${post.slug}/opengraph-image`;
 }

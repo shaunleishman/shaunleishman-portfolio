@@ -4,7 +4,8 @@ import { useMemo, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Headphones } from "lucide-react";
-import type { BlogPost } from "@/lib/blog";
+import type { BlogPostSummary } from "@/lib/blog";
+import { formatBlogDate, formatBlogReadingTime } from "@/lib/blog-display";
 import { getBlogThumbnailSrc } from "@/lib/blog-images";
 import {
   BLOG_CATEGORY_FILTER_OPTIONS,
@@ -22,13 +23,9 @@ import { Reveal } from "@/components/ui/Reveal";
 const FILTERS = BLOG_CATEGORY_FILTER_OPTIONS;
 
 type BlogPostListProps = {
-  posts: BlogPost[];
+  posts: BlogPostSummary[];
   engagement: Record<string, BlogEngagementStats>;
 };
-
-function formatReadingTime(text: string) {
-  return text.replace(/^less than a minute read$/i, "1 min read");
-}
 
 export function BlogPostList({ posts, engagement }: BlogPostListProps) {
   const [filter, setFilter] = useState<BlogCategoryFilter>("All");
@@ -113,14 +110,10 @@ export function BlogPostList({ posts, engagement }: BlogPostListProps) {
                   <div className="min-w-0 flex flex-col justify-center">
                     <SectionLabel>
                     <time dateTime={post.date}>
-                      {new Date(post.date).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {formatBlogDate(post.date)}
                     </time>
                     {" · "}
-                    {formatReadingTime(post.readingTime)}
+                    {formatBlogReadingTime(post.readingTime)}
                     {post.audioUrl && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-accent)]/10 px-2 py-0.5 text-[var(--color-accent)]">
                         <Headphones className="size-3" aria-hidden />
