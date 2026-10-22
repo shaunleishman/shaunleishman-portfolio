@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { capturePointer, ratioFromClientX, releasePointer } from "@/components/audio/pointer";
 import { cn } from "@/lib/utils";
 
 type WaveformProps = {
@@ -42,30 +43,40 @@ export function Waveform({
   const ref = useRef<HTMLDivElement>(null);
   const bars = useMemo(() => resample(peaks, maxBars), [peaks, maxBars]);
   const dragging = useRef(false);
+  const hoverIndex = useRef<number | null>(null);
   const [hover, setHover] = useState<number | null>(null);
 
-  const ratioFromClientX = (clientX: number) => {
-    const el = ref.current;
-    if (!el) return 0;
-    const rect = el.getBoundingClientRect();
-    return Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+  // Bars light up when the pointer passes their centre. Moves inside the same
+  // bar do not change the picture, so they do not need a render.
+  const paintHover = (ratio: number) => {
+    const nextIndex = Math.floor(ratio * bars.length - 0.5);
+    const stored = nextIndex < 0 ? null : nextIndex;
+    if (hoverIndex.current === stored) return;
+    hoverIndex.current = stored;
+    setHover(stored == null ? null : ratio);
+  };
+
+  const clearHover = () => {
+    if (hoverIndex.current == null && hover == null) return;
+    hoverIndex.current = null;
+    setHover(null);
   };
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     dragging.current = true;
-    ref.current?.setPointerCapture(event.pointerId);
-    onSeek(ratioFromClientX(event.clientX));
+    capturePointer(ref.current, event.pointerId);
+    onSeek(ratioFromClientX(ref.current, event.clientX));
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    const ratio = ratioFromClientX(event.clientX);
-    setHover(ratio);
+    const ratio = ratioFromClientX(ref.current, event.clientX);
+    paintHover(ratio);
     if (dragging.current) onSeek(ratio);
   };
 
   const endDrag = (event: PointerEvent<HTMLDivElement>) => {
     dragging.current = false;
-    ref.current?.releasePointerCapture(event.pointerId);
+    releasePointer(ref.current, event.pointerId);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -97,7 +108,7 @@ export function Waveform({
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
-      onPointerLeave={() => setHover(null)}
+      onPointerLeave={clearHover}
       onKeyDown={handleKeyDown}
       className={cn(
         "flex h-10 cursor-pointer touch-none select-none items-center gap-[2px] overflow-hidden rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-accent)]",

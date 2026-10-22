@@ -1,20 +1,69 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
-import { useAudioPlayer, type AudioTrack } from "@/components/audio/AudioPlayerProvider";
+import {
+  useAudioCurrentTime,
+  useAudioPlayer,
+  type AudioTrack,
+} from "@/components/audio/AudioPlayerProvider";
+import { finiteMediaDuration, formatPlaybackTime } from "@/components/audio/format-time";
 import { Waveform } from "@/components/audio/Waveform";
 import { cn } from "@/lib/utils";
 
-function formatTime(seconds: number) {
-  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-  const total = Math.floor(seconds);
-  const mins = Math.floor(total / 60);
-  const secs = total % 60;
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
+type WaveformData = { duration: number; peaks: number[] };
+
+/**
+ * Peaks for the session. The file is static, and navigating back to an article
+ * should not wait on the network before the same waveform can draw.
+ */
+const waveformCache = new Map<string, WaveformData>();
+const waveformListeners = new Set<() => void>();
+
+function subscribeWaveform(listener: () => void) {
+  waveformListeners.add(listener);
+  return () => waveformListeners.delete(listener);
 }
 
-type WaveformData = { duration: number; peaks: number[] };
+function getServerWaveform() {
+  return null;
+}
+
+function storeWaveform(url: string, data: WaveformData) {
+  waveformCache.set(url, data);
+  for (const listener of [...waveformListeners]) listener();
+}
+
+/**
+ * `/audio/post.m4a` -> `/audio/post.peaks.json`.
+ * Query strings are ignored so a cache-busted audio URL still finds its peaks.
+ */
+export function peaksUrlFor(src: string) {
+  const path = src.split(/[?#]/, 1)[0];
+  return `${path.replace(/\.[^/.]+$/, "")}.peaks.json`;
+}
+
+function parseWaveform(json: unknown): WaveformData | null {
+  if (Array.isArray(json)) {
+    if (!isPeakList(json)) return null;
+    return { duration: 0, peaks: json };
+  }
+  if (!json || typeof json !== "object") return null;
+  const record = json as { duration?: unknown; peaks?: unknown };
+  if (!isPeakList(record.peaks)) return null;
+  const duration = finiteMediaDuration(
+    typeof record.duration === "number" ? record.duration : 0,
+  );
+  return { duration, peaks: record.peaks };
+}
+
+function isPeakList(value: unknown): value is number[] {
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every((peak) => typeof peak === "number" && Number.isFinite(peak))
+  );
+}
 
 type ArticleAudioPlayerProps = {
   src: string;
@@ -38,28 +87,33 @@ export function ArticleAudioPlayer({
   className,
 }: ArticleAudioPlayerProps) {
   const player = useAudioPlayer();
-  const [data, setData] = useState<WaveformData | null>(null);
-
-  const peaksUrl = useMemo(() => src.replace(/\.[^/.]+$/, ".peaks.json"), [src]);
+  const peaksUrl = useMemo(() => peaksUrlFor(src), [src]);
+  // The snapshot is the cached object for this URL, or null. A reused instance
+  // cannot show another article's peaks, and the server render stays empty.
+  const getWaveform = useCallback(() => waveformCache.get(peaksUrl) ?? null, [peaksUrl]);
+  const data = useSyncExternalStore(subscribeWaveform, getWaveform, getServerWaveform);
 
   useEffect(() => {
+    if (waveformCache.has(peaksUrl)) return;
+
+    const controller = new AbortController();
     let cancelled = false;
-    fetch(peaksUrl)
+    fetch(peaksUrl, { signal: controller.signal })
       .then((response) => {
         if (!response.ok) throw new Error("No waveform");
         return response.json();
       })
-      .then((json) => {
+      .then((json: unknown) => {
         if (cancelled) return;
-        if (Array.isArray(json)) {
-          setData({ duration: 0, peaks: json });
-        } else {
-          setData({ duration: json.duration ?? 0, peaks: json.peaks ?? [] });
-        }
+        const parsed = parseWaveform(json);
+        if (!parsed) return;
+        storeWaveform(peaksUrl, parsed);
       })
       .catch(() => undefined);
+
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [peaksUrl]);
 
@@ -80,9 +134,6 @@ export function ArticleAudioPlayer({
   if (!data || !track) return null;
 
   const active = player.isActive(slug);
-  const currentTime = active ? player.currentTime : 0;
-  const duration = active && player.duration ? player.duration : data.duration;
-  const progress = duration > 0 ? currentTime / duration : 0;
   const isPlaying = active && player.isPlaying;
 
   return (
@@ -134,23 +185,51 @@ export function ArticleAudioPlayer({
             </div>
           </div>
 
-          <div className="mt-3 flex items-center gap-3">
-            <span className="w-10 shrink-0 text-body-sm tabular-nums text-[var(--color-text-muted)]">
-              {formatTime(currentTime)}
-            </span>
-            <Waveform
-              peaks={data.peaks}
-              progress={progress}
-              onSeek={(ratio) => (active ? player.seekToRatio(ratio) : player.play(track, ratio))}
-              ariaLabel="Seek through narration"
-              className="flex-1"
-            />
-            <span className="w-10 shrink-0 text-right text-body-sm tabular-nums text-[var(--color-text-muted)]">
-              {formatTime(duration)}
-            </span>
-          </div>
+          <ArticleTimeline
+            active={active}
+            peaks={data.peaks}
+            fallbackDuration={data.duration}
+            onSeek={(ratio) => (active ? player.seekToRatio(ratio) : player.play(track, ratio))}
+          />
         </div>
       </div>
     </section>
+  );
+}
+
+function ArticleTimeline({
+  active,
+  peaks,
+  fallbackDuration,
+  onSeek,
+}: {
+  active: boolean;
+  peaks: number[];
+  fallbackDuration: number;
+  onSeek: (ratio: number) => void;
+}) {
+  const player = useAudioPlayer();
+  const clock = useAudioCurrentTime();
+  const currentTime = active ? clock : 0;
+  const duration =
+    active && finiteMediaDuration(player.duration) ? player.duration : fallbackDuration;
+  const progress = duration > 0 ? currentTime / duration : 0;
+
+  return (
+    <div className="mt-3 flex items-center gap-3">
+      <span className="w-10 shrink-0 text-body-sm tabular-nums text-[var(--color-text-muted)]">
+        {formatPlaybackTime(currentTime)}
+      </span>
+      <Waveform
+        peaks={peaks}
+        progress={progress}
+        onSeek={onSeek}
+        ariaLabel="Seek through narration"
+        className="flex-1"
+      />
+      <span className="w-10 shrink-0 text-right text-body-sm tabular-nums text-[var(--color-text-muted)]">
+        {formatPlaybackTime(duration)}
+      </span>
+    </div>
   );
 }

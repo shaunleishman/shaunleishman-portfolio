@@ -24,7 +24,13 @@ export type BlogPost = {
   tags: string[];
   /** Optional share/card image under /public, e.g. /images/blog/my-post.jpg (1200×630 recommended). */
   thumbnail?: string;
-  /** Optional narrated-audio file under /public, e.g. /audio/my-post.mp3. Renders the article audio player when set. */
+  /**
+   * Narration under /public, for example `/audio/my-post.m4a`.
+   * The article player stays hidden until a sibling peaks file exists at the
+   * same path with a `.peaks.json` suffix: `{ duration: number, peaks: number[] }`.
+   * Generate it with `node scripts/generate-waveform.mjs` and do not regenerate
+   * a published file unless the source audio changed — the bars are part of the page.
+   */
   audioUrl?: string;
   /** Optional collaborator credit shown on the article. */
   collaboration?: BlogCollaborator;

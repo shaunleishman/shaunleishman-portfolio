@@ -4,15 +4,9 @@ import { useRef, type KeyboardEvent, type PointerEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Pause, Play, RotateCcw, X } from "lucide-react";
-import { useAudioPlayer } from "@/components/audio/AudioPlayerProvider";
-
-function formatTime(seconds: number) {
-  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-  const total = Math.floor(seconds);
-  const mins = Math.floor(total / 60);
-  const secs = total % 60;
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-}
+import { useAudioCurrentTime, useAudioPlayer } from "@/components/audio/AudioPlayerProvider";
+import { finiteMediaDuration, formatPlaybackTime } from "@/components/audio/format-time";
+import { capturePointer, ratioFromClientX, releasePointer } from "@/components/audio/pointer";
 
 function ProgressBar({
   progress,
@@ -25,26 +19,19 @@ function ProgressBar({
   const dragging = useRef(false);
   const pct = `${Math.min(100, Math.max(0, progress * 100))}%`;
 
-  const ratioFromClientX = (clientX: number) => {
-    const el = ref.current;
-    if (!el) return 0;
-    const rect = el.getBoundingClientRect();
-    return Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-  };
-
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     dragging.current = true;
-    ref.current?.setPointerCapture(event.pointerId);
-    onSeek(ratioFromClientX(event.clientX));
+    capturePointer(ref.current, event.pointerId);
+    onSeek(ratioFromClientX(ref.current, event.clientX));
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (dragging.current) onSeek(ratioFromClientX(event.clientX));
+    if (dragging.current) onSeek(ratioFromClientX(ref.current, event.clientX));
   };
 
   const endDrag = (event: PointerEvent<HTMLDivElement>) => {
     dragging.current = false;
-    ref.current?.releasePointerCapture(event.pointerId);
+    releasePointer(ref.current, event.pointerId);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -94,13 +81,36 @@ function ProgressBar({
   );
 }
 
+function ElapsedReadout({ fallbackDuration }: { fallbackDuration: number }) {
+  const player = useAudioPlayer();
+  const currentTime = useAudioCurrentTime();
+  const total = finiteMediaDuration(player.duration) || finiteMediaDuration(fallbackDuration);
+
+  return (
+    <span className="shrink-0 text-[0.6875rem] tabular-nums text-[var(--color-text-muted)]">
+      {formatPlaybackTime(currentTime)} / {formatPlaybackTime(total)}
+    </span>
+  );
+}
+
+function FloatingSeek({ fallbackDuration }: { fallbackDuration: number }) {
+  const player = useAudioPlayer();
+  const currentTime = useAudioCurrentTime();
+  const total = finiteMediaDuration(player.duration) || finiteMediaDuration(fallbackDuration);
+
+  return (
+    <ProgressBar
+      progress={total > 0 ? currentTime / total : 0}
+      onSeek={player.seekToRatio}
+    />
+  );
+}
+
 export function FloatingAudioPlayer() {
   const player = useAudioPlayer();
-  const { track, activated, isPlaying, currentTime, duration } = player;
+  const { track, activated, isPlaying } = player;
 
   if (!activated || !track) return null;
-
-  const total = duration || track.duration;
 
   return (
     <div
@@ -148,15 +158,10 @@ export function FloatingAudioPlayer() {
               <span className="min-w-0 truncate text-[0.8125rem] font-medium text-[var(--color-text-primary)] transition-colors group-hover:text-[var(--color-accent)]">
                 {track.title}
               </span>
-              <span className="shrink-0 text-[0.6875rem] tabular-nums text-[var(--color-text-muted)]">
-                {formatTime(currentTime)} / {formatTime(total)}
-              </span>
+              <ElapsedReadout fallbackDuration={track.duration} />
             </div>
           </Link>
-          <ProgressBar
-            progress={total > 0 ? currentTime / total : 0}
-            onSeek={player.seekToRatio}
-          />
+          <FloatingSeek fallbackDuration={track.duration} />
         </div>
 
         <button
