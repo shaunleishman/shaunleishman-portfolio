@@ -28,7 +28,7 @@ export async function trackBlogEngagement(
   type: "blog_like" | "blog_share",
   path: string,
   metadata?: Record<string, string | number>,
-): Promise<{ ok: boolean; stats?: BlogEngagementStats }> {
+): Promise<{ ok: boolean; stats?: BlogEngagementStats; changed?: boolean }> {
   if (await isMetricsTrackingExcluded()) return { ok: false };
 
   const sessionId = getAnalyticsSessionId();
@@ -57,14 +57,32 @@ export async function trackBlogEngagement(
 
     if (!res.ok) return { ok: false };
 
-    const data = (await res.json()) as { stats?: BlogEngagementStats };
-    return { ok: true, stats: data.stats };
+    const data = (await res.json()) as { stats?: BlogEngagementStats; changed?: boolean };
+    return { ok: true, stats: data.stats, changed: data.changed };
   } catch {
     return { ok: false };
   }
 }
 
-export async function recordBlogArticleView(slug: string): Promise<BlogEngagementStats | null> {
+const articleViewRequests = new Map<string, Promise<BlogEngagementStats | null>>();
+
+export function recordBlogArticleView(slug: string): Promise<BlogEngagementStats | null> {
+  if (typeof window === "undefined") return Promise.resolve(null);
+
+  const existing = articleViewRequests.get(slug);
+  if (existing) return existing;
+
+  // Claim the slot before the first await. A remount (including Strict Mode)
+  // shares this promise instead of posting a second view.
+  const request = recordBlogArticleViewOnce(slug).then((stats) => {
+    if (!stats) articleViewRequests.delete(slug);
+    return stats;
+  });
+  articleViewRequests.set(slug, request);
+  return request;
+}
+
+async function recordBlogArticleViewOnce(slug: string): Promise<BlogEngagementStats | null> {
   if (typeof window === "undefined") return null;
   if (await isMetricsTrackingExcluded()) return null;
   if (sessionStorage.getItem(`blog_view_${slug}`) === "1") return null;

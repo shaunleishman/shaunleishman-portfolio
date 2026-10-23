@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { writeEventAsync } from "@/lib/analytics";
 import {
+  blogEngagementStatsFromRecord,
   getBlogEngagementForSlugAsync,
   getBlogEngagementMapAsync,
+  isPublishedBlogSlug,
 } from "@/lib/blog-engagement";
 import { blogPostPath } from "@/lib/blog-engagement-shared";
 import {
@@ -17,6 +19,13 @@ export const dynamic = "force-dynamic";
 
 function isValidAction(value: unknown): value is BlogEngagementAction {
   return value === "view" || value === "like" || value === "share";
+}
+
+/** Matches `crypto.randomUUID()` and rejects oversized client-supplied ids. */
+const SESSION_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidSessionId(value: unknown): value is string {
+  return typeof value === "string" && SESSION_ID.test(value);
 }
 
 async function mirrorToAnalytics(
@@ -43,19 +52,27 @@ async function mirrorToAnalytics(
 }
 
 export async function GET(request: NextRequest) {
-  const slug = request.nextUrl.searchParams.get("slug");
+  try {
+    const slug = request.nextUrl.searchParams.get("slug");
 
-  if (slug) {
+    if (slug) {
+      if (!isPublishedBlogSlug(slug)) {
+        return NextResponse.json({ error: "Unknown article" }, { status: 404 });
+      }
+
+      return NextResponse.json(
+        { stats: await getBlogEngagementForSlugAsync(slug) },
+        { headers: { "Cache-Control": "no-store" } },
+      );
+    }
+
     return NextResponse.json(
-      { stats: await getBlogEngagementForSlugAsync(slug) },
+      { posts: await getBlogEngagementMapAsync() },
       { headers: { "Cache-Control": "no-store" } },
     );
+  } catch {
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
-
-  return NextResponse.json(
-    { posts: await getBlogEngagementMapAsync() },
-    { headers: { "Cache-Control": "no-store" } },
-  );
 }
 
 export async function POST(request: NextRequest) {
@@ -68,10 +85,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const slug = typeof body.slug === "string" ? body.slug : null;
     const action = body.action;
-    const sessionId = typeof body.sessionId === "string" ? body.sessionId : null;
+    const sessionId = body.sessionId;
 
-    if (!slug || !isValidAction(action) || !sessionId) {
+    if (!slug || !isValidAction(action) || !isValidSessionId(sessionId)) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+
+    if (!isPublishedBlogSlug(slug)) {
+      return NextResponse.json({ error: "Unknown article" }, { status: 404 });
     }
 
     if (isMetricsOwnerRequest(request)) {
@@ -85,8 +106,9 @@ export async function POST(request: NextRequest) {
       await mirrorToAnalytics(blogPath, action, sessionId, slug);
     }
 
-    const stats = await getBlogEngagementForSlugAsync(slug);
-    return NextResponse.json({ ok: true, stats, record, changed });
+    // `record` includes session id lists. Public clients only need `stats`.
+    const stats = blogEngagementStatsFromRecord(slug, record);
+    return NextResponse.json({ ok: true, stats, changed });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

@@ -1,6 +1,25 @@
 import fs from "fs";
 import path from "path";
-import { hasBlobStorage, readJsonFromBlob, writeJsonToBlob } from "@/lib/blob-storage";
+import { hasBlobStorage, readBlobJson, writeJsonToBlob } from "@/lib/blob-storage";
+import { normalizeEngagementCount } from "@/lib/blog-engagement-shared";
+
+/**
+ * Public view, like, and share counts.
+ *
+ * Blob is the source of truth when `BLOB_READ_WRITE_TOKEN` is set. The sync
+ * reader only sees the local file (`data/` in dev, ephemeral `/tmp` on
+ * Vercel), so static pages must refresh from `GET /api/blog/engagement`.
+ *
+ * A failed blob read throws. Falling through to the local file and writing
+ * that back would replace the live counts with an empty store.
+ *
+ * Mutations are queued in this process so two overlapping requests cannot
+ * both read the same snapshot and drop one increment. Separate serverless
+ * isolates can still race; the queue covers remounts and double-clicks.
+ *
+ * `viewedSessions` and `likedSessions` are dedupe keys, not public data.
+ * Do not return them from the API.
+ */
 
 const BLOB_PATHNAME = "blog-engagement.json";
 
@@ -39,11 +58,35 @@ function ensureLocalFile(filePath: string) {
   }
 }
 
+function sessionIds(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const ids = value.filter(
+    (id): id is string => typeof id === "string" && id.length > 0 && id.length <= 64,
+  );
+  return uniqueRecent(ids);
+}
+
+/** Keep the newest unique ids so a trimmed list still blocks a repeat count. */
+function uniqueRecent(ids: string[]): string[] {
+  const seen = new Set<string>();
+  const unique: string[] = [];
+
+  for (let index = ids.length - 1; index >= 0 && unique.length < MAX_SESSION_IDS; index -= 1) {
+    const id = ids[index];
+    if (seen.has(id)) continue;
+    seen.add(id);
+    unique.push(id);
+  }
+
+  unique.reverse();
+  return unique;
+}
+
 function trimSessions(record: BlogEngagementRecord): BlogEngagementRecord {
   return {
     ...record,
-    viewedSessions: record.viewedSessions.slice(-MAX_SESSION_IDS),
-    likedSessions: record.likedSessions.slice(-MAX_SESSION_IDS),
+    viewedSessions: uniqueRecent(record.viewedSessions),
+    likedSessions: uniqueRecent(record.likedSessions),
   };
 }
 
@@ -55,26 +98,26 @@ function normalizeStore(raw: unknown): BlogEngagementStore {
     if (!value || typeof value !== "object") continue;
     const entry = value as Partial<BlogEngagementRecord>;
     store[key] = trimSessions({
-      views: Number(entry.views) || 0,
-      likes: Number(entry.likes) || 0,
-      shares: Number(entry.shares) || 0,
-      viewedSessions: Array.isArray(entry.viewedSessions)
-        ? entry.viewedSessions.filter((id): id is string => typeof id === "string")
-        : [],
-      likedSessions: Array.isArray(entry.likedSessions)
-        ? entry.likedSessions.filter((id): id is string => typeof id === "string")
-        : [],
+      views: normalizeEngagementCount(entry.views),
+      likes: normalizeEngagementCount(entry.likes),
+      shares: normalizeEngagementCount(entry.shares),
+      viewedSessions: sessionIds(entry.viewedSessions),
+      likedSessions: sessionIds(entry.likedSessions),
     });
   }
   return store;
 }
 
-async function readStoreFromBlob(): Promise<BlogEngagementStore | null> {
-  if (!hasBlobStorage()) return null;
+async function readStoreForUpdate(): Promise<BlogEngagementStore> {
+  if (!hasBlobStorage()) return readStoreFromLocalSync();
 
-  const raw = await readJsonFromBlob(BLOB_PATHNAME);
-  if (raw === null) return null;
-  return normalizeStore(raw);
+  const result = await readBlobJson(BLOB_PATHNAME);
+  if (!result.ok) {
+    if (result.reason === "missing") return readStoreFromLocalSync();
+    throw new Error("Blog engagement blob could not be read");
+  }
+
+  return normalizeStore(result.data);
 }
 
 function readStoreFromLocalSync(): BlogEngagementStore {
@@ -103,9 +146,7 @@ export function readBlogEngagementStoreSync(): BlogEngagementStore {
 }
 
 export async function readBlogEngagementStore(): Promise<BlogEngagementStore> {
-  const blobStore = await readStoreFromBlob();
-  if (blobStore) return blobStore;
-  return readStoreFromLocalSync();
+  return readStoreForUpdate();
 }
 
 async function writeBlogEngagementStore(store: BlogEngagementStore) {
@@ -122,12 +163,23 @@ async function writeBlogEngagementStore(store: BlogEngagementStore) {
 
 export type BlogEngagementAction = "view" | "like" | "share";
 
-export async function incrementBlogEngagement(
+let mutationQueue: Promise<void> = Promise.resolve();
+
+function enqueueMutation<T>(task: () => Promise<T>): Promise<T> {
+  const run = mutationQueue.then(task, task);
+  mutationQueue = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
+async function incrementBlogEngagementNow(
   blogPath: string,
   action: BlogEngagementAction,
   sessionId: string,
 ): Promise<{ record: BlogEngagementRecord; changed: boolean }> {
-  const store = await readBlogEngagementStore();
+  const store = await readStoreForUpdate();
   const current = store[blogPath] ?? emptyRecord();
   const next = { ...current };
   let changed = false;
@@ -160,6 +212,14 @@ export async function incrementBlogEngagement(
   }
 
   return { record: trimmed, changed };
+}
+
+export function incrementBlogEngagement(
+  blogPath: string,
+  action: BlogEngagementAction,
+  sessionId: string,
+): Promise<{ record: BlogEngagementRecord; changed: boolean }> {
+  return enqueueMutation(() => incrementBlogEngagementNow(blogPath, action, sessionId));
 }
 
 export function getBlogEngagementRecord(

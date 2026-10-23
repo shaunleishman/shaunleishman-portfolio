@@ -14,6 +14,7 @@ import {
   blogPostPath,
   formatEngagementCount,
   mergeBlogEngagementStats,
+  reconcileEngagementAction,
   type BlogEngagementStats,
 } from "@/lib/blog-engagement-shared";
 import {
@@ -96,9 +97,9 @@ export function BlogPostEngagement({
     if (result.ok) {
       markBlogPostLiked(slug);
       setLiked(true);
-      if (result.stats) {
-        setStats((current) => mergeBlogEngagementStats(current, result.stats!));
-      }
+      setStats((current) =>
+        reconcileEngagementAction(current, result.stats, "likes", result.changed),
+      );
     } else {
       setStats((current) => ({ ...current, likes: Math.max(0, current.likes - 1) }));
     }
@@ -113,9 +114,9 @@ export function BlogPostEngagement({
       channel: "linkedin",
     });
     if (result.ok) {
-      if (result.stats) {
-        setStats((current) => mergeBlogEngagementStats(current, result.stats!));
-      }
+      setStats((current) =>
+        reconcileEngagementAction(current, result.stats, "shares", result.changed),
+      );
     } else {
       setStats((current) => ({ ...current, shares: Math.max(0, current.shares - 1) }));
     }

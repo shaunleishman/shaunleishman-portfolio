@@ -5,7 +5,7 @@ import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
 import {
   blogPostPath,
   formatEngagementCount,
-  mergeBlogEngagementStats,
+  reconcileEngagementAction,
 } from "@/lib/blog-engagement-shared";
 import { trackBlogEngagement } from "@/lib/analytics-client";
 import { useBlogEngagementStats } from "@/hooks/useBlogEngagementStats";
@@ -46,9 +46,9 @@ export function LinkedInShare({
       channel: "linkedin",
     });
     if (result.ok) {
-      if (result.stats) {
-        setStats((current) => mergeBlogEngagementStats(current, result.stats!));
-      }
+      setStats((current) =>
+        reconcileEngagementAction(current, result.stats, "shares", result.changed),
+      );
     } else {
       setStats((current) => ({ ...current, shares: Math.max(0, current.shares - 1) }));
     }

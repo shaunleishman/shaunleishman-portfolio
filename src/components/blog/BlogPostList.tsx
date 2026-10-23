@@ -13,6 +13,7 @@ import {
   getBlogCategoryByLabel,
 } from "@/lib/blog-categories";
 import type { BlogEngagementStats } from "@/lib/blog-engagement-shared";
+import { useBlogEngagementMap } from "@/hooks/useBlogEngagementStats";
 import { BlogEngagementStatsDisplay } from "@/components/blog/BlogEngagementStats";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { FilterChip } from "@/components/ui/FilterChip";
@@ -31,6 +32,7 @@ function formatReadingTime(text: string) {
 }
 
 export function BlogPostList({ posts, engagement }: BlogPostListProps) {
+  const liveEngagement = useBlogEngagementMap(engagement);
   const [filter, setFilter] = useState<BlogCategoryFilter>("All");
   const [pending, startTransition] = useTransition();
 
@@ -130,7 +132,7 @@ export function BlogPostList({ posts, engagement }: BlogPostListProps) {
                   </SectionLabel>
                   <BlogEngagementStatsDisplay
                     stats={
-                      engagement[post.slug] ?? {
+                      liveEngagement[post.slug] ?? {
                         slug: post.slug,
                         views: 0,
                         likes: 0,
