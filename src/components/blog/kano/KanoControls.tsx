@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { FilterChip, FilterChipRow } from "@/components/ui/FilterChip";
 
 export { FilterChipRow };
@@ -82,7 +83,7 @@ type KanoDetailProps = {
   body: string;
 };
 
-export function KanoDetail({ color, title, body }: KanoDetailProps) {
+export const KanoDetail = memo(function KanoDetail({ color, title, body }: KanoDetailProps) {
   return (
     <div className="mt-3 flex gap-2 surface-muted px-3 py-2">
       {color && (
@@ -97,7 +98,7 @@ export function KanoDetail({ color, title, body }: KanoDetailProps) {
       </p>
     </div>
   );
-}
+});
 
 type KanoStatProps = {
   label: string;
@@ -106,7 +107,7 @@ type KanoStatProps = {
   highlight?: boolean;
 };
 
-export function KanoStat({ label, value, accent, highlight }: KanoStatProps) {
+export const KanoStat = memo(function KanoStat({ label, value, accent, highlight }: KanoStatProps) {
   return (
     <div
       className={`flex-1 rounded-lg px-2 py-1.5 text-center ${
@@ -124,7 +125,7 @@ export function KanoStat({ label, value, accent, highlight }: KanoStatProps) {
       </p>
     </div>
   );
-}
+});
 
 export function KanoStatRow({ children }: { children: React.ReactNode }) {
   return (

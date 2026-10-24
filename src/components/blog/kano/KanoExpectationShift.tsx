@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { shiftedSatisfactionAt, satisfactionAt, satisfactionLabel } from "./kano-math";
 import { areaPathFromFn, pathFromFn } from "./kano-chart";
 import { KanoChart } from "./KanoChart";
-import { KanoChip, FilterChipRow, KanoSlider, KanoStat, KanoStatRow, ClientMount } from "./KanoControls";
+import { KanoChip, FilterChipRow, KanoStat, KanoStatRow, ClientMount } from "./KanoControls";
 import { KanoWidget } from "./KanoWidget";
 
 const MATURITY_STAGES = [
@@ -14,6 +14,39 @@ const MATURITY_STAGES = [
 ] as const;
 
 const PRIMARY = "#14b8a6";
+
+const MaturityControls = memo(function MaturityControls({
+  maturityIdx,
+  onSelect,
+}: {
+  maturityIdx: number;
+  onSelect: (index: number) => void;
+}) {
+  const maturityLabel = MATURITY_STAGES[maturityIdx].label.toLowerCase();
+
+  return (
+    <>
+      <FilterChipRow label="Market maturity">
+        {MATURITY_STAGES.map((stage, i) => (
+          <KanoChip
+            key={stage.label}
+            label={stage.label}
+            selected={maturityIdx === i}
+            onClick={() => onSelect(i)}
+          />
+        ))}
+      </FilterChipRow>
+
+      <p className="mb-3 text-[0.8125rem] text-[var(--color-text-secondary)]">
+        A feature like <span className="font-medium text-[var(--color-text-primary)]">AI summaries</span> can
+        feel like a delighter at launch, then drift toward a{" "}
+        <span className="font-medium text-[#eab308]">basic expectation</span> as competitors catch up. With
+        the market <span className="font-medium text-[var(--color-text-primary)]">{maturityLabel}</span>, the
+        same capability sits further along that shift.
+      </p>
+    </>
+  );
+});
 
 export function KanoExpectationShift() {
   const [maturityIdx, setMaturityIdx] = useState(1);
@@ -33,40 +66,26 @@ export function KanoExpectationShift() {
     () => areaPathFromFn((t) => shiftedSatisfactionAt(t, maturity)),
     [maturity],
   );
+  const curves = useMemo(
+    () => [
+      { id: "launch", d: delighterPath, color: "#22c55e", dashed: true as const, opacity: 0.35 },
+      { id: "now", d: shiftedPath, areaD: shiftedArea, color: PRIMARY },
+    ],
+    [delighterPath, shiftedPath, shiftedArea],
+  );
 
   const currentSat = shiftedSatisfactionAt(probeT, maturity);
-  const maturityLabel = MATURITY_STAGES[maturityIdx].label.toLowerCase();
 
   return (
     <KanoWidget
       title="Delighters become expectations"
       hint="Hover the chart to explore. Switch maturity to see the curve shift."
     >
-      <FilterChipRow label="Market maturity">
-        {MATURITY_STAGES.map((stage, i) => (
-          <KanoChip
-            key={stage.label}
-            label={stage.label}
-            selected={maturityIdx === i}
-            onClick={() => setMaturityIdx(i)}
-          />
-        ))}
-      </FilterChipRow>
-
-      <p className="mb-3 text-[0.8125rem] text-[var(--color-text-secondary)]">
-        A feature like <span className="font-medium text-[var(--color-text-primary)]">AI summaries</span> can
-        feel like a delighter at launch, then drift toward a{" "}
-        <span className="font-medium text-[#eab308]">basic expectation</span> as competitors catch up. With
-        the market <span className="font-medium text-[var(--color-text-primary)]">{maturityLabel}</span>, the
-        same capability sits further along that shift.
-      </p>
+      <MaturityControls maturityIdx={maturityIdx} onSelect={setMaturityIdx} />
 
       <ClientMount>
         <KanoChart
-          curves={[
-            { id: "launch", d: delighterPath, color: "#22c55e", dashed: true, opacity: 0.35 },
-            { id: "now", d: shiftedPath, areaD: shiftedArea, color: PRIMARY },
-          ]}
+          curves={curves}
           activeColor={PRIMARY}
           onHighlightTChange={setProbeT}
           valueAt={(t) => shiftedSatisfactionAt(t, maturity)}

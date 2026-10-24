@@ -1,3 +1,15 @@
+/**
+ * Kano satisfaction curves for the blog widgets.
+ *
+ * `t` is how fully a feature is implemented, from 0 (absent) to 1 (fully built).
+ * The returned satisfaction is about -1 (frustrated) to 1 (delighted). These
+ * shapes are the diagram: basic rises quickly and levels off below delight,
+ * performance is a straight "more is better" line, delighters stay quiet until
+ * they are present, indifferent is flat, and reverse falls as implementation grows.
+ * `satisfactionLabel` then buckets that number into the five words the widgets show.
+ * Changing either the exponents or the bucket edges changes those words.
+ */
+
 export type KanoCategory = "basic" | "performance" | "delighter" | "indifferent" | "reverse";
 
 export type KanoCategoryMeta = {
@@ -53,7 +65,7 @@ export const KANO_CATEGORIES: KanoCategoryMeta[] = [
   },
 ];
 
-/** Satisfaction from -1 (dissatisfied) to 1 (delighted) at implementation level t (0–1). */
+/** Satisfaction at implementation level `t` (clamped to 0–1). See the file note for each shape. */
 export function satisfactionAt(t: number, category: KanoCategory): number {
   const x = Math.min(1, Math.max(0, t));
 
@@ -88,7 +100,11 @@ export function sampleCurve(category: KanoCategory, steps = 40): Array<{ t: numb
   });
 }
 
-/** Morph delighter curve toward basic as market maturity increases (0–1). */
+/**
+ * Blend the delighter curve toward basic as market maturity goes from 0 to 1.
+ * This does not move `t`. A feature can be fully built and still sit on the
+ * basic curve once the market treats it as expected.
+ */
 export function shiftedSatisfactionAt(
   t: number,
   maturity: number,

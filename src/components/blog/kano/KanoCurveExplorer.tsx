@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import {
   KANO_CATEGORIES,
   satisfactionAt,
@@ -11,6 +11,28 @@ import { pathForCategory } from "./kano-chart";
 import { KanoChart } from "./KanoChart";
 import { KanoChip, FilterChipRow, KanoDetail, ClientMount } from "./KanoControls";
 import { KanoWidget } from "./KanoWidget";
+
+const CurveCategoryChips = memo(function CurveCategoryChips({
+  active,
+  onSelect,
+}: {
+  active: KanoCategory;
+  onSelect: (id: KanoCategory) => void;
+}) {
+  return (
+    <FilterChipRow label="Feature type">
+      {KANO_CATEGORIES.map((cat) => (
+        <KanoChip
+          key={cat.id}
+          label={cat.shortLabel}
+          selected={active === cat.id}
+          color={cat.color}
+          onClick={() => onSelect(cat.id)}
+        />
+      ))}
+    </FilterChipRow>
+  );
+});
 
 export function KanoCurveExplorer() {
   const [active, setActive] = useState<KanoCategory>("basic");
@@ -34,17 +56,7 @@ export function KanoCurveExplorer() {
       title="Satisfaction curves"
       hint="Hover the chart to explore. Select a feature type to compare curves."
     >
-      <FilterChipRow label="Feature type">
-        {KANO_CATEGORIES.map((cat) => (
-          <KanoChip
-            key={cat.id}
-            label={cat.shortLabel}
-            selected={active === cat.id}
-            color={cat.color}
-            onClick={() => setActive(cat.id)}
-          />
-        ))}
-      </FilterChipRow>
+      <CurveCategoryChips active={active} onSelect={setActive} />
 
       <ClientMount>
         <KanoChart
