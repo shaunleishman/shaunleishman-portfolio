@@ -4,8 +4,8 @@ import { useState } from "react";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FilterChipRow } from "@/components/blog/kano/KanoControls";
 import { cn } from "@/lib/utils";
-import { groupingHintIn, groupingMorphTransition } from "./grouping-motion";
-import { GroupingWidget } from "./GroupingWidget";
+import { groupingMorphTransition } from "./grouping-motion";
+import { GroupingLiveHint, GroupingWidget } from "./GroupingWidget";
 
 type Mode = "inconsistent" | "consistent" | "flattened";
 
@@ -76,7 +76,7 @@ function SimilarityCard({ card, mode, index }: { card: CardSpec; mode: Mode; ind
               : "size-7 rounded-full bg-[var(--color-accent)]/10",
             !showIcon && "size-0 opacity-0",
           )}
-          aria-hidden={!showIcon}
+          aria-hidden
         >
           ◆
         </span>
@@ -137,7 +137,7 @@ export function SimilarityExplorer() {
 
   return (
     <GroupingWidget title="Law of Similarity" hint="Similar things should look related. Different jobs should feel different.">
-      <FilterChipRow>
+      <FilterChipRow ariaLabel="Similarity layout">
         <FilterChip label="Inconsistent" selected={mode === "inconsistent"} onClick={() => setMode("inconsistent")} />
         <FilterChip label="Consistent" selected={mode === "consistent"} onClick={() => setMode("consistent")} accent="accent" />
         <FilterChip label="Too similar" selected={mode === "flattened"} onClick={() => setMode("flattened")} />
@@ -148,9 +148,7 @@ export function SimilarityExplorer() {
           <SimilarityCard key={card.title} card={card} mode={mode} index={index} />
         ))}
       </div>
-      <p key={mode} className={cn("mt-3 text-body-sm text-[var(--color-text-secondary)]", groupingHintIn)}>
-        {hint}
-      </p>
+      <GroupingLiveHint text={hint} />
     </GroupingWidget>
   );
 }

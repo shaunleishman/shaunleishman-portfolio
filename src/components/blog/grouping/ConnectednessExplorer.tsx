@@ -7,12 +7,11 @@ import { cn } from "@/lib/utils";
 import { GroupingAnimatedPanel } from "./GroupingAnimatedPanel";
 import {
   groupingConnectorIn,
-  groupingHintIn,
   groupingMorphTransition,
   groupingPanelIn,
   groupingStaggerDelay,
 } from "./grouping-motion";
-import { GroupingWidget } from "./GroupingWidget";
+import { GroupingLiveHint, GroupingWidget } from "./GroupingWidget";
 
 type Mode = "floating" | "stepper" | "timeline" | "parent";
 
@@ -139,7 +138,7 @@ export function ConnectednessExplorer() {
       title="Law of Uniform Connectedness"
       hint="Visible links show sequence, dependency, or progress."
     >
-      <FilterChipRow>
+      <FilterChipRow ariaLabel="Connectedness layout">
         <FilterChip label="Floating" selected={mode === "floating"} onClick={() => setMode("floating")} />
         <FilterChip label="Stepper" selected={mode === "stepper"} onClick={() => setMode("stepper")} accent="accent" />
         <FilterChip label="Timeline" selected={mode === "timeline"} onClick={() => setMode("timeline")} />
@@ -213,9 +212,7 @@ export function ConnectednessExplorer() {
         </GroupingAnimatedPanel>
       </div>
 
-      <p key={mode} className={cn("mt-3 text-body-sm text-[var(--color-text-secondary)]", groupingHintIn)}>
-        {HINTS[mode]}
-      </p>
+      <GroupingLiveHint text={HINTS[mode]} />
     </GroupingWidget>
   );
 }

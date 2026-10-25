@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { groupingHintIn } from "./grouping-motion";
 
 type GroupingWidgetProps = {
   title: string;
@@ -23,5 +24,31 @@ export function GroupingWidget({ title, hint, children, className }: GroupingWid
       </header>
       <div className="p-4">{children}</div>
     </aside>
+  );
+}
+
+/**
+ * Status line under a grouping explorer.
+ * The paragraph stays mounted so `aria-live` hears the new text. The span
+ * remounts, which replays the fade without changing the line box.
+ */
+export function GroupingLiveHint({
+  text,
+  className,
+  textClassName,
+}: {
+  text: string;
+  className?: string;
+  textClassName?: string;
+}) {
+  return (
+    <p
+      className={cn("mt-3 text-body-sm text-[var(--color-text-secondary)]", className)}
+      aria-live="polite"
+    >
+      <span key={text} className={cn(groupingHintIn, textClassName)}>
+        {text}
+      </span>
+    </p>
   );
 }

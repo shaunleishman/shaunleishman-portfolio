@@ -4,8 +4,8 @@ import { useState } from "react";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FilterChipRow } from "@/components/blog/kano/KanoControls";
 import { cn } from "@/lib/utils";
-import { groupingHintIn, groupingMorphTransition } from "./grouping-motion";
-import { GroupingWidget } from "./GroupingWidget";
+import { groupingCollapsedProps, groupingMorphTransition } from "./grouping-motion";
+import { GroupingLiveHint, GroupingWidget } from "./GroupingWidget";
 
 type Mode = "split" | "over-boxed" | "card" | "space";
 
@@ -60,7 +60,7 @@ export function CommonRegionExplorer() {
       title="Law of Common Region"
       hint="Elements in the same visual area feel grouped — a box is not the only way to do it."
     >
-      <FilterChipRow>
+      <FilterChipRow ariaLabel="Common region layout">
         <FilterChip label="Split heading" selected={mode === "split"} onClick={() => setMode("split")} />
         <FilterChip label="Over-boxed" selected={mode === "over-boxed"} onClick={() => setMode("over-boxed")} />
         <FilterChip label="Full card" selected={mode === "card"} onClick={() => setMode("card")} accent="accent" />
@@ -83,6 +83,7 @@ export function CommonRegionExplorer() {
             "grid motion-safe:transition-[grid-template-rows,opacity,margin-bottom] motion-safe:duration-500 motion-safe:ease-out",
             isSplit ? "mb-0 grid-rows-[1fr] opacity-100" : "mb-0 grid-rows-[0fr] opacity-0",
           )}
+          {...groupingCollapsedProps(isSplit)}
         >
           <div className="overflow-hidden">
             <h4 className="text-[0.9375rem] font-semibold text-[var(--color-text-primary)]">{heading}</h4>
@@ -100,6 +101,7 @@ export function CommonRegionExplorer() {
               "grid motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-500 motion-safe:ease-out",
               headingInside ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
             )}
+            {...groupingCollapsedProps(headingInside)}
           >
             <div className="overflow-hidden">
               <h4 className="text-[0.9375rem] font-semibold text-[var(--color-text-primary)]">{heading}</h4>
@@ -127,6 +129,7 @@ export function CommonRegionExplorer() {
               "grid motion-safe:transition-[grid-template-rows,opacity,margin-top] motion-safe:duration-500 motion-safe:ease-out",
               showFaq ? "mt-4 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0",
             )}
+            {...groupingCollapsedProps(showFaq)}
           >
             <div className="overflow-hidden">
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed border-[var(--color-border)] px-3 py-2">
@@ -138,9 +141,7 @@ export function CommonRegionExplorer() {
         </div>
       </div>
 
-      <p key={mode} className={cn("mt-3 text-body-sm text-[var(--color-text-secondary)]", groupingHintIn)}>
-        {HINTS[mode]}
-      </p>
+      <GroupingLiveHint text={HINTS[mode]} />
     </GroupingWidget>
   );
 }
