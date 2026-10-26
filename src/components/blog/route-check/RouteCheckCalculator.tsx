@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type KeyboardEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,16 +20,18 @@ import { KanoWidget } from "@/components/blog/kano/KanoWidget";
 import {
   ROUTE_BANDS,
   ROUTE_CHECK_QUESTIONS,
+  adjacentOptionScore,
   getRouteBand,
+  isRouteOptionKey,
   sumAnswers,
   type RouteBand,
 } from "@/components/blog/route-check/route-check-data";
 import {
   RouteCheckFinale,
   RouteCheckPanel,
+  RouteCheckScoreValue,
   routeCheckStepClass,
   staggerStyle,
-  useAnimatedScore,
 } from "@/components/blog/route-check/RouteCheckMotion";
 import { cn } from "@/lib/utils";
 
@@ -86,6 +88,22 @@ export function RouteCheckCalculator() {
       next[step] = score;
       return next;
     });
+  }
+
+  function onOptionKeyDown(
+    event: KeyboardEvent<HTMLButtonElement>,
+    score: number,
+    optionCount: number,
+  ) {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (!isRouteOptionKey(event.key)) return;
+
+    event.preventDefault();
+    const nextScore = adjacentOptionScore(score, optionCount, event.key);
+    selectAnswer(nextScore);
+    event.currentTarget.parentElement
+      ?.querySelector<HTMLButtonElement>(`[data-score="${nextScore}"]`)
+      ?.focus();
   }
 
   function startSurvey() {
@@ -149,7 +167,7 @@ export function RouteCheckCalculator() {
                 aria-label="Survey progress"
               >
                 <div
-                  className="h-full rounded-full bg-[var(--color-accent)] transition-all duration-500 ease-out"
+                  className="h-full rounded-full bg-[var(--color-accent)] transition-[width] duration-500 ease-out"
                   style={{ width: `${((step + 1) / QUESTION_COUNT) * 100}%` }}
                 />
               </div>
@@ -157,12 +175,18 @@ export function RouteCheckCalculator() {
           </div>
 
           <RouteCheckPanel panelKey={`step-${step}`}>
-            <fieldset>
-              <legend className="text-body-lg font-semibold leading-snug text-[var(--color-text-primary)]">
+            <fieldset className="min-w-0">
+              <legend
+                id={`${baseId}-q-${step}`}
+                className="text-body-lg font-semibold leading-snug text-[var(--color-text-primary)]"
+              >
                 {currentQuestion.question}
               </legend>
               {currentQuestion.hint && (
-                <p className="mt-1 text-[0.8125rem] text-[var(--color-text-muted)]">
+                <p
+                  id={`${baseId}-hint-${step}`}
+                  className="mt-1 text-[0.8125rem] text-[var(--color-text-muted)]"
+                >
                   {currentQuestion.hint}
                 </p>
               )}
@@ -170,10 +194,10 @@ export function RouteCheckCalculator() {
                 className="mt-3 flex flex-col gap-2"
                 role="radiogroup"
                 aria-labelledby={`${baseId}-q-${step}`}
+                aria-describedby={
+                  currentQuestion.hint ? `${baseId}-hint-${step}` : undefined
+                }
               >
-                <span id={`${baseId}-q-${step}`} className="sr-only">
-                  {currentQuestion.question}
-                </span>
                 {currentQuestion.options.map((label, index) => {
                   const score = index + 1;
                   const selected = currentAnswer === score;
@@ -182,8 +206,12 @@ export function RouteCheckCalculator() {
                       key={label}
                       type="button"
                       role="radio"
+                      data-score={score}
                       aria-checked={selected}
                       onClick={() => selectAnswer(score)}
+                      onKeyDown={(event) =>
+                        onOptionKeyDown(event, score, currentQuestion.options.length)
+                      }
                       style={staggerStyle(index, 45)}
                       className={cn(
                         routeCheckStepClass(),
@@ -332,10 +360,12 @@ type RouteCheckResultsProps = {
 
 function RouteCheckResults({ total, band, onRestart }: RouteCheckResultsProps) {
   const BandIcon = BAND_ICONS[band.id];
-  const animatedScore = useAnimatedScore(total, true);
 
   return (
-    <div aria-live="polite">
+    <div>
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
+        Your Route Check score is {total} out of 50. {band.label}. {band.description}
+      </p>
       <div
         className="overflow-hidden rounded-2xl border motion-safe:animate-[route-check-score-pop_0.55s_ease-out_both]"
         style={{
@@ -350,12 +380,11 @@ function RouteCheckResults({ total, band, onRestart }: RouteCheckResultsProps) {
             <p className="text-label text-[var(--color-text-muted)]">Your Route Check score</p>
 
             <div className="mt-1 flex items-baseline justify-center gap-1.5 sm:justify-start">
-              <span
+              <RouteCheckScoreValue
+                target={total}
                 className="text-[clamp(2.75rem,7vw,3.75rem)] font-semibold tabular-nums leading-none tracking-tight"
                 style={{ color: band.color }}
-              >
-                {animatedScore}
-              </span>
+              />
               <span className="text-h3 font-normal text-[var(--color-text-muted)]">/ 50</span>
             </div>
 

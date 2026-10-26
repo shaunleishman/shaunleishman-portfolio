@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useLayoutEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   getRouteBandTone,
@@ -8,6 +8,29 @@ import {
   type RouteBandTone,
 } from "@/components/blog/route-check/route-check-data";
 import { cn } from "@/lib/utils";
+
+/**
+ * Motion for the Route Check widget.
+ *
+ * `RouteCheckPanel` puts `panelKey` on the animated node. The parent renders
+ * one panel per phase, so the key has to sit on that node for
+ * `route-check-enter` to replay when the question changes.
+ *
+ * `route-check-step-in` animates `transform` and uses fill `both` so a
+ * staggered row stays hidden during its delay. A selected option scales with
+ * Tailwind's `scale` property, which is separate from `transform`. Folding
+ * that scale into the keyframe lets the fill mode cancel the selection scale.
+ *
+ * The score counts from 0 to the total over 700ms with an ease-out cubic.
+ * The frame state lives in `RouteCheckScoreValue`, so a tick re-renders the
+ * number and not the finale or the band list. A parent live region must not
+ * wrap that number: it would announce every tick. The results screen
+ * announces the finished total once. Reduced motion shows that total before
+ * paint.
+ *
+ * The survey bar transitions `width` only, over 500ms. `transition-all` was
+ * also watching every other property on the bar.
+ */
 
 const SPARK_OFFSETS = [
   { x: 0, y: -26 },
@@ -40,27 +63,35 @@ export function RouteCheckPanel({
   );
 }
 
-export function useAnimatedScore(target: number, active: boolean) {
-  const [display, setDisplay] = useState(active ? 0 : target);
+const SCORE_COUNT_MS = 700;
 
-  useEffect(() => {
-    if (!active) {
-      setDisplay(target);
-      return;
-    }
+type RouteCheckScoreValueProps = {
+  target: number;
+  className?: string;
+  style?: CSSProperties;
+};
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) {
-      setDisplay(target);
-      return;
-    }
+export function RouteCheckScoreValue({ target, className, style }: RouteCheckScoreValueProps) {
+  const [display, setDisplay] = useState(0);
 
-    const duration = 700;
-    const start = performance.now();
+  useLayoutEffect(() => {
     let frame = 0;
+    let cancelled = false;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      queueMicrotask(() => {
+        if (!cancelled) setDisplay(target);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const start = performance.now();
 
     const tick = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1);
+      if (cancelled) return;
+      const progress = Math.min((now - start) / SCORE_COUNT_MS, 1);
       const eased = 1 - (1 - progress) ** 3;
       setDisplay(Math.round(eased * target));
       if (progress < 1) {
@@ -68,12 +99,18 @@ export function useAnimatedScore(target: number, active: boolean) {
       }
     };
 
-    setDisplay(0);
     frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [active, target]);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
+  }, [target]);
 
-  return display;
+  return (
+    <span className={className} style={style}>
+      {display}
+    </span>
+  );
 }
 
 type RouteCheckFinaleProps = {

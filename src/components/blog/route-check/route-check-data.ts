@@ -1,3 +1,25 @@
+/**
+ * Route Check scores one screen from ten questions.
+ *
+ * Each question lists five options from most tiring to least. The first
+ * option scores 1 and the last scores 5, and that number is the badge on
+ * the option. Reordering an option changes its score.
+ *
+ * A finished check sums those scores, so the total is between 10 and 50.
+ * `sumAnswers` stays null until every question has an answer, which keeps a
+ * partial total off the results.
+ *
+ * Bands are inclusive and meet with no gaps: 10–20, 21–30, 31–40, 41–50.
+ * The label, colour, and finale all come from the band that contains the
+ * total. `getRouteBand` falls back to the first band only for a total
+ * outside 10–50, which this calculator cannot produce.
+ *
+ * Tones: `smooth` is positive, `heavy` is negative, and the two middle
+ * bands are mixed. Finale motion follows the tone.
+ *
+ * Arrow keys, Home, and End move between option scores and wrap. The
+ * options themselves stay in the tab order.
+ */
 export type RouteCheckQuestion = {
   id: number;
   question: string;
@@ -138,4 +160,21 @@ export function getRouteBandTone(bandId: RouteBand["id"]): RouteBandTone {
 export function sumAnswers(answers: Array<number | null>): number | null {
   if (answers.some((value) => value === null)) return null;
   return answers.reduce<number>((sum, value) => sum + (value ?? 0), 0);
+}
+
+const OPTION_KEYS = ["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"] as const;
+
+export type RouteOptionKey = (typeof OPTION_KEYS)[number];
+
+export function isRouteOptionKey(key: string): key is RouteOptionKey {
+  return (OPTION_KEYS as readonly string[]).includes(key);
+}
+
+/** Score of the option an arrow, Home, or End key moves to. Scores are 1-based and wrap. */
+export function adjacentOptionScore(score: number, count: number, key: RouteOptionKey): number {
+  if (count < 1) return score;
+  if (key === "Home") return 1;
+  if (key === "End") return count;
+  if (key === "ArrowDown" || key === "ArrowRight") return (score % count) + 1;
+  return ((score - 2 + count) % count) + 1;
 }
