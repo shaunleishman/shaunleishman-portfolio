@@ -1,36 +1,98 @@
 "use client";
 
 import { Check, Copy } from "lucide-react";
-import { useCallback, useState } from "react";
-import { siteConfig } from "@/content/projects";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type EmailCopyActionProps = {
-  email?: string;
+  email: string;
   className?: string;
 };
 
-export function EmailCopyAction({ email = siteConfig.email, className }: EmailCopyActionProps) {
+/** Checkmark dwell. A newer copy restarts it; it does not stack. */
+const COPY_RESET_MS = 2000;
+
+/**
+ * Last-resort copy when `navigator.clipboard` is missing or rejects.
+ * `position: fixed` keeps the helper field from widening the page.
+ * Focus is restored so the copy button keeps the keyboard position it had.
+ */
+function legacyCopy(text: string): boolean {
+  const active = document.activeElement;
+  const input = document.createElement("textarea");
+  input.value = text;
+  input.setAttribute("readonly", "");
+  input.tabIndex = -1;
+  input.setAttribute("aria-hidden", "true");
+  input.style.position = "fixed";
+  input.style.inset = "0 auto auto 0";
+  input.style.width = "1px";
+  input.style.height = "1px";
+  input.style.opacity = "0";
+  input.style.pointerEvents = "none";
+  document.body.appendChild(input);
+
+  let ok = false;
+  try {
+    input.focus({ preventScroll: true });
+    input.select();
+    ok = document.execCommand("copy");
+  } catch {
+    ok = false;
+  } finally {
+    input.remove();
+    if (active instanceof HTMLElement) {
+      active.focus({ preventScroll: true });
+    }
+  }
+
+  return ok;
+}
+
+/**
+ * Email address plus the icon copy button on the contact card.
+ * The address stays plain text. A mailto link would add a second control.
+ * The check icon is only shown after a copy that actually succeeded.
+ */
+export function EmailCopyAction({ email, className }: EmailCopyActionProps) {
   const [copied, setCopied] = useState(false);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const requestId = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimer.current != null) clearTimeout(resetTimer.current);
+    };
+  }, []);
 
   const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(email);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const textarea = document.createElement("textarea");
-      textarea.value = email;
-      textarea.setAttribute("readonly", "");
-      textarea.style.position = "absolute";
-      textarea.style.left = "-9999px";
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
+    const id = ++requestId.current;
+    let ok = false;
+
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(email);
+        ok = true;
+      } catch {
+        ok = false;
+      }
     }
+
+    if (!ok) ok = legacyCopy(email);
+    if (requestId.current !== id) return;
+
+    if (resetTimer.current != null) clearTimeout(resetTimer.current);
+
+    if (!ok) {
+      setCopied(false);
+      return;
+    }
+
+    setCopied(true);
+    resetTimer.current = setTimeout(() => {
+      resetTimer.current = null;
+      setCopied(false);
+    }, COPY_RESET_MS);
   }, [email]);
 
   return (
@@ -50,6 +112,9 @@ export function EmailCopyAction({ email = siteConfig.email, className }: EmailCo
       >
         {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}
       </button>
+      <span className="sr-only" role="status" aria-live="polite">
+        {copied ? "Email copied to clipboard" : ""}
+      </span>
     </div>
   );
 }

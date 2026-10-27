@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { FileText } from "lucide-react";
 import { CvDownloadIconButton } from "@/components/cv/CvDownloadIconButton";
@@ -15,6 +13,7 @@ type ContactCvCardProps = {
 export function ContactCvCard({ title, description, href, label }: ContactCvCardProps) {
   return (
     <article className="surface-card-interactive relative flex h-full flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-6">
+      {/* Download stays its own control. The link below only opens the CV page. */}
       <CvDownloadIconButton className="absolute top-4 right-4" />
       <IconBadge icon={FileText} size="lg" variant="light" className="mb-4" />
       <h2 className="text-h4 font-semibold mb-2 pr-10">{title}</h2>

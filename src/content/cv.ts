@@ -1,5 +1,7 @@
 import { siteConfig } from "@/content/projects";
 
+export { getCvPdfFilename } from "@/lib/cv-pdf-filename";
+
 export type CvExperienceItem = {
   role: string;
   company: string;
@@ -110,8 +112,3 @@ export const cvContent: CvContent = {
   },
 };
 
-export function getCvPdfFilename(date = new Date()) {
-  const month = date.toLocaleString("en-GB", { month: "long" });
-  const year = date.getFullYear();
-  return `Shaun-Leishman-UX-Designer-CV-${month}-${year}.pdf`;
-}

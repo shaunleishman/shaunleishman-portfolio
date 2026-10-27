@@ -10,6 +10,13 @@ import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 import type { LucideIcon } from "lucide-react";
 
+/**
+ * Three cards, in order: email, LinkedIn, CV.
+ * The email address is text plus an icon copy button, not a mailto link.
+ * The CV card keeps "View CV" and the PDF download as separate actions.
+ * Card chrome stays the shared muted surface: radius, border, and hover lift.
+ */
+
 export const metadata: Metadata = {
   title: "Contact",
   description: `Get in touch with ${siteConfig.name}. Open to UX/UI design opportunities.`,
@@ -103,7 +110,7 @@ export default function ContactPage() {
                       {method.description}
                     </p>
                     {method.title === "Email" ? (
-                      <EmailCopyAction />
+                      <EmailCopyAction email={siteConfig.email} />
                     ) : (
                       <a
                         href={method.href}
