@@ -1,11 +1,12 @@
-import { siteConfig } from "@/content/projects";
-
-export type AboutBackgroundView = "professional" | "personal";
-
-export const eyesOfHome = {
-  name: "Eyes of Home",
-  instagramUrl: "https://www.instagram.com/eyes_of_home/",
-} as const;
+/**
+ * About page facts that do not read the project catalog.
+ * Background copy lives in `about-background.ts` so client sections can import
+ * this file without shipping every case study to the browser.
+ *
+ * Life-window photos are JPEG. Keep the `.jpg` extension: the site sends
+ * `X-Content-Type-Options: nosniff`, so a `.png` name would be served as
+ * `image/png` and the browser would refuse the file.
+ */
 
 export type AboutLifeWindow = {
   id: string;
@@ -22,7 +23,7 @@ export const aboutLifeWindows: readonly AboutLifeWindow[] = [
     id: "music",
     label: "Music",
     alt: "Shaun performing live with guitar",
-    src: "/images/profile-personal.png",
+    src: "/images/profile-personal.jpg",
     icon: "music",
     accent: "#7c3aed",
   },
@@ -30,7 +31,7 @@ export const aboutLifeWindows: readonly AboutLifeWindow[] = [
     id: "diving",
     label: "Diving",
     alt: "Shaun in scuba gear with a dive buddy",
-    src: "/images/about/diving.png",
+    src: "/images/about/diving.jpg",
     icon: "diving",
     accent: "#0891b2",
   },
@@ -38,7 +39,7 @@ export const aboutLifeWindows: readonly AboutLifeWindow[] = [
     id: "skiing",
     label: "Skiing",
     alt: "Shaun skiing on a sunny powder day",
-    src: "/images/about/skiing.png",
+    src: "/images/about/skiing.jpg",
     icon: "skiing",
     accent: "#475569",
   },
@@ -46,7 +47,7 @@ export const aboutLifeWindows: readonly AboutLifeWindow[] = [
     id: "travel",
     label: "Travel",
     alt: "Shaun in the desert with mountains in the background",
-    src: "/images/about/travel.png",
+    src: "/images/about/travel.jpg",
     icon: "travel",
     accent: "#d97706",
   },
@@ -54,7 +55,7 @@ export const aboutLifeWindows: readonly AboutLifeWindow[] = [
     id: "gaming",
     label: "Gaming",
     alt: "Shaun at a gaming setup with mechanical keyboard and PC",
-    src: "/images/about/gaming.png",
+    src: "/images/about/gaming.jpg",
     icon: "gaming",
     accent: "#4f46e5",
   },
@@ -125,40 +126,3 @@ export const aboutStatGroups: readonly AboutStatGroup[] = [
     ],
   },
 ] as const;
-
-export const aboutBackgroundViews = {
-  professional: {
-    label: "Professional",
-    heading: "Design informed by user research",
-    paragraphs: [
-      "I'm a research-led UX/UI designer. I start with discovery interviews and co-design workshops, then turn what I learn into wireframes, prototypes, and usability tests. Recently that's been healthcare with OMRON and NHS 111, and sustainability with Arbnco, where people must trust what they see before acting.",
-      siteConfig.quote,
-      "I'm looking for UX/UI design roles across interaction design and prototyping, where I help teams decide with real user evidence, not just polished screens.",
-    ],
-  },
-  personal: {
-    label: "Personal",
-    heading: "Off the clock",
-    paragraphs: [
-      "Design work can live in your head for hours. I balance that with things that get me outside, on stage, or hands-on with something physical.",
-      "I value straight talk, good humour, and never making anyone feel stupid for not knowing something. That's how I show up with friends, family, teams, and in the work itself.",
-      "If we work together, you'll get someone who cares about the craft and remembers there's a human on the other side of every screen.",
-    ],
-  },
-} as const satisfies Record<
-  AboutBackgroundView,
-  { label: string; heading: string; paragraphs: readonly string[] }
->;
-
-export const aboutBackgroundViewOrder: AboutBackgroundView[] = ["professional", "personal"];
-
-export const aboutProfilePhotos = {
-  professional: {
-    src: "/images/profile.png",
-    alt: `${siteConfig.name}, UX/UI designer`,
-  },
-  personal: {
-    src: "/images/profile-personal.png",
-    alt: `${siteConfig.name} performing live with guitar`,
-  },
-} as const satisfies Record<AboutBackgroundView, { src: string; alt: string }>;

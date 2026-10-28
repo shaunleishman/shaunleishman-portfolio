@@ -57,15 +57,16 @@ export function AboutStatsSection() {
                   <dl className="grid grid-cols-3 divide-x divide-[var(--color-border)]">
                     {group.stats.map((stat) => (
                       <div key={stat.label} className="flex flex-col gap-1.5 px-4 py-6 md:px-5">
+                        {/* Term before description keeps the pair valid. order keeps the figure on top. */}
+                        <dt className="order-2 text-body-sm leading-snug text-[var(--color-text-secondary)]">
+                          {stat.label}
+                        </dt>
                         <dd
-                          className="text-h3 font-semibold leading-none tabular-nums"
+                          className="order-1 text-h3 font-semibold leading-none tabular-nums"
                           style={{ color: group.accent }}
                         >
                           {stat.value}
                         </dd>
-                        <dt className="text-body-sm leading-snug text-[var(--color-text-secondary)]">
-                          {stat.label}
-                        </dt>
                       </div>
                     ))}
                   </dl>
