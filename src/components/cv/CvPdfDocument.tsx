@@ -263,6 +263,12 @@ function createStyles(density: CvPdfDensity) {
 
 type Styles = ReturnType<typeof createStyles>;
 
+/** Built once per density. The tokens do not change between renders. */
+const stylesByDensity: Record<CvPdfDensity, Styles> = {
+  default: createStyles("default"),
+  compact: createStyles("compact"),
+};
+
 function BulletList({ items, styles }: { items: string[]; styles: Styles }) {
   return (
     <>
@@ -376,7 +382,7 @@ export function CvPdfDocument({
   content = cvContent,
   density = "default",
 }: CvPdfDocumentProps) {
-  const styles = createStyles(density);
+  const styles = stylesByDensity[density];
 
   return (
     <Document title={`${siteConfig.name} CV`} author={siteConfig.name}>

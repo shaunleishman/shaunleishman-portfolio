@@ -798,4 +798,24 @@
     color: #3b66f5 !important;
     text-decoration: none;
   }
+
+  /*
+   * Reveal starts at opacity 0 until it scrolls in, and those utilities can beat
+   * print:opacity-100. Print the settled CV. Screen styles are outside this block.
+   * Fixed chrome (cookie bar, heatmap) is not part of the document.
+   */
+  .cv-document,
+  .cv-document * {
+    opacity: 1 !important;
+    translate: none !important;
+    transform: none !important;
+    scale: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  body:has(.cv-document) .skip-link,
+  body:has(.cv-document) .fixed {
+    display: none !important;
+  }
 }

@@ -12,6 +12,8 @@ export function DownloadCvButton() {
     setStatus("preparing");
     try {
       await downloadCvPdf();
+    } catch {
+      // Back to "Download CV". A failed save must not leave the button on "Preparing PDF…".
     } finally {
       setStatus("idle");
     }
