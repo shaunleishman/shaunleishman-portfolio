@@ -20,6 +20,8 @@ export function DownloadCoverLetterButton({ slug, className }: DownloadCoverLett
       setStatus("preparing");
       try {
         await downloadCoverLetterPdf(slug);
+      } catch {
+        // The button returns to idle. A failed save has no extra message.
       } finally {
         setStatus("idle");
       }

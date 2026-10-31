@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { renderToBuffer } from "@react-pdf/renderer";
-import { CvPdfDocument } from "@/components/cv/CvPdfDocument";
 import {
   getApplicationBySlug,
   getApplicationCvPdfFilename,
 } from "@/content/applications";
 import { getApplicationCvContent } from "@/content/application-cvs";
+import { getApplicationCvPdfBuffer } from "@/lib/application-cv-pdf-buffer";
 
 export const runtime = "nodejs";
 
@@ -23,9 +22,7 @@ export async function GET(_request: Request, context: RouteContext) {
   }
 
   try {
-    const buffer = await renderToBuffer(
-      <CvPdfDocument content={content} density="compact" />,
-    );
+    const buffer = await getApplicationCvPdfBuffer(content);
 
     return new NextResponse(new Uint8Array(buffer), {
       headers: {

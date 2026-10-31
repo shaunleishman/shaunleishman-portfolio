@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { renderToBuffer } from "@react-pdf/renderer";
-import { CoverLetterPdfDocument } from "@/components/cv/CoverLetterPdfDocument";
 import {
   getApplicationBySlug,
   getCoverLetterPdfFilename,
 } from "@/content/applications";
+import { getCoverLetterPdfBuffer } from "@/lib/cover-letter-pdf-buffer";
 
 export const runtime = "nodejs";
 
@@ -21,7 +20,7 @@ export async function GET(_request: Request, context: RouteContext) {
   }
 
   try {
-    const buffer = await renderToBuffer(<CoverLetterPdfDocument letter={application} />);
+    const buffer = await getCoverLetterPdfBuffer(application);
 
     return new NextResponse(new Uint8Array(buffer), {
       headers: {

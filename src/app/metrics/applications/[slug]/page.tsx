@@ -10,6 +10,7 @@ import {
   coverLetterShared,
   getApplicationBySlug,
   getApplicationSector,
+  toApplicationSummary,
 } from "@/content/applications";
 import { siteConfig } from "@/content/projects";
 
@@ -30,6 +31,7 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
   }
 
   const sector = getApplicationSector(application.sectorId);
+  const summary = toApplicationSummary(application);
   const { contact } = coverLetterShared;
 
   return (
@@ -48,7 +50,7 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
           </Link>
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <ApplicationOutcomeBadge outcomeId={application.outcomeId} />
-            <ApplicationDocumentChips application={application} />
+            <ApplicationDocumentChips application={summary} />
           </div>
           <p className="text-body-sm font-medium text-[var(--color-text-primary)]">
             {application.company}
@@ -58,7 +60,7 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
             {sector ? ` · ${sector.label}` : null}
           </p>
         </div>
-        <ApplicationDownloadButton application={application} />
+        <ApplicationDownloadButton application={summary} />
       </div>
 
       {application.learningNote ? (

@@ -1,8 +1,8 @@
-import type { Application } from "@/content/applications";
+import type { ApplicationSummary } from "@/content/application-model";
 import { cn } from "@/lib/utils";
 
 type ApplicationDocumentChipsProps = {
-  application: Application;
+  application: Pick<ApplicationSummary, "hasCv" | "hasCoverLetter">;
   className?: string;
 };
 

@@ -6,29 +6,29 @@ import { downloadApplicationCvPdf } from "@/components/cv/downloadApplicationCvP
 import { downloadCoverLetterPdf } from "@/components/cv/downloadCoverLetterPdf";
 import {
   getAvailableDocuments,
-  type Application,
   type ApplicationDocumentKind,
-} from "@/content/applications";
+  type ApplicationSummary,
+} from "@/content/application-model";
 import { cn } from "@/lib/utils";
 
 type ApplicationDownloadButtonProps = {
-  application: Application;
+  application: ApplicationSummary;
   className?: string;
 };
 
-type PreparingKind = ApplicationDocumentKind | "primary" | null;
+type PreparingKey = ApplicationDocumentKind | "primary";
 
 const DOC_LABELS: Record<ApplicationDocumentKind, string> = {
   cv: "CV",
   "cover-letter": "Cover letter",
 };
 
-async function downloadDocument(kind: ApplicationDocumentKind, slug: string) {
+async function downloadDocument(kind: ApplicationDocumentKind, application: ApplicationSummary) {
   if (kind === "cv") {
-    await downloadApplicationCvPdf(slug);
+    await downloadApplicationCvPdf(application.slug, application.cvMode);
     return;
   }
-  await downloadCoverLetterPdf(slug);
+  await downloadCoverLetterPdf(application.slug);
 }
 
 export function ApplicationDownloadButton({
@@ -37,19 +37,31 @@ export function ApplicationDownloadButton({
 }: ApplicationDownloadButtonProps) {
   const docs = getAvailableDocuments(application);
   const [modalOpen, setModalOpen] = useState(false);
-  const [preparing, setPreparing] = useState<PreparingKind>(null);
+  const [busyKeys, setBusyKeys] = useState<ReadonlySet<PreparingKey>>(() => new Set());
   const titleId = useId();
 
+  const setKeyBusy = useCallback((key: PreparingKey, on: boolean) => {
+    setBusyKeys((current) => {
+      if (current.has(key) === on) return current;
+      const next = new Set(current);
+      if (on) next.add(key);
+      else next.delete(key);
+      return next;
+    });
+  }, []);
+
   const runDownload = useCallback(
-    async (kind: ApplicationDocumentKind, preparingKey: PreparingKind = kind) => {
-      setPreparing(preparingKey);
+    async (kind: ApplicationDocumentKind, preparingKey: PreparingKey = kind) => {
+      setKeyBusy(preparingKey, true);
       try {
-        await downloadDocument(kind, application.slug);
+        await downloadDocument(kind, application);
+      } catch {
+        // The button returns to idle. A failed save has no extra message.
       } finally {
-        setPreparing(null);
+        setKeyBusy(preparingKey, false);
       }
     },
-    [application.slug],
+    [application, setKeyBusy],
   );
 
   const handlePrimaryClick = useCallback(
@@ -81,7 +93,7 @@ export function ApplicationDownloadButton({
     return null;
   }
 
-  const primaryBusy = preparing === "primary";
+  const primaryBusy = busyKeys.has("primary");
 
   return (
     <>
@@ -142,7 +154,7 @@ export function ApplicationDownloadButton({
 
             <ul className="space-y-3 p-5">
               {docs.map((kind) => {
-                const busy = preparing === kind;
+                const busy = busyKeys.has(kind);
                 return (
                   <li
                     key={kind}
