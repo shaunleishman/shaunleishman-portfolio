@@ -36,9 +36,13 @@ const ConsentContext = createContext<ConsentContextValue | null>(null);
 export function ConsentProvider({ children }: { children: ReactNode }) {
   const [consent, setConsent] = useState<StoredConsent | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // Session dismissal is read in an effect. Reading sessionStorage during render
+  // makes the first client render disagree with the server HTML.
+  const [sessionBannerDismissed, setSessionBannerDismissed] = useState(false);
 
   const syncFromStorage = useCallback(() => {
     setConsent(readConsentFromStorage());
+    setSessionBannerDismissed(isBannerDismissedForSession());
   }, []);
 
   useEffect(() => {
@@ -80,8 +84,7 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ConsentContextValue>(
     () => ({
       ready: consent !== null,
-      hasDecided:
-        (consent?.hasDecided ?? false) || isBannerDismissedForSession(),
+      hasDecided: (consent?.hasDecided ?? false) || sessionBannerDismissed,
       analytics: consent?.analytics ?? false,
       acceptAll,
       rejectOptional,
@@ -90,7 +93,16 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
       closeSettings,
       settingsOpen,
     }),
-    [acceptAll, closeSettings, consent, openSettings, rejectOptional, savePreferences, settingsOpen],
+    [
+      acceptAll,
+      closeSettings,
+      consent,
+      openSettings,
+      rejectOptional,
+      savePreferences,
+      sessionBannerDismissed,
+      settingsOpen,
+    ],
   );
 
   return <ConsentContext.Provider value={value}>{children}</ConsentContext.Provider>;

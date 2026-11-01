@@ -26,8 +26,9 @@ async function mirrorToAnalytics(
   slug: string,
 ) {
   try {
-    // Views become pageviews here so the dashboard counts them once. AnalyticsProvider
-    // skips article pageviews to avoid a second write for consenting visitors.
+    // Article pageviews are written only from here. AnalyticsProvider skips them
+    // so a consenting visitor is not counted twice. Callers must already have
+    // checked analytics consent for views.
     const type = action === "like" ? "blog_like" : action === "share" ? "blog_share" : "pageview";
     await writeEventAsync({
       id: crypto.randomUUID(),
@@ -80,13 +81,21 @@ export async function POST(request: NextRequest) {
     }
 
     const blogPath = blogPostPath(slug);
-    const { record, changed } = await incrementBlogEngagement(blogPath, action, sessionId);
-    if (changed) {
+    // Views update the public counter either way. The analytics pageview is a
+    // separate write and only happens when this browser says analytics is allowed.
+    // Likes and shares stay explicit actions: the public count and the analytics
+    // copy both follow a successful increment.
+    const analyticsConsent = action === "view" && body.analyticsConsent === true;
+    const { changed, mirroredView } = await incrementBlogEngagement(blogPath, action, sessionId, {
+      mirrorAnalyticsView: analyticsConsent,
+    });
+    if (action === "view" ? mirroredView : changed) {
       await mirrorToAnalytics(blogPath, action, sessionId, slug);
     }
 
     const stats = await getBlogEngagementForSlugAsync(slug);
-    return NextResponse.json({ ok: true, stats, record, changed });
+    // Session id lists stay on the server. `stats` is the public counts only.
+    return NextResponse.json({ ok: true, stats, changed });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

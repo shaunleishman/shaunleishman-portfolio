@@ -17,12 +17,21 @@ export type BlogEngagementRecord = {
   shares: number;
   viewedSessions: string[];
   likedSessions: string[];
+  /** Sessions already copied into analytics as an article pageview. */
+  analyticsViewSessions: string[];
 };
 
 export type BlogEngagementStore = Record<string, BlogEngagementRecord>;
 
 function emptyRecord(): BlogEngagementRecord {
-  return { views: 0, likes: 0, shares: 0, viewedSessions: [], likedSessions: [] };
+  return {
+    views: 0,
+    likes: 0,
+    shares: 0,
+    viewedSessions: [],
+    likedSessions: [],
+    analyticsViewSessions: [],
+  };
 }
 
 function localFilePath(): string {
@@ -39,11 +48,16 @@ function ensureLocalFile(filePath: string) {
   }
 }
 
+function sessionIds(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((id): id is string => typeof id === "string") : [];
+}
+
 function trimSessions(record: BlogEngagementRecord): BlogEngagementRecord {
   return {
     ...record,
     viewedSessions: record.viewedSessions.slice(-MAX_SESSION_IDS),
     likedSessions: record.likedSessions.slice(-MAX_SESSION_IDS),
+    analyticsViewSessions: record.analyticsViewSessions.slice(-MAX_SESSION_IDS),
   };
 }
 
@@ -58,12 +72,9 @@ function normalizeStore(raw: unknown): BlogEngagementStore {
       views: Number(entry.views) || 0,
       likes: Number(entry.likes) || 0,
       shares: Number(entry.shares) || 0,
-      viewedSessions: Array.isArray(entry.viewedSessions)
-        ? entry.viewedSessions.filter((id): id is string => typeof id === "string")
-        : [],
-      likedSessions: Array.isArray(entry.likedSessions)
-        ? entry.likedSessions.filter((id): id is string => typeof id === "string")
-        : [],
+      viewedSessions: sessionIds(entry.viewedSessions),
+      likedSessions: sessionIds(entry.likedSessions),
+      analyticsViewSessions: sessionIds(entry.analyticsViewSessions),
     });
   }
   return store;
@@ -126,17 +137,30 @@ export async function incrementBlogEngagement(
   blogPath: string,
   action: BlogEngagementAction,
   sessionId: string,
-): Promise<{ record: BlogEngagementRecord; changed: boolean }> {
+  options?: { mirrorAnalyticsView?: boolean },
+): Promise<{ record: BlogEngagementRecord; changed: boolean; mirroredView: boolean }> {
   const store = await readBlogEngagementStore();
   const current = store[blogPath] ?? emptyRecord();
-  const next = { ...current };
+  const next = {
+    ...current,
+    analyticsViewSessions: current.analyticsViewSessions ?? [],
+  };
   let changed = false;
+  let mirroredView = false;
 
   if (action === "view") {
     if (!next.viewedSessions.includes(sessionId)) {
       next.views += 1;
       next.viewedSessions = [...next.viewedSessions, sessionId];
       changed = true;
+    }
+
+    if (
+      options?.mirrorAnalyticsView &&
+      !next.analyticsViewSessions.includes(sessionId)
+    ) {
+      next.analyticsViewSessions = [...next.analyticsViewSessions, sessionId];
+      mirroredView = true;
     }
   }
 
@@ -154,12 +178,12 @@ export async function incrementBlogEngagement(
   }
 
   const trimmed = trimSessions(next);
-  if (changed) {
+  if (changed || mirroredView) {
     store[blogPath] = trimmed;
     await writeBlogEngagementStore(store);
   }
 
-  return { record: trimmed, changed };
+  return { record: trimmed, changed, mirroredView };
 }
 
 export function getBlogEngagementRecord(

@@ -22,6 +22,7 @@ import {
   recordBlogArticleView,
   trackBlogEngagement,
 } from "@/lib/analytics-client";
+import { useConsent } from "@/components/consent/ConsentProvider";
 import { useBlogEngagementStats } from "@/hooks/useBlogEngagementStats";
 import { cn } from "@/lib/utils";
 import { BlogEngagementStatsDisplay } from "@/components/blog/BlogEngagementStats";
@@ -66,6 +67,7 @@ export function BlogPostEngagement({
   children,
 }: BlogPostEngagementProps) {
   const { stats, setStats } = useBlogEngagementStats(slug, initialStats);
+  const { ready: consentReady, analytics: analyticsAllowed } = useConsent();
   const [liked, setLiked] = useState(false);
   const [liking, setLiking] = useState(false);
 
@@ -74,12 +76,18 @@ export function BlogPostEngagement({
   }, [slug]);
 
   useEffect(() => {
+    if (!consentReady) return;
+
+    let cancelled = false;
     void recordBlogArticleView(slug).then((nextStats) => {
-      if (nextStats) {
-        setStats((current) => mergeBlogEngagementStats(current, nextStats));
-      }
+      if (cancelled || !nextStats) return;
+      setStats((current) => mergeBlogEngagementStats(current, nextStats));
     });
-  }, [slug, setStats]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [analyticsAllowed, consentReady, setStats, slug]);
 
   const linkedInHref = useMemo(
     () => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,

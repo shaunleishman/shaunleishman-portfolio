@@ -53,7 +53,13 @@ function parseStoredConsent(raw: string | null): StoredConsent {
 
 const LEGACY_CONSENT_STORAGE_KEY = "cookie_consent_v1";
 
+let legacyMigrationChecked = false;
+
 function migrateLegacyConsent(): void {
+  // Accept-all checks call this on every read. One pass per page load is enough.
+  if (legacyMigrationChecked) return;
+  legacyMigrationChecked = true;
+
   const legacy = localStorage.getItem(LEGACY_CONSENT_STORAGE_KEY);
   if (!legacy || localStorage.getItem(CONSENT_STORAGE_KEY)) return;
 
@@ -123,16 +129,17 @@ export function isBannerDismissedForSession(): boolean {
   return sessionStorage.getItem(CONSENT_SESSION_BANNER_DISMISS_KEY) === "1";
 }
 
-/** Reject optional cookies for this visit only; banner will show again next time. */
+/**
+ * Reject optional cookies for this visit only. The stored accept choice is left
+ * as-is; the session flag turns analytics off until the tab closes. The banner
+ * stays hidden for this visit and shows again next time if the visitor has not
+ * accepted.
+ */
 export function rejectOptionalForSession(): StoredConsent {
   sessionStorage.setItem(CONSENT_SESSION_DENY_KEY, "1");
   dismissBannerForSession();
   window.dispatchEvent(new Event(CONSENT_UPDATED_EVENT));
-  return {
-    hasDecided: false,
-    updatedAt: "",
-    analytics: false,
-  };
+  return readConsentFromStorage();
 }
 
 export function dismissBannerUntilNextVisit(): void {
@@ -140,6 +147,7 @@ export function dismissBannerUntilNextVisit(): void {
   window.dispatchEvent(new Event(CONSENT_UPDATED_EVENT));
 }
 
+/** True only after Accept all (or analytics saved on) and not rejected for this visit. */
 export function isAnalyticsAllowed(): boolean {
   const consent = readConsentFromStorage();
   return consent.hasDecided && consent.analytics;

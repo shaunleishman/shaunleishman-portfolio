@@ -64,10 +64,23 @@ export async function trackBlogEngagement(
   }
 }
 
-export async function recordBlogArticleView(slug: string): Promise<BlogEngagementStats | null> {
-  if (typeof window === "undefined") return null;
+const articleViewChain = new Map<string, Promise<BlogEngagementStats | null>>();
+
+function articleViewStorageKey(slug: string): string {
+  return `blog_view_${slug}`;
+}
+
+function articleViewMirrorKey(slug: string): string {
+  return `blog_view_mirrored_${slug}`;
+}
+
+async function postBlogArticleView(slug: string): Promise<BlogEngagementStats | null> {
   if (await isMetricsTrackingExcluded()) return null;
-  if (sessionStorage.getItem(`blog_view_${slug}`) === "1") return null;
+
+  const analyticsConsent = isAnalyticsAllowed();
+  const viewed = sessionStorage.getItem(articleViewStorageKey(slug)) === "1";
+  const mirrored = sessionStorage.getItem(articleViewMirrorKey(slug)) === "1";
+  if (viewed && (!analyticsConsent || mirrored)) return null;
 
   const sessionId = getAnalyticsSessionId();
   if (!sessionId) return null;
@@ -76,18 +89,37 @@ export async function recordBlogArticleView(slug: string): Promise<BlogEngagemen
     const res = await fetch("/api/blog/engagement", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, action: "view", sessionId }),
+      body: JSON.stringify({ slug, action: "view", sessionId, analyticsConsent }),
       keepalive: true,
     });
 
     if (!res.ok) return null;
 
-    sessionStorage.setItem(`blog_view_${slug}`, "1");
+    sessionStorage.setItem(articleViewStorageKey(slug), "1");
+    if (analyticsConsent) sessionStorage.setItem(articleViewMirrorKey(slug), "1");
     const data = (await res.json()) as { stats?: BlogEngagementStats };
     return data.stats ?? null;
   } catch {
     return null;
   }
+}
+
+/**
+ * Count one public article view per tab, and copy it into analytics only when
+ * analytics consent is on. Calls for the same slug run one after another so a
+ * second effect pass cannot double-count. Call again after consent is granted:
+ * the public count stays put and the analytics pageview is sent once.
+ */
+export function recordBlogArticleView(slug: string): Promise<BlogEngagementStats | null> {
+  if (typeof window === "undefined") return Promise.resolve(null);
+
+  const previous = articleViewChain.get(slug) ?? Promise.resolve(null);
+  const next = previous.then(
+    () => postBlogArticleView(slug),
+    () => postBlogArticleView(slug),
+  );
+  articleViewChain.set(slug, next);
+  return next;
 }
 
 export function isPassiveAnalyticsAllowed(): boolean {

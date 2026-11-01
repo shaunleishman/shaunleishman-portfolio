@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useConsent } from "@/components/consent/ConsentProvider";
 import { CONSENT_CATEGORIES } from "@/lib/consent";
 
@@ -27,7 +28,9 @@ function ConsentToggle({
         type="checkbox"
         checked={checked}
         disabled={disabled}
-        onChange={(e) => onChange?.(e.target.checked)}
+        onChange={
+          disabled ? () => {} : (event) => onChange?.(event.target.checked)
+        }
         className="mt-1 size-4 shrink-0 rounded border-[var(--color-border)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
       />
       <div>
@@ -45,9 +48,17 @@ function ConsentToggle({
 
 function CookieConsentSettings() {
   const { settingsOpen, closeSettings, savePreferences, analytics } = useConsent();
+  const pathname = usePathname();
+  const pathnameRef = useRef(pathname);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const [draftAnalytics, setDraftAnalytics] = useState(analytics);
+
+  useEffect(() => {
+    if (pathnameRef.current === pathname) return;
+    pathnameRef.current = pathname;
+    closeSettings();
+  }, [closeSettings, pathname]);
 
   useEffect(() => {
     if (settingsOpen) {
@@ -176,7 +187,30 @@ function CookieConsentBanner() {
   );
 }
 
+function subscribeToMountedStore() {
+  return () => {};
+}
+
+function getMountedSnapshot() {
+  return true;
+}
+
+function getServerMountedSnapshot() {
+  return false;
+}
+
 export function CookieConsent() {
+  // Server snapshot stays false so the hydration render matches the empty server
+  // HTML. Consent is applied in an effect; painting the banner in that first
+  // render is what mismatched the settings dialog. A closed dialog is not visible.
+  const mounted = useSyncExternalStore(
+    subscribeToMountedStore,
+    getMountedSnapshot,
+    getServerMountedSnapshot,
+  );
+
+  if (!mounted) return null;
+
   return (
     <>
       <CookieConsentBanner />
