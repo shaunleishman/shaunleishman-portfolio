@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeEventAsync, writeEventsAsync, getAnalyticsSummary, readEventsAsync } from "@/lib/analytics";
+import { writeEventAsync, writeEventsAsync, getAnalyticsSummary } from "@/lib/analytics";
 import { normalizeAnalyticsPath } from "@/lib/analytics-paths";
 import { METRICS_COOKIE_NAME } from "@/lib/metrics-config";
 import { verifyMetricsPassword, verifyMetricsSessionToken } from "@/lib/metrics-auth";
@@ -21,9 +21,41 @@ const VALID_TYPES = [
   "blog_share",
 ] as const;
 
+const MAX_SESSION_ID_LENGTH = 128;
+const MAX_PATH_LENGTH = 512;
+const MAX_METADATA_KEYS = 32;
+const MAX_METADATA_KEY_LENGTH = 64;
+const MAX_METADATA_STRING = 4000;
+
+function sanitizeMetadata(metadata: unknown): Record<string, string | number> | undefined {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) return undefined;
+
+  const clean: Record<string, string | number> = {};
+  for (const [key, value] of Object.entries(metadata)) {
+    if (Object.keys(clean).length >= MAX_METADATA_KEYS) break;
+    if (key.length === 0 || key.length > MAX_METADATA_KEY_LENGTH) continue;
+    if (typeof value === "string") {
+      if (value.length === 0) continue;
+      clean[key] = value.length > MAX_METADATA_STRING ? value.slice(0, MAX_METADATA_STRING) : value;
+    } else if (typeof value === "number" && Number.isFinite(value)) {
+      clean[key] = value;
+    }
+  }
+
+  return Object.keys(clean).length > 0 ? clean : undefined;
+}
+
 function normalizeEvent(raw: Record<string, unknown>) {
   const { sessionId, type, path, metadata } = raw;
   if (typeof sessionId !== "string" || typeof type !== "string" || typeof path !== "string") {
+    return null;
+  }
+  if (
+    sessionId.length === 0 ||
+    sessionId.length > MAX_SESSION_ID_LENGTH ||
+    path.length === 0 ||
+    path.length > MAX_PATH_LENGTH
+  ) {
     return null;
   }
   if (!VALID_TYPES.includes(type as (typeof VALID_TYPES)[number])) {
@@ -36,7 +68,7 @@ function normalizeEvent(raw: Record<string, unknown>) {
     type: type as (typeof VALID_TYPES)[number],
     path: normalizeAnalyticsPath(path),
     timestamp: new Date().toISOString(),
-    metadata: metadata as Record<string, string | number> | undefined,
+    metadata: sanitizeMetadata(metadata),
   };
 }
 
@@ -78,20 +110,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing or invalid fields" }, { status: 400 });
     }
 
-    if (event.type === "blog_like") {
-      const events = await readEventsAsync();
-      const alreadyLiked = events.some(
-        (existing) =>
-          existing.type === "blog_like" &&
-          existing.path === event.path &&
-          existing.sessionId === event.sessionId,
-      );
-      if (alreadyLiked) {
-        return NextResponse.json({ ok: true, duplicate: true });
-      }
+    const { duplicate } = await writeEventAsync(event);
+    if (duplicate) {
+      return NextResponse.json({ ok: true, duplicate: true });
     }
-
-    await writeEventAsync(event);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });

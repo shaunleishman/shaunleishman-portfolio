@@ -9,7 +9,7 @@ import {
   isOtherImprovement,
   type FeedbackVariant,
 } from "@/lib/feedback-config";
-import { isPassiveAnalyticsAllowed } from "@/lib/analytics-client";
+import { getAnalyticsSessionId, isPassiveAnalyticsAllowed } from "@/lib/analytics-client";
 import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FeedbackSubmittedNotice } from "@/components/ui/FeedbackSubmittedNotice";
@@ -87,13 +87,13 @@ export function CaseStudyFeedback({
       }
 
       try {
-        const sessionId =
-          sessionStorage.getItem("analytics_session") ??
-          (() => {
-            const id = crypto.randomUUID();
-            sessionStorage.setItem("analytics_session", id);
-            return id;
-          })();
+        const sessionId = getAnalyticsSessionId();
+        if (!sessionId) {
+          setSubmitted(true);
+          setSubmitting(false);
+          setStep("done");
+          return;
+        }
 
         await fetch("/api/analytics", {
           method: "POST",

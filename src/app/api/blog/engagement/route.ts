@@ -69,8 +69,15 @@ export async function POST(request: NextRequest) {
     const slug = typeof body.slug === "string" ? body.slug : null;
     const action = body.action;
     const sessionId = typeof body.sessionId === "string" ? body.sessionId : null;
+    const analyticsConsent = body.analyticsConsent === true;
 
-    if (!slug || !isValidAction(action) || !sessionId) {
+    if (
+      !slug ||
+      slug.length > 180 ||
+      !isValidAction(action) ||
+      !sessionId ||
+      sessionId.length > 128
+    ) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
 
@@ -80,13 +87,18 @@ export async function POST(request: NextRequest) {
     }
 
     const blogPath = blogPostPath(slug);
-    const { record, changed } = await incrementBlogEngagement(blogPath, action, sessionId);
-    if (changed) {
+    // Views mirror only when this session has analytics consent. Likes and
+    // shares still mirror when the public count changes. The response stays
+    // { ok, stats, changed } — session id lists are not public.
+    const { changed, mirrorAnalytics } = await incrementBlogEngagement(blogPath, action, sessionId, {
+      analyticsConsent: action === "view" && analyticsConsent,
+    });
+    if (mirrorAnalytics) {
       await mirrorToAnalytics(blogPath, action, sessionId, slug);
     }
 
     const stats = await getBlogEngagementForSlugAsync(slug);
-    return NextResponse.json({ ok: true, stats, record, changed });
+    return NextResponse.json({ ok: true, stats, changed });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

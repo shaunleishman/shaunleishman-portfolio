@@ -13,6 +13,22 @@ const TMP_FILE = path.join(TMP_DIR, "analytics.json");
 /** Safety cap — raised for long-term retention; oldest events drop only above this. */
 const MAX_EVENTS = 500_000;
 
+/**
+ * Appends share one in-process queue. Overlapping read-modify-write cycles
+ * (pageview, dwell flush, feedback, article mirror) otherwise drop events.
+ * Do not call the unlocked reader from outside this queue.
+ */
+let writeQueue: Promise<unknown> = Promise.resolve();
+
+function enqueue<T>(task: () => Promise<T>): Promise<T> {
+  const run = writeQueue.then(task, task);
+  writeQueue = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
 function localFilePath(): string {
   return process.env.VERCEL ? TMP_FILE : LOCAL_FILE;
 }
@@ -61,7 +77,8 @@ function readStoreFromLocalSync(): AnalyticsEvent[] {
 function writeStoreToLocalSync(events: AnalyticsEvent[]) {
   const filePath = localFilePath();
   ensureLocalFile(filePath);
-  fs.writeFileSync(filePath, JSON.stringify(trimEvents(events), null, 2));
+  // Compact JSON. Pretty-printing the full log blocks the process as it grows.
+  fs.writeFileSync(filePath, JSON.stringify(trimEvents(events)));
 }
 
 async function readStoreFromBlob(): Promise<AnalyticsEvent[] | null> {
@@ -104,7 +121,7 @@ async function writeAnalyticsEvents(events: AnalyticsEvent[]) {
   }
 }
 
-export async function readAnalyticsEvents(): Promise<AnalyticsEvent[]> {
+async function readAnalyticsEventsUnlocked(): Promise<AnalyticsEvent[]> {
   const blobEvents = await readStoreFromBlob();
   if (blobEvents !== null) {
     const merged = await mergeLegacyLocalEvents(blobEvents);
@@ -117,18 +134,46 @@ export async function readAnalyticsEvents(): Promise<AnalyticsEvent[]> {
   return readStoreFromLocalSync();
 }
 
+export async function readAnalyticsEvents(): Promise<AnalyticsEvent[]> {
+  return enqueue(() => readAnalyticsEventsUnlocked());
+}
+
+/** Local file only. This does not wait for the write queue. */
 export function readAnalyticsEventsSync(): AnalyticsEvent[] {
   return readStoreFromLocalSync();
 }
 
-export async function appendAnalyticsEvents(batch: AnalyticsEvent[]): Promise<void> {
+async function persistAppend(batch: AnalyticsEvent[]): Promise<void> {
   if (batch.length === 0) return;
-
-  const events = await readAnalyticsEvents();
+  const events = await readAnalyticsEventsUnlocked();
   events.push(...batch);
   await writeAnalyticsEvents(events);
 }
 
-export async function appendAnalyticsEvent(event: AnalyticsEvent): Promise<void> {
-  await appendAnalyticsEvents([event]);
+export async function appendAnalyticsEvents(batch: AnalyticsEvent[]): Promise<void> {
+  if (batch.length === 0) return;
+  await enqueue(() => persistAppend(batch));
+}
+
+export async function appendAnalyticsEvent(
+  event: AnalyticsEvent,
+): Promise<{ duplicate: boolean }> {
+  return enqueue(async () => {
+    const events = await readAnalyticsEventsUnlocked();
+    if (
+      event.type === "blog_like" &&
+      events.some(
+        (existing) =>
+          existing.type === "blog_like" &&
+          existing.path === event.path &&
+          existing.sessionId === event.sessionId,
+      )
+    ) {
+      return { duplicate: true };
+    }
+
+    events.push(event);
+    await writeAnalyticsEvents(events);
+    return { duplicate: false };
+  });
 }

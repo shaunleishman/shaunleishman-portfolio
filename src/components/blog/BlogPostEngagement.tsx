@@ -22,6 +22,8 @@ import {
   recordBlogArticleView,
   trackBlogEngagement,
 } from "@/lib/analytics-client";
+import { useConsent } from "@/components/consent/ConsentProvider";
+import { isAnalyticsAllowed } from "@/lib/consent";
 import { useBlogEngagementStats } from "@/hooks/useBlogEngagementStats";
 import { cn } from "@/lib/utils";
 import { BlogEngagementStatsDisplay } from "@/components/blog/BlogEngagementStats";
@@ -66,6 +68,7 @@ export function BlogPostEngagement({
   children,
 }: BlogPostEngagementProps) {
   const { stats, setStats } = useBlogEngagementStats(slug, initialStats);
+  const { ready: consentReady, analytics: analyticsAllowed } = useConsent();
   const [liked, setLiked] = useState(false);
   const [liking, setLiking] = useState(false);
 
@@ -74,12 +77,15 @@ export function BlogPostEngagement({
   }, [slug]);
 
   useEffect(() => {
-    void recordBlogArticleView(slug).then((nextStats) => {
+    // Storage is readable before consent state hydrates, so a returning visitor
+    // is mirrored immediately. Accepting later runs this again and mirrors once.
+    const analyticsConsent = consentReady ? analyticsAllowed : isAnalyticsAllowed();
+    void recordBlogArticleView(slug, analyticsConsent).then((nextStats) => {
       if (nextStats) {
         setStats((current) => mergeBlogEngagementStats(current, nextStats));
       }
     });
-  }, [slug, setStats]);
+  }, [slug, setStats, consentReady, analyticsAllowed]);
 
   const linkedInHref = useMemo(
     () => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
