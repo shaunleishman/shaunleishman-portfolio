@@ -1,39 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import type { AnalyticsSummary } from "@/lib/analytics";
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
 import { MetricsPageFilter } from "@/components/metrics/MetricsPageFilter";
 import { MetricsPeriodFilter } from "@/components/metrics/MetricsPeriodFilter";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { useMetricsQuery } from "@/hooks/useMetricsQuery";
 
 export default function MetricsInsightsPage() {
-  const [data, setData] = useState<AnalyticsSummary | null>(null);
-  const [loading, setLoading] = useState(true);
   const [filterPath, setFilterPath] = useState("all");
   const [filterPeriod, setFilterPeriod] = useState<AnalyticsPeriod>("28d");
-
-  const loadSummary = useCallback(async () => {
-    setLoading(true);
-    const params = new URLSearchParams();
-    if (filterPath !== "all") params.set("path", filterPath);
-    params.set("period", filterPeriod);
-    const query = params.toString();
-
-    const res = await fetch(`/api/metrics/summary?${query}`, {
-      credentials: "include",
-    });
-    if (res.ok) {
-      setData(await res.json());
-    } else {
-      setData(null);
-    }
-    setLoading(false);
-  }, [filterPath, filterPeriod]);
-
-  useEffect(() => {
-    void loadSummary();
-  }, [loadSummary]);
+  const params = new URLSearchParams({ period: filterPeriod });
+  if (filterPath !== "all") params.set("path", filterPath);
+  const { data, loading } = useMetricsQuery<AnalyticsSummary>(`/api/metrics/summary?${params.toString()}`);
 
   return (
     <AdminShell

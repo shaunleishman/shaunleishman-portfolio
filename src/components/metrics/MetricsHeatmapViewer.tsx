@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import {
   buildHeatmapOverlayUrl,
   type PageHeatmapData,
 } from "@/lib/analytics-heatmap-types";
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
 import { dwellColor, formatDwell } from "@/lib/heatmap-visual";
+import { useMetricsQuery } from "@/hooks/useMetricsQuery";
 import { startHeatmapOverlaySession } from "@/lib/metrics-heatmap-session";
 
 type HeatmapResponse = {
@@ -15,29 +15,12 @@ type HeatmapResponse = {
 };
 
 export function MetricsHeatmapViewer({ path, period = "12m" }: { path: string; period?: AnalyticsPeriod }) {
-  const [heatmap, setHeatmap] = useState<PageHeatmapData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const loadHeatmap = useCallback(async (pagePath: string, periodFilter: AnalyticsPeriod) => {
-    setLoading(true);
-
-    const params = new URLSearchParams({ path: pagePath, period: periodFilter });
-
-    const res = await fetch(`/api/metrics/heatmap?${params.toString()}`, {
-      credentials: "include",
-    });
-    if (!res.ok) {
-      setLoading(false);
-      return;
-    }
-    const json = (await res.json()) as HeatmapResponse;
-    setHeatmap(json.heatmap);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void loadHeatmap(path, period);
-  }, [loadHeatmap, path, period]);
+  const params = new URLSearchParams({ path, period });
+  const query = useMetricsQuery<HeatmapResponse>(`/api/metrics/heatmap?${params.toString()}`, {
+    keepPrevious: false,
+  });
+  const loading = query.loading;
+  const heatmap = query.data?.heatmap ?? null;
 
   const metricsReturnPath =
     typeof window !== "undefined" ? `${window.location.pathname}${window.location.search}` : "";

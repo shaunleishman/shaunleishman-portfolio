@@ -46,6 +46,55 @@ export function getAllPosts(): BlogPost[] {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
+export type PublishedPostIndex = {
+  slug: string;
+  title: string;
+  date: string;
+};
+
+let publishedPostIndex: { stamp: string; posts: PublishedPostIndex[] } | null = null;
+
+function blogFileStamp(): string {
+  return fs
+    .readdirSync(BLOG_DIR)
+    .filter((file) => file.endsWith(".md"))
+    .map((file) => {
+      const stat = fs.statSync(path.join(BLOG_DIR, file));
+      return `${file}:${stat.mtimeMs}:${stat.size}`;
+    })
+    .join("|");
+}
+
+/**
+ * Slug, title, and date for published posts. Skips the article body and reading time.
+ * The metrics catalogue calls this on every dashboard request.
+ */
+export function listPublishedPosts(): PublishedPostIndex[] {
+  if (!fs.existsSync(BLOG_DIR)) return [];
+
+  const stamp = blogFileStamp();
+  if (publishedPostIndex?.stamp === stamp) return publishedPostIndex.posts;
+
+  const posts = fs
+    .readdirSync(BLOG_DIR)
+    .filter((file) => file.endsWith(".md"))
+    .map((file) => {
+      const slug = file.replace(/\.md$/, "");
+      const raw = fs.readFileSync(path.join(BLOG_DIR, file), "utf-8");
+      const { data } = matter(raw);
+      const published = data.published ?? true;
+      if (!published) return null;
+      const title = typeof data.title === "string" ? data.title : "";
+      const date = typeof data.date === "string" ? data.date : "";
+      return { slug, title, date };
+    })
+    .filter((post): post is PublishedPostIndex => post !== null)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  publishedPostIndex = { stamp, posts };
+  return posts;
+}
+
 export function getPostBySlug(slug: string): BlogPost | null {
   const filePath = path.join(BLOG_DIR, `${slug}.md`);
   if (!fs.existsSync(filePath)) return null;

@@ -99,6 +99,10 @@ export function parseAudienceMetric(value: string | null | undefined): AudienceM
  * Fills a trend series so there is one point per bucket across the whole period,
  * inserting zeros for buckets with no events. Keys match the server bucketing
  * (hourly for 24h, monthly for 12m, daily otherwise).
+ *
+ * The server window is a rolling duration, so the first partial hour, day, or
+ * month can start before the first key. Those counts stay in the KPI and are
+ * not drawn here. Adding that leading bucket would put an extra row on the chart.
  */
 export function expandTrendBuckets(
   points: TimeSeriesPoint[],

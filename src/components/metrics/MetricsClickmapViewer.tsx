@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import {
   buildHeatmapOverlayUrl,
   type PageClickmapData,
 } from "@/lib/analytics-heatmap-types";
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
 import { clickColor } from "@/lib/heatmap-visual";
+import { useMetricsQuery } from "@/hooks/useMetricsQuery";
 import { startHeatmapOverlaySession } from "@/lib/metrics-heatmap-session";
 
 type ClickmapResponse = {
@@ -15,29 +15,12 @@ type ClickmapResponse = {
 };
 
 export function MetricsClickmapViewer({ path, period = "12m" }: { path: string; period?: AnalyticsPeriod }) {
-  const [clickmap, setClickmap] = useState<PageClickmapData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const loadClickmap = useCallback(async (pagePath: string, periodFilter: AnalyticsPeriod) => {
-    setLoading(true);
-
-    const params = new URLSearchParams({ path: pagePath, period: periodFilter });
-
-    const res = await fetch(`/api/metrics/clickmap?${params.toString()}`, {
-      credentials: "include",
-    });
-    if (!res.ok) {
-      setLoading(false);
-      return;
-    }
-    const json = (await res.json()) as ClickmapResponse;
-    setClickmap(json.clickmap);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void loadClickmap(path, period);
-  }, [loadClickmap, path, period]);
+  const params = new URLSearchParams({ path, period });
+  const query = useMetricsQuery<ClickmapResponse>(`/api/metrics/clickmap?${params.toString()}`, {
+    keepPrevious: false,
+  });
+  const loading = query.loading;
+  const clickmap = query.data?.clickmap ?? null;
 
   const metricsReturnPath =
     typeof window !== "undefined" ? `${window.location.pathname}${window.location.search}` : "";
