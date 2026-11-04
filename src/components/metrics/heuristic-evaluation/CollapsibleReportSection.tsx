@@ -17,6 +17,20 @@ function getScrollParent(node: HTMLElement | null): HTMLElement | null {
   return null;
 }
 
+/**
+ * Stop the report scroller moving behind a modal.
+ * Restores whatever inline overflow the scroller had. The public page has no
+ * overflow container, so the lock falls back to the document body.
+ */
+export function lockReportScroll(anchor: HTMLElement | null): () => void {
+  const scroller = getScrollParent(anchor) ?? document.body;
+  const previous = scroller.style.overflow;
+  scroller.style.overflow = "hidden";
+  return () => {
+    scroller.style.overflow = previous;
+  };
+}
+
 /** Scroll an element into view inside the admin report scroll container. */
 export function scrollIntoReportViewport(element: HTMLElement, offset = SCROLL_OFFSET_PX) {
   const scrollParent = getScrollParent(element);
@@ -134,6 +148,9 @@ function CollapsibleContent({
       role="region"
       aria-labelledby={labelledBy}
       aria-hidden={!isOpen}
+      // Closed panels stay in the DOM so the height animation can measure them.
+      // inert keeps the hidden controls out of the tab order.
+      inert={isOpen ? undefined : true}
       className={cn(
         "grid motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-300 motion-safe:ease-out",
         isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",

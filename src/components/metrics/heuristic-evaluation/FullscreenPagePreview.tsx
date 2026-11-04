@@ -5,11 +5,13 @@ import { createPortal } from "react-dom";
 import { Maximize2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { RedesignCallout } from "@/content/heuristic-evaluations/types";
+import { lockReportScroll } from "./CollapsibleReportSection";
 import { RedesignPreviewProvider } from "./RedesignPreviewContext";
 
 /** Inline teaser scale — content is laid out full-size then scaled down inside the frame */
 const INLINE_PREVIEW_SCALE = 0.68;
 const INLINE_PREVIEW_HEIGHT_PX = 288;
+const EMPTY_CALLOUTS: readonly RedesignCallout[] = [];
 
 type PanelPosition = { x: number; y: number };
 
@@ -202,10 +204,11 @@ export function FullscreenPagePreview({
   returnAnchorId,
   children,
   className,
-  callouts = [],
+  callouts = EMPTY_CALLOUTS,
   accentColor = "#E85D04",
 }: FullscreenPagePreviewProps) {
   const dialogId = useId();
+  const anchorRef = useRef<HTMLElement>(null);
   const [fullscreen, setFullscreen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const savedScrollRef = useRef(0);
@@ -236,14 +239,14 @@ export function FullscreenPagePreview({
     if (!fullscreen) return;
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeFullscreen();
+      if (e.key === "Escape" && !e.defaultPrevented) closeFullscreen();
     };
 
-    document.body.style.overflow = "hidden";
+    const unlock = lockReportScroll(anchorRef.current);
     window.addEventListener("keydown", onKey);
 
     return () => {
-      document.body.style.overflow = "";
+      unlock();
       window.removeEventListener("keydown", onKey);
     };
   }, [fullscreen, closeFullscreen]);
@@ -251,6 +254,7 @@ export function FullscreenPagePreview({
   return (
     <>
       <figure
+        ref={anchorRef}
         className={cn("m-0 not-prose", className)}
         style={{ ["--preview-accent" as string]: accentColor }}
       >

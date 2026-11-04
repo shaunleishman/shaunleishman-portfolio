@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 import type { HeuristicFinding, HeuristicId, Severity } from "@/content/heuristic-evaluations/types";
 import { HEURISTIC_LABELS } from "@/content/heuristic-evaluations/types";
@@ -109,7 +110,7 @@ type HeuristicFindingCardProps = {
   defaultOpen?: boolean;
 };
 
-export function HeuristicFindingCard({
+export const HeuristicFindingCard = memo(function HeuristicFindingCard({
   finding,
   priorityRank,
   totalFindings,
@@ -174,4 +175,4 @@ export function HeuristicFindingCard({
       </div>
     </CollapsibleTeaserCard>
   );
-}
+});

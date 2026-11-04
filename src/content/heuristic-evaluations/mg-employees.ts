@@ -682,9 +682,5 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
   },
 };
 
-export function getEvaluationBySlug(slug: string): HeuristicEvaluation | undefined {
-  if (slug === "mg-employees") return mgEmployeesEvaluation;
-  return undefined;
-}
-
+// Slug lookup lives in ./index.ts so every study resolves, not only this one.
 export { mgEmployeesRedesignCallouts };

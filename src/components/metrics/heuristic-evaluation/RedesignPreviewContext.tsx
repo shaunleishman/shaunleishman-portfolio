@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import type { RedesignCallout } from "@/content/heuristic-evaluations/types";
 
 type RedesignPreviewContextValue = {
@@ -12,6 +12,8 @@ type RedesignPreviewContextValue = {
   accentColor: string;
 };
 
+const EMPTY_CALLOUTS: readonly RedesignCallout[] = [];
+
 const RedesignPreviewContext = createContext<RedesignPreviewContextValue>({
   immersive: false,
   showCallouts: false,
@@ -21,7 +23,7 @@ const RedesignPreviewContext = createContext<RedesignPreviewContextValue>({
 
 export function RedesignPreviewProvider({
   immersive,
-  callouts = [],
+  callouts = EMPTY_CALLOUTS,
   accentColor = "#E85D04",
   children,
 }: {
@@ -30,15 +32,18 @@ export function RedesignPreviewProvider({
   accentColor?: string;
   children: React.ReactNode;
 }) {
+  const value = useMemo(
+    () => ({
+      immersive,
+      showCallouts: immersive && callouts.length > 0,
+      callouts,
+      accentColor,
+    }),
+    [immersive, callouts, accentColor],
+  );
+
   return (
-    <RedesignPreviewContext.Provider
-      value={{
-        immersive,
-        showCallouts: immersive && callouts.length > 0,
-        callouts,
-        accentColor,
-      }}
-    >
+    <RedesignPreviewContext.Provider value={value}>
       {children}
     </RedesignPreviewContext.Provider>
   );

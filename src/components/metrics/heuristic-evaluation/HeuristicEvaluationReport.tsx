@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { HeuristicEvaluation, Severity } from "@/content/heuristic-evaluations/types";
 import { useAdminHref } from "@/hooks/useAdminBase";
 import { cn } from "@/lib/utils";
@@ -15,11 +15,14 @@ import { OffAxisRedesign } from "./OffAxisRedesign";
 import {
   type FindingsSeverityFilterValue,
   FindingsSeverityFilter,
-  countFindingsBySeverity,
   filterFindingsBySeverity,
+  summarizeFindingSeverities,
 } from "./FindingsSeverityFilter";
 import { FindingPriorityBreakdown, PriorityRankBadge, PriorityScoringGuide } from "./FindingPriorityDisplay";
 import { buildPriorityRankMap, EFFORT_LABELS, getQuickWins, sortFindingsByPriority } from "./finding-priority";
+
+const MgEmployeesRedesignView = memo(MgEmployeesRedesign);
+const OffAxisRedesignView = memo(OffAxisRedesign);
 
 const FINDINGS_INITIAL_VISIBLE = 6;
 const SEVERE_PROBLEMS_COUNT = 2;
@@ -58,12 +61,12 @@ const REDESIGN_MOCKS: Record<
   { Component: React.ComponentType; headline: string; teaser: string }
 > = {
   "mg-employees": {
-    Component: MgEmployeesRedesign,
+    Component: MgEmployeesRedesignView,
     headline: "Live-site layout with audit fixes",
     teaser: "Task cards, plain language, stronger Log in, slimmer cookie bar",
   },
   "off-axis-tours": {
-    Component: OffAxisRedesign,
+    Component: OffAxisRedesignView,
     headline: "Live-site layout with audit fixes",
     teaser: "Clear hero actions, how-it-works, directory search, real cards, footer",
   },
@@ -82,6 +85,16 @@ function formatUkDate(iso: string): string {
   const monthName = MONTH_NAMES[Number(month) - 1];
   if (!monthName) return iso;
   return `${Number(day)} ${monthName} ${year}`;
+}
+
+/** Open a finding card and bring it into the report scroller. */
+function openFindingInReport(element: HTMLElement) {
+  const toggle = element.querySelector<HTMLButtonElement>("button[aria-expanded]");
+  if (toggle?.getAttribute("aria-expanded") === "false") {
+    toggle.click();
+    return;
+  }
+  scrollIntoReportViewport(element);
 }
 
 type HeuristicEvaluationReportProps = {
@@ -105,6 +118,8 @@ export function HeuristicEvaluationReport({
   const fixNowCount = actionPlan.filter((item) => item.priority === "fix_now").length;
   const [severityFilter, setSeverityFilter] = useState<FindingsSeverityFilterValue>("all");
   const [findingsExpanded, setFindingsExpanded] = useState(false);
+  const [jumpAttempt, setJumpAttempt] = useState(0);
+  const pendingJumpIdRef = useRef<string | null>(null);
   const firstRevealedFindingRef = useRef<HTMLDivElement>(null);
   const findingsSectionRef = useRef<HTMLElement>(null);
   const priorityRankById = useMemo(() => buildPriorityRankMap(findings), [findings]);
@@ -132,7 +147,26 @@ export function HeuristicEvaluationReport({
     if (findingsExpanded || severityFilter !== "all") return filteredFindings;
     return filteredFindings.slice(0, FINDINGS_INITIAL_VISIBLE);
   }, [filteredFindings, findingsExpanded, severityFilter]);
+  const severityCounts = useMemo(() => summarizeFindingSeverities(findings), [findings]);
   const hiddenFindingsCount = filteredFindings.length - visibleFindings.length;
+
+  const jumpToFinding = (findingId: string) => {
+    const existing = document.getElementById(findingId);
+    if (existing) {
+      openFindingInReport(existing);
+      return;
+    }
+
+    // The card is unmounted: either a severity filter hid it, or it sits past
+    // the first six on the "all" list. Reveal that card, then open it.
+    pendingJumpIdRef.current = findingId;
+    const priorityIndex = sortFindingsByPriority(findings).findIndex(
+      (finding) => finding.finding_id === findingId,
+    );
+    setSeverityFilter("all");
+    if (priorityIndex >= FINDINGS_INITIAL_VISIBLE) setFindingsExpanded(true);
+    setJumpAttempt((attempt) => attempt + 1);
+  };
 
   const handleSeverityKpiClick = (severity: Severity) => {
     setSeverityFilter((current) => (current === severity ? "all" : severity));
@@ -142,15 +176,29 @@ export function HeuristicEvaluationReport({
   };
 
   useEffect(() => {
+    if (pendingJumpIdRef.current) return;
     setFindingsExpanded(false);
   }, [severityFilter]);
 
   useEffect(() => {
-    if (!findingsExpanded || !firstRevealedFindingRef.current) return;
-    window.requestAnimationFrame(() => {
-      scrollIntoReportViewport(firstRevealedFindingRef.current!);
+    if (!findingsExpanded || pendingJumpIdRef.current || !firstRevealedFindingRef.current) return;
+    const frame = window.requestAnimationFrame(() => {
+      if (pendingJumpIdRef.current || !firstRevealedFindingRef.current) return;
+      scrollIntoReportViewport(firstRevealedFindingRef.current);
     });
+    return () => window.cancelAnimationFrame(frame);
   }, [findingsExpanded]);
+
+  useEffect(() => {
+    const findingId = pendingJumpIdRef.current;
+    if (!findingId) return;
+    const frame = window.requestAnimationFrame(() => {
+      const element = document.getElementById(findingId);
+      pendingJumpIdRef.current = null;
+      if (element) openFindingInReport(element);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [jumpAttempt, findingsExpanded, severityFilter, visibleFindings]);
 
   return (
     <div className="space-y-8 pb-20 sm:space-y-10 sm:pb-24">
@@ -165,7 +213,7 @@ export function HeuristicEvaluationReport({
         )}
         <div className="h-1 w-16 rounded-full mb-4" style={{ backgroundColor: evaluation.accent }} aria-hidden />
         <p className="text-label text-[var(--color-text-muted)]">{evaluation.client}</p>
-        <h1 className="text-h2 font-semibold mt-1 text-balance">{evaluation.title}</h1>
+        <h2 className="text-h2 font-semibold mt-1 text-balance">{evaluation.title}</h2>
         <a
           href={scope.evaluatedUrl}
           target="_blank"
@@ -321,16 +369,7 @@ export function HeuristicEvaluationReport({
                   </div>
                   <button
                     type="button"
-                    onClick={() => {
-                      const el = document.getElementById(finding.finding_id);
-                      if (!el) return;
-                      const toggle = el.querySelector<HTMLButtonElement>("button[aria-expanded]");
-                      if (toggle?.getAttribute("aria-expanded") === "false") {
-                        toggle.click();
-                      } else {
-                        scrollIntoReportViewport(el);
-                      }
-                    }}
+                    onClick={() => jumpToFinding(finding.finding_id)}
                     className="text-body-sm font-medium text-[var(--color-text-primary)] underline underline-offset-2"
                   >
                     Jump to full finding →
@@ -359,7 +398,7 @@ export function HeuristicEvaluationReport({
         </div>
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 mb-6" role="group" aria-label="Filter findings by severity">
           {SEVERITY_KPI_OPTIONS.map(({ key, label }) => {
-            const count = countFindingsBySeverity(findings, key);
+            const count = severityCounts[key];
             return (
               <MetricsKpiCard
                 key={key}
@@ -551,6 +590,12 @@ export function HeuristicEvaluationReport({
                 <div>
                   <h3 className="text-body-sm font-semibold">Top changes in the mock</h3>
                   <ul className="mt-2 space-y-1.5">
+                    {/*
+                      Keep this column the same length as "Still to do".
+                      M&G lists more implemented changes than follow-ups;
+                      showing every line would make the column taller.
+                      The full list stays in the evaluation source.
+                    */}
                     {evaluation.redesignSummary.implemented
                       .slice(0, evaluation.redesignSummary.planned.length)
                       .map((item) => (

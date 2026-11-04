@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { memo, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import type {
   ScreenshotAnnotation,
   ScreenshotAnnotationLabelPosition,
 } from "@/content/heuristic-evaluations/types";
+import { lockReportScroll } from "./CollapsibleReportSection";
 
 type AnnotationDensity = "default" | "compact";
 
@@ -400,7 +401,7 @@ function AnnotatedScreenshotContent({
   );
 }
 
-export function AnnotatedScreenshot({
+export const AnnotatedScreenshot = memo(function AnnotatedScreenshot({
   src,
   alt,
   annotations = [],
@@ -411,18 +412,22 @@ export function AnnotatedScreenshot({
   caption,
 }: AnnotatedScreenshotProps) {
   const dialogId = useId();
+  const anchorRef = useRef<HTMLElement>(null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
+    const unlock = lockReportScroll(anchorRef.current);
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      e.stopPropagation();
+      setOpen(false);
     };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey, true);
     return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
+      unlock();
+      window.removeEventListener("keydown", onKey, true);
     };
   }, [open]);
 
@@ -439,6 +444,7 @@ export function AnnotatedScreenshot({
   if (!expandable) {
     return (
       <figure
+        ref={anchorRef}
         className={cn(
           "relative rounded-lg border border-[var(--color-border)]",
           density === "compact" ? "overflow-hidden" : "overflow-visible",
@@ -453,6 +459,7 @@ export function AnnotatedScreenshot({
   return (
     <>
       <figure
+        ref={anchorRef}
         className={cn(
           "relative rounded-lg border border-[var(--color-border)]",
           density === "compact" ? "overflow-hidden" : "overflow-visible",
@@ -516,4 +523,4 @@ export function AnnotatedScreenshot({
         : null}
     </>
   );
-}
+});
