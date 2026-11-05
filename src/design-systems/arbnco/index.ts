@@ -8,9 +8,12 @@ export {
 } from "./tokens-data";
 export type { TokenEntry, TokenGroup } from "./tokens-data";
 export * from "./components";
-export { COMPONENT_CATALOG, COMPONENT_CATEGORIES, COMPONENT_COUNT } from "./catalog/component-catalog";
-export type { ComponentCatalogEntry } from "./catalog/component-catalog";
 export { ARBNCO_PROTOTYPE_INTEGRATION_NOTES } from "./prototype-integration.notes";
+
+/**
+ * Component previews stay in `./catalog/component-catalog`.
+ * Re-exporting that module here pulled every preview into prototype bundles.
+ */
 
 /** Import path for use in prototypes and case studies. */
 export const ARBNCO_DS_IMPORT_PATH = "@/design-systems/arbnco";

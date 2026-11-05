@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import svgPaths from "@/design-systems/showcase/imports/ToolTip/svg-w7y14cqv64";
 import {
   buildTooltipShape,
@@ -107,10 +107,22 @@ export function Tooltip({
   useLayoutEffect(() => {
     const node = contentRef.current;
     if (!node) return;
-    setBodyHeight(node.offsetHeight);
-  }, [title, children, variant, pointerSide, showClose, showIcon, icon]);
 
-  const shape = buildTooltipShape(pointerSide, TOOLTIP_BODY_WIDTH, bodyHeight);
+    const measure = () => {
+      const next = node.offsetHeight;
+      setBodyHeight((current) => (current === next ? current : next));
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [title, variant, pointerSide, showClose, showIcon]);
+
+  const shape = useMemo(
+    () => buildTooltipShape(pointerSide, TOOLTIP_BODY_WIDTH, bodyHeight),
+    [pointerSide, bodyHeight],
+  );
   const paddedWidth = shape.svgWidth + STROKE_PAD * 2;
   const paddedHeight = shape.svgHeight + STROKE_PAD * 2;
 

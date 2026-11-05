@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type ChangeEvent, type FocusEvent, type InputHTMLAttributes } from "react";
 import svgPaths from "../../imports/InputField/svg-32yx2j8oqg";
 import { ShowcaseChevron } from "./ShowcaseChevron";
 
@@ -27,6 +27,22 @@ type ConnectedInputFieldProps = {
   compAfter?: boolean;
   type?: string;
   className?: string;
+  id?: string;
+  name?: string;
+  readOnly?: boolean;
+  tabIndex?: number;
+  autoComplete?: string;
+  maxLength?: number;
+  min?: number | string;
+  max?: number | string;
+  inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
+  "aria-label"?: string;
+  "aria-describedby"?: string;
+  "aria-invalid"?: InputHTMLAttributes<HTMLInputElement>["aria-invalid"];
+  /** Native change event. `onChange` still receives the string value. */
+  onInputChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  onFocus?: (event: FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
 };
 
 function HelpCircleIcon({ size = 20, fill = "#4A5453" }: { size?: number; fill?: string }) {
@@ -138,10 +154,26 @@ export function ConnectedInputField({
   compAfter = false,
   type = "text",
   className,
+  id,
+  name,
+  readOnly = false,
+  tabIndex,
+  autoComplete,
+  maxLength,
+  min,
+  max,
+  inputMode,
+  "aria-label": ariaLabel,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
+  onInputChange,
+  onFocus,
+  onBlur,
 }: ConnectedInputFieldProps) {
   const [focused, setFocused] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const inputId = useId();
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
 
   const isDisabled = disabled || forcedState === "Disabled";
   const visualState = resolveVisualState({
@@ -213,13 +245,33 @@ export function ConnectedInputField({
                 {compBefore && <SearchIcon />}
                 <input
                   id={inputId}
+                  name={name}
                   type={type}
                   value={value}
                   disabled={isDisabled}
+                  readOnly={readOnly}
+                  tabIndex={tabIndex}
+                  autoComplete={autoComplete}
+                  maxLength={maxLength}
+                  min={min}
+                  max={max}
+                  inputMode={inputMode}
+                  aria-label={ariaLabel}
+                  aria-describedby={ariaDescribedBy}
+                  aria-invalid={ariaInvalid}
                   placeholder={placeholder}
-                  onChange={(event) => onChange(event.target.value)}
-                  onFocus={() => setFocused(true)}
-                  onBlur={() => setFocused(false)}
+                  onChange={(event) => {
+                    onChange(event.target.value);
+                    onInputChange?.(event);
+                  }}
+                  onFocus={(event) => {
+                    setFocused(true);
+                    onFocus?.(event);
+                  }}
+                  onBlur={(event) => {
+                    setFocused(false);
+                    onBlur?.(event);
+                  }}
                   className={`min-w-0 w-full flex-1 border-0 bg-transparent font-['Open_Sans:regular',sans-serif] leading-[20px] not-italic text-[14px] tracking-[-0.1px] outline-none placeholder:text-[#aab6b4] disabled:cursor-not-allowed ${textColor}`}
                 />
               </div>

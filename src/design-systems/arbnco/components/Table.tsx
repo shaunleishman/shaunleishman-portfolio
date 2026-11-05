@@ -30,9 +30,10 @@ export function TableRow({ className, ...props }: HTMLAttributes<HTMLTableRowEle
   );
 }
 
-export function TableHead({ className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
+export function TableHead({ className, scope = "col", ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
     <th
+      scope={scope}
       className={cn(
         "px-[var(--measurement-spacing-sm)] py-3 text-left text-[length:var(--typography-font-size-xs)] font-semibold text-[var(--colour-labels-neutral)]",
         className,
