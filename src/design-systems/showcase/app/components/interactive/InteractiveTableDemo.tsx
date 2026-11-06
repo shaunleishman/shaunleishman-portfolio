@@ -32,8 +32,14 @@ export function InteractiveTableDemo() {
   const [view, setView] = useState<TableView>("table");
   const [showAll, setShowAll] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
+  const seenView = useRef<{ view: TableView; showAll: boolean } | null>(null);
 
   useEffect(() => {
+    const previous = seenView.current;
+    seenView.current = { view, showAll };
+    // The first run is the lazy mount. scrollIntoView here pulls the gallery
+    // down by the observer's root margin before the visitor reaches the table.
+    if (!previous || (previous.view === view && previous.showAll === showAll)) return;
     previewRef.current?.scrollIntoView({ block: "nearest" });
   }, [view, showAll]);
 

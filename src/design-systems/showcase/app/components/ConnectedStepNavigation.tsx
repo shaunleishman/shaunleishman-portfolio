@@ -2,6 +2,7 @@
 
 import { Fragment } from "react";
 import svgPaths from "../../imports/StepHeaderNavigation/svg-ey42xntbzl";
+import { handleTablistKeyDown } from "./tablist-keyboard";
 
 export type StepNavItem = {
   id: string;
@@ -89,6 +90,7 @@ export function ConnectedStepNavigation({
       className={`showcase-connected-step-nav flex w-full min-w-0 items-center overflow-x-auto ${className ?? ""}`}
       role="tablist"
       aria-label="Step navigation"
+      onKeyDown={(event) => handleTablistKeyDown(event, steps.length, currentStep, onStepChange)}
     >
       {steps.map((step, index) => {
         const state = getStepState(index, currentStep);

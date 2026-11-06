@@ -54,6 +54,13 @@ function ConnectedUploadModal({ onStatus }: { onStatus: (message: string) => voi
 
   const handleFile = (file: File | undefined) => {
     if (!file) return;
+    const name = file.name.toLowerCase();
+    const accepted =
+      name.endsWith(".csv") || name.endsWith(".txt") || file.type === "text/csv" || file.type === "text/plain";
+    if (!accepted) {
+      onStatus("Choose a CSV or TXT file");
+      return;
+    }
     setFileName(file.name);
     setUploadStatus("Default");
     onStatus(`Selected ${file.name}`);
@@ -105,6 +112,7 @@ function ConnectedUploadModal({ onStatus }: { onStatus: (message: string) => voi
           <ModalDropZone
             inputId={inputId}
             onChooseFile={() => inputRef.current?.click()}
+            onFile={handleFile}
           />
         </ModalBody>
       </Modal>

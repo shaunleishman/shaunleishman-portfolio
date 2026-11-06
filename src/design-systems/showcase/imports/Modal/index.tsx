@@ -1,5 +1,5 @@
 import svgPaths from "./svg-k323i3tpjp";
-import type { ReactNode } from "react";
+import type { DragEvent, ReactNode } from "react";
 
 function HelpCircle({ className }: { className?: string }) {
   return (
@@ -124,9 +124,12 @@ function XClose({ className }: { className?: string }) {
 export function ModalDropZone({
   onChooseFile,
   inputId,
+  onFile,
 }: {
   onChooseFile?: () => void;
   inputId?: string;
+  /** Dropped file. The zone keeps the same chrome; only the file is forwarded. */
+  onFile?: (file: File) => void;
 }) {
   const content = (
     <>
@@ -152,8 +155,25 @@ export function ModalDropZone({
     </>
   );
 
+  const dropHandlers = onFile
+    ? {
+        onDragOver: (event: DragEvent<HTMLElement>) => {
+          event.preventDefault();
+        },
+        onDrop: (event: DragEvent<HTMLElement>) => {
+          event.preventDefault();
+          const file = event.dataTransfer.files?.[0];
+          if (file) onFile(file);
+        },
+      }
+    : undefined;
+
   return (
-    <div className="relative h-[153px] w-full shrink-0 rounded-[4px]" data-name="Drop box">
+    <div
+      className="relative h-[153px] w-full shrink-0 rounded-[4px]"
+      data-name="Drop box"
+      {...dropHandlers}
+    >
       <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[4px] border border-dashed border-[#aab6b4]" />
       {onChooseFile && inputId ? (
         <label

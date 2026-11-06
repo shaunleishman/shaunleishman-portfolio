@@ -1,5 +1,7 @@
 "use client";
 
+import { handleTablistKeyDown } from "./tablist-keyboard";
+
 export type ConnectedPageTab = {
   value: string;
   label: string;
@@ -34,6 +36,13 @@ export function ConnectedPageTabs({ value, tabs, onChange, className }: Connecte
       className={`showcase-connected-page-tabs flex w-full max-w-full items-end rounded-lg bg-[#e5e8e7] p-1 ${className ?? ""}`}
       role="tablist"
       aria-label="Page tabs"
+      onKeyDown={(event) => {
+        const index = tabs.findIndex((tab) => tab.value === value);
+        handleTablistKeyDown(event, tabs.length, index, (nextIndex) => {
+          const next = tabs[nextIndex];
+          if (next) onChange(next.value);
+        });
+      }}
     >
       {tabs.map((tab) => {
         const active = tab.value === value;
