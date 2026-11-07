@@ -12,12 +12,8 @@ import {
   TableRow,
 } from "@/design-systems/arbnco";
 import { useHalfHourlyNav } from "./useHalfHourlyNav";
-import { BULK_SYNTHESISED_LABEL } from "./HalfHourlyBulkDemoPlayback";
+import { isSyntheticResolution } from "./HalfHourlyBulkDemoPlayback";
 import { cn } from "@/lib/utils";
-
-function isSyntheticResolution(label: string) {
-  return label === "Synthetic" || label === BULK_SYNTHESISED_LABEL;
-}
 
 type ProjectRow = {
   id: string;
@@ -63,18 +59,34 @@ export function ProjectListTable({
     }
   };
 
-  const allSelected = projects.length > 0 && selectedIds.size === projects.length;
-  const someSelected = selectedIds.size > 0 && !allSelected;
+  // Select-all follows the rows on screen. A resolution tab can hide projects that
+  // stay selected, and those hidden ids must not mark this page as fully selected.
+  const selectedVisibleCount = projects.reduce(
+    (count, project) => count + (selectedIds.has(project.id) ? 1 : 0),
+    0,
+  );
+  const allSelected = projects.length > 0 && selectedVisibleCount === projects.length;
+  const someSelected = selectedVisibleCount > 0 && !allSelected;
 
   const selectedCountLabel = useMemo(() => {
-    if (selectedIds.size === 0) return `${projects.length} results shown`;
-    return `${selectedIds.size} selected, ${projects.length} results shown`;
-  }, [projects.length, selectedIds.size]);
+    if (selectedVisibleCount === 0) return `${projects.length} results shown`;
+    return `${selectedVisibleCount} selected, ${projects.length} results shown`;
+  }, [projects.length, selectedVisibleCount]);
 
   function toggleAll() {
-    setSelectedIds((current) =>
-      current.size === projects.length ? new Set() : new Set(projects.map((project) => project.id)),
-    );
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      const everyVisibleSelected =
+        projects.length > 0 && projects.every((project) => next.has(project.id));
+
+      if (everyVisibleSelected) {
+        for (const project of projects) next.delete(project.id);
+      } else {
+        for (const project of projects) next.add(project.id);
+      }
+
+      return next;
+    });
   }
 
   function toggleRow(projectId: string) {

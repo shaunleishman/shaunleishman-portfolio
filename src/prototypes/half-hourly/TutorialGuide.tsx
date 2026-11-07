@@ -21,34 +21,82 @@ type TutorialGuideProps = {
   onPrimary?: () => void;
 };
 
+function sameRect(a: DOMRect | null, b: DOMRect | null) {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  return a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height;
+}
+
+/**
+ * Track the spotlight target without scrolling on every sample.
+ * The target can mount after a route change, so the first frames only look for it.
+ * scrollIntoView runs once, when the node appears. A short follow covers the
+ * sidebar width transition. After that, only scroll and resize update the rect.
+ * Repeating scrollIntoView from a timer restarts the smooth scroll.
+ */
 function useTargetRect(targetId?: string, active?: boolean) {
   const [rect, setRect] = useState<DOMRect | null>(null);
 
-  const measure = useCallback(() => {
-    if (!targetId || !active) {
-      setRect(null);
-      return;
-    }
-    const el = document.getElementById(targetId);
-    if (!el) {
-      setRect(null);
-      return;
-    }
-    setRect(el.getBoundingClientRect());
-    el.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [targetId, active]);
+  const publish = useCallback((next: DOMRect | null) => {
+    setRect((current) => (sameRect(current, next) ? current : next));
+  }, []);
 
   useEffect(() => {
-    measure();
-    window.addEventListener("resize", measure);
-    window.addEventListener("scroll", measure, true);
-    const interval = window.setInterval(measure, 300);
-    return () => {
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("scroll", measure, true);
-      window.clearInterval(interval);
+    let frame = 0;
+    let stopped = false;
+
+    if (!targetId || !active) {
+      frame = window.requestAnimationFrame(() => publish(null));
+      return () => {
+        stopped = true;
+        window.cancelAnimationFrame(frame);
+      };
+    }
+
+    let scrolled = false;
+    let followUntil = 0;
+    const waitUntil = performance.now() + 4000;
+
+    const read = () => {
+      const node = document.getElementById(targetId);
+      publish(node ? node.getBoundingClientRect() : null);
+      return node;
     };
-  }, [measure]);
+
+    const tick = () => {
+      if (stopped) return;
+      const node = read();
+      const now = performance.now();
+
+      if (!node) {
+        if (now < waitUntil) frame = window.requestAnimationFrame(tick);
+        return;
+      }
+
+      if (!scrolled) {
+        scrolled = true;
+        node.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        followUntil = now + 800;
+      }
+
+      if (now < followUntil) frame = window.requestAnimationFrame(tick);
+    };
+
+    const onViewportChange = () => {
+      read();
+    };
+
+    frame = window.requestAnimationFrame(tick);
+    window.addEventListener("resize", onViewportChange);
+    window.addEventListener("scroll", onViewportChange, true);
+
+    return () => {
+      stopped = true;
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", onViewportChange);
+      window.removeEventListener("scroll", onViewportChange, true);
+    };
+  }, [targetId, active, publish]);
 
   return rect;
 }

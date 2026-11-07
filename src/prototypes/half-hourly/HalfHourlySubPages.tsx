@@ -37,6 +37,7 @@ import {
   TableRow,
   Toggle,
 } from "@/design-systems/arbnco";
+import { isSyntheticResolution } from "./HalfHourlyBulkDemoPlayback";
 import { useProjectContext } from "./context";
 import { cn } from "@/lib/utils";
 import { ProjectListTable } from "./ProjectListTable";
@@ -553,7 +554,7 @@ export function MainOverviewPage() {
     dataResolution: data.dataResolution,
   }));
 
-  const syntheticCount = projectList.filter((p) => p.dataResolution === "Synthetic").length;
+  const syntheticCount = projectList.filter((p) => isSyntheticResolution(p.dataResolution)).length;
   const mixedCount = projectList.filter((p) => p.dataResolution === "Mixed").length;
   const openAlerts = 3;
 

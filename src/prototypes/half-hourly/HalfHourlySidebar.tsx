@@ -1,6 +1,5 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import {
   AlertTriangle,
   BarChart3,
@@ -18,7 +17,7 @@ import {
 } from "lucide-react";
 import { Chip } from "@/design-systems/arbnco";
 import { ShowcaseNavMenuItem } from "@/design-systems/showcase/app/components/ShowcaseNavSidebar";
-import { cn } from "@/lib/utils";
+import { useSidebarHovered } from "./sidebar-hover";
 import { useHalfHourlyNav } from "./useHalfHourlyNav";
 
 export type HalfHourlyMainSection = "overview" | "project-list" | "alerts" | "settings";
@@ -84,33 +83,6 @@ const PROJECT_SUB_NAV: SubNavItem[] = [
 
 const SIDEBAR_TRANSITION = "transition-all duration-700 ease-in-out";
 
-/**
- * Expanded state lives outside the component so it survives the remounts that
- * happen on in-app navigation — clicking a nav item keeps the menu open instead
- * of collapsing it, since the pointer is still over the sidebar.
- */
-let sidebarHovered = false;
-const sidebarHoverListeners = new Set<() => void>();
-
-function setSidebarHovered(value: boolean) {
-  if (sidebarHovered === value) return;
-  sidebarHovered = value;
-  sidebarHoverListeners.forEach((listener) => listener());
-}
-
-function subscribeSidebarHover(listener: () => void) {
-  sidebarHoverListeners.add(listener);
-  return () => sidebarHoverListeners.delete(listener);
-}
-
-function useSidebarHovered() {
-  return useSyncExternalStore(
-    subscribeSidebarHover,
-    () => sidebarHovered,
-    () => false,
-  );
-}
-
 type HalfHourlySidebarProps = {
   currentProject?: { name: string; syntheticEnabled: boolean };
   currentProjectId?: string;
@@ -128,7 +100,7 @@ export function HalfHourlySidebar({
 }: HalfHourlySidebarProps) {
   const { navigate } = useHalfHourlyNav();
   const isSubPage = Boolean(activeSubSection);
-  const isHovered = useSidebarHovered();
+  const { hovered: isHovered, setHovered } = useSidebarHovered();
 
   const showSubMenu = Boolean(currentProject && isSubPage);
   // The main rail stays collapsed (icons only) while the submenu is open.
@@ -138,8 +110,8 @@ export function HalfHourlySidebar({
   return (
     <div
       className="relative flex h-full shrink-0"
-      onMouseEnter={() => setSidebarHovered(true)}
-      onMouseLeave={() => setSidebarHovered(false)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <aside
         className={`flex h-full shrink-0 flex-col bg-[#232828] p-3 ${SIDEBAR_TRANSITION} ${railWidth}`}

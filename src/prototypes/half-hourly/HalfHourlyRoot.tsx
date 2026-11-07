@@ -4,6 +4,7 @@ import { Open_Sans, Raleway } from "next/font/google";
 import "@/design-systems/arbnco/tokens.css";
 import "@/design-systems/arbnco/dropdown.css";
 import "@/design-systems/arbnco/input-field.css";
+import { HalfHourlySidebarHoverProvider } from "./sidebar-hover";
 
 const openSans = Open_Sans({
   subsets: ["latin"],
@@ -25,7 +26,7 @@ export function HalfHourlyRoot({ children }: { children: React.ReactNode }) {
           font-family: ${raleway.style.fontFamily}, Raleway, sans-serif;
         }
       `}</style>
-      {children}
+      <HalfHourlySidebarHoverProvider>{children}</HalfHourlySidebarHoverProvider>
     </div>
   );
 }

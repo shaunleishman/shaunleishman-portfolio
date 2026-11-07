@@ -26,6 +26,7 @@ import { ProjectListTable, ProjectListPagination } from "./ProjectListTable";
 import {
   BULK_SYNTHESISE_DEMO_IDS,
   BULK_SYNTHESISED_LABEL,
+  isSyntheticResolution,
   useBulkDemoPlaybackStep,
 } from "./HalfHourlyBulkDemoPlayback";
 import { GenerateReportModal } from "./GenerateReportModal";
@@ -299,22 +300,22 @@ export function ProjectListPage({ demoMode = false }: { demoMode?: boolean }) {
     });
   }, [bulkSetSynthetic, demoMode, playbackStep]);
 
-  const projectList = Object.entries(projects).map(([id, data]) => ({
-    id,
-    name: data.name,
-    dataResolution: data.dataResolution,
-  }));
+  const projectList = useMemo(
+    () =>
+      Object.entries(projects).map(([id, data]) => ({
+        id,
+        name: data.name,
+        dataResolution: data.dataResolution,
+      })),
+    [projects],
+  );
 
-  const syntheticCount = projectList.filter(
-    (p) => p.dataResolution === "Synthetic" || p.dataResolution === BULK_SYNTHESISED_LABEL,
-  ).length;
+  const syntheticCount = projectList.filter((p) => isSyntheticResolution(p.dataResolution)).length;
   const mixedCount = projectList.filter((p) => p.dataResolution === "Mixed").length;
 
   const filteredProjects = useMemo(() => {
     if (resolutionFilter === "synthetic") {
-      return projectList.filter(
-        (p) => p.dataResolution === "Synthetic" || p.dataResolution === BULK_SYNTHESISED_LABEL,
-      );
+      return projectList.filter((p) => isSyntheticResolution(p.dataResolution));
     }
     if (resolutionFilter === "mixed") {
       return projectList.filter((p) => p.dataResolution === "Mixed");
@@ -960,13 +961,7 @@ export function EnergyConsumptionTabPage({ projectId }: { projectId: string }) {
   const [activeMeter, setActiveMeter] = useState("all");
 
   const project = projects[projectId];
-
-  if (!project) {
-    return null;
-  }
-
-  const syntheticEnabled = project.syntheticEnabled;
-  const accentColor = syntheticEnabled ? "#14a35c" : "#00a7b5";
+  const syntheticEnabled = project?.syntheticEnabled ?? false;
   const chartData = useMemo(() => {
     const meterScale =
       activeMeter === "elec-main" ? 0.72 : activeMeter === "gas-main" ? 0.41 : activeMeter === "elec-solar" ? 0.18 : 1;
@@ -977,6 +972,12 @@ export function EnergyConsumptionTabPage({ projectId }: { projectId: string }) {
       value: Math.round(row.value * meterScale * yearScale),
     }));
   }, [syntheticEnabled, activeMeter, fuel, activeYear]);
+
+  if (!project) {
+    return null;
+  }
+
+  const accentColor = syntheticEnabled ? "#14a35c" : "#00a7b5";
 
   return (
     <>

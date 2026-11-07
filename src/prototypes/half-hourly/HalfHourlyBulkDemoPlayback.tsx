@@ -32,3 +32,8 @@ export function BulkDemoPlaybackProvider({
 export const BULK_SYNTHESISE_DEMO_IDS = ["2", "3", "4"] as const;
 
 export const BULK_SYNTHESISED_LABEL = "Synthesised";
+
+/** The edit toggle stores "Synthetic". Bulk synthesise stores "Synthesised". Both are synthetic profiles. */
+export function isSyntheticResolution(label: string) {
+  return label === "Synthetic" || label === BULK_SYNTHESISED_LABEL;
+}
