@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import "./enhance-animations.css";
 import {
   CartesianGrid,
@@ -1091,7 +1091,11 @@ function averageBloodPressure(points: BloodPressureHistoryPoint[]) {
   };
 }
 
-function BloodPressureHistoryChart({ history }: { history: BloodPressureHistoryPoint[] }) {
+const BloodPressureHistoryChart = memo(function BloodPressureHistoryChart({
+  history,
+}: {
+  history: BloodPressureHistoryPoint[];
+}) {
   if (history.length === 0) {
     return <p className="text-sm text-gray-500">No blood pressure history available.</p>;
   }
@@ -1190,7 +1194,7 @@ function BloodPressureHistoryChart({ history }: { history: BloodPressureHistoryP
       </div>
     </div>
   );
-}
+});
 
 function BloodPressureSection({ patient }: { patient: Patient }) {
   const history = useMemo(
@@ -1449,10 +1453,19 @@ function getPatientPriority(
   };
 }
 
-function sortPatientsByPriority(patients: Patient[], resolvedAlerts: Record<string, string> = {}) {
+function sortPatientsByPriority(
+  patients: Patient[],
+  priorities: ReadonlyMap<string, PatientPriority>,
+  resolvedAlerts: Record<string, string> = {},
+) {
+  // Priorities are computed once per resolution change. Looking them up here
+  // keeps the same order without rebuilding every alert list for each pair.
+  const priorityFor = (patient: Patient) =>
+    priorities.get(patient.id) ?? getPatientPriority(patient, resolvedAlerts);
+
   return [...patients].sort((a, b) => {
-    const priorityA = getPatientPriority(a, resolvedAlerts);
-    const priorityB = getPatientPriority(b, resolvedAlerts);
+    const priorityA = priorityFor(a);
+    const priorityB = priorityFor(b);
 
     if (priorityB.score !== priorityA.score) {
       return priorityB.score - priorityA.score;
@@ -2429,18 +2442,18 @@ function getFilterCount(patients: Patient[], filter: string) {
   return filterPatientsByCategory(patients, filter).length;
 }
 
+const CATEGORY_PATIENT_COUNTS: Record<string, number> = Object.fromEntries(
+  categories.map((filter) => [filter, getFilterCount(mockPatients, filter)]),
+);
+
 function PatientListAlertsCell({
-  patient,
-  activeFilter,
-  resolvedAlerts,
+  priority,
+  alerts,
 }: {
-  patient: Patient;
-  activeFilter: string;
-  resolvedAlerts: Record<string, string>;
+  priority: PatientPriority;
+  alerts: PatientDetailAlert[];
 }) {
-  const priority = getPatientPriority(patient, resolvedAlerts);
   const display = getPatientPriorityDisplay(priority);
-  const alerts = getVisibleDetailAlerts(patient, activeFilter, resolvedAlerts);
 
   if (alerts.length === 0) {
     return <span className="text-sm text-gray-400">-</span>;
@@ -2524,6 +2537,30 @@ function getDemoInitialState(demoScene?: EnhanceDemoScene) {
   };
 }
 
+function scrollWithinContainer(
+  container: HTMLElement,
+  target: HTMLElement,
+  block: "start" | "center",
+) {
+  // Scroll the patient record only. scrollIntoView also moves the case study
+  // page behind the embed. "start" and "center" keep the same alignment in this pane.
+  const containerRect = container.getBoundingClientRect();
+  const targetRect = target.getBoundingClientRect();
+  const delta = targetRect.top - containerRect.top;
+  const top =
+    block === "center"
+      ? container.scrollTop + delta - (container.clientHeight - targetRect.height) / 2
+      : container.scrollTop + delta;
+
+  container.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+}
+
+function clearWindowTimer(timerRef: { current: number | null }) {
+  if (timerRef.current == null) return;
+  window.clearTimeout(timerRef.current);
+  timerRef.current = null;
+}
+
 export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
   const demoInitialState = getDemoInitialState(demoScene);
   const [currentView, setCurrentView] = useState<View>(demoInitialState.currentView);
@@ -2531,6 +2568,7 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
   const [showAssignModal, setShowAssignModal] = useState(demoInitialState.showAssignModal);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [assignmentToastName, setAssignmentToastName] = useState("");
   const [selectedPractitioner, setSelectedPractitioner] = useState<string>(demoInitialState.selectedPractitioner);
   const [assignmentReason, setAssignmentReason] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(demoInitialState.selectedPatient);
@@ -2554,21 +2592,49 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
   const [visiblePatientCount, setVisiblePatientCount] = useState(PATIENT_LIST_BATCH_SIZE);
   const monitoringListRef = useRef<HTMLDivElement>(null);
   const loadMorePatientsRef = useRef<HTMLTableRowElement>(null);
+  const patientDetailContentRef = useRef<HTMLDivElement>(null);
+  const alertToastTimerRef = useRef<number | null>(null);
+  const assignmentToastTimerRef = useRef<number | null>(null);
+  const patientPriorities = useMemo(() => {
+    const priorities = new Map<string, PatientPriority>();
+    for (const patient of mockPatients) {
+      priorities.set(patient.id, getPatientPriority(patient, resolvedAlerts));
+    }
+    return priorities;
+  }, [resolvedAlerts]);
   const filteredPatients = useMemo(
     () =>
       sortPatientsByPriority(
         filterPatientsByCategory(mockPatients, activeFilter),
+        patientPriorities,
         resolvedAlerts,
       ),
-    [activeFilter, resolvedAlerts],
+    [activeFilter, patientPriorities, resolvedAlerts],
   );
+  const visibleAlertsByPatientId = useMemo(() => {
+    const alerts = new Map<string, PatientDetailAlert[]>();
+    for (const patient of filteredPatients) {
+      alerts.set(patient.id, getVisibleDetailAlerts(patient, activeFilter, resolvedAlerts));
+    }
+    return alerts;
+  }, [activeFilter, filteredPatients, resolvedAlerts]);
   const visiblePatients = useMemo(
     () => filteredPatients.slice(0, visiblePatientCount),
     [filteredPatients, visiblePatientCount],
   );
   const hasMorePatients = visiblePatientCount < filteredPatients.length;
-  const allPatientsSelected = selectedPatients.size === filteredPatients.length && filteredPatients.length > 0;
-  const somePatientsSelected = selectedPatients.size > 0 && !allPatientsSelected;
+  // The header box follows patients in the current filter, not the size of the
+  // selection. Ids chosen under another filter stay selected, and they do not
+  // check this box. With every patient visible, the filter is the whole list.
+  const selectedInFilterCount = useMemo(() => {
+    let count = 0;
+    for (const patient of filteredPatients) {
+      if (selectedPatients.has(patient.id)) count += 1;
+    }
+    return count;
+  }, [filteredPatients, selectedPatients]);
+  const allPatientsSelected = filteredPatients.length > 0 && selectedInFilterCount === filteredPatients.length;
+  const somePatientsSelected = selectedInFilterCount > 0 && !allPatientsSelected;
 
   useEffect(() => {
     setVisiblePatientCount(PATIENT_LIST_BATCH_SIZE);
@@ -2598,7 +2664,15 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
   }, [filteredPatients.length, hasMorePatients, visiblePatientCount]);
 
   useEffect(() => {
+    return () => {
+      clearWindowTimer(alertToastTimerRef);
+      clearWindowTimer(assignmentToastTimerRef);
+    };
+  }, []);
+
+  useEffect(() => {
     setResolvedAlerts({});
+    clearWindowTimer(alertToastTimerRef);
     setAlertToastMessage(null);
     if (!demoScene) {
       setAlertToResolve(null);
@@ -2626,12 +2700,25 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
 
   const showAlertToast = (message: string) => {
     setAlertToastMessage(message);
-    setTimeout(() => setAlertToastMessage(null), 3000);
+    clearWindowTimer(alertToastTimerRef);
+    alertToastTimerRef.current = window.setTimeout(() => {
+      alertToastTimerRef.current = null;
+      setAlertToastMessage(null);
+    }, 3000);
+  };
+
+  const dismissAlertToast = () => {
+    clearWindowTimer(alertToastTimerRef);
+    setAlertToastMessage(null);
   };
 
   const handleAlertAction = (alert: PatientDetailAlert) => {
     const targetId = alert.actionTarget === "medication" ? "current-medication" : "blood-pressure-metrics";
-    document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const container = patientDetailContentRef.current;
+    const target = container?.querySelector<HTMLElement>(`#${targetId}`);
+    if (container && target) {
+      scrollWithinContainer(container, target, "start");
+    }
     const toastMessages: Record<PatientDetailAlert["actionTarget"], string> = {
       "blood-pressure": "Opened blood pressure metrics",
       medication: "Opened current medication",
@@ -2688,13 +2775,25 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
     setShowConfirmModal(true);
   };
 
+  const dismissAssignmentToast = () => {
+    clearWindowTimer(assignmentToastTimerRef);
+    setShowToast(false);
+  };
+
   const handleFinalConfirm = () => {
+    // The toast renders after this reset. Reading the id then would be blank.
+    const practitionerName = practitioners.find((entry) => entry.id === selectedPractitioner)?.name ?? "";
+    setAssignmentToastName(practitionerName);
     setShowConfirmModal(false);
     setShowToast(true);
     setSelectedPatients(new Set());
-    setSelectedPractitioner('');
-    setAssignmentReason('');
-    setTimeout(() => setShowToast(false), 4000);
+    setSelectedPractitioner("");
+    setAssignmentReason("");
+    clearWindowTimer(assignmentToastTimerRef);
+    assignmentToastTimerRef.current = window.setTimeout(() => {
+      assignmentToastTimerRef.current = null;
+      setShowToast(false);
+    }, 4000);
   };
 
   const handleViewPatient = (patient: Patient, options?: { clearHighlight?: boolean }) => {
@@ -2719,26 +2818,28 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
     setReadNotificationIds(new Set(PLATFORM_NOTIFICATIONS.map((notification) => notification.id)));
   };
 
-  const patientDetailContentRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!highlightedAlertId || currentView !== "patient-detail" || !selectedPatient) {
       return;
     }
 
     const scrollTimer = window.setTimeout(() => {
-      patientDetailContentRef.current
-        ?.querySelector(`#patient-alert-${highlightedAlertId}`)
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      const container = patientDetailContentRef.current;
+      const target = container?.querySelector<HTMLElement>(
+        `#${CSS.escape(`patient-alert-${highlightedAlertId}`)}`,
+      );
+      if (container && target) {
+        scrollWithinContainer(container, target, "center");
+      }
     }, 150);
 
-    const clearTimer = window.setTimeout(() => {
+    const clearHighlightTimer = window.setTimeout(() => {
       setHighlightedAlertId(null);
     }, 5000);
 
     return () => {
       window.clearTimeout(scrollTimer);
-      window.clearTimeout(clearTimer);
+      window.clearTimeout(clearHighlightTimer);
     };
   }, [highlightedAlertId, currentView, selectedPatient?.id]);
 
@@ -2972,7 +3073,7 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
               <p className="text-sm">{alertToastMessage}</p>
               <button
                 type="button"
-                onClick={() => setAlertToastMessage(null)}
+                onClick={dismissAlertToast}
                 className="flex size-6 shrink-0 items-center justify-center rounded hover:bg-white/10"
               >
                 <X className="size-4" />
@@ -3065,7 +3166,7 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
                     activeFilter === filter ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {getFilterCount(mockPatients, filter)}
+                  {CATEGORY_PATIENT_COUNTS[filter]}
                 </span>
               </button>
             ))}
@@ -3118,11 +3219,18 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
                       indeterminate={somePatientsSelected}
                       aria-label={allPatientsSelected ? "Deselect all patients" : "Select all patients"}
                       onChange={() => {
-                        if (allPatientsSelected) {
-                          setSelectedPatients(new Set());
-                        } else {
-                          setSelectedPatients(new Set(filteredPatients.map((patient) => patient.id)));
-                        }
+                        setSelectedPatients((current) => {
+                          const next = new Set(current);
+                          const everyFilteredSelected =
+                            filteredPatients.length > 0 &&
+                            filteredPatients.every((patient) => next.has(patient.id));
+                          if (everyFilteredSelected) {
+                            for (const patient of filteredPatients) next.delete(patient.id);
+                          } else {
+                            for (const patient of filteredPatients) next.add(patient.id);
+                          }
+                          return next;
+                        });
                       }}
                     />
                   </th>
@@ -3147,7 +3255,11 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
                 ) : (
                   <>
                   {visiblePatients.map((patient) => {
-                    const priority = getPatientPriority(patient, resolvedAlerts);
+                    const priority =
+                      patientPriorities.get(patient.id) ?? getPatientPriority(patient, resolvedAlerts);
+                    const visibleAlerts =
+                      visibleAlertsByPatientId.get(patient.id) ??
+                      getVisibleDetailAlerts(patient, activeFilter, resolvedAlerts);
 
                     return (
                   <tr
@@ -3173,11 +3285,7 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
                       <PatientPriorityBadge priority={priority} />
                     </td>
                     <td className="whitespace-nowrap p-3">
-                      <PatientListAlertsCell
-                        patient={patient}
-                        activeFilter={activeFilter}
-                        resolvedAlerts={resolvedAlerts}
-                      />
+                      <PatientListAlertsCell priority={priority} alerts={visibleAlerts} />
                     </td>
                     <td className="p-3 text-gray-700 text-sm">{patient.nhsNumber}</td>
                     <td className="p-3 text-gray-700 text-sm">{patient.age}</td>
@@ -3370,10 +3478,10 @@ export function EnhancePrototype({ demoScene }: EnhancePrototypeProps = {}) {
               <Check className="w-4 h-4 text-[#00a106]" />
             </div>
             <p className="text-sm">
-              Patient has been reassigned to {practitioners.find((p) => p.id === selectedPractitioner)?.name}
+              Patient has been reassigned to {assignmentToastName}
             </p>
             <button
-              onClick={() => setShowToast(false)}
+              onClick={dismissAssignmentToast}
               className="w-6 h-6 hover:bg-[#009105] flex items-center justify-center transition-colors rounded flex-shrink-0"
             >
               <X className="w-4 h-4" />
