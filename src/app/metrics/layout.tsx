@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { SiteLogoLink } from "@/components/layout/SiteLogo";
 import { MetricsPathProvider } from "@/components/admin/MetricsPathProvider";
+import { hasMetricsPageAccess } from "@/lib/metrics-access";
 import { getMetricsPath } from "@/lib/metrics-config";
 
 export const metadata: Metadata = {
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 
 export default async function MetricsLayout({ children }: { children: React.ReactNode }) {
   const headerList = await headers();
-  if (headerList.get("x-metrics-access") !== "1") {
+  if (!(await hasMetricsPageAccess(headerList))) {
     notFound();
   }
 

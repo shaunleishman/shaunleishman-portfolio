@@ -2,66 +2,114 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getMetricsPath } from "@/lib/metrics-config";
 import {
+  createMetricsAccessProof,
+  isMetricsRewriteContinuation,
+  METRICS_ACCESS_HEADER,
+  METRICS_REWRITE_HEADER,
+  rememberMetricsRewrite,
+} from "@/lib/metrics-access";
+import {
   applyFixedSecurityHeaders,
   buildContentSecurityPolicy,
+  CANONICAL_APEX_HOST,
+  canonicalWwwUrl,
+  isStaticAssetPath,
 } from "@/lib/security-headers";
-
-const APEX_HOST = "shaunleishmanportfolio.com";
-const WWW_HOST = "www.shaunleishmanportfolio.com";
 
 function requestHost(request: NextRequest) {
   return request.headers.get("host")?.split(":")[0]?.toLowerCase() ?? "";
 }
 
+function createNonce() {
+  return Buffer.from(crypto.randomUUID()).toString("base64");
+}
+
 /** Apex → www with the full HSTS preload header on the redirect response. */
 function redirectApexToWww(request: NextRequest) {
-  const url = request.nextUrl.clone();
-  url.protocol = "https:";
-  url.hostname = WWW_HOST;
-  const response = NextResponse.redirect(url, 308);
+  const response = NextResponse.redirect(canonicalWwwUrl(request.nextUrl), 308);
   applyFixedSecurityHeaders(response.headers);
   return response;
 }
 
-export function middleware(request: NextRequest) {
-  // Must run before Vercel’s incomplete apex redirect. In the Vercel dashboard,
-  // set the apex domain to “No Redirect” so this middleware handles it.
-  if (requestHost(request) === APEX_HOST) {
+function denyMetrics(csp: string) {
+  const response = new NextResponse("Not Found", { status: 404 });
+  applyFixedSecurityHeaders(response.headers);
+  response.headers.set("Content-Security-Policy", csp);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+function isMetricsAppPath(pathname: string) {
+  return pathname === "/metrics" || pathname.startsWith("/metrics/");
+}
+
+function isLegacyAdminPath(pathname: string) {
+  return pathname === "/admin" || pathname.startsWith("/admin/");
+}
+
+/**
+ * Stays `middleware.ts` (Edge), not `proxy.ts`. The apex redirect has to run
+ * before Vercel's own redirect. Proxy is Node and runs later. In the Vercel
+ * dashboard, set the apex domain to "No Redirect" so this file handles it.
+ */
+export async function middleware(request: NextRequest) {
+  if (requestHost(request) === CANONICAL_APEX_HOST) {
     return redirectApexToWww(request);
   }
 
-  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
-  const csp = buildContentSecurityPolicy(nonce);
   const { pathname } = request.nextUrl;
   const metricsPath = getMetricsPath();
-
-  const isLegacyAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
-  const isDirectMetrics = pathname === "/metrics" || pathname.startsWith("/metrics/");
+  const isLegacyAdmin = isLegacyAdminPath(pathname);
+  const isDirectMetrics = isMetricsAppPath(pathname);
   const isSecretMetrics = pathname === metricsPath || pathname.startsWith(`${metricsPath}/`);
 
-  if (isLegacyAdmin || isDirectMetrics) {
-    const response = new NextResponse("Not Found", { status: 404 });
+  if (!isLegacyAdmin && !isDirectMetrics && !isSecretMetrics && isStaticAssetPath(pathname)) {
+    const response = NextResponse.next();
     applyFixedSecurityHeaders(response.headers);
-    response.headers.set("Content-Security-Policy", csp);
     return response;
   }
 
+  const incomingNonce = request.headers.get("x-nonce");
+  const incomingProof = request.headers.get(METRICS_ACCESS_HEADER);
+  const continuation =
+    isDirectMetrics &&
+    (await isMetricsRewriteContinuation({
+      nonce: incomingNonce,
+      proof: incomingProof,
+      rewriteId: request.headers.get(METRICS_REWRITE_HEADER),
+    }));
+
+  if (isLegacyAdmin || (isDirectMetrics && !continuation)) {
+    return denyMetrics(buildContentSecurityPolicy(createNonce()));
+  }
+
+  const nonce = continuation && incomingNonce ? incomingNonce : createNonce();
+  const csp = buildContentSecurityPolicy(nonce);
   const requestHeaders = new Headers(request.headers);
+  requestHeaders.delete(METRICS_ACCESS_HEADER);
+  requestHeaders.delete(METRICS_REWRITE_HEADER);
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("Content-Security-Policy", csp);
 
-  if (isSecretMetrics) {
-    const suffix = pathname.slice(metricsPath.length);
-    const url = request.nextUrl.clone();
-    url.pathname = `/metrics${suffix}`;
-    requestHeaders.set("x-metrics-access", "1");
+  if (isSecretMetrics || continuation) {
+    const proof =
+      continuation && incomingProof ? incomingProof : await createMetricsAccessProof(nonce);
+    requestHeaders.set(METRICS_ACCESS_HEADER, proof);
 
-    const response = NextResponse.rewrite(url, {
-      request: { headers: requestHeaders },
-    });
-    applyFixedSecurityHeaders(response.headers);
-    response.headers.set("Content-Security-Policy", csp);
-    return response;
+    if (isSecretMetrics) {
+      const rewriteId = crypto.randomUUID();
+      rememberMetricsRewrite(rewriteId);
+      requestHeaders.set(METRICS_REWRITE_HEADER, rewriteId);
+      const suffix = pathname.slice(metricsPath.length);
+      const url = request.nextUrl.clone();
+      url.pathname = `/metrics${suffix}`;
+      const response = NextResponse.rewrite(url, {
+        request: { headers: requestHeaders },
+      });
+      applyFixedSecurityHeaders(response.headers);
+      response.headers.set("Content-Security-Policy", csp);
+      return response;
+    }
   }
 
   const response = NextResponse.next({
@@ -74,6 +122,12 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    // Prefetch requests skip the broad matcher below. These paths must still
+    // run, or a prefetch plus a client `x-metrics-access` header reaches the page.
+    "/metrics",
+    "/metrics/:path*",
+    "/admin",
+    "/admin/:path*",
     {
       source: "/((?!_next/static|_next/image).*)",
       missing: [
