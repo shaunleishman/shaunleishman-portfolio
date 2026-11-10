@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { companies } from "@/content/companies";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/Reveal";
@@ -21,6 +21,7 @@ const LOGO_GAP = 96;
 const AUTO_SCROLL_PX_PER_SEC = 40;
 const MAX_VELOCITY_PX_PER_SEC = 1200;
 const VELOCITY_RETURN_MS = 1800;
+const LOGO_COPIES = [0, 1, 2] as const;
 
 type DragState = {
   active: boolean;
@@ -81,6 +82,7 @@ function CompanyLogoImage({ name, logo, width, height, scale = 1 }: CompanyLogoI
 
 export function LogoMarquee() {
   const trackRef = useRef<HTMLDivElement>(null);
+  const setRef = useRef<HTMLDivElement>(null);
   const setWidthRef = useRef(0);
   const offsetRef = useRef(0);
   const velocityRef = useRef(-AUTO_SCROLL_PX_PER_SEC);
@@ -95,62 +97,69 @@ export function LogoMarquee() {
   const lastTimeRef = useRef<number | null>(null);
   const rafRef = useRef<number>(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [offset, setOffset] = useState(0);
 
-  const tripled = [...companies, ...companies, ...companies];
+  const applyOffset = useCallback((value: number) => {
+    const next = wrapOffset(value, setWidthRef.current);
+    offsetRef.current = next;
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translateX(${next}px)`;
+    }
+  }, []);
 
-  const measureSetWidth = useCallback(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    setWidthRef.current = track.scrollWidth / 3;
+  useLayoutEffect(() => {
+    const set = setRef.current;
+    if (!set) return;
+
+    // Repeat distance is one copy plus the gap before the next copy.
+    // Dividing the padded track by three was long by a few pixels on desktop.
+    const measure = () => {
+      const box = set.getBoundingClientRect();
+      setWidthRef.current = box.width + LOGO_GAP;
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(set);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-
-    measureSetWidth();
-    const observer = new ResizeObserver(measureSetWidth);
-    observer.observe(track);
-    window.addEventListener("resize", measureSetWidth);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", measureSetWidth);
-    };
-  }, [measureSetWidth]);
-
-  useEffect(() => {
-    offsetRef.current = offset;
-  }, [offset]);
-
-  useEffect(() => {
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reducedMotion) return;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     const tick = (time: number) => {
       if (lastTimeRef.current !== null && !dragRef.current.active) {
         const delta = time - lastTimeRef.current;
         const deltaSec = delta / 1000;
-
-        let next = offsetRef.current + velocityRef.current * deltaSec;
-        const setWidth = setWidthRef.current;
-        next = wrapOffset(next, setWidth);
-
+        const next = offsetRef.current + velocityRef.current * deltaSec;
         const baseline = -AUTO_SCROLL_PX_PER_SEC;
         const returnStrength = 1 - Math.exp(-delta / VELOCITY_RETURN_MS);
         velocityRef.current += (baseline - velocityRef.current) * returnStrength;
-
-        offsetRef.current = next;
-        setOffset(next);
+        applyOffset(next);
       }
       lastTimeRef.current = time;
       rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []);
+    const stop = () => {
+      cancelAnimationFrame(rafRef.current);
+      lastTimeRef.current = null;
+    };
+
+    const start = () => {
+      stop();
+      if (media.matches || document.hidden) return;
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    start();
+    media.addEventListener("change", start);
+    document.addEventListener("visibilitychange", start);
+    return () => {
+      stop();
+      media.removeEventListener("change", start);
+      document.removeEventListener("visibilitychange", start);
+    };
+  }, [applyOffset]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const now = performance.now();
@@ -183,11 +192,7 @@ export function LogoMarquee() {
     dragRef.current.lastTime = now;
 
     const dragDelta = e.clientX - dragRef.current.startX;
-    const setWidth = setWidthRef.current;
-    const next = wrapOffset(dragRef.current.startOffset + dragDelta, setWidth);
-
-    offsetRef.current = next;
-    setOffset(next);
+    applyOffset(dragRef.current.startOffset + dragDelta);
   };
 
   const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -226,22 +231,38 @@ export function LogoMarquee() {
             "flex w-max items-center px-12 md:px-16",
             isDragging ? "cursor-grabbing" : "cursor-grab",
           )}
-          style={{ gap: LOGO_GAP, minHeight: LOGO_ROW_HEIGHT, transform: `translateX(${offset}px)` }}
+          style={{ gap: LOGO_GAP, minHeight: LOGO_ROW_HEIGHT }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
           onLostPointerCapture={endDrag}
         >
-          {tripled.map((company, i) => (
-            <div key={`${company.name}-${i}`} role="listitem" className="shrink-0">
-              <CompanyLogoImage
-                name={company.name}
-                logo={company.logo}
-                width={company.width}
-                height={company.height}
-                scale={company.scale}
-              />
+          {/* Extra copies keep the loop seamless and stay out of the accessibility tree. */}
+          {LOGO_COPIES.map((copy) => (
+            <div
+              key={copy}
+              ref={copy === 0 ? setRef : undefined}
+              role={copy === 0 ? "presentation" : undefined}
+              aria-hidden={copy === 0 ? undefined : true}
+              className="flex shrink-0 items-center"
+              style={{ gap: LOGO_GAP }}
+            >
+              {companies.map((company) => (
+                <div
+                  key={company.name}
+                  role={copy === 0 ? "listitem" : undefined}
+                  className="shrink-0"
+                >
+                  <CompanyLogoImage
+                    name={company.name}
+                    logo={company.logo}
+                    width={company.width}
+                    height={company.height}
+                    scale={company.scale}
+                  />
+                </div>
+              ))}
             </div>
           ))}
         </div>

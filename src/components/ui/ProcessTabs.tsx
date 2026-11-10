@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { processSteps } from "@/content/projects";
 import { processIcons } from "@/lib/icon-maps";
@@ -9,11 +9,48 @@ import { IconBadge } from "@/components/ui/IconBadge";
 
 export function ProcessTabs() {
   const [active, setActive] = useState(0);
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const lastTab = processSteps.length - 1;
+
+  const selectTab = (index: number) => {
+    setActive(index);
+    tabRefs.current[index]?.focus();
+  };
+
+  // Roving tabindex keeps one tab in the tab order. Arrows, Home, and End
+  // have to move the selection or the other steps stay unreachable.
+  const onTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let next = index;
+
+    switch (event.key) {
+      case "ArrowDown":
+      case "ArrowRight":
+        next = index === lastTab ? 0 : index + 1;
+        break;
+      case "ArrowUp":
+      case "ArrowLeft":
+        next = index === 0 ? lastTab : index - 1;
+        break;
+      case "Home":
+        next = 0;
+        break;
+      case "End":
+        next = lastTab;
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    selectTab(next);
+  };
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-16 items-start">
       <div
         role="tablist"
+        aria-orientation="vertical"
         aria-label="Design process steps"
         className="flex flex-col divide-y divide-[var(--color-border)]"
       >
@@ -23,6 +60,9 @@ export function ProcessTabs() {
           return (
             <button
               key={step.number}
+              ref={(node) => {
+                tabRefs.current[index] = node;
+              }}
               role="tab"
               type="button"
               id={`process-tab-${index}`}
@@ -36,6 +76,7 @@ export function ProcessTabs() {
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]",
               )}
               onClick={() => setActive(index)}
+              onKeyDown={(event) => onTabKeyDown(event, index)}
             >
               {Icon && (
                 <IconBadge
@@ -57,8 +98,11 @@ export function ProcessTabs() {
                   <span
                     className={cn(
                       "block text-body text-[var(--color-text-secondary)] lg:hidden motion-safe:transition-all motion-safe:duration-300",
-                      isSelected ? "motion-safe:opacity-100" : "motion-safe:opacity-0 motion-safe:h-0 overflow-hidden",
+                      // Collapse stays on when reduced motion is requested. A
+                      // motion-safe prefix skipped h-0, so every step showed at once.
+                      isSelected ? "opacity-100" : "h-0 opacity-0 overflow-hidden",
                     )}
+                    aria-hidden={!isSelected}
                   >
                     {step.description}
                   </span>
