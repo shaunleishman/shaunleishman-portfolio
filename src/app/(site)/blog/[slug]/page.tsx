@@ -5,7 +5,7 @@ import { getAllPosts, getPostBySlug } from "@/lib/blog";
 import { getBlogShareImageUrl, getBlogShareImageMeta, getBlogThumbnailSrc } from "@/lib/blog-images";
 import { getBlogCategory } from "@/lib/blog-categories";
 import { getBlogEngagementForSlug } from "@/lib/blog-engagement";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CaseStudyFeedback } from "@/components/projects/CaseStudyFeedback";
 import { BlogContent } from "@/components/blog/BlogContent";

@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { getPostBySlug } from "@/lib/blog";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 
 export const alt = "Blog article preview";
 export const size = { width: 1200, height: 630 };

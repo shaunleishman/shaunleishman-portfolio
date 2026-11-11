@@ -11,7 +11,7 @@ import {
   getApplicationBySlug,
   getApplicationSector,
 } from "@/content/applications";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 
 type PageProps = {
   params: Promise<{ slug: string }>;

@@ -10,7 +10,7 @@ import {
   coverLetterShared,
   type Application,
 } from "@/content/applications";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 
 /** Matches CV PDF typography and colour so both documents feel like one set. */
 const type = {

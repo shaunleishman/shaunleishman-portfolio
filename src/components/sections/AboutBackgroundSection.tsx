@@ -9,7 +9,7 @@ import {
   eyesOfHome,
   type AboutBackgroundView,
 } from "@/content/about";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 import { Button } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Reveal } from "@/components/ui/Reveal";

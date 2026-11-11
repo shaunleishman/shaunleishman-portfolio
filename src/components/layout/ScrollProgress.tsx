@@ -1,33 +1,37 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
-/** Thin progress bar — shows reading position on long pages */
+/** Thin progress bar — shows reading position on long pages. */
+function writeScrollProgress(node: HTMLDivElement | null) {
+  if (!node) return;
+
+  const scrolling = document.scrollingElement ?? document.documentElement;
+  const scrollable = scrolling.scrollHeight - scrolling.clientHeight;
+  const ratio = scrollable > 0 ? Math.min(1, Math.max(0, scrolling.scrollTop / scrollable)) : 0;
+  node.style.transform = `scaleX(${ratio})`;
+}
+
 export function ScrollProgress() {
   const pathname = usePathname();
   const barRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
 
+  useLayoutEffect(() => {
+    writeScrollProgress(barRef.current);
+  }, [pathname]);
+
   useEffect(() => {
-    function updateProgress() {
-      rafRef.current = null;
-      const node = barRef.current;
-      if (!node) return;
-
-      const doc = document.documentElement;
-      const scrollable = doc.scrollHeight - doc.clientHeight;
-      const ratio = scrollable > 0 ? doc.scrollTop / scrollable : 0;
-      node.style.transform = `scaleX(${ratio})`;
-    }
-
     function scheduleUpdate() {
       if (rafRef.current === null) {
-        rafRef.current = requestAnimationFrame(updateProgress);
+        rafRef.current = requestAnimationFrame(() => {
+          rafRef.current = null;
+          writeScrollProgress(barRef.current);
+        });
       }
     }
 
-    scheduleUpdate();
     window.addEventListener("scroll", scheduleUpdate, { passive: true });
     window.addEventListener("resize", scheduleUpdate, { passive: true });
 
@@ -35,11 +39,17 @@ export function ScrollProgress() {
     resizeObserver.observe(document.documentElement);
     resizeObserver.observe(document.body);
 
+    scheduleUpdate();
+
     return () => {
       window.removeEventListener("scroll", scheduleUpdate);
       window.removeEventListener("resize", scheduleUpdate);
       resizeObserver.disconnect();
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        // A cancelled frame must not leave the id set, or later scrolls never schedule.
+        rafRef.current = null;
+      }
     };
   }, [pathname]);
 

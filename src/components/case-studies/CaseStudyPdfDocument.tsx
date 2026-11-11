@@ -3,7 +3,7 @@ import { Document, Font, Link, Page, StyleSheet, Text, View } from "@react-pdf/r
 
 // Wrap whole words to the next line instead of hyphenating across the break.
 Font.registerHyphenationCallback((word) => [word]);
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 import type {
   HeuristicEvaluation,
   HeuristicFinding,

@@ -14,6 +14,10 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+function isNavCurrent(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 function MobileMenuIcon({ open }: { open: boolean }) {
   return (
     <span className="relative flex h-6 w-6 flex-col items-center justify-center" aria-hidden="true">
@@ -43,6 +47,7 @@ export function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
+  // Dark bar only on routes whose first screen is the grid hero. Light pages, such as privacy, stay light.
   const isDarkHero =
     pathname === "/" ||
     pathname.startsWith("/work") ||
@@ -56,20 +61,23 @@ export function Header() {
   }
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
+    if (!menuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
     };
   }, [menuOpen]);
 
   useEffect(() => {
+    if (!menuOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setMenuOpen(false);
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [menuOpen]);
 
   return (
     <header
@@ -91,18 +99,12 @@ export function Header() {
                   href={link.href}
                   className={cn(
                     "relative text-body-sm font-medium transition-colors hover:opacity-80 min-h-[44px] inline-flex items-center",
-                    pathname === link.href || pathname.startsWith(`${link.href}/`)
-                      ? "opacity-100"
-                      : "opacity-70",
+                    isNavCurrent(pathname, link.href) ? "opacity-100" : "opacity-70",
                   )}
-                  aria-current={
-                    pathname === link.href || pathname.startsWith(`${link.href}/`)
-                      ? "page"
-                      : undefined
-                  }
+                  aria-current={isNavCurrent(pathname, link.href) ? "page" : undefined}
                 >
                   {link.label}
-                  {(pathname === link.href || pathname.startsWith(`${link.href}/`)) && (
+                  {isNavCurrent(pathname, link.href) && (
                     <span
                       className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full bg-[var(--color-accent)] motion-safe:animate-[scale-in_0.2s_ease-out]"
                       aria-hidden
@@ -137,7 +139,7 @@ export function Header() {
         </button>
       </div>
 
-      <div className="lg:hidden" aria-hidden={!menuOpen}>
+      <div className="lg:hidden" aria-hidden={!menuOpen} inert={menuOpen ? undefined : true}>
         <button
           type="button"
           tabIndex={menuOpen ? 0 : -1}
@@ -152,7 +154,6 @@ export function Header() {
         <nav
           id="mobile-menu"
           aria-label="Mobile navigation"
-          inert={menuOpen ? undefined : true}
           className={cn(
             "fixed inset-x-0 top-16 z-50 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b shadow-lg motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out",
             menuOpen
@@ -177,7 +178,7 @@ export function Header() {
                   href={link.href}
                   tabIndex={menuOpen ? 0 : -1}
                   className="block py-3 text-body font-medium min-h-[44px]"
-                  aria-current={pathname === link.href ? "page" : undefined}
+                  aria-current={isNavCurrent(pathname, link.href) ? "page" : undefined}
                   onClick={() => setMenuOpen(false)}
                 >
                   {link.label}
@@ -191,7 +192,11 @@ export function Header() {
               )}
               style={menuOpen ? { transitionDelay: `${80 + navLinks.length * 40}ms` } : undefined}
             >
-              <Button href="/contact" variant={isDarkHero ? "inverse" : "primary"}>
+              <Button
+                href="/contact"
+                variant={isDarkHero ? "inverse" : "primary"}
+                onClick={() => setMenuOpen(false)}
+              >
                 Let&apos;s talk
               </Button>
             </li>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 import { AboutBackgroundSection } from "@/components/sections/AboutBackgroundSection";
 import { AboutLifeWindows } from "@/components/sections/AboutLifeWindows";
 import { AboutOriginTimeline } from "@/components/sections/AboutOriginTimeline";

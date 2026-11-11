@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 
 type SiteLogoProps = {
   className?: string;

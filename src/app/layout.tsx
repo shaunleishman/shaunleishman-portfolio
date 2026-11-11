@@ -8,7 +8,7 @@ import { MetricsTrackingExclusionWarmup } from "@/components/analytics/MetricsTr
 import { CookieConsent } from "@/components/consent/CookieConsent";
 import { ConsentProvider } from "@/components/consent/ConsentProvider";
 import { LazyMetricsHeatmapOverlay } from "@/components/metrics/LazyMetricsHeatmapOverlay";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 
 const inter = Inter({
   variable: "--font-inter",

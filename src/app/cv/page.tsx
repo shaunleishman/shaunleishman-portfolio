@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 import { cvContent } from "@/content/cv";
 import { SiteLogo } from "@/components/layout/SiteLogo";
 import { DownloadCvButton } from "@/components/cv/DownloadCvButton";

@@ -1,4 +1,4 @@
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 
 /**
  * Sectors you own. Add or rename here when you want new application categories.

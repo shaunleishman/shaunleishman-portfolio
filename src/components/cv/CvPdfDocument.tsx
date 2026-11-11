@@ -8,7 +8,7 @@ import {
   View,
 } from "@react-pdf/renderer";
 import { cvContent, type CvContent } from "@/content/cv";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 
 /**
  * One-page A4 CV with one shared leading and paragraph rhythm.

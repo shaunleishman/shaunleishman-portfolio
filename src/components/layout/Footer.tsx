@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FileText, Mail } from "lucide-react";
 import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
 import { CookieSettingsButton } from "@/components/consent/CookieSettingsButton";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 import { SiteLogoLink } from "@/components/layout/SiteLogo";
 
 const footerLinks = {

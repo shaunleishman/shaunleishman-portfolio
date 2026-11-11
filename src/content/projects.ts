@@ -347,28 +347,4 @@ export const faqs = [
   },
 ];
 
-export const siteConfig = {
-  name: "Shaun Leishman",
-  brand: "sleishman.design",
-  brandHandle: "sleishman",
-  logo: "/brand/logo.png",
-  logoDark: "/brand/logo-dark.png",
-  domain: "shaunleishmanportfolio.com",
-  siteUrl: "https://www.shaunleishmanportfolio.com",
-  tagline: "Helping Teams Design Products Users Trust",
-  heroHeadlineLines: ["Helping Teams", "Design Products", "Users Trust"],
-  heroFocusAreas: [
-    "Energy & sustainability",
-    "Healthcare",
-    "Government",
-    "Finance",
-    "Mostly B2B products",
-  ],
-  quote:
-    "It's one thing to shape experiences that improve lives. Helping people make better decisions is where the real work happens.",
-  email: "postalshaun@outlook.com",
-  phone: "07708002642",
-  linkedIn: "https://www.linkedin.com/in/shaun-leishman-94a46b130/",
-  cvUrl: "/cv",
-  experience: "5+ years",
-};
+export { siteConfig } from "@/content/site";

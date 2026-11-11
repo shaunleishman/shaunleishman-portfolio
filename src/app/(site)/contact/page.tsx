@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { FileText, Mail } from "lucide-react";
 import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 import { ContactCvCard } from "@/components/contact/ContactCvCard";
 import { EmailCopyAction } from "@/components/contact/EmailCopyAction";
 import { IconBadge } from "@/components/ui/IconBadge";

@@ -1,4 +1,4 @@
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 
 export type Testimonial = {
   id: string;

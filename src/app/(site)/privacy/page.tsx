@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 import { CONSENT_CATEGORIES } from "@/lib/consent";
 import { CookieSettingsButton } from "@/components/consent/CookieSettingsButton";
 

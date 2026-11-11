@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/Button";
 import { Stagger } from "@/components/ui/Stagger";
-import { siteConfig } from "@/content/projects";
+import { siteConfig } from "@/content/site";
 import { heroFocusIcons } from "@/lib/icon-maps";
 
 const FigmaHeroAnimation = dynamic(
