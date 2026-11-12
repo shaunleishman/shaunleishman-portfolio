@@ -104,7 +104,7 @@ function SurveyRespondentsPanel({ baseId, animationKey }: { baseId: string; anim
   const max = 45;
 
   return (
-    <div role="tabpanel" aria-labelledby={`${baseId}-age-${activeAge}`}>
+    <div role="tabpanel" aria-labelledby={`${baseId}-survey-age-${activeAge}`}>
       <AgeFilterRow baseId={`${baseId}-survey`} activeAge={activeAge} onSelect={setActiveAge} />
       <div className="mt-4 space-y-3">
         <MetricBar
@@ -134,7 +134,7 @@ function PriorResourcesPanel({ baseId, animationKey }: { baseId: string; animati
   const max = 45;
 
   return (
-    <div role="tabpanel">
+    <div role="tabpanel" aria-labelledby={`${baseId}-resources-age-${activeAge}`}>
       <AgeFilterRow baseId={`${baseId}-resources`} activeAge={activeAge} onSelect={setActiveAge} />
       <div className="mt-4 space-y-3">
         <MetricBar
@@ -591,7 +591,11 @@ function Outcome999Panel({ baseId, animationKey }: { baseId: string; animationKe
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2" role="tabpanel">
+      <div
+        className="grid gap-3 sm:grid-cols-2"
+        role="tabpanel"
+        aria-labelledby={`${baseId}-time-${activeBlockId}`}
+      >
         {showDidNotTry && (
           <div className="rounded-xl border border-[var(--color-border)] bg-white px-4 py-3">
             <p className="mb-1 text-body-sm text-[var(--color-text-muted)]">Didn&apos;t try other resources</p>
@@ -681,7 +685,6 @@ export function NhsQuantitativeInteractive({ className }: NhsQuantitativeInterac
                 selected={selected}
                 onClick={() => handleSelect(view.id)}
                 accentColor={EXPLORER_ACCENT}
-                aria-pressed={selected}
                 role="tab"
                 aria-selected={selected}
                 aria-controls={`${baseId}-quant-panel`}

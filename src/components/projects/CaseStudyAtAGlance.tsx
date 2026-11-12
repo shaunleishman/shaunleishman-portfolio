@@ -1,6 +1,7 @@
 "use client";
 
 import { GitBranch, LayoutDashboard, Timer, type LucideIcon } from "lucide-react";
+import { sectionHeadingId } from "@/components/ui/section-heading";
 import { CaseStudyTwoColumn } from "@/components/projects/CaseStudyLayout";
 import { CaseStudySectionHeader } from "@/components/projects/CaseStudySectionHeader";
 import { Reveal } from "@/components/ui/Reveal";
@@ -36,7 +37,7 @@ export function CaseStudyAtAGlance({
     <Reveal variant="up">
       <section
         id={id}
-        aria-labelledby={`${id}-heading`}
+        aria-labelledby={sectionHeadingId(id)}
         className="mb-16 scroll-mt-36 surface-muted p-6 md:mb-20 md:p-8"
       >
         <CaseStudySectionHeader

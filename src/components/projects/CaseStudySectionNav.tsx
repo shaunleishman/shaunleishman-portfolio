@@ -27,9 +27,9 @@ export function CaseStudySectionNav({ items, accentColor, className }: CaseStudy
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]?.target.id) {
-          setActiveId(visible[0].target.id);
-        }
+        const next = visible[0]?.target.id;
+        if (!next) return;
+        setActiveId((current) => (current === next ? current : next));
       },
       { rootMargin: "-30% 0px -55% 0px", threshold: [0, 0.25, 0.5, 1] },
     );

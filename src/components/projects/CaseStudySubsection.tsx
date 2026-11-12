@@ -1,3 +1,4 @@
+import { sectionHeadingId } from "@/components/ui/section-heading";
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
@@ -27,7 +28,7 @@ export function CaseStudySubsection({
         spacingTop && "mt-10 md:mt-12",
         className,
       )}
-      aria-labelledby={headingId}
+      aria-labelledby={sectionHeadingId(headingId)}
     >
       <SectionHeader
         id={headingId}

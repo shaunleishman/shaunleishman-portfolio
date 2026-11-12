@@ -220,8 +220,6 @@ export function OmronWireframeSketchAnimation({
         <div
           ref={rootRef}
           className="group relative hidden bg-neutral-50/80 p-4 sm:p-5 lg:block lg:p-6"
-          role="img"
-          aria-label={alt}
         >
           <div ref={layoutRef} className="relative flex items-start gap-x-4 xl:gap-x-6">
             <SideColumn

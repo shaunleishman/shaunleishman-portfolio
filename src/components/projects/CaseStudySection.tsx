@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { sectionHeadingId } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/Reveal";
 import {
   CaseStudySectionHeader,
@@ -32,7 +32,7 @@ export function CaseStudySection({
     <Reveal delay={delay} variant="up">
       <section
         id={id}
-        aria-labelledby={`${id}-heading`}
+        aria-labelledby={sectionHeadingId(id)}
         className={caseStudyMainSectionClass(dividerTop, className)}
       >
         <CaseStudySectionHeader id={id} title={title} lead={lead} />

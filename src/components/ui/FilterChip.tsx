@@ -94,7 +94,7 @@ export function FilterChip(props: FilterChipProps) {
       onClick={props.onClick}
       className={classes}
       style={style}
-      aria-pressed={props["aria-pressed"] ?? selected}
+      aria-pressed={role === "tab" ? undefined : (props["aria-pressed"] ?? selected)}
     >
       {label}
     </button>

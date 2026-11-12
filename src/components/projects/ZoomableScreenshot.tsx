@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import Image from "next/image";
 import { X, ZoomIn } from "lucide-react";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/utils";
 import type { ScreenshotAnnotation } from "@/lib/screenshot-annotations";
@@ -74,17 +75,15 @@ export function ZoomableScreenshot({
     setOpen(false);
   }
 
+  useLockBodyScroll(open);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
     };
-    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   const previewHeightCss = previewHeight

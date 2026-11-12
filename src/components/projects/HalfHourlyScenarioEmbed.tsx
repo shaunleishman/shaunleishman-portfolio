@@ -18,6 +18,7 @@ import {
   type PrototypeHighlightRegion,
 } from "@/components/projects/PrototypeDesignCallout";
 import { PrototypeDemoCursor } from "@/components/projects/PrototypeDemoCursor";
+import { useFitWidthScale } from "@/components/projects/useFitWidthScale";
 import {
   arbncoBulkSynthesiseSteps,
   bulkSynthesiseDemoElapsedBeforeStepMs,
@@ -180,31 +181,6 @@ function useContainLayout(
   }, [designWidth, designHeight, canvasRef]);
 
   return layout;
-}
-
-function useFitWidthScale(
-  viewportRef: RefObject<HTMLDivElement | null>,
-  designWidth: number,
-) {
-  const [scale, setScale] = useState(1);
-
-  useLayoutEffect(() => {
-    const node = viewportRef.current;
-    if (!node) return;
-
-    const update = () => {
-      const width = node.clientWidth;
-      if (width <= 0) return;
-      setScale(width / designWidth);
-    };
-
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [designWidth, viewportRef]);
-
-  return scale;
 }
 
 function PrototypeSurface({

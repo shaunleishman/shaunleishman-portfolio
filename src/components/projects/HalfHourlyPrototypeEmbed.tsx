@@ -1,8 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useFitWidthScale } from "@/components/projects/useFitWidthScale";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_DESIGN_WIDTH = 1280;
@@ -41,31 +42,6 @@ type HalfHourlyPrototypeEmbedProps = {
   compactHeader?: boolean;
   className?: string;
 };
-
-function useFitWidthScale(
-  viewportRef: RefObject<HTMLDivElement | null>,
-  designWidth: number,
-) {
-  const [scale, setScale] = useState(1);
-
-  useLayoutEffect(() => {
-    const node = viewportRef.current;
-    if (!node) return;
-
-    const update = () => {
-      const width = node.clientWidth;
-      if (width <= 0) return;
-      setScale(width / designWidth);
-    };
-
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [designWidth, viewportRef]);
-
-  return scale;
-}
 
 function PrototypeSurface({
   width,

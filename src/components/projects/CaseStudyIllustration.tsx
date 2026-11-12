@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { sectionHeadingId } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/utils";
 import {
@@ -151,7 +152,7 @@ export function CaseStudySplitSection({
   return (
     <section
       id={id}
-      aria-labelledby={headingId}
+      aria-labelledby={sectionHeadingId(headingId)}
       className={
         isMainSection
           ? caseStudyMainSectionClass(dividerTop, className)

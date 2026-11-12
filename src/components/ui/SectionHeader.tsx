@@ -1,6 +1,7 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
+import { sectionHeadingId } from "@/components/ui/section-heading";
 import { cn } from "@/lib/utils";
 
 /** Shared horizontal gap between section icon and text. */
@@ -41,7 +42,7 @@ export function SectionHeader({
   titleClassName,
   as: Wrapper = "header",
 }: SectionHeaderProps) {
-  const headingId = id ? `${id}-heading` : undefined;
+  const headingId = id ? sectionHeadingId(id) : undefined;
   const TitleTag = variant === "primary" ? "h2" : "h3";
   const hasIcon = Boolean(Icon);
 
