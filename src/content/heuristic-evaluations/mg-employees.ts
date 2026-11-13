@@ -328,7 +328,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 5, impact: 4, effort: 3 },
-      screenshot_reference: "/metrics/case-studies/mg-employees/hero-above-fold.png",
+      screenshot_reference: "/images/case-studies/mg-employees/hero-above-fold.png",
       screenshot_annotations: heroRoutingAnnotations,
     },
     {
@@ -353,7 +353,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       owner: "Content",
       status: "new",
       priority: { frequency: 4, impact: 4, effort: 3 },
-      screenshot_reference: "/metrics/case-studies/mg-employees/content-jargon.png",
+      screenshot_reference: "/images/case-studies/mg-employees/content-jargon.png",
       screenshot_annotations: contentJargonAnnotations,
     },
     {
@@ -381,7 +381,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 5, impact: 4, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/mg-employees/cta-hierarchy.png",
+      screenshot_reference: "/images/case-studies/mg-employees/cta-hierarchy.png",
       screenshot_annotations: ctaHierarchyAnnotations,
       screenshot_caption:
         "Register now is the first strong mid-page CTA. Main Log in buttons sit further down, often below the cookie bar.",
@@ -412,7 +412,7 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
         wcag_principle: "WCAG Perceivable, minimum contrast",
         notes: "Likely fails WCAG 2.2 SC 1.4.3 for normal text",
       },
-      screenshot_reference: "/metrics/case-studies/mg-employees/hero-contrast.png",
+      screenshot_reference: "/images/case-studies/mg-employees/hero-contrast.png",
       screenshot_annotations: heroContrastAnnotations,
     },
     {
@@ -637,20 +637,20 @@ export const mgEmployeesEvaluation: HeuristicEvaluation = {
   ],
   screenshots: [
     {
-      src: "/metrics/case-studies/mg-employees/hero-above-fold.png",
+      src: "/images/case-studies/mg-employees/hero-above-fold.png",
       alt: "Hero with faint subtext and no task routing",
       caption:
         "Register and Log in sit mid-nav with equal weight. Users expect Log in top right as the primary action.",
       annotations: heroAboveFoldAnnotations,
     },
     {
-      src: "/metrics/case-studies/mg-employees/cta-hierarchy.png",
+      src: "/images/case-studies/mg-employees/cta-hierarchy.png",
       alt: "Register is the first mid-page CTA, and Log in sits lower on the page",
       caption: "Register is prominent mid-page. Log in is only a small header link here.",
       annotations: ctaHierarchyAnnotations,
     },
     {
-      src: "/metrics/case-studies/mg-employees/content-jargon.png",
+      src: "/images/case-studies/mg-employees/content-jargon.png",
       alt: "Jargon-heavy sections with actions at the bottom",
       caption: "The body leads with jargon. Main actions sit near the bottom.",
       annotations: contentJargonAnnotations.filter((_, index) => index === 0 || index === 3),

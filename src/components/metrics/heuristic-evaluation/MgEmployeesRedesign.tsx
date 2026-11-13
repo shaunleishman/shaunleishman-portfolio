@@ -12,8 +12,8 @@ import {
 } from "./RedesignFindingIndicator";
 
 const ASSETS = {
-  hero: "/metrics/case-studies/mg-employees/redesign/hero-gardeners-planting-vegetables-desktop.jpg",
-  logo: "/metrics/case-studies/mg-employees/redesign/pru-logo.svg",
+  hero: "/images/case-studies/mg-employees/redesign/hero-gardeners-planting-vegetables-desktop.jpg",
+  logo: "/images/case-studies/mg-employees/redesign/pru-logo.svg",
 } as const;
 
 /** Live-site palette from evaluation screenshots (June 2026) */

@@ -15,8 +15,8 @@ import { OffAxisRedesign } from "./OffAxisRedesign";
 import {
   type FindingsSeverityFilterValue,
   FindingsSeverityFilter,
-  countFindingsBySeverity,
   filterFindingsBySeverity,
+  summarizeFindingSeverities,
 } from "./FindingsSeverityFilter";
 import { FindingPriorityBreakdown, PriorityRankBadge, PriorityScoringGuide } from "./FindingPriorityDisplay";
 import { buildPriorityRankMap, EFFORT_LABELS, getQuickWins, sortFindingsByPriority } from "./finding-priority";
@@ -74,6 +74,18 @@ const MONTH_NAMES = [
   "July", "August", "September", "October", "November", "December",
 ];
 
+/** Open a mounted finding card, or scroll to it when it is already open. */
+function revealFindingCard(findingId: string) {
+  const el = document.getElementById(findingId);
+  if (!el) return;
+  const toggle = el.querySelector<HTMLButtonElement>("button[aria-expanded]");
+  if (toggle?.getAttribute("aria-expanded") === "false") {
+    toggle.click();
+  } else {
+    scrollIntoReportViewport(el);
+  }
+}
+
 /** Format an ISO date (YYYY-MM-DD) as a UK-style date, e.g. "15 June 2026". */
 function formatUkDate(iso: string): string {
   const match = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -107,6 +119,8 @@ export function HeuristicEvaluationReport({
   const [findingsExpanded, setFindingsExpanded] = useState(false);
   const firstRevealedFindingRef = useRef<HTMLDivElement>(null);
   const findingsSectionRef = useRef<HTMLElement>(null);
+  /** Set while a "Jump to full finding" click is waiting for that card to mount. */
+  const pendingJumpIdRef = useRef<string | null>(null);
   const priorityRankById = useMemo(() => buildPriorityRankMap(findings), [findings]);
   const topSevereFindings = useMemo(
     () =>
@@ -133,6 +147,7 @@ export function HeuristicEvaluationReport({
     return filteredFindings.slice(0, FINDINGS_INITIAL_VISIBLE);
   }, [filteredFindings, findingsExpanded, severityFilter]);
   const hiddenFindingsCount = filteredFindings.length - visibleFindings.length;
+  const severityCounts = useMemo(() => summarizeFindingSeverities(findings), [findings]);
 
   const handleSeverityKpiClick = (severity: Severity) => {
     setSeverityFilter((current) => (current === severity ? "all" : severity));
@@ -142,15 +157,53 @@ export function HeuristicEvaluationReport({
   };
 
   useEffect(() => {
+    // A jump clears the filter and then opens the card. Collapsing here would
+    // unmount a finding that sits past the first six before that click lands.
+    if (pendingJumpIdRef.current) return;
     setFindingsExpanded(false);
   }, [severityFilter]);
 
   useEffect(() => {
-    if (!findingsExpanded || !firstRevealedFindingRef.current) return;
-    window.requestAnimationFrame(() => {
-      scrollIntoReportViewport(firstRevealedFindingRef.current!);
+    if (!findingsExpanded || pendingJumpIdRef.current) return;
+    const frame = window.requestAnimationFrame(() => {
+      const target = firstRevealedFindingRef.current;
+      if (!target || pendingJumpIdRef.current) return;
+      scrollIntoReportViewport(target);
     });
+    return () => window.cancelAnimationFrame(frame);
   }, [findingsExpanded]);
+
+  useEffect(() => {
+    const findingId = pendingJumpIdRef.current;
+    if (!findingId || severityFilter !== "all") return;
+    const rank = priorityRankById.get(findingId) ?? Number.POSITIVE_INFINITY;
+    if (rank > FINDINGS_INITIAL_VISIBLE && !findingsExpanded) return;
+
+    // Clear the pending id inside the frame. Strict mode runs this effect
+    // twice and cancels the first frame; clearing earlier would drop the jump.
+    const frame = window.requestAnimationFrame(() => {
+      if (pendingJumpIdRef.current !== findingId) return;
+      pendingJumpIdRef.current = null;
+      revealFindingCard(findingId);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [findingsExpanded, severityFilter, priorityRankById]);
+
+  const jumpToFinding = (findingId: string) => {
+    if (document.getElementById(findingId)) {
+      revealFindingCard(findingId);
+      return;
+    }
+
+    const rank = priorityRankById.get(findingId) ?? Number.POSITIVE_INFINITY;
+    const needsAllSeverities = severityFilter !== "all";
+    const needsExpand = rank > FINDINGS_INITIAL_VISIBLE && !findingsExpanded;
+    if (!needsAllSeverities && !needsExpand) return;
+
+    pendingJumpIdRef.current = findingId;
+    if (needsAllSeverities) setSeverityFilter("all");
+    if (rank > FINDINGS_INITIAL_VISIBLE) setFindingsExpanded(true);
+  };
 
   return (
     <div className="space-y-8 pb-20 sm:space-y-10 sm:pb-24">
@@ -165,7 +218,7 @@ export function HeuristicEvaluationReport({
         )}
         <div className="h-1 w-16 rounded-full mb-4" style={{ backgroundColor: evaluation.accent }} aria-hidden />
         <p className="text-label text-[var(--color-text-muted)]">{evaluation.client}</p>
-        <h1 className="text-h2 font-semibold mt-1 text-balance">{evaluation.title}</h1>
+        <h2 className="text-h2 font-semibold mt-1 text-balance">{evaluation.title}</h2>
         <a
           href={scope.evaluatedUrl}
           target="_blank"
@@ -321,16 +374,7 @@ export function HeuristicEvaluationReport({
                   </div>
                   <button
                     type="button"
-                    onClick={() => {
-                      const el = document.getElementById(finding.finding_id);
-                      if (!el) return;
-                      const toggle = el.querySelector<HTMLButtonElement>("button[aria-expanded]");
-                      if (toggle?.getAttribute("aria-expanded") === "false") {
-                        toggle.click();
-                      } else {
-                        scrollIntoReportViewport(el);
-                      }
-                    }}
+                    onClick={() => jumpToFinding(finding.finding_id)}
                     className="text-body-sm font-medium text-[var(--color-text-primary)] underline underline-offset-2"
                   >
                     Jump to full finding →
@@ -359,7 +403,7 @@ export function HeuristicEvaluationReport({
         </div>
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 mb-6" role="group" aria-label="Filter findings by severity">
           {SEVERITY_KPI_OPTIONS.map(({ key, label }) => {
-            const count = countFindingsBySeverity(findings, key);
+            const count = severityCounts[key];
             return (
               <MetricsKpiCard
                 key={key}

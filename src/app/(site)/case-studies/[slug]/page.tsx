@@ -9,6 +9,15 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
+/** Meta descriptions stay within 160 characters and do not end mid-word. */
+function metaDescription(text: string, max = 160): string {
+  const flat = text.replace(/\s+/g, " ").trim();
+  if (flat.length <= max) return flat;
+  const cut = flat.slice(0, max + 1);
+  const space = cut.lastIndexOf(" ");
+  return (space > 0 ? cut.slice(0, space) : flat.slice(0, max)).trimEnd();
+}
+
 export function generateStaticParams() {
   return CASE_STUDY_ENTRIES.map((entry) => ({ slug: entry.slug }));
 }
@@ -26,7 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${evaluation.title} · Case study`,
-    description: evaluation.executiveSummary.whatWasEvaluated.slice(0, 160),
+    description: metaDescription(evaluation.executiveSummary.whatWasEvaluated),
     robots: { index: false, follow: false },
   };
 }

@@ -1,4 +1,5 @@
 import { Download, Presentation } from "lucide-react";
+import { caseStudyDownloadFilename } from "@/lib/case-study-download";
 import { cn } from "@/lib/utils";
 
 type DownloadReportPdfButtonProps = {
@@ -27,11 +28,14 @@ export function DownloadReportPdfButton({
   const href = `/api/case-studies/${slug}/${isDeck ? "deck" : "pdf"}`;
   const Icon = isDeck ? Presentation : Download;
   const label = isDeck ? "Download deck" : "Download PDF";
+  // A bare `download` is an empty attribute. The URL ends in `/pdf` or `/deck`, so the
+  // saved name has to be set here to match the response Content-Disposition filename.
+  const filename = caseStudyDownloadFilename(slug, isDeck ? "deck" : "report");
 
   return (
     <a
       href={href}
-      download
+      download={filename}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white font-medium text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)]/40 hover:text-[var(--color-accent)]",
         isCompact ? "px-3 py-1.5 text-[0.75rem]" : "min-h-[44px] px-4 py-2 text-body-sm",

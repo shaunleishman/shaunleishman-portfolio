@@ -363,7 +363,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 5, impact: 4, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/hero-no-cta.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/hero-no-cta.png",
       screenshot_annotations: heroNoCtaAnnotations,
     },
     {
@@ -391,7 +391,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Content",
       status: "new",
       priority: { frequency: 5, impact: 4, effort: 3 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/hero-no-cta.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/hero-no-cta.png",
       screenshot_annotations: heroNoCtaAnnotations.filter((_, index) => index === 0),
     },
     {
@@ -419,7 +419,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Product",
       status: "new",
       priority: { frequency: 4, impact: 4, effort: 3 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/hero-no-cta.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/hero-no-cta.png",
       screenshot_annotations: heroNoCtaAnnotations.filter((_, index) => index === 2),
     },
     {
@@ -446,7 +446,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 4, impact: 4, effort: 4 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/gigs-search.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/gigs-search.png",
       screenshot_annotations: gigsSearchAnnotations.filter((_, index) => index === 0),
     },
     {
@@ -528,7 +528,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 4, impact: 2, effort: 3 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/gigs-search.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/gigs-search.png",
       screenshot_annotations: gigsSearchAnnotations.filter((_, index) => index === 1),
       screenshot_caption:
         "Every gig card uses a blank grey placeholder. The same pattern appears on many artist cards.",
@@ -609,7 +609,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 3, impact: 2, effort: 1 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/login-flow.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/login-flow.png",
       screenshot_annotations: loginFlowAnnotations,
     },
     {
@@ -662,7 +662,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 4, impact: 3, effort: 1 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/artist-profile.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/artist-profile.png",
     },
     {
       finding_id: "HE-013",
@@ -690,7 +690,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 3, impact: 2, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/ended-gigs.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/ended-gigs.png",
     },
     {
       finding_id: "HE-014",
@@ -717,7 +717,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 3, impact: 2, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/ended-gigs.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/ended-gigs.png",
     },
     {
       finding_id: "HE-015",
@@ -745,7 +745,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 3, impact: 3, effort: 1 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/connect-links.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/connect-links.png",
       accessibility_lens: {
         is_accessibility_related: true,
         wcag_principle: "WCAG use of colour and focus visibility (Perceivable and Operable)",
@@ -779,7 +779,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Content",
       status: "new",
       priority: { frequency: 3, impact: 3, effort: 1 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/instagram-raw-url.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/instagram-raw-url.png",
     },
     {
       finding_id: "HE-017",
@@ -807,7 +807,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Product",
       status: "new",
       priority: { frequency: 4, impact: 4, effort: 3 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/profile-no-genre.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/profile-no-genre.png",
     },
     {
       finding_id: "HE-018",
@@ -835,7 +835,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 3, impact: 3, effort: 3 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/profile-no-genre.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/profile-no-genre.png",
     },
     {
       finding_id: "HE-019",
@@ -863,7 +863,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 3, impact: 2, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/event-artist-icon.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/event-artist-icon.png",
     },
     {
       finding_id: "HE-020",
@@ -891,7 +891,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 3, impact: 2, effort: 1 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/event-title.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/event-title.png",
     },
     {
       finding_id: "HE-021",
@@ -918,7 +918,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Product",
       status: "new",
       priority: { frequency: 4, impact: 3, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/gig-card-price.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/gig-card-price.png",
     },
     {
       finding_id: "HE-022",
@@ -946,7 +946,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Engineering",
       status: "new",
       priority: { frequency: 3, impact: 4, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/account-profile.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/account-profile.png",
     },
     {
       finding_id: "HE-023",
@@ -974,7 +974,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 3, impact: 3, effort: 3 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/account-profile.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/account-profile.png",
     },
     {
       finding_id: "HE-024",
@@ -1001,7 +1001,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 2, impact: 2, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/account-profile.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/account-profile.png",
     },
     {
       finding_id: "HE-025",
@@ -1029,7 +1029,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Content",
       status: "new",
       priority: { frequency: 3, impact: 2, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/account-profile.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/account-profile.png",
     },
     {
       finding_id: "HE-026",
@@ -1057,7 +1057,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Content",
       status: "new",
       priority: { frequency: 3, impact: 2, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/subscriptions.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/subscriptions.png",
     },
     {
       finding_id: "HE-027",
@@ -1085,7 +1085,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Design",
       status: "new",
       priority: { frequency: 4, impact: 3, effort: 3 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/checkout.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/checkout.png",
     },
     {
       finding_id: "HE-028",
@@ -1113,7 +1113,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Product",
       status: "new",
       priority: { frequency: 3, impact: 3, effort: 2 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/checkout.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/checkout.png",
     },
     {
       finding_id: "HE-029",
@@ -1141,7 +1141,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Product",
       status: "new",
       priority: { frequency: 5, impact: 4, effort: 3 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/booking-fee.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/booking-fee.png",
     },
     {
       finding_id: "HE-030",
@@ -1169,7 +1169,7 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
       owner: "Content",
       status: "new",
       priority: { frequency: 3, impact: 2, effort: 1 },
-      screenshot_reference: "/metrics/case-studies/off-axis-tours/donation.png",
+      screenshot_reference: "/images/case-studies/off-axis-tours/donation.png",
     },
     {
       finding_id: "HE-031",
@@ -1210,21 +1210,21 @@ export const offAxisToursEvaluation: HeuristicEvaluation = {
   ],
   screenshots: [
     {
-      src: "/metrics/case-studies/off-axis-tours/hero-no-cta.png",
+      src: "/images/case-studies/off-axis-tours/hero-no-cta.png",
       alt: "Off Axis home hero with no call to action above a grid of artist cards",
       caption:
         "The hero states a goal but offers no action, and the directory below mixes real artists with test and empty profiles.",
       annotations: heroNoCtaAnnotations,
     },
     {
-      src: "/metrics/case-studies/off-axis-tours/gigs-search.png",
+      src: "/images/case-studies/off-axis-tours/gigs-search.png",
       alt: "Gigs page with a search field and blank gig image placeholders",
       caption:
         "Gigs has a search field that the artist directory lacks, and every gig card uses a blank image placeholder.",
       annotations: gigsSearchAnnotations,
     },
     {
-      src: "/metrics/case-studies/off-axis-tours/login-flow.png",
+      src: "/images/case-studies/off-axis-tours/login-flow.png",
       alt: "Login page with the Sign in button below the social login options",
       caption:
         "The primary Sign in button sits below the social options, and password rules appear on the login form.",

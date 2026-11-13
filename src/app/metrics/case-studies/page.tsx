@@ -25,7 +25,7 @@ export default function CaseStudiesGalleryPage() {
                 siblings (the Copy-link button) sit above it and stay clickable. */}
             <Link
               href={`${base}/case-studies/${entry.slug}`}
-              className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+              className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--color-accent)]"
               aria-label={`Open ${entry.title}`}
             />
             <div className="h-2" style={{ backgroundColor: entry.accent }} aria-hidden />
