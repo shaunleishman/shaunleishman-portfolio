@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { CaseStudyPdfDocument } from "@/components/case-studies/CaseStudyPdfDocument";
 import { getEvaluationBySlug } from "@/content/heuristic-evaluations";
+import { caseStudyPdfHeaders } from "@/lib/case-study-download";
+import { getCachedCaseStudyPdf } from "@/lib/case-study-pdf-cache";
 
 export const runtime = "nodejs";
 
@@ -17,14 +19,12 @@ export async function GET(
   }
 
   try {
-    const buffer = await renderToBuffer(<CaseStudyPdfDocument evaluation={evaluation} />);
+    const buffer = await getCachedCaseStudyPdf("report", evaluation, () =>
+      renderToBuffer(<CaseStudyPdfDocument evaluation={evaluation} />),
+    );
 
     return new NextResponse(new Uint8Array(buffer), {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${slug}-heuristic-evaluation.pdf"`,
-        "Cache-Control": "private, no-cache",
-      },
+      headers: caseStudyPdfHeaders(evaluation.slug, "report"),
     });
   } catch {
     return NextResponse.json({ error: "PDF generation failed" }, { status: 500 });

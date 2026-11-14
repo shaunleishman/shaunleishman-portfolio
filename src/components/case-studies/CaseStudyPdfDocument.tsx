@@ -1,8 +1,5 @@
 import type { ReactNode } from "react";
-import { Document, Font, Link, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
-
-// Wrap whole words to the next line instead of hyphenating across the break.
-Font.registerHyphenationCallback((word) => [word]);
+import { Document, Link, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { siteConfig } from "@/content/projects";
 import type {
   HeuristicEvaluation,
@@ -375,6 +372,9 @@ const ACTION_GROUPS: { key: "fix_now" | "fix_next" | "monitor" | "validate"; lab
   { key: "validate", label: "Validate and research" },
 ];
 
+// Whole words are kept intact by getCachedCaseStudyPdf for the duration of the
+// render. Do not call Font.registerHyphenationCallback from this module. That
+// callback is process-wide and would change later CV and cover-letter PDFs.
 export function CaseStudyPdfDocument({ evaluation }: { evaluation: HeuristicEvaluation }) {
   const { executiveSummary: exec, scope, severitySummary } = evaluation;
   const rankedFindings = sortFindingsByPriority(evaluation.findings);

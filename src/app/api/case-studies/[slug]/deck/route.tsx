@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { CaseStudyDeckDocument } from "@/components/case-studies/CaseStudyDeckDocument";
 import { getEvaluationBySlug } from "@/content/heuristic-evaluations";
+import { caseStudyPdfHeaders } from "@/lib/case-study-download";
+import { getCachedCaseStudyPdf } from "@/lib/case-study-pdf-cache";
 
 export const runtime = "nodejs";
 
@@ -17,14 +19,12 @@ export async function GET(
   }
 
   try {
-    const buffer = await renderToBuffer(<CaseStudyDeckDocument evaluation={evaluation} />);
+    const buffer = await getCachedCaseStudyPdf("deck", evaluation, () =>
+      renderToBuffer(<CaseStudyDeckDocument evaluation={evaluation} />),
+    );
 
     return new NextResponse(new Uint8Array(buffer), {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${slug}-summary-deck.pdf"`,
-        "Cache-Control": "private, no-cache",
-      },
+      headers: caseStudyPdfHeaders(evaluation.slug, "deck"),
     });
   } catch {
     return NextResponse.json({ error: "Deck generation failed" }, { status: 500 });
