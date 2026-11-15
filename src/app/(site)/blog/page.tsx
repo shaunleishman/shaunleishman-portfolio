@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAllPosts } from "@/lib/blog";
+import { getPublishedPostSummaries } from "@/lib/blog";
 import { getBlogEngagementMap } from "@/lib/blog-engagement";
 import { BlogPostList } from "@/components/blog/BlogPostList";
 import { PageHero } from "@/components/layout/PageHero";
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  const posts = getAllPosts();
+  const posts = getPublishedPostSummaries();
   const engagement = getBlogEngagementMap();
 
   return (

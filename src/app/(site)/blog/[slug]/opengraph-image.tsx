@@ -1,8 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { getPostBySlug } from "@/lib/blog";
+import { readBlogShareImage } from "@/lib/blog-share-image";
 import { siteConfig } from "@/content/projects";
 
 export const alt = "Blog article preview";
@@ -13,26 +11,6 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-function thumbnailContentType(thumbnailPath: string, data: Buffer): string {
-  if (data.length >= 3 && data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff) {
-    return "image/jpeg";
-  }
-
-  if (
-    data.length >= 8 &&
-    data[0] === 0x89 &&
-    data[1] === 0x50 &&
-    data[2] === 0x4e &&
-    data[3] === 0x47
-  ) {
-    return "image/png";
-  }
-
-  if (thumbnailPath.toLowerCase().match(/\.jpe?g$/)) return "image/jpeg";
-  if (thumbnailPath.toLowerCase().endsWith(".png")) return "image/png";
-  return "application/octet-stream";
-}
-
 export default async function Image({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
@@ -41,17 +19,14 @@ export default async function Image({ params }: Props) {
     return new Response("Not found", { status: 404 });
   }
 
-  if (post.thumbnail) {
-    const filePath = join(process.cwd(), "public", post.thumbnail.replace(/^\//, ""));
-    if (existsSync(filePath)) {
-      const data = await readFile(filePath);
-      return new Response(data, {
-        headers: {
-          "Content-Type": thumbnailContentType(post.thumbnail, data),
-          "Cache-Control": "public, max-age=31536000, immutable",
-        },
-      });
-    }
+  const image = readBlogShareImage(post);
+  if (image) {
+    return new Response(Uint8Array.from(image.data), {
+      headers: {
+        "Content-Type": image.type,
+        "Cache-Control": "public, max-age=31536000, immutable",
+      },
+    });
   }
 
   const tagLine = post.tags.slice(0, 3).join(" · ");

@@ -4,7 +4,8 @@ import { useMemo, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Headphones } from "lucide-react";
-import type { BlogPost } from "@/lib/blog";
+import type { BlogPostSummary } from "@/lib/blog";
+import { formatBlogDate } from "@/lib/blog-display";
 import { getBlogThumbnailSrc } from "@/lib/blog-images";
 import {
   BLOG_CATEGORY_FILTER_OPTIONS,
@@ -22,7 +23,7 @@ import { Reveal } from "@/components/ui/Reveal";
 const FILTERS = BLOG_CATEGORY_FILTER_OPTIONS;
 
 type BlogPostListProps = {
-  posts: BlogPost[];
+  posts: BlogPostSummary[];
   engagement: Record<string, BlogEngagementStats>;
 };
 
@@ -107,17 +108,13 @@ export function BlogPostList({ posts, engagement }: BlogPostListProps) {
                       fill
                       className="object-cover"
                       sizes="(max-width: 640px) 100vw, 14rem"
-                      loading="lazy"
+                      loading={index === 0 ? "eager" : "lazy"}
                     />
                   </Link>
                   <div className="min-w-0 flex flex-col justify-center">
                     <SectionLabel>
                     <time dateTime={post.date}>
-                      {new Date(post.date).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {formatBlogDate(post.date)}
                     </time>
                     {" · "}
                     {formatReadingTime(post.readingTime)}

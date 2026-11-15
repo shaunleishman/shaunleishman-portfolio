@@ -36,6 +36,10 @@ tags: ["UX", "Research"]
 Your content here...
 ```
 
+`date` is the calendar day to display (`YYYY-MM-DD`). It stays on that day in every timezone.
+
+`thumbnail` is optional, for example `/images/blog/my-post.png`. The index uses that path. The share image is `my-post-og.png` when that file sits beside it, otherwise the thumbnail. Open Graph width, height, and type are read from the file that is sent. The index card path does not change.
+
 ## Analytics
 
 Set `ADMIN_PASSWORD` in `.env.local`, then visit `/admin`.

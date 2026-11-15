@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
 import { getBlogShareImageUrl, getBlogShareImageMeta, getBlogThumbnailSrc } from "@/lib/blog-images";
+import { getServedBlogShareImageMeta } from "@/lib/blog-share-image";
+import { formatBlogDate } from "@/lib/blog-display";
 import { getBlogCategory } from "@/lib/blog-categories";
 import { getBlogEngagementForSlug } from "@/lib/blog-engagement";
 import { siteConfig } from "@/content/projects";
@@ -33,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: "Post not found" };
 
   const imageUrl = getBlogShareImageUrl(post, siteConfig.siteUrl);
-  const imageMeta = getBlogShareImageMeta(post);
+  const imageMeta = getServedBlogShareImageMeta(post) ?? getBlogShareImageMeta(post);
 
   return {
     title: post.title,
@@ -114,11 +116,7 @@ export default async function BlogPostPage({ params }: Props) {
             {category.label}
             {" · "}
             <time dateTime={post.date}>
-              {new Date(post.date).toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
+              {formatBlogDate(post.date)}
             </time>
             {" · "}
             {post.readingTime}

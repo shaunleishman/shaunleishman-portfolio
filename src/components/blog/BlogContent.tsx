@@ -1,5 +1,3 @@
-"use client";
-
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { KanoCategoryOverview } from "./kano/KanoCategoryOverview";
@@ -107,7 +105,12 @@ function renderMarkdownBlock(block: string, key: number) {
   );
 }
 
-/** Renders markdown with optional <!-- viz:id --> embed markers */
+/**
+ * Renders markdown with optional <!-- viz:id --> embed markers.
+ * This stays a Server Component. The article page passes it through
+ * BlogPostEngagement as children, so the markdown is not a client prop.
+ * Widget imports stay static. A dynamic import can leave a gap while the chunk loads.
+ */
 export function BlogContent({ content }: { content: string }) {
   const segments = content.split(/<!--\s*viz:([\w-]+)\s*-->/);
   const nodes: ReactNode[] = [];
