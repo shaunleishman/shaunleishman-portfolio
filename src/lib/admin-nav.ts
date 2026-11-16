@@ -135,7 +135,7 @@ export const CASE_STUDY_ENTRIES: CaseStudyEntry[] = [
     title: "Off Axis heuristic evaluation · Part 4",
     client: "Off Axis · Task flows across fan, artist and venue roles",
     description:
-      "Part 4. Signed-out task flows for fans, artists and venue managers on desktop and mobile, each with a highlighted screenshot.",
+      "Part 4. Signed-out and signed-in task flows for fans, artists, venues, admins and door staff on desktop and mobile, each with a highlighted screenshot.",
     accent: "#A855F7",
     tags: ["Heuristic evaluation", "Part 4", "Task flows"],
     evaluatedUrl: "https://offaxistours.com/",
