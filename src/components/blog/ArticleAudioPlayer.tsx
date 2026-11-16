@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
-import { useAudioPlayer, type AudioTrack } from "@/components/audio/AudioPlayerProvider";
+import {
+  useAudioCurrentTime,
+  useAudioPlayer,
+  type AudioTrack,
+} from "@/components/audio/AudioPlayerProvider";
 import { Waveform } from "@/components/audio/Waveform";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +19,10 @@ function formatTime(seconds: number) {
 }
 
 type WaveformData = { duration: number; peaks: number[] };
+
+// Parsed peaks for this browser session. The player stays unmounted until the
+// file has parsed once, then a return visit can paint it on the first render.
+const waveformCache = new Map<string, WaveformData>();
 
 type ArticleAudioPlayerProps = {
   src: string;
@@ -38,11 +46,14 @@ export function ArticleAudioPlayer({
   className,
 }: ArticleAudioPlayerProps) {
   const player = useAudioPlayer();
-  const [data, setData] = useState<WaveformData | null>(null);
-
+  const liveTime = useAudioCurrentTime();
   const peaksUrl = useMemo(() => src.replace(/\.[^/.]+$/, ".peaks.json"), [src]);
+  const [fetched, setFetched] = useState<{ url: string; data: WaveformData } | null>(null);
+  const data = waveformCache.get(peaksUrl) ?? (fetched?.url === peaksUrl ? fetched.data : null);
 
   useEffect(() => {
+    if (waveformCache.has(peaksUrl)) return;
+
     let cancelled = false;
     fetch(peaksUrl)
       .then((response) => {
@@ -50,12 +61,11 @@ export function ArticleAudioPlayer({
         return response.json();
       })
       .then((json) => {
-        if (cancelled) return;
-        if (Array.isArray(json)) {
-          setData({ duration: 0, peaks: json });
-        } else {
-          setData({ duration: json.duration ?? 0, peaks: json.peaks ?? [] });
-        }
+        const next: WaveformData = Array.isArray(json)
+          ? { duration: 0, peaks: json }
+          : { duration: json.duration ?? 0, peaks: json.peaks ?? [] };
+        waveformCache.set(peaksUrl, next);
+        if (!cancelled) setFetched({ url: peaksUrl, data: next });
       })
       .catch(() => undefined);
     return () => {
@@ -80,7 +90,7 @@ export function ArticleAudioPlayer({
   if (!data || !track) return null;
 
   const active = player.isActive(slug);
-  const currentTime = active ? player.currentTime : 0;
+  const currentTime = active ? liveTime : 0;
   const duration = active && player.duration ? player.duration : data.duration;
   const progress = duration > 0 ? currentTime / duration : 0;
   const isPlaying = active && player.isPlaying;

@@ -4,7 +4,7 @@ import { useRef, type KeyboardEvent, type PointerEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Pause, Play, RotateCcw, X } from "lucide-react";
-import { useAudioPlayer } from "@/components/audio/AudioPlayerProvider";
+import { useAudioCurrentTime, useAudioPlayer } from "@/components/audio/AudioPlayerProvider";
 
 function formatTime(seconds: number) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -96,7 +96,8 @@ function ProgressBar({
 
 export function FloatingAudioPlayer() {
   const player = useAudioPlayer();
-  const { track, activated, isPlaying, currentTime, duration } = player;
+  const currentTime = useAudioCurrentTime();
+  const { track, activated, isPlaying, duration } = player;
 
   if (!activated || !track) return null;
 

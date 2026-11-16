@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 
 export const PLAYBACK_RATES = [1, 1.25, 1.5, 2] as const;
@@ -32,7 +33,6 @@ type AudioPlayerContextValue = {
   /** True once playback has been started at least once (drives the floating bar). */
   activated: boolean;
   isPlaying: boolean;
-  currentTime: number;
   duration: number;
   playbackRate: number;
   isActive: (slug: string) => boolean;
@@ -43,6 +43,39 @@ type AudioPlayerContextValue = {
   cycleRate: () => void;
   close: () => void;
 };
+
+// The playhead is not React state. timeupdate would otherwise re-render the
+// provider and every layout child for the whole time the narration is playing.
+const audioTimeListeners = new Set<() => void>();
+let audioCurrentTime = 0;
+
+function subscribeAudioCurrentTime(listener: () => void) {
+  audioTimeListeners.add(listener);
+  return () => audioTimeListeners.delete(listener);
+}
+
+function getAudioCurrentTime() {
+  return audioCurrentTime;
+}
+
+function getServerAudioCurrentTime() {
+  return 0;
+}
+
+function publishAudioCurrentTime(next: number) {
+  const time = Number.isFinite(next) && next > 0 ? next : 0;
+  if (Object.is(time, audioCurrentTime)) return;
+  audioCurrentTime = time;
+  audioTimeListeners.forEach((listener) => listener());
+}
+
+export function useAudioCurrentTime() {
+  return useSyncExternalStore(
+    subscribeAudioCurrentTime,
+    getAudioCurrentTime,
+    getServerAudioCurrentTime,
+  );
+}
 
 const AudioPlayerContext = createContext<AudioPlayerContextValue | null>(null);
 
@@ -62,7 +95,6 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
   const [track, setTrack] = useState<AudioTrack | null>(null);
   const [activated, setActivated] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [rateIndex, setRateIndex] = useState(0);
 
@@ -77,22 +109,34 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       if (!audio) return;
 
       if (loadedSrcRef.current !== next.src) {
+        // Assign the ratio first. A cached file fires loadedmetadata inside
+        // the src setter, before the next line would have stored it.
+        pendingSeekRef.current = startRatio ?? null;
         audio.src = next.src;
         loadedSrcRef.current = next.src;
         setTrack(next);
-        setCurrentTime(0);
         setDuration(next.duration || 0);
-        pendingSeekRef.current = startRatio ?? null;
+        if (pendingSeekRef.current == null) {
+          if (startRatio == null) publishAudioCurrentTime(0);
+        } else if (next.duration && startRatio != null) {
+          const clamped = Math.min(1, Math.max(0, startRatio));
+          publishAudioCurrentTime(clamped * next.duration);
+        }
       } else if (startRatio != null) {
+        const clamped = Math.min(1, Math.max(0, startRatio));
         if (audio.duration) {
-          audio.currentTime = startRatio * audio.duration;
+          audio.currentTime = clamped * audio.duration;
+          publishAudioCurrentTime(audio.currentTime);
         } else {
-          pendingSeekRef.current = startRatio;
+          pendingSeekRef.current = clamped;
+          if (next.duration) publishAudioCurrentTime(clamped * next.duration);
         }
       }
 
       audio.playbackRate = PLAYBACK_RATES[rateIndex];
-      void audio.play();
+      void audio.play().catch(() => {
+        // Autoplay can reject. The play and pause events own isPlaying.
+      });
       setActivated(true);
     },
     [rateIndex],
@@ -111,20 +155,28 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     [play],
   );
 
-  const seekToRatio = useCallback((ratio: number) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const total = audio.duration || 0;
-    if (!total) return;
-    const clamped = Math.min(1, Math.max(0, ratio));
-    audio.currentTime = clamped * total;
-    setCurrentTime(audio.currentTime);
-  }, []);
+  const seekToRatio = useCallback(
+    (ratio: number) => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      const clamped = Math.min(1, Math.max(0, ratio));
+      const total = audio.duration || 0;
+      if (!total) {
+        pendingSeekRef.current = clamped;
+        if (duration) publishAudioCurrentTime(clamped * duration);
+        return;
+      }
+      audio.currentTime = clamped * total;
+      publishAudioCurrentTime(audio.currentTime);
+    },
+    [duration],
+  );
 
   const rewind = useCallback((seconds = 15) => {
     const audio = audioRef.current;
     if (!audio) return;
     audio.currentTime = Math.max(0, audio.currentTime - seconds);
+    publishAudioCurrentTime(audio.currentTime);
   }, []);
 
   const cycleRate = useCallback(() => {
@@ -145,7 +197,6 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       track,
       activated,
       isPlaying,
-      currentTime,
       duration,
       playbackRate: PLAYBACK_RATES[rateIndex],
       isActive,
@@ -160,7 +211,6 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       track,
       activated,
       isPlaying,
-      currentTime,
       duration,
       rateIndex,
       isActive,
@@ -185,9 +235,10 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
           if (pendingSeekRef.current != null && audio.duration) {
             audio.currentTime = pendingSeekRef.current * audio.duration;
             pendingSeekRef.current = null;
+            publishAudioCurrentTime(audio.currentTime);
           }
         }}
-        onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+        onTimeUpdate={(event) => publishAudioCurrentTime(event.currentTarget.currentTime)}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}
