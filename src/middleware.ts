@@ -38,8 +38,11 @@ export function middleware(request: NextRequest) {
   const isLegacyAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
   const isDirectMetrics = pathname === "/metrics" || pathname.startsWith("/metrics/");
   const isSecretMetrics = pathname === metricsPath || pathname.startsWith(`${metricsPath}/`);
+  // Case study screenshots live in public/metrics and are shown on the public case study pages.
+  const isCaseStudyAsset =
+    pathname.startsWith("/metrics/case-studies/") && /\.(png|jpe?g|webp|gif|svg)$/i.test(pathname);
 
-  if (isLegacyAdmin || isDirectMetrics) {
+  if (isLegacyAdmin || (isDirectMetrics && !isCaseStudyAsset)) {
     const response = new NextResponse("Not Found", { status: 404 });
     applyFixedSecurityHeaders(response.headers);
     response.headers.set("Content-Security-Policy", csp);
