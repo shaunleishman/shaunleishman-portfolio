@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import {
   blogPostPath,
+  bumpEngagementCount,
   formatEngagementCount,
-  mergeBlogEngagementStats,
+  reconcileEngagementAction,
   type BlogEngagementStats,
 } from "@/lib/blog-engagement-shared";
 import {
@@ -27,7 +28,7 @@ export function BlogEngagementActions({
   initialStats,
   className,
 }: BlogEngagementActionsProps) {
-  const { stats, setStats } = useBlogEngagementStats(slug, initialStats);
+  const { stats, setStats, statsRef } = useBlogEngagementStats(slug, initialStats);
   const [liked, setLiked] = useState(false);
   const [liking, setLiking] = useState(false);
 
@@ -39,17 +40,25 @@ export function BlogEngagementActions({
     if (liked || liking) return;
 
     setLiking(true);
-    setStats((current) => ({ ...current, likes: current.likes + 1 }));
+    const baseline = statsRef.current.likes;
+    setStats((current) => bumpEngagementCount(current, slug, "likes", 1));
 
     const result = await trackBlogEngagement("blog_like", blogPostPath(slug), { slug });
     if (result.ok) {
       markBlogPostLiked(slug);
       setLiked(true);
       if (result.stats) {
-        setStats((current) => mergeBlogEngagementStats(current, result.stats!));
+        const incoming = result.stats;
+        setStats((current) =>
+          reconcileEngagementAction(current, incoming, "likes", result.changed === true, baseline),
+        );
       }
     } else {
-      setStats((current) => ({ ...current, likes: Math.max(0, current.likes - 1) }));
+      setStats((current) =>
+        current.slug === slug && current.likes === baseline + 1
+          ? bumpEngagementCount(current, slug, "likes", -1)
+          : current,
+      );
     }
     setLiking(false);
   }

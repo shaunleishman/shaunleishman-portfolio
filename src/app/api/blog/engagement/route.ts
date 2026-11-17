@@ -5,7 +5,7 @@ import {
   getBlogEngagementForSlugAsync,
   getBlogEngagementMapAsync,
 } from "@/lib/blog-engagement";
-import { blogPostPath } from "@/lib/blog-engagement-shared";
+import { blogPostPath, withEngagementSeed } from "@/lib/blog-engagement-shared";
 import {
   incrementBlogEngagement,
   type BlogEngagementAction,
@@ -85,8 +85,13 @@ export async function POST(request: NextRequest) {
       await mirrorToAnalytics(blogPath, action, sessionId, slug);
     }
 
-    const stats = await getBlogEngagementForSlugAsync(slug);
-    return NextResponse.json({ ok: true, stats, record, changed });
+    // `{ ok, stats, changed }` only. Do not add `record`, `viewedSessions`, or `likedSessions`.
+    const stats = withEngagementSeed(slug, {
+      views: record.views,
+      likes: record.likes,
+      shares: record.shares,
+    });
+    return NextResponse.json({ ok: true, stats, changed });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

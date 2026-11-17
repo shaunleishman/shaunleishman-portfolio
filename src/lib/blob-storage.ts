@@ -8,6 +8,22 @@ export async function readJsonFromBlob(pathname: string): Promise<unknown | null
   if (!hasBlobStorage()) return null;
 
   try {
+    return await readJsonFromBlobOrThrow(pathname);
+  } catch (error) {
+    console.error(`[blob] Failed to read ${pathname}`, error);
+    return null;
+  }
+}
+
+/**
+ * Same read as `readJsonFromBlob`, but a transport or parse failure throws.
+ * A missing blob is still null. Callers that write the store back must use
+ * this so a failed read is not saved over live data.
+ */
+export async function readJsonFromBlobOrThrow(pathname: string): Promise<unknown | null> {
+  if (!hasBlobStorage()) return null;
+
+  try {
     const result = await get(pathname, { access: "private" });
     if (!result || result.statusCode !== 200 || !result.stream) return null;
 
@@ -16,8 +32,7 @@ export async function readJsonFromBlob(pathname: string): Promise<unknown | null
   } catch (error) {
     // Missing file is expected on first write.
     if (error instanceof BlobNotFoundError) return null;
-    console.error(`[blob] Failed to read ${pathname}`, error);
-    return null;
+    throw error;
   }
 }
 

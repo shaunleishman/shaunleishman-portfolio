@@ -1,6 +1,17 @@
 import fs from "fs";
 import path from "path";
-import { hasBlobStorage, readJsonFromBlob, writeJsonToBlob } from "@/lib/blob-storage";
+import { hasBlobStorage, readJsonFromBlobOrThrow, writeJsonToBlob } from "@/lib/blob-storage";
+
+/**
+ * Public article counts (views, likes, shares).
+ *
+ * Increments run one at a time in this process so overlapping likes, shares,
+ * and views cannot drop a count. A failed blob read throws: do not treat that
+ * as an empty store and write it back, or live counts are replaced by the
+ * local file. The sync reader only sees `data/blog-engagement.json` (or `/tmp`
+ * on Vercel). Session lists stay in this store. API responses must not
+ * include `viewedSessions` or `likedSessions`.
+ */
 
 const BLOB_PATHNAME = "blog-engagement.json";
 
@@ -72,7 +83,7 @@ function normalizeStore(raw: unknown): BlogEngagementStore {
 async function readStoreFromBlob(): Promise<BlogEngagementStore | null> {
   if (!hasBlobStorage()) return null;
 
-  const raw = await readJsonFromBlob(BLOB_PATHNAME);
+  const raw = await readJsonFromBlobOrThrow(BLOB_PATHNAME);
   if (raw === null) return null;
   return normalizeStore(raw);
 }
@@ -122,7 +133,26 @@ async function writeBlogEngagementStore(store: BlogEngagementStore) {
 
 export type BlogEngagementAction = "view" | "like" | "share";
 
-export async function incrementBlogEngagement(
+let mutationQueue: Promise<unknown> = Promise.resolve();
+
+function enqueueMutation<T>(task: () => Promise<T>): Promise<T> {
+  const run = mutationQueue.then(task, task);
+  mutationQueue = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
+export function incrementBlogEngagement(
+  blogPath: string,
+  action: BlogEngagementAction,
+  sessionId: string,
+): Promise<{ record: BlogEngagementRecord; changed: boolean }> {
+  return enqueueMutation(() => incrementBlogEngagementNow(blogPath, action, sessionId));
+}
+
+async function incrementBlogEngagementNow(
   blogPath: string,
   action: BlogEngagementAction,
   sessionId: string,

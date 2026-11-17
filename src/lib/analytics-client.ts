@@ -28,7 +28,7 @@ export async function trackBlogEngagement(
   type: "blog_like" | "blog_share",
   path: string,
   metadata?: Record<string, string | number>,
-): Promise<{ ok: boolean; stats?: BlogEngagementStats }> {
+): Promise<{ ok: boolean; stats?: BlogEngagementStats; changed?: boolean }> {
   if (await isMetricsTrackingExcluded()) return { ok: false };
 
   const sessionId = getAnalyticsSessionId();
@@ -57,14 +57,30 @@ export async function trackBlogEngagement(
 
     if (!res.ok) return { ok: false };
 
-    const data = (await res.json()) as { stats?: BlogEngagementStats };
-    return { ok: true, stats: data.stats };
+    const data = (await res.json()) as { stats?: BlogEngagementStats; changed?: boolean };
+    return { ok: true, stats: data.stats, changed: data.changed === true };
   } catch {
     return { ok: false };
   }
 }
 
-export async function recordBlogArticleView(slug: string): Promise<BlogEngagementStats | null> {
+const articleViewQueue = new Map<string, Promise<BlogEngagementStats | null>>();
+
+/** One view POST per article at a time, so a second mount cannot count the visit twice. */
+export function recordBlogArticleView(slug: string): Promise<BlogEngagementStats | null> {
+  const previous = articleViewQueue.get(slug) ?? Promise.resolve(null);
+  const next = previous.then(
+    () => postBlogArticleView(slug),
+    () => postBlogArticleView(slug),
+  );
+  articleViewQueue.set(slug, next);
+  void next.finally(() => {
+    if (articleViewQueue.get(slug) === next) articleViewQueue.delete(slug);
+  });
+  return next;
+}
+
+async function postBlogArticleView(slug: string): Promise<BlogEngagementStats | null> {
   if (typeof window === "undefined") return null;
   if (await isMetricsTrackingExcluded()) return null;
   if (sessionStorage.getItem(`blog_view_${slug}`) === "1") return null;

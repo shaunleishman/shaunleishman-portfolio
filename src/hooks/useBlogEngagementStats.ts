@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   mergeBlogEngagementStats,
   type BlogEngagementStats,
@@ -11,22 +11,39 @@ const REFRESH_INTERVAL_MS = 20_000;
 
 export function useBlogEngagementStats(slug: string, initialStats: BlogEngagementStats) {
   const [stats, setStats] = useState(initialStats);
+  const slugRef = useRef(slug);
+  const statsRef = useRef(stats);
+  const { views, likes, shares } = initialStats;
+  const [seenServerStats, setSeenServerStats] = useState({ slug, views, likes, shares });
+
+  if (
+    seenServerStats.slug !== slug ||
+    seenServerStats.views !== views ||
+    seenServerStats.likes !== likes ||
+    seenServerStats.shares !== shares
+  ) {
+    const next = { slug, views, likes, shares };
+    setSeenServerStats(next);
+    setStats((current) => (current.slug === slug ? mergeBlogEngagementStats(current, next) : next));
+  }
 
   useEffect(() => {
-    setStats(initialStats);
-  }, [initialStats, slug]);
+    slugRef.current = slug;
+    statsRef.current = stats;
+  }, [slug, stats]);
 
   const refreshStats = useCallback(async () => {
-    const next = await fetchBlogEngagementStats(slug);
-    if (next) {
-      setStats((current) => mergeBlogEngagementStats(current, next));
-    }
+    const requestedSlug = slug;
+    const next = await fetchBlogEngagementStats(requestedSlug);
+    if (!next || slugRef.current !== requestedSlug) return;
+    setStats((current) => mergeBlogEngagementStats(current, next));
   }, [slug]);
 
   useEffect(() => {
     void refreshStats();
 
     const interval = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
       void refreshStats();
     }, REFRESH_INTERVAL_MS);
 
@@ -46,5 +63,5 @@ export function useBlogEngagementStats(slug: string, initialStats: BlogEngagemen
     };
   }, [refreshStats]);
 
-  return { stats, setStats, refreshStats };
+  return { stats, setStats, refreshStats, statsRef };
 }

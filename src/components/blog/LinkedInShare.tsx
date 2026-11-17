@@ -4,8 +4,9 @@ import { useMemo } from "react";
 import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
 import {
   blogPostPath,
+  bumpEngagementCount,
   formatEngagementCount,
-  mergeBlogEngagementStats,
+  reconcileEngagementAction,
 } from "@/lib/blog-engagement-shared";
 import { trackBlogEngagement } from "@/lib/analytics-client";
 import { useBlogEngagementStats } from "@/hooks/useBlogEngagementStats";
@@ -26,7 +27,7 @@ export function LinkedInShare({
   initialShareCount = 0,
   className,
 }: LinkedInShareProps) {
-  const { stats, setStats } = useBlogEngagementStats(slug, {
+  const { stats, setStats, statsRef } = useBlogEngagementStats(slug, {
     slug,
     views: 0,
     likes: 0,
@@ -39,7 +40,8 @@ export function LinkedInShare({
   );
 
   async function handleShare() {
-    setStats((current) => ({ ...current, shares: current.shares + 1 }));
+    const baseline = statsRef.current.shares;
+    setStats((current) => bumpEngagementCount(current, slug, "shares", 1));
 
     const result = await trackBlogEngagement("blog_share", blogPostPath(slug), {
       slug,
@@ -47,10 +49,17 @@ export function LinkedInShare({
     });
     if (result.ok) {
       if (result.stats) {
-        setStats((current) => mergeBlogEngagementStats(current, result.stats!));
+        const incoming = result.stats;
+        setStats((current) =>
+          reconcileEngagementAction(current, incoming, "shares", result.changed === true, baseline),
+        );
       }
     } else {
-      setStats((current) => ({ ...current, shares: Math.max(0, current.shares - 1) }));
+      setStats((current) =>
+        current.slug === slug && current.shares === baseline + 1
+          ? bumpEngagementCount(current, slug, "shares", -1)
+          : current,
+      );
     }
   }
 
