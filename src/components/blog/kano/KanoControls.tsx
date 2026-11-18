@@ -55,16 +55,26 @@ type KanoChipProps = {
   onClick: () => void;
 };
 
-/** Kano category chip — uses FilterChip with optional custom selected colour */
+const categoryChipIdleClass =
+  "inline-flex min-h-[36px] shrink-0 items-center rounded-full border px-3 py-1.5 text-body-sm font-medium whitespace-nowrap transition-[background-color,color,border-color] border-[var(--color-border)] bg-white text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]/40";
+
+const categoryChipSelectedClass =
+  "inline-flex min-h-[36px] shrink-0 items-center rounded-full px-3 py-1.5 text-body-sm font-medium text-white shadow-sm transition-colors";
+
+/**
+ * Category chip. A custom colour used to swap in a different element when selected,
+ * which dropped keyboard focus. Both states stay one button so the control keeps focus.
+ * Chips without a colour still use FilterChip.
+ */
 export function KanoChip({ label, selected, color, onClick }: KanoChipProps) {
-  if (selected && color) {
+  if (color) {
     return (
       <button
         type="button"
         onClick={onClick}
-        className="inline-flex min-h-[36px] shrink-0 items-center rounded-full px-3 py-1.5 text-body-sm font-medium text-white shadow-sm transition-colors"
-        style={{ backgroundColor: color }}
-        aria-pressed
+        className={selected ? categoryChipSelectedClass : categoryChipIdleClass}
+        style={selected ? { backgroundColor: color } : undefined}
+        aria-pressed={Boolean(selected)}
       >
         {label}
       </button>

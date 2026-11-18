@@ -53,7 +53,10 @@ export const KANO_CATEGORIES: KanoCategoryMeta[] = [
   },
 ];
 
-/** Satisfaction from -1 (dissatisfied) to 1 (delighted) at implementation level t (0–1). */
+/**
+ * Satisfaction from -1 (dissatisfied) to 1 (delighted) at implementation level t (0–1).
+ * The exponents here and the buckets in `satisfactionLabel` are the diagram.
+ */
 export function satisfactionAt(t: number, category: KanoCategory): number {
   const x = Math.min(1, Math.max(0, t));
 

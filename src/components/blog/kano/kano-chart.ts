@@ -42,8 +42,18 @@ export function pathFromSamples(points: Array<{ t: number; y: number }>) {
     .join(" ");
 }
 
+const categoryLinePaths = new Map<KanoCategory, string>();
+
+/**
+ * Category line, sampled at 48 steps.
+ * Cached because pointer moves re-render the chart and must not resample the curve.
+ */
 export function pathForCategory(category: KanoCategory) {
-  return pathFromSamples(sampleCurve(category, 48));
+  const cached = categoryLinePaths.get(category);
+  if (cached) return cached;
+  const path = pathFromSamples(sampleCurve(category, 48));
+  categoryLinePaths.set(category, path);
+  return path;
 }
 
 export function pathFromFn(fn: (t: number) => number, steps = 48) {
@@ -63,14 +73,21 @@ export function areaPathFromFn(fn: (t: number) => number, steps = 48) {
   return `${line} ${close}`;
 }
 
+const categoryAreaPaths = new Map<KanoCategory, string>();
+
+/** Filled area for one category. Same cache rule as `pathForCategory`. */
 export function areaPathForCategory(category: KanoCategory) {
+  const cached = categoryAreaPaths.get(category);
+  if (cached) return cached;
   const pts = sampleCurve(category, 48);
   const baseline = toY(0);
   const line = pts
     .map(({ t, y }, i) => `${i === 0 ? "M" : "L"} ${toX(t).toFixed(1)} ${toY(y).toFixed(1)}`)
     .join(" ");
   const close = `L ${toX(1).toFixed(1)} ${baseline.toFixed(1)} L ${toX(0).toFixed(1)} ${baseline.toFixed(1)} Z`;
-  return `${line} ${close}`;
+  const path = `${line} ${close}`;
+  categoryAreaPaths.set(category, path);
+  return path;
 }
 
 export function formatImplementation(t: number): string {

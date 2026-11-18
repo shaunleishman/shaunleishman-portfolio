@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { shiftedSatisfactionAt, satisfactionAt, satisfactionLabel } from "./kano-math";
 import { areaPathFromFn, pathFromFn } from "./kano-chart";
 import { KanoChart } from "./KanoChart";
-import { KanoChip, FilterChipRow, KanoSlider, KanoStat, KanoStatRow, ClientMount } from "./KanoControls";
+import { KanoChip, FilterChipRow, KanoStat, KanoStatRow, ClientMount } from "./KanoControls";
 import { KanoWidget } from "./KanoWidget";
 
 const MATURITY_STAGES = [

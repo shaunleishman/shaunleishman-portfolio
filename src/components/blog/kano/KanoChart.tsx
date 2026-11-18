@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   CHART,
   Y_TICKS,
@@ -51,6 +51,9 @@ export function KanoChart({
 }: KanoChartProps) {
   const uid = useId().replace(/:/g, "");
   const svgRef = useRef<SVGSVGElement>(null);
+  const capturedRef = useRef(false);
+  const frameRef = useRef<number | null>(null);
+  const pendingRef = useRef<{ clientX: number; svg: SVGSVGElement } | null>(null);
   const [hoverT, setHoverT] = useState<number | null>(null);
 
   const highlightT = hoverT ?? 0.65;
@@ -70,15 +73,64 @@ export function KanoChart({
   const hy = toY(yAtHighlight);
   const showGuide = valueAt !== undefined && hoverT !== null;
 
-  const handlePointer = useCallback(
-    (clientX: number, target: SVGSVGElement) => {
-      const rect = target.getBoundingClientRect();
-      const x = ((clientX - rect.left) / rect.width) * CHART.w;
-      const t = fromX(x);
-      setHoverT(t);
-      onHighlightTChange?.(t);
+  const cancelPointerFrame = useCallback(() => {
+    pendingRef.current = null;
+    if (frameRef.current !== null) {
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => cancelPointerFrame, [cancelPointerFrame]);
+
+  const flushPointer = useCallback(() => {
+    frameRef.current = null;
+    const pending = pendingRef.current;
+    pendingRef.current = null;
+    if (!pending) return;
+    const rect = pending.svg.getBoundingClientRect();
+    if (rect.width === 0) return;
+    const x = ((pending.clientX - rect.left) / rect.width) * CHART.w;
+    const t = fromX(x);
+    setHoverT(t);
+    onHighlightTChange?.(t);
+  }, [onHighlightTChange]);
+
+  const schedulePointer = useCallback(
+    (clientX: number, svg: SVGSVGElement) => {
+      pendingRef.current = { clientX, svg };
+      if (frameRef.current !== null) return;
+      frameRef.current = requestAnimationFrame(flushPointer);
     },
-    [onHighlightTChange],
+    [flushPointer],
+  );
+
+  const hideGuide = useCallback(() => {
+    cancelPointerFrame();
+    setHoverT(null);
+  }, [cancelPointerFrame]);
+
+  const endPointer = useCallback(
+    (clientX: number, clientY: number) => {
+      capturedRef.current = false;
+      const svg = svgRef.current;
+      if (!svg) {
+        hideGuide();
+        return;
+      }
+      const rect = svg.getBoundingClientRect();
+      const inside =
+        clientX >= rect.left &&
+        clientX <= rect.right &&
+        clientY >= rect.top &&
+        clientY <= rect.bottom;
+      if (!inside) {
+        hideGuide();
+        return;
+      }
+      schedulePointer(clientX, svg);
+    },
+    [hideGuide, schedulePointer],
   );
 
   const tooltipW = 128;
@@ -106,7 +158,12 @@ export function KanoChart({
         className="w-full touch-none select-none"
         role="img"
         aria-label={ariaLabel}
-        onPointerLeave={() => setHoverT(null)}
+        onPointerLeave={() => {
+          // Leave fires while a drag is still captured, and the next move would
+          // show the guide again. Hide only after the pointer is released outside.
+          if (capturedRef.current) return;
+          hideGuide();
+        }}
       >
         <defs>
           <linearGradient id={`${uid}-fill`} x1="0" y1="0" x2="0" y2="1">
@@ -250,10 +307,21 @@ export function KanoChart({
             height={ph}
             fill="transparent"
             className="cursor-crosshair"
-            onPointerMove={(e) => svgRef.current && handlePointer(e.clientX, svgRef.current)}
+            onPointerMove={(e) => {
+              if (svgRef.current) schedulePointer(e.clientX, svgRef.current);
+            }}
             onPointerDown={(e) => {
               e.currentTarget.setPointerCapture(e.pointerId);
-              svgRef.current && handlePointer(e.clientX, svgRef.current);
+              capturedRef.current = e.currentTarget.hasPointerCapture(e.pointerId);
+              if (svgRef.current) schedulePointer(e.clientX, svgRef.current);
+            }}
+            onPointerUp={(e) => endPointer(e.clientX, e.clientY)}
+            onPointerCancel={() => {
+              capturedRef.current = false;
+              hideGuide();
+            }}
+            onLostPointerCapture={() => {
+              capturedRef.current = false;
             }}
           />
         )}
