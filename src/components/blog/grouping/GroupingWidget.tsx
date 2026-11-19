@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { groupingHintIn } from "./grouping-motion";
 
 type GroupingWidgetProps = {
   title: string;
@@ -23,5 +24,27 @@ export function GroupingWidget({ title, hint, children, className }: GroupingWid
       </header>
       <div className="p-4">{children}</div>
     </aside>
+  );
+}
+
+/**
+ * Status line under an explorer. The live region stays mounted; the key replays
+ * the fade on an inner span. Keying the region itself drops the announcement.
+ */
+export function GroupingLiveHint({
+  hintKey,
+  className,
+  children,
+}: {
+  hintKey: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <p className="mt-3 text-body-sm text-[var(--color-text-secondary)]" aria-live="polite">
+      <span key={hintKey} className={cn(groupingHintIn, className)}>
+        {children}
+      </span>
+    </p>
   );
 }

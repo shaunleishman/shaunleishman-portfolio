@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FilterChipRow } from "@/components/blog/kano/KanoControls";
 import { cn } from "@/lib/utils";
-import { groupingGapTransition, groupingHintIn } from "./grouping-motion";
-import { GroupingWidget } from "./GroupingWidget";
+import { groupingCollapsedProps, groupingGapTransition } from "./grouping-motion";
+import { GroupingLiveHint, GroupingWidget } from "./GroupingWidget";
 
 type Mode = "before" | "after";
 
@@ -27,8 +27,10 @@ export function ProximityExplorer() {
   const [mode, setMode] = useState<Mode>("before");
   const [withinGap, setWithinGap] = useState(20);
   const [betweenGap, setBetweenGap] = useState(8);
+  const [gapsFollowInput, setGapsFollowInput] = useState(false);
 
   const applyPreset = (next: Mode) => {
+    setGapsFollowInput(false);
     setMode(next);
     if (next === "before") {
       setWithinGap(20);
@@ -38,6 +40,17 @@ export function ProximityExplorer() {
       setBetweenGap(28);
     }
   };
+
+  const setGapFromInput = (kind: "within" | "between", value: number) => {
+    setGapsFollowInput(true);
+    if (kind === "within") setWithinGap(value);
+    else setBetweenGap(value);
+  };
+
+  const gapStyle = (gap: number): CSSProperties => ({
+    gap,
+    ...(gapsFollowInput ? { transitionDuration: "0s" } : {}),
+  });
 
   const clarity = useMemo(() => {
     const score = betweenGap / Math.max(withinGap, 1);
@@ -53,14 +66,14 @@ export function ProximityExplorer() {
       title="Law of Proximity"
       hint="Related items should sit closer together than unrelated sections."
     >
-      <FilterChipRow>
+      <FilterChipRow ariaLabel="Proximity layout">
         <FilterChip label="Before" selected={mode === "before"} onClick={() => applyPreset("before")} />
         <FilterChip label="After" selected={mode === "after"} onClick={() => applyPreset("after")} accent="accent" />
       </FilterChipRow>
 
       <div className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-4">
-        <div className={cn("flex flex-col", groupingGapTransition)} style={{ gap: betweenGap }}>
-          <section className={cn("flex flex-col", groupingGapTransition)} style={{ gap: withinGap }}>
+        <div className={cn("flex flex-col", groupingGapTransition)} style={gapStyle(betweenGap)}>
+          <section className={cn("flex flex-col", groupingGapTransition)} style={gapStyle(withinGap)}>
             <p className="text-[0.6875rem] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
               Account overview
             </p>
@@ -68,7 +81,7 @@ export function ProximityExplorer() {
             <MiniButton label="Open dashboard" primary />
           </section>
 
-          <section className={cn("flex flex-col", groupingGapTransition)} style={{ gap: withinGap }}>
+          <section className={cn("flex flex-col", groupingGapTransition)} style={gapStyle(withinGap)}>
             <p className="text-[0.6875rem] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
               Quick actions
             </p>
@@ -83,6 +96,7 @@ export function ProximityExplorer() {
               "grid motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-500 motion-safe:ease-out",
               showPromo ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
             )}
+            {...groupingCollapsedProps(showPromo)}
           >
             <div className="overflow-hidden">
               <p className="rounded-lg border border-dashed border-[var(--color-border)] bg-white px-3 py-2 text-[0.75rem] text-[var(--color-text-muted)]">
@@ -101,7 +115,7 @@ export function ProximityExplorer() {
             min={4}
             max={32}
             value={withinGap}
-            onChange={(e) => setWithinGap(Number(e.target.value))}
+            onChange={(e) => setGapFromInput("within", Number(e.target.value))}
             className="mt-1.5 w-full accent-[var(--color-accent)]"
           />
         </label>
@@ -112,15 +126,15 @@ export function ProximityExplorer() {
             min={4}
             max={40}
             value={betweenGap}
-            onChange={(e) => setBetweenGap(Number(e.target.value))}
+            onChange={(e) => setGapFromInput("between", Number(e.target.value))}
             className="mt-1.5 w-full accent-[var(--color-accent)]"
           />
         </label>
       </div>
 
-      <p key={clarity.label} className={cn("mt-3 text-body-sm font-medium", clarity.tone, groupingHintIn)} aria-live="polite">
+      <GroupingLiveHint hintKey={clarity.label} className={cn("font-medium", clarity.tone)}>
         {clarity.label}
-      </p>
+      </GroupingLiveHint>
     </GroupingWidget>
   );
 }

@@ -103,10 +103,14 @@ export function FilterChip(props: FilterChipProps) {
 
 export function FilterChipRow({
   label,
+  ariaLabel,
   children,
   className,
 }: {
+  /** Visible caption. Omit it when the row should stay unlabelled on screen. */
   label?: string;
+  /** Accessible name when there is no visible caption. `label` is still that caption. */
+  ariaLabel?: string;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -115,7 +119,7 @@ export function FilterChipRow({
       {label && (
         <p className="text-label text-[var(--color-text-muted)] mb-1.5">{label}</p>
       )}
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label={label}>
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label={ariaLabel ?? label}>
         {children}
       </div>
     </div>
