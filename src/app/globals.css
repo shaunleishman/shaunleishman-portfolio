@@ -433,6 +433,7 @@
   }
 }
 
+/* Translate only. The selected option's scale is a separate property, so this keyframe must not set it. */
 @keyframes route-check-step-in {
   from {
     opacity: 0;

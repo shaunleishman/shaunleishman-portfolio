@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  useLayoutEffect,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   getRouteBandTone,
@@ -31,7 +37,8 @@ export function RouteCheckPanel({
     <div
       key={panelKey}
       className={cn(
-        "motion-safe:animate-[route-check-enter_0.45s_ease-out]",
+        // `both` applies the hidden start state before the first paint. The end state is fully visible, with no offset.
+        "motion-safe:animate-[route-check-enter_0.45s_ease-out_both]",
         className,
       )}
     >
@@ -40,20 +47,31 @@ export function RouteCheckPanel({
   );
 }
 
+function subscribeReducedMotion(onStoreChange: () => void) {
+  const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+  media.addEventListener("change", onStoreChange);
+  return () => media.removeEventListener("change", onStoreChange);
+}
+
+function usePrefersReducedMotion() {
+  return useSyncExternalStore(
+    subscribeReducedMotion,
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false,
+  );
+}
+
+/**
+ * 700ms ease-out cubic. State stays in the score node so a tick does not
+ * re-render the results card. Reduced motion returns the final total on the
+ * first render, so paint never shows the count.
+ */
 export function useAnimatedScore(target: number, active: boolean) {
-  const [display, setDisplay] = useState(active ? 0 : target);
+  const reducedMotion = usePrefersReducedMotion();
+  const [display, setDisplay] = useState(0);
 
-  useEffect(() => {
-    if (!active) {
-      setDisplay(target);
-      return;
-    }
-
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) {
-      setDisplay(target);
-      return;
-    }
+  useLayoutEffect(() => {
+    if (!active || reducedMotion) return;
 
     const duration = 700;
     const start = performance.now();
@@ -62,18 +80,24 @@ export function useAnimatedScore(target: number, active: boolean) {
     const tick = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - (1 - progress) ** 3;
-      setDisplay(Math.round(eased * target));
+      const next = Math.round(eased * target);
+      setDisplay((current) => (current === next ? current : next));
       if (progress < 1) {
         frame = requestAnimationFrame(tick);
       }
     };
 
-    setDisplay(0);
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [active, target]);
+  }, [active, reducedMotion, target]);
 
+  if (!active || reducedMotion) return target;
   return display;
+}
+
+/** Ticking total. Keep the finished-score live region outside this node. */
+export function RouteCheckScoreValue({ total }: { total: number }) {
+  return useAnimatedScore(total, true);
 }
 
 type RouteCheckFinaleProps = {

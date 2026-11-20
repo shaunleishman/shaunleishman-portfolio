@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type KeyboardEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -21,15 +21,16 @@ import {
   ROUTE_BANDS,
   ROUTE_CHECK_QUESTIONS,
   getRouteBand,
+  nextOptionScore,
   sumAnswers,
   type RouteBand,
 } from "@/components/blog/route-check/route-check-data";
 import {
   RouteCheckFinale,
   RouteCheckPanel,
+  RouteCheckScoreValue,
   routeCheckStepClass,
   staggerStyle,
-  useAnimatedScore,
 } from "@/components/blog/route-check/RouteCheckMotion";
 import { cn } from "@/lib/utils";
 
@@ -79,6 +80,22 @@ export function RouteCheckCalculator() {
   const answeredCount = answers.filter((value) => value !== null).length;
   const total = sumAnswers(answers);
   const band = total !== null ? getRouteBand(total) : null;
+  const scoreAnnouncement =
+    phase === "results" && band && total !== null
+      ? `Your Route Check score is ${total} out of 50. ${band.label}. ${band.description}`
+      : "";
+
+  function onQuestionKeyDown(event: KeyboardEvent<HTMLFieldSetElement>) {
+    if (event.altKey || event.metaKey || event.ctrlKey || event.shiftKey) return;
+    const radios = event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="radio"]');
+    const focusedIndex = Array.prototype.indexOf.call(radios, event.target);
+    const focusedScore = focusedIndex >= 0 ? focusedIndex + 1 : currentAnswer;
+    const next = nextOptionScore(focusedScore, event.key, radios.length);
+    if (next === null) return;
+    event.preventDefault();
+    selectAnswer(next);
+    radios[next - 1]?.focus();
+  }
 
   function selectAnswer(score: number) {
     setAnswers((prev) => {
@@ -126,6 +143,9 @@ export function RouteCheckCalculator() {
       title="Route Check"
       hint={phase === "intro" ? undefined : "10 questions · score out of 50"}
     >
+      <p className="sr-only" aria-live="polite">
+        {scoreAnnouncement}
+      </p>
       {phase === "intro" && (
         <RouteCheckPanel panelKey="intro">
           <RouteCheckIntro onStart={startSurvey} />
@@ -149,7 +169,7 @@ export function RouteCheckCalculator() {
                 aria-label="Survey progress"
               >
                 <div
-                  className="h-full rounded-full bg-[var(--color-accent)] transition-all duration-500 ease-out"
+                  className="h-full rounded-full bg-[var(--color-accent)] transition-[width] duration-500 ease-out"
                   style={{ width: `${((step + 1) / QUESTION_COUNT) * 100}%` }}
                 />
               </div>
@@ -157,23 +177,25 @@ export function RouteCheckCalculator() {
           </div>
 
           <RouteCheckPanel panelKey={`step-${step}`}>
-            <fieldset>
+            <fieldset
+              role="radiogroup"
+              aria-describedby={
+                currentQuestion.hint ? `${baseId}-q-${step}-hint` : undefined
+              }
+              onKeyDown={onQuestionKeyDown}
+            >
               <legend className="text-body-lg font-semibold leading-snug text-[var(--color-text-primary)]">
                 {currentQuestion.question}
               </legend>
               {currentQuestion.hint && (
-                <p className="mt-1 text-[0.8125rem] text-[var(--color-text-muted)]">
+                <p
+                  id={`${baseId}-q-${step}-hint`}
+                  className="mt-1 text-[0.8125rem] text-[var(--color-text-muted)]"
+                >
                   {currentQuestion.hint}
                 </p>
               )}
-              <div
-                className="mt-3 flex flex-col gap-2"
-                role="radiogroup"
-                aria-labelledby={`${baseId}-q-${step}`}
-              >
-                <span id={`${baseId}-q-${step}`} className="sr-only">
-                  {currentQuestion.question}
-                </span>
+              <div className="mt-3 flex flex-col gap-2">
                 {currentQuestion.options.map((label, index) => {
                   const score = index + 1;
                   const selected = currentAnswer === score;
@@ -332,10 +354,9 @@ type RouteCheckResultsProps = {
 
 function RouteCheckResults({ total, band, onRestart }: RouteCheckResultsProps) {
   const BandIcon = BAND_ICONS[band.id];
-  const animatedScore = useAnimatedScore(total, true);
 
   return (
-    <div aria-live="polite">
+    <div>
       <div
         className="overflow-hidden rounded-2xl border motion-safe:animate-[route-check-score-pop_0.55s_ease-out_both]"
         style={{
@@ -354,7 +375,7 @@ function RouteCheckResults({ total, band, onRestart }: RouteCheckResultsProps) {
                 className="text-[clamp(2.75rem,7vw,3.75rem)] font-semibold tabular-nums leading-none tracking-tight"
                 style={{ color: band.color }}
               >
-                {animatedScore}
+                <RouteCheckScoreValue total={total} />
               </span>
               <span className="text-h3 font-normal text-[var(--color-text-muted)]">/ 50</span>
             </div>
