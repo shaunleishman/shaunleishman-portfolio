@@ -103,7 +103,7 @@ export default function ContactPage() {
                       {method.description}
                     </p>
                     {method.title === "Email" ? (
-                      <EmailCopyAction />
+                      <EmailCopyAction email={siteConfig.email} />
                     ) : (
                       <a
                         href={method.href}

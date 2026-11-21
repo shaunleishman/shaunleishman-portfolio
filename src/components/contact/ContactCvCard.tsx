@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { FileText } from "lucide-react";
 import { CvDownloadIconButton } from "@/components/cv/CvDownloadIconButton";
@@ -12,6 +10,10 @@ type ContactCvCardProps = {
   label: string;
 };
 
+/**
+ * Server-rendered contact card. The PDF button is the client island.
+ * Do not add "use client" here; that hydrates the card markup.
+ */
 export function ContactCvCard({ title, description, href, label }: ContactCvCardProps) {
   return (
     <article className="surface-card-interactive relative flex h-full flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-muted)] p-6">

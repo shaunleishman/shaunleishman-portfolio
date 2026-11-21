@@ -1,36 +1,93 @@
 "use client";
 
 import { Check, Copy } from "lucide-react";
-import { useCallback, useState } from "react";
-import { siteConfig } from "@/content/projects";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type EmailCopyActionProps = {
-  email?: string;
+  /** Passed in from the server page so this module does not import the project catalog. */
+  email: string;
   className?: string;
 };
 
-export function EmailCopyAction({ email = siteConfig.email, className }: EmailCopyActionProps) {
+const COPIED_RESET_MS = 2000;
+
+/**
+ * Last-resort copy when the async clipboard API is missing or rejects.
+ * The field is fixed and off-screen so it cannot widen the page. Focus is
+ * returned only if removing the field left focus on the document body.
+ */
+function copyWithHiddenField(text: string): boolean {
+  const restore = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  const field = document.createElement("textarea");
+  field.value = text;
+  field.setAttribute("readonly", "");
+  field.setAttribute("aria-hidden", "true");
+  field.tabIndex = -1;
+  field.style.position = "fixed";
+  field.style.left = "-9999px";
+  field.style.top = "0";
+  document.body.appendChild(field);
+  field.select();
+  let ok = false;
+  try {
+    ok = document.execCommand("copy");
+  } catch {
+    ok = false;
+  } finally {
+    field.remove();
+  }
+  if (restore && (document.activeElement === document.body || document.activeElement === null)) {
+    restore.focus({ preventScroll: true });
+  }
+  return ok;
+}
+
+export function EmailCopyAction({ email, className }: EmailCopyActionProps) {
   const [copied, setCopied] = useState(false);
+  const resetTimerRef = useRef<number | null>(null);
+  const attemptRef = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current !== null) {
+        window.clearTimeout(resetTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(email);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const textarea = document.createElement("textarea");
-      textarea.value = email;
-      textarea.setAttribute("readonly", "");
-      textarea.style.position = "absolute";
-      textarea.style.left = "-9999px";
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
+    const attempt = ++attemptRef.current;
+    if (resetTimerRef.current !== null) {
+      window.clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = null;
     }
+
+    let ok = false;
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(email);
+        ok = true;
+      } catch {
+        ok = false;
+      }
+    }
+    if (!ok) {
+      ok = copyWithHiddenField(email);
+    }
+
+    if (attempt !== attemptRef.current) return;
+
+    if (!ok) {
+      setCopied(false);
+      return;
+    }
+
+    setCopied(true);
+    resetTimerRef.current = window.setTimeout(() => {
+      resetTimerRef.current = null;
+      setCopied(false);
+    }, COPIED_RESET_MS);
   }, [email]);
 
   return (

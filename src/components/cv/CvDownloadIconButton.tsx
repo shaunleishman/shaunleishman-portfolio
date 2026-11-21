@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Download, Loader2 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { downloadCvPdf } from "@/components/cv/downloadCvPdf";
 import { cn } from "@/lib/utils";
 
@@ -9,16 +9,38 @@ type CvDownloadIconButtonProps = {
   className?: string;
 };
 
+const DONE_RESET_MS = 2000;
+
 export function CvDownloadIconButton({ className }: CvDownloadIconButtonProps) {
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
+  const resetTimerRef = useRef<number | null>(null);
+  const requestRef = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current !== null) {
+        window.clearTimeout(resetTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleDownload = useCallback(async () => {
+    const requestId = ++requestRef.current;
+    if (resetTimerRef.current !== null) {
+      window.clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = null;
+    }
     setStatus("loading");
     try {
       await downloadCvPdf();
+      if (requestId !== requestRef.current) return;
       setStatus("done");
-      window.setTimeout(() => setStatus("idle"), 2000);
+      resetTimerRef.current = window.setTimeout(() => {
+        resetTimerRef.current = null;
+        setStatus("idle");
+      }, DONE_RESET_MS);
     } catch {
+      if (requestId !== requestRef.current) return;
       setStatus("idle");
     }
   }, []);
