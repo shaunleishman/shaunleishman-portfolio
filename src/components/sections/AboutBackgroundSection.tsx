@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   aboutBackgroundViewOrder,
   aboutBackgroundViews,
   aboutProfilePhotos,
   eyesOfHome,
+  nextAboutBackgroundView,
   type AboutBackgroundView,
 } from "@/content/about";
 import { siteConfig } from "@/content/projects";
@@ -23,9 +24,28 @@ export function AboutBackgroundSection() {
   const panel = aboutBackgroundViews[activeView];
   const activeTabIndex = aboutBackgroundViewOrder.indexOf(activeView);
   const tabCount = aboutBackgroundViewOrder.length;
+  const focusFrame = useRef(0);
+
+  useEffect(() => () => cancelAnimationFrame(focusFrame.current), []);
+
+  function onTabKeyDown(
+    event: React.KeyboardEvent<HTMLButtonElement>,
+    viewId: AboutBackgroundView,
+  ) {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    const nextView = nextAboutBackgroundView(viewId, event.key);
+    if (!nextView) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setActiveView(nextView);
+    cancelAnimationFrame(focusFrame.current);
+    focusFrame.current = requestAnimationFrame(() => {
+      document.getElementById(`about-tab-${nextView}`)?.focus({ preventScroll: true });
+    });
+  }
 
   return (
-    <section className="section-padding bg-white">
+    <section className="section-padding bg-white" data-analytics-section="about-background">
       <div className="container-site">
         <Reveal delay={80}>
           <div className="mb-10 flex justify-center md:mb-12">
@@ -56,6 +76,7 @@ export function AboutBackgroundSection() {
                     aria-controls={`about-panel-${viewId}`}
                     tabIndex={selected ? 0 : -1}
                     onClick={() => setActiveView(viewId)}
+                    onKeyDown={(event) => onTabKeyDown(event, viewId)}
                     className={cn(
                       tabButtonClass,
                       selected
@@ -73,11 +94,7 @@ export function AboutBackgroundSection() {
 
         <div className="grid items-start gap-12 lg:grid-cols-[280px_1fr] lg:gap-16">
           <Reveal variant="scale" delay={100}>
-            <div
-              className="relative aspect-square max-w-[280px] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-neutral-100"
-              role="img"
-              aria-label={aboutProfilePhotos[activeView].alt}
-            >
+            <div className="relative aspect-square max-w-[280px] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-neutral-100">
               {aboutBackgroundViewOrder.map((viewId) => {
                 const photo = aboutProfilePhotos[viewId];
                 const visible = activeView === viewId;
@@ -86,16 +103,16 @@ export function AboutBackgroundSection() {
                   <Image
                     key={viewId}
                     src={photo.src}
-                    alt={photo.alt}
+                    alt={visible ? photo.alt : ""}
                     width={1024}
                     height={1024}
-                    priority={viewId === "professional"}
+                    preload={viewId === "professional"}
                     sizes="280px"
                     className={cn(
                       "absolute inset-0 h-full w-full object-cover object-center motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
                       visible ? "opacity-100" : "pointer-events-none opacity-0",
                     )}
-                    aria-hidden={!visible}
+                    aria-hidden={visible ? undefined : true}
                   />
                 );
               })}

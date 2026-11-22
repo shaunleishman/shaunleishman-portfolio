@@ -11,7 +11,11 @@ export type AboutLifeWindow = {
   id: string;
   label: string;
   alt: string;
-  /** Drop a photo at this path to replace the gradient fallback */
+  /**
+   * Optional photo. These files are JPEG data, so the name has to end in
+   * .jpg. The site sends X-Content-Type-Options: nosniff, and a .png name
+   * is served as image/png, which the browser then refuses.
+   */
   src?: string;
   icon: "music" | "diving" | "skiing" | "travel" | "gaming";
   accent: string;
@@ -22,7 +26,7 @@ export const aboutLifeWindows: readonly AboutLifeWindow[] = [
     id: "music",
     label: "Music",
     alt: "Shaun performing live with guitar",
-    src: "/images/profile-personal.png",
+    src: "/images/profile-personal.jpg",
     icon: "music",
     accent: "#7c3aed",
   },
@@ -30,7 +34,7 @@ export const aboutLifeWindows: readonly AboutLifeWindow[] = [
     id: "diving",
     label: "Diving",
     alt: "Shaun in scuba gear with a dive buddy",
-    src: "/images/about/diving.png",
+    src: "/images/about/diving.jpg",
     icon: "diving",
     accent: "#0891b2",
   },
@@ -38,7 +42,7 @@ export const aboutLifeWindows: readonly AboutLifeWindow[] = [
     id: "skiing",
     label: "Skiing",
     alt: "Shaun skiing on a sunny powder day",
-    src: "/images/about/skiing.png",
+    src: "/images/about/skiing.jpg",
     icon: "skiing",
     accent: "#475569",
   },
@@ -46,7 +50,7 @@ export const aboutLifeWindows: readonly AboutLifeWindow[] = [
     id: "travel",
     label: "Travel",
     alt: "Shaun in the desert with mountains in the background",
-    src: "/images/about/travel.png",
+    src: "/images/about/travel.jpg",
     icon: "travel",
     accent: "#d97706",
   },
@@ -54,7 +58,7 @@ export const aboutLifeWindows: readonly AboutLifeWindow[] = [
     id: "gaming",
     label: "Gaming",
     alt: "Shaun at a gaming setup with mechanical keyboard and PC",
-    src: "/images/about/gaming.png",
+    src: "/images/about/gaming.jpg",
     icon: "gaming",
     accent: "#4f46e5",
   },
@@ -152,13 +156,29 @@ export const aboutBackgroundViews = {
 
 export const aboutBackgroundViewOrder: AboutBackgroundView[] = ["professional", "personal"];
 
+/** Horizontal tablist. Arrow keys wrap. Home and End jump to the ends. */
+export function nextAboutBackgroundView(
+  current: AboutBackgroundView,
+  key: string,
+): AboutBackgroundView | null {
+  const order = aboutBackgroundViewOrder;
+  const index = order.indexOf(current);
+  if (index < 0) return null;
+  if (key === "Home") return order[0];
+  if (key === "End") return order[order.length - 1];
+  if (key !== "ArrowLeft" && key !== "ArrowRight") return null;
+  const delta = key === "ArrowRight" ? 1 : -1;
+  return order[(index + delta + order.length) % order.length];
+}
+
 export const aboutProfilePhotos = {
   professional: {
+    // JPEG bytes. next/image sniffs this file. public/images/profile.jpg is a different photo.
     src: "/images/profile.png",
     alt: `${siteConfig.name}, UX/UI designer`,
   },
   personal: {
-    src: "/images/profile-personal.png",
+    src: "/images/profile-personal.jpg",
     alt: `${siteConfig.name} performing live with guitar`,
   },
 } as const satisfies Record<AboutBackgroundView, { src: string; alt: string }>;
