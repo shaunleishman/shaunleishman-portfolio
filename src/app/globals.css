@@ -798,4 +798,29 @@
     color: #3b66f5 !important;
     text-decoration: none;
   }
+
+  /*
+   * Reveal starts at opacity 0 until a section scrolls in. motion-safe
+   * utilities can beat print:opacity-100, which prints those sections blank.
+   * Tailwind translate and scale read these variables. Setting the
+   * properties themselves in this rule gets folded into an invalid transform.
+   */
+  .cv-document,
+  .cv-document * {
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-translate-z: 0;
+    --tw-scale-x: 1;
+    --tw-scale-y: 1;
+    --tw-scale-z: 1;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  body:has(.cv-document) .skip-link,
+  body:has(.cv-document) .fixed {
+    display: none !important;
+  }
 }

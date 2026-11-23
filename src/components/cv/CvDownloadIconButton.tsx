@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Download, Loader2 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { downloadCvPdf } from "@/components/cv/downloadCvPdf";
 import { cn } from "@/lib/utils";
 
@@ -11,17 +11,31 @@ type CvDownloadIconButtonProps = {
 
 export function CvDownloadIconButton({ className }: CvDownloadIconButtonProps) {
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
+  const resetTimer = useRef<number | null>(null);
+
+  const clearReset = useCallback(() => {
+    if (resetTimer.current !== null) {
+      window.clearTimeout(resetTimer.current);
+      resetTimer.current = null;
+    }
+  }, []);
+
+  useEffect(() => clearReset, [clearReset]);
 
   const handleDownload = useCallback(async () => {
+    clearReset();
     setStatus("loading");
     try {
       await downloadCvPdf();
       setStatus("done");
-      window.setTimeout(() => setStatus("idle"), 2000);
+      resetTimer.current = window.setTimeout(() => {
+        resetTimer.current = null;
+        setStatus("idle");
+      }, 2000);
     } catch {
       setStatus("idle");
     }
-  }, []);
+  }, [clearReset]);
 
   const label =
     status === "loading"

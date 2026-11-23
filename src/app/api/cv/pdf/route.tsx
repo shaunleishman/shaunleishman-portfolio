@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { renderToBuffer } from "@react-pdf/renderer";
-import { CvPdfDocument } from "@/components/cv/CvPdfDocument";
-import { getCvPdfFilename } from "@/content/cv";
+import { getCvPdfFilename } from "@/lib/cv-pdf-filename";
+import { getCvPdfBuffer } from "@/lib/cv-pdf-buffer";
 
 export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const buffer = await renderToBuffer(<CvPdfDocument />);
+    const buffer = await getCvPdfBuffer();
 
+    // Copy the bytes. The cached buffer must stay intact for the next request.
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "application/pdf",

@@ -110,8 +110,6 @@ export const cvContent: CvContent = {
   },
 };
 
-export function getCvPdfFilename(date = new Date()) {
-  const month = date.toLocaleString("en-GB", { month: "long" });
-  const year = date.getFullYear();
-  return `Shaun-Leishman-UX-Designer-CV-${month}-${year}.pdf`;
-}
+// Client downloads import the helper from `@/lib/cv-pdf-filename`.
+// Importing it from this module also loads the CV essay and the project catalog.
+export { getCvPdfFilename } from "@/lib/cv-pdf-filename";

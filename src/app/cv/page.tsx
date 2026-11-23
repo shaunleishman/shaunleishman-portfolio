@@ -32,7 +32,8 @@ export default function CvPage() {
         </div>
       </header>
 
-      <main data-cv-pdf-root className="container-site max-w-3xl py-10 md:py-14 print:py-8">
+      {/* This route sits outside the site layout, so the skip link target is here. */}
+      <main id="main-content" data-cv-pdf-root className="container-site max-w-3xl py-10 md:py-14 print:py-8">
         <CvHeader>
           <p className="text-label uppercase tracking-widest text-[#737373] mb-3">CV</p>
           <h1 className="text-h2 font-semibold mb-2">{siteConfig.name}</h1>
