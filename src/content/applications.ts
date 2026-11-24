@@ -1,69 +1,40 @@
 import { siteConfig } from "@/content/projects";
+import {
+  APPLICATION_OUTCOMES,
+  APPLICATION_SECTORS,
+  getApplicationOutcome,
+  getApplicationSector,
+  type Application,
+  type ApplicationOutcomeId,
+  type ApplicationSectorId,
+  type ApplicationSummary,
+} from "@/content/application-model";
 
 /**
- * Sectors you own. Add or rename here when you want new application categories.
+ * Application packs. Letter bodies stay in this module so they are not shipped
+ * to the gallery. Sectors, outcomes, and card fields live in
+ * `@/content/application-model`. Client components import that file only.
+ *
+ * Sectors: add or rename them in the model when you want a new category.
  * Applications reference a sector by `id`.
+ * Outcomes: update `outcomeId` as you hear back, and use `learningNote`
+ * to capture what to keep or change next time.
  */
-export const APPLICATION_SECTORS = [
-  { id: "financial-services", label: "Financial services" },
-  { id: "healthcare", label: "Healthcare" },
-  { id: "energy", label: "Energy and sustainability" },
-  { id: "saas", label: "SaaS and product" },
-  { id: "government", label: "Government and public sector" },
-  { id: "agency", label: "Agency and consultancy" },
-] as const;
-
-export type ApplicationSectorId = (typeof APPLICATION_SECTORS)[number]["id"];
-
-/**
- * Application outcomes. Update these as you hear back,
- * and use `learningNote` to capture what to keep or change next time.
- */
-export const APPLICATION_OUTCOMES = [
-  { id: "in-progress", label: "In progress", tone: "neutral" },
-  { id: "interviewing", label: "Interviewing", tone: "active" },
-  { id: "offered", label: "Offered", tone: "success" },
-  { id: "rejected", label: "Unsuccessful", tone: "danger" },
-  { id: "withdrawn", label: "Withdrawn", tone: "muted" },
-] as const;
-
-export type ApplicationOutcomeId = (typeof APPLICATION_OUTCOMES)[number]["id"];
-
-export type ApplicationCvMode = "shared" | "tailored";
-
-export type ApplicationDocumentKind = "cv" | "cover-letter";
-
-export type Application = {
-  /** URL and PDF key, e.g. lloyds-ux-designer-ftc */
-  slug: string;
-  /** Employer or organisation */
-  company: string;
-  /** Job title on the advert */
-  jobTitle: string;
-  /** Sector category from APPLICATION_SECTORS */
-  sectorId: ApplicationSectorId;
-  /** Short line under the job title, e.g. location and contract */
-  roleMeta: string;
-  /** Where the application stands right now */
-  outcomeId: ApplicationOutcomeId;
-  /** Optional date the pack was written, ISO date */
-  writtenOn?: string;
-  /**
-   * What you learned after the outcome. What worked, what to change,
-   * or what you would do differently on the next application.
-   */
-  learningNote?: string;
-  /** Tailored cover letter available to download */
-  hasCoverLetter: boolean;
-  /** Tailored (or shared) CV available to download */
-  hasCv: boolean;
-  /** How the CV is produced when hasCv is true */
-  cvMode?: ApplicationCvMode;
-  /** Cover letter body when hasCoverLetter is true */
-  greeting?: string;
-  paragraphs?: string[];
-  closing?: string;
-};
+export type { Application, ApplicationSummary } from "@/content/application-model";
+export {
+  APPLICATION_OUTCOMES,
+  APPLICATION_SECTORS,
+  getAvailableDocuments,
+  type ApplicationCvMode,
+  type ApplicationDocumentKind,
+  type ApplicationOutcomeId,
+  type ApplicationSectorId,
+} from "@/content/application-model";
+export { getApplicationOutcome, getApplicationSector };
+export {
+  getApplicationCvPdfFilename,
+  getCoverLetterPdfFilename,
+} from "@/lib/application-pdf-filename";
 
 export const applicationContact = {
   email: siteConfig.email,
@@ -141,14 +112,6 @@ export const applications: Application[] = [
   },
 ];
 
-export function getApplicationSector(sectorId: ApplicationSectorId) {
-  return APPLICATION_SECTORS.find((sector) => sector.id === sectorId);
-}
-
-export function getApplicationOutcome(outcomeId: ApplicationOutcomeId) {
-  return APPLICATION_OUTCOMES.find((outcome) => outcome.id === outcomeId);
-}
-
 export function getApplicationBySlug(slug: string) {
   return applications.find((application) => application.slug === slug);
 }
@@ -158,27 +121,20 @@ export function getApplicationsBySector(sectorId: ApplicationSectorId | "all") {
   return applications.filter((application) => application.sectorId === sectorId);
 }
 
-export function getAvailableDocuments(application: Application): ApplicationDocumentKind[] {
-  const docs: ApplicationDocumentKind[] = [];
-  if (application.hasCv) docs.push("cv");
-  if (application.hasCoverLetter) docs.push("cover-letter");
-  return docs;
-}
-
-export function getCoverLetterPdfFilename(application: Application, date = new Date()) {
-  const month = date.toLocaleString("en-GB", { month: "long" });
-  const year = date.getFullYear();
-  const company = application.company.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const role = application.jobTitle.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "");
-  return `Shaun-Leishman-${company}-${role}-Cover-Letter-${month}-${year}.pdf`;
-}
-
-export function getApplicationCvPdfFilename(application: Application, date = new Date()) {
-  const month = date.toLocaleString("en-GB", { month: "long" });
-  const year = date.getFullYear();
-  const company = application.company.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const role = application.jobTitle.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "");
-  return `Shaun-Leishman-${company}-${role}-CV-${month}-${year}.pdf`;
+/** Card fields only. Do not pass greeting, paragraphs, or closing into a client component. */
+export function toApplicationSummary(application: Application): ApplicationSummary {
+  return {
+    slug: application.slug,
+    company: application.company,
+    jobTitle: application.jobTitle,
+    sectorId: application.sectorId,
+    roleMeta: application.roleMeta,
+    outcomeId: application.outcomeId,
+    learningNote: application.learningNote,
+    hasCoverLetter: application.hasCoverLetter,
+    hasCv: application.hasCv,
+    cvMode: application.cvMode,
+  };
 }
 
 /** @deprecated Use APPLICATION_SECTORS */

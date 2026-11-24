@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { CvPdfDocument } from "@/components/cv/CvPdfDocument";
-import {
-  getApplicationBySlug,
-  getApplicationCvPdfFilename,
-} from "@/content/applications";
+import { getApplicationBySlug } from "@/content/applications";
 import { getApplicationCvContent } from "@/content/application-cvs";
+import { siteConfig } from "@/content/projects";
+import { getCachedPdfBuffer } from "@/lib/application-pdf-cache";
+import { getApplicationCvPdfFilename } from "@/lib/application-pdf-filename";
 
 export const runtime = "nodejs";
 
@@ -22,9 +22,17 @@ export async function GET(_request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Application CV not found" }, { status: 404 });
   }
 
+  const stamp = JSON.stringify({
+    content,
+    density: "compact",
+    name: siteConfig.name,
+    quote: siteConfig.quote,
+    brand: siteConfig.brand,
+  });
+
   try {
-    const buffer = await renderToBuffer(
-      <CvPdfDocument content={content} density="compact" />,
+    const buffer = await getCachedPdfBuffer(`application-cv:${application.slug}`, stamp, () =>
+      renderToBuffer(<CvPdfDocument content={content} density="compact" />),
     );
 
     return new NextResponse(new Uint8Array(buffer), {

@@ -6,29 +6,29 @@ import { downloadApplicationCvPdf } from "@/components/cv/downloadApplicationCvP
 import { downloadCoverLetterPdf } from "@/components/cv/downloadCoverLetterPdf";
 import {
   getAvailableDocuments,
-  type Application,
   type ApplicationDocumentKind,
-} from "@/content/applications";
+  type ApplicationSummary,
+} from "@/content/application-model";
 import { cn } from "@/lib/utils";
 
 type ApplicationDownloadButtonProps = {
-  application: Application;
+  application: ApplicationSummary;
   className?: string;
 };
 
-type PreparingKind = ApplicationDocumentKind | "primary" | null;
+type PreparingKind = ApplicationDocumentKind | "primary";
 
 const DOC_LABELS: Record<ApplicationDocumentKind, string> = {
   cv: "CV",
   "cover-letter": "Cover letter",
 };
 
-async function downloadDocument(kind: ApplicationDocumentKind, slug: string) {
+async function downloadDocument(kind: ApplicationDocumentKind, application: ApplicationSummary) {
   if (kind === "cv") {
-    await downloadApplicationCvPdf(slug);
+    await downloadApplicationCvPdf(application.slug, application.cvMode);
     return;
   }
-  await downloadCoverLetterPdf(slug);
+  await downloadCoverLetterPdf(application.slug);
 }
 
 export function ApplicationDownloadButton({
@@ -37,19 +37,29 @@ export function ApplicationDownloadButton({
 }: ApplicationDownloadButtonProps) {
   const docs = getAvailableDocuments(application);
   const [modalOpen, setModalOpen] = useState(false);
-  const [preparing, setPreparing] = useState<PreparingKind>(null);
+  const [preparing, setPreparing] = useState<ReadonlySet<PreparingKind>>(() => new Set());
   const titleId = useId();
 
   const runDownload = useCallback(
     async (kind: ApplicationDocumentKind, preparingKey: PreparingKind = kind) => {
-      setPreparing(preparingKey);
+      setPreparing((current) => {
+        const next = new Set(current);
+        next.add(preparingKey);
+        return next;
+      });
       try {
-        await downloadDocument(kind, application.slug);
+        await downloadDocument(kind, application);
+      } catch {
+        // Leave the button idle. Do not add an error message.
       } finally {
-        setPreparing(null);
+        setPreparing((current) => {
+          const next = new Set(current);
+          next.delete(preparingKey);
+          return next;
+        });
       }
     },
-    [application.slug],
+    [application],
   );
 
   const handlePrimaryClick = useCallback(
@@ -81,7 +91,7 @@ export function ApplicationDownloadButton({
     return null;
   }
 
-  const primaryBusy = preparing === "primary";
+  const primaryBusy = preparing.has("primary");
 
   return (
     <>
@@ -142,7 +152,7 @@ export function ApplicationDownloadButton({
 
             <ul className="space-y-3 p-5">
               {docs.map((kind) => {
-                const busy = preparing === kind;
+                const busy = preparing.has(kind);
                 return (
                   <li
                     key={kind}

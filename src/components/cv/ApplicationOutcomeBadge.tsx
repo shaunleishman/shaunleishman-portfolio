@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import {
   getApplicationOutcome,
   type ApplicationOutcomeId,
-} from "@/content/applications";
+} from "@/content/application-model";
 
 const TONE_STYLES = {
   neutral: "border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]",

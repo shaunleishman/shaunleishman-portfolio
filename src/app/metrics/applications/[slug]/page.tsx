@@ -10,6 +10,7 @@ import {
   coverLetterShared,
   getApplicationBySlug,
   getApplicationSector,
+  toApplicationSummary,
 } from "@/content/applications";
 import { siteConfig } from "@/content/projects";
 
@@ -58,7 +59,7 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
             {sector ? ` · ${sector.label}` : null}
           </p>
         </div>
-        <ApplicationDownloadButton application={application} />
+        <ApplicationDownloadButton application={toApplicationSummary(application)} />
       </div>
 
       {application.learningNote ? (
