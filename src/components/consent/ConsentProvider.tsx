@@ -4,18 +4,18 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import {
   CONSENT_UPDATED_EVENT,
+  getDefaultConsent,
   isBannerDismissedForSession,
   readConsentFromStorage,
   rejectOptionalForSession,
-  writeConsentToStorage,
-  dismissBannerUntilNextVisit,
+  saveConsentPreferences,
   type StoredConsent,
 } from "@/lib/consent";
 
@@ -31,41 +31,70 @@ type ConsentContextValue = {
   settingsOpen: boolean;
 };
 
+type ConsentSnapshot = {
+  consent: StoredConsent;
+  sessionBannerDismissed: boolean;
+};
+
+const SERVER_CONSENT_SNAPSHOT: ConsentSnapshot = {
+  consent: getDefaultConsent(),
+  sessionBannerDismissed: false,
+};
+
+let clientConsentSnapshot: ConsentSnapshot = SERVER_CONSENT_SNAPSHOT;
+
+function consentSnapshotsMatch(snapshot: ConsentSnapshot, consent: StoredConsent, dismissed: boolean) {
+  return (
+    snapshot.sessionBannerDismissed === dismissed &&
+    snapshot.consent.hasDecided === consent.hasDecided &&
+    snapshot.consent.analytics === consent.analytics &&
+    snapshot.consent.updatedAt === consent.updatedAt
+  );
+}
+
+function getConsentServerSnapshot() {
+  return SERVER_CONSENT_SNAPSHOT;
+}
+
+function getConsentClientSnapshot() {
+  const consent = readConsentFromStorage();
+  const sessionBannerDismissed = isBannerDismissedForSession();
+  if (consentSnapshotsMatch(clientConsentSnapshot, consent, sessionBannerDismissed)) {
+    return clientConsentSnapshot;
+  }
+  clientConsentSnapshot = { consent, sessionBannerDismissed };
+  return clientConsentSnapshot;
+}
+
+function subscribeToConsent(onChange: () => void) {
+  window.addEventListener(CONSENT_UPDATED_EVENT, onChange);
+  return () => window.removeEventListener(CONSENT_UPDATED_EVENT, onChange);
+}
+
 const ConsentContext = createContext<ConsentContextValue | null>(null);
 
 export function ConsentProvider({ children }: { children: ReactNode }) {
-  const [consent, setConsent] = useState<StoredConsent | null>(null);
+  // Server snapshot stays undecided. Session storage is read only in the client snapshot,
+  // after hydration, so the banner does not render from a stored choice on the first pass.
+  const { consent, sessionBannerDismissed } = useSyncExternalStore(
+    subscribeToConsent,
+    getConsentClientSnapshot,
+    getConsentServerSnapshot,
+  );
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const syncFromStorage = useCallback(() => {
-    setConsent(readConsentFromStorage());
-  }, []);
-
-  useEffect(() => {
-    syncFromStorage();
-
-    const onUpdate = () => syncFromStorage();
-    window.addEventListener(CONSENT_UPDATED_EVENT, onUpdate);
-    return () => window.removeEventListener(CONSENT_UPDATED_EVENT, onUpdate);
-  }, [syncFromStorage]);
-
   const acceptAll = useCallback(() => {
-    setConsent(writeConsentToStorage(true, true));
+    saveConsentPreferences(true);
     setSettingsOpen(false);
   }, []);
 
   const rejectOptional = useCallback(() => {
-    setConsent(rejectOptionalForSession());
+    rejectOptionalForSession();
     setSettingsOpen(false);
   }, []);
 
   const savePreferences = useCallback((analytics: boolean) => {
-    if (analytics) {
-      setConsent(writeConsentToStorage(true, true));
-    } else {
-      setConsent(writeConsentToStorage(false, false));
-      dismissBannerUntilNextVisit();
-    }
+    saveConsentPreferences(analytics);
     setSettingsOpen(false);
   }, []);
 
@@ -79,10 +108,9 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<ConsentContextValue>(
     () => ({
-      ready: consent !== null,
-      hasDecided:
-        (consent?.hasDecided ?? false) || isBannerDismissedForSession(),
-      analytics: consent?.analytics ?? false,
+      ready: true,
+      hasDecided: consent.hasDecided || sessionBannerDismissed,
+      analytics: consent.analytics,
       acceptAll,
       rejectOptional,
       savePreferences,
@@ -90,7 +118,16 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
       closeSettings,
       settingsOpen,
     }),
-    [acceptAll, closeSettings, consent, openSettings, rejectOptional, savePreferences, settingsOpen],
+    [
+      acceptAll,
+      closeSettings,
+      consent,
+      openSettings,
+      rejectOptional,
+      savePreferences,
+      sessionBannerDismissed,
+      settingsOpen,
+    ],
   );
 
   return <ConsentContext.Provider value={value}>{children}</ConsentContext.Provider>;

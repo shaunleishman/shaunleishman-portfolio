@@ -1,9 +1,27 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useConsent } from "@/components/consent/ConsentProvider";
 import { CONSENT_CATEGORIES } from "@/lib/consent";
+
+function subscribeToHydration() {
+  return () => {};
+}
+
+function getHydratedSnapshot() {
+  return true;
+}
+
+function getServerHydratedSnapshot() {
+  return false;
+}
+
+/** False on the server and during hydration, then true. Keeps the cookie UI out of the server HTML. */
+function useHasHydrated() {
+  return useSyncExternalStore(subscribeToHydration, getHydratedSnapshot, getServerHydratedSnapshot);
+}
 
 function ConsentToggle({
   id,
@@ -45,17 +63,31 @@ function ConsentToggle({
 
 function CookieConsentSettings() {
   const { settingsOpen, closeSettings, savePreferences, analytics } = useConsent();
+  const pathname = usePathname();
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const pathnameRef = useRef<string | null>(null);
   const titleId = useId();
   const [draftAnalytics, setDraftAnalytics] = useState(analytics);
+  const [draftSync, setDraftSync] = useState({ open: settingsOpen, analytics });
+
+  if (settingsOpen && (!draftSync.open || draftSync.analytics !== analytics)) {
+    setDraftSync({ open: true, analytics });
+    setDraftAnalytics(analytics);
+  } else if (!settingsOpen && draftSync.open) {
+    setDraftSync({ open: false, analytics });
+  }
 
   useEffect(() => {
-    if (settingsOpen) {
-      setDraftAnalytics(analytics);
+    const previous = pathnameRef.current;
+    pathnameRef.current = pathname;
+    // The first pass records the path that mounted the dialog. Closing there
+    // would dismiss settings that were opened before this tree mounted.
+    if (previous !== null && previous !== pathname) {
+      closeSettings();
     }
-  }, [analytics, settingsOpen]);
+  }, [pathname, closeSettings]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
 
@@ -73,6 +105,8 @@ function CookieConsentSettings() {
     <dialog
       ref={dialogRef}
       aria-labelledby={titleId}
+      aria-hidden={settingsOpen ? undefined : true}
+      style={settingsOpen ? undefined : { display: "none" }}
       className="fixed inset-0 z-[10000] m-auto w-[min(100vw-2rem,32rem)] max-h-[90vh] overflow-y-auto rounded-2xl border border-[var(--color-border)] bg-white p-6 text-[var(--color-text-primary)] shadow-2xl backdrop:bg-black/40"
       onClose={closeSettings}
       onCancel={closeSettings}
@@ -177,6 +211,9 @@ function CookieConsentBanner() {
 }
 
 export function CookieConsent() {
+  const hydrated = useHasHydrated();
+  if (!hydrated) return null;
+
   return (
     <>
       <CookieConsentBanner />

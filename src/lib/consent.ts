@@ -1,3 +1,13 @@
+/**
+ * Cookie choice storage.
+ *
+ * Accept all writes `cookie_consent_v2` with `accepted: true`. That hides the banner on later visits.
+ * Reject optional is this visit only. It sets the two session keys and does not write localStorage,
+ * so a previous accept stays stored and analytics stays off until the tab closes.
+ * Saving analytics off after an accept keeps `accepted: true`. Saving it off before any accept
+ * only dismisses the banner until the next visit.
+ * Legacy `cookie_consent_v1` is copied once per page load.
+ */
 export const CONSENT_STORAGE_KEY = "cookie_consent_v2";
 export const CONSENT_SESSION_DENY_KEY = "cookie_consent_session_denied";
 export const CONSENT_SESSION_BANNER_DISMISS_KEY = "cookie_banner_dismissed_session";
@@ -52,8 +62,12 @@ function parseStoredConsent(raw: string | null): StoredConsent {
 }
 
 const LEGACY_CONSENT_STORAGE_KEY = "cookie_consent_v1";
+let legacyConsentChecked = false;
 
 function migrateLegacyConsent(): void {
+  if (legacyConsentChecked) return;
+  legacyConsentChecked = true;
+
   const legacy = localStorage.getItem(LEGACY_CONSENT_STORAGE_KEY);
   if (!legacy || localStorage.getItem(CONSENT_STORAGE_KEY)) return;
 
@@ -64,7 +78,8 @@ function migrateLegacyConsent(): void {
       updatedAt?: string;
     };
     if (parsed.hasDecided && typeof parsed.analytics === "boolean" && parsed.updatedAt) {
-      writeConsentToStorage(parsed.analytics, parsed.analytics);
+      // No event: this can run while a snapshot is being read.
+      storeConsent(parsed.analytics, parsed.analytics, false);
       localStorage.removeItem(LEGACY_CONSENT_STORAGE_KEY);
     }
   } catch {
@@ -90,7 +105,7 @@ export function readConsentFromStorage(): StoredConsent {
   return stored;
 }
 
-export function writeConsentToStorage(analytics: boolean, accepted: boolean): StoredConsent {
+function storeConsent(analytics: boolean, accepted: boolean, notify: boolean): StoredConsent {
   const next: StoredConsent = {
     hasDecided: accepted,
     updatedAt: new Date().toISOString(),
@@ -110,8 +125,12 @@ export function writeConsentToStorage(analytics: boolean, accepted: boolean): St
     sessionStorage.removeItem(CONSENT_SESSION_BANNER_DISMISS_KEY);
   }
 
-  window.dispatchEvent(new Event(CONSENT_UPDATED_EVENT));
+  if (notify) window.dispatchEvent(new Event(CONSENT_UPDATED_EVENT));
   return next;
+}
+
+export function writeConsentToStorage(analytics: boolean, accepted: boolean): StoredConsent {
+  return storeConsent(analytics, accepted, true);
 }
 
 function dismissBannerForSession(): void {
@@ -127,12 +146,19 @@ export function isBannerDismissedForSession(): boolean {
 export function rejectOptionalForSession(): StoredConsent {
   sessionStorage.setItem(CONSENT_SESSION_DENY_KEY, "1");
   dismissBannerForSession();
+  const next = readConsentFromStorage();
   window.dispatchEvent(new Event(CONSENT_UPDATED_EVENT));
-  return {
-    hasDecided: false,
-    updatedAt: "",
-    analytics: false,
-  };
+  return next;
+}
+
+/** Persist the analytics toggle. An existing accept is kept when analytics is turned off. */
+export function saveConsentPreferences(analytics: boolean): StoredConsent {
+  if (analytics) return writeConsentToStorage(true, true);
+
+  const alreadyAccepted = readConsentFromStorage().hasDecided;
+  const next = writeConsentToStorage(false, alreadyAccepted);
+  if (!alreadyAccepted) dismissBannerUntilNextVisit();
+  return next;
 }
 
 export function dismissBannerUntilNextVisit(): void {
