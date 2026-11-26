@@ -5,22 +5,14 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useConsent } from "@/components/consent/ConsentProvider";
 import { useHeatmapOverlayActive } from "@/hooks/useHeatmapOverlayActive";
 import { useMetricsTrackingExcluded } from "@/hooks/useMetricsTrackingExcluded";
+import { scrollDepthReached, sectionCountsAsViewed } from "@/lib/analytics-beacons";
 import {
   HEATMAP_CELL_SIZE,
   METRICS_PREVIEW_PARAM,
   SCROLL_BAND_COUNT,
 } from "@/lib/analytics-heatmap-types";
 import { isArticlePath } from "@/lib/analytics-paths";
-
-function getSessionId(): string {
-  if (typeof window === "undefined") return "";
-  let id = sessionStorage.getItem("analytics_session");
-  if (!id) {
-    id = crypto.randomUUID();
-    sessionStorage.setItem("analytics_session", id);
-  }
-  return id;
-}
+import { getAnalyticsSessionId } from "@/lib/analytics-session";
 
 function isTrackablePath(path: string): boolean {
   return !path.startsWith("/metrics") && !path.startsWith("/internal/");
@@ -36,42 +28,49 @@ async function track(
     | "heatmap_dwell"
     | "click_map"
     | "page_meta",
+  path: string,
   metadata?: Record<string, string | number>,
 ) {
-  const sessionId = getSessionId();
+  const sessionId = getAnalyticsSessionId();
   if (!sessionId) return;
-
-  const path = window.location.pathname;
   if (!isTrackablePath(path) && type !== "exit") return;
 
-  await fetch("/api/analytics", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      sessionId,
-      type,
-      path,
-      metadata,
-    }),
-    keepalive: type === "exit" || type === "heatmap_dwell" || type === "click_map" || type === "page_meta",
-  });
+  try {
+    await fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sessionId,
+        type,
+        path,
+        metadata,
+      }),
+      keepalive: type === "exit" || type === "heatmap_dwell" || type === "click_map" || type === "page_meta",
+    });
+  } catch {
+    // A failed beacon stays on the page. The next one can still send.
+  }
 }
 
 async function trackBatch(
+  path: string,
   events: { type: "heatmap_dwell"; metadata: Record<string, string | number> }[],
 ) {
   if (events.length === 0) return;
 
-  const sessionId = getSessionId();
-  const path = window.location.pathname;
+  const sessionId = getAnalyticsSessionId();
   if (!sessionId || !isTrackablePath(path)) return;
 
-  await fetch("/api/analytics", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId, path, events }),
-    keepalive: true,
-  });
+  try {
+    await fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId, path, events }),
+      keepalive: true,
+    });
+  } catch {
+    // A failed beacon stays on the page. The next one can still send.
+  }
 }
 
 const MOUSE_SAMPLE_MS = 100;
@@ -100,7 +99,11 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const pageMetaSent = useRef(false);
 
   useEffect(() => {
-    if (skipTracking) return;
+    if (skipTracking || !pathname) return;
+
+    // Keep the path from this effect. The address can already be the next page
+    // by the time a beacon is sent, and cleanup must flush dwell for this one.
+    const path = pathname;
 
     scrollTracked.current = new Set();
     scrollBandsTracked.current = new Set();
@@ -112,8 +115,8 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     // Blog article pageviews are recorded once via /api/blog/engagement and
     // mirrored into the analytics store. Skip here so consenting visitors are
     // not counted twice.
-    if (!isArticlePath(pathname)) {
-      track("pageview");
+    if (!isArticlePath(path)) {
+      void track("pageview", path);
     }
 
     const sendPageMeta = () => {
@@ -121,7 +124,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       pageMetaSent.current = true;
       const pageWidth = document.documentElement.clientWidth;
       const pageHeight = document.documentElement.scrollHeight;
-      void track("page_meta", { pageWidth, pageHeight });
+      void track("page_meta", path, { pageWidth, pageHeight });
     };
 
     const flushDwell = () => {
@@ -134,6 +137,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       const pageHeight = document.documentElement.scrollHeight;
 
       void trackBatch(
+        path,
         entries.map(([key, dwellMs]) => {
           const [cellX, cellY] = key.split(":").map(Number);
           return {
@@ -141,6 +145,15 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
             metadata: { cellX, cellY, dwellMs, pageWidth, pageHeight },
           };
         }),
+      );
+    };
+
+    const creditActiveCell = () => {
+      const key = activeCellRef.current;
+      if (!key) return;
+      dwellAccumulator.current.set(
+        key,
+        (dwellAccumulator.current.get(key) ?? 0) + MOUSE_SAMPLE_MS,
       );
     };
 
@@ -156,10 +169,9 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       const key = `${cellX}:${cellY}`;
 
       if (activeCellRef.current && activeCellRef.current !== key) {
-        const elapsed = MOUSE_SAMPLE_MS;
         dwellAccumulator.current.set(
           activeCellRef.current,
-          (dwellAccumulator.current.get(activeCellRef.current) ?? 0) + elapsed,
+          (dwellAccumulator.current.get(activeCellRef.current) ?? 0) + MOUSE_SAMPLE_MS,
         );
       } else if (activeCellRef.current === key) {
         dwellAccumulator.current.set(key, (dwellAccumulator.current.get(key) ?? 0) + MOUSE_SAMPLE_MS);
@@ -169,15 +181,14 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     };
 
     const handleScroll = () => {
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = docHeight > 0 ? Math.round((window.scrollY / docHeight) * 100) : 0;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = maxScroll > 0 ? Math.round((window.scrollY / maxScroll) * 100) : 0;
 
-      const milestones = [25, 50, 75, 100];
-      milestones.forEach((m) => {
-        if (scrollPercent >= m && !scrollTracked.current.has(m)) {
-          scrollTracked.current.add(m);
-          track("scroll", { depth: `${m}%` });
-        }
+      ([25, 50, 75, 100] as const).forEach((milestone) => {
+        if (!scrollDepthReached(milestone, window.scrollY, maxScroll)) return;
+        if (scrollTracked.current.has(milestone)) return;
+        scrollTracked.current.add(milestone);
+        void track("scroll", path, { depth: `${milestone}%` });
       });
 
       const band = Math.min(
@@ -186,7 +197,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       );
       if (!scrollBandsTracked.current.has(band)) {
         scrollBandsTracked.current.add(band);
-        track("scroll_band", { band });
+        void track("scroll_band", path, { band });
       }
     };
 
@@ -207,34 +218,35 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       const pageWidth = document.documentElement.clientWidth;
       const pageHeight = document.documentElement.scrollHeight;
 
-      void track("click_map", { cellX, cellY, pageWidth, pageHeight });
+      void track("click_map", path, { cellX, cellY, pageWidth, pageHeight });
     };
 
     const handleMouseLeave = () => {
-      if (activeCellRef.current) {
-        dwellAccumulator.current.set(
-          activeCellRef.current,
-          (dwellAccumulator.current.get(activeCellRef.current) ?? 0) + MOUSE_SAMPLE_MS,
-        );
-        activeCellRef.current = null;
-      }
+      creditActiveCell();
+      activeCellRef.current = null;
     };
 
-    const handleExit = () => {
-      if (activeCellRef.current) {
-        dwellAccumulator.current.set(
-          activeCellRef.current,
-          (dwellAccumulator.current.get(activeCellRef.current) ?? 0) + MOUSE_SAMPLE_MS,
-        );
-      }
+    const handlePageHide = (event: PageTransitionEvent) => {
+      creditActiveCell();
+      activeCellRef.current = null;
       flushDwell();
-      track("exit");
+      // A page kept in the back-forward cache has not been left.
+      if (event.persisted) return;
+      void track("exit", path);
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState !== "hidden") return;
+      creditActiveCell();
+      activeCellRef.current = null;
+      flushDwell();
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     document.addEventListener("click", handleClick, { capture: true });
     document.documentElement.addEventListener("mouseleave", handleMouseLeave);
-    window.addEventListener("beforeunload", handleExit);
+    window.addEventListener("pagehide", handlePageHide);
+    document.addEventListener("visibilitychange", handleVisibility);
     handleScroll();
 
     const attachMouseMove = () => {
@@ -250,19 +262,31 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 
     const metaTimeout = window.setTimeout(sendPageMeta, 800);
 
+    const seenSections = new Set<string>();
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const section = entry.target.getAttribute("data-analytics-section");
-            if (section) {
-              track("section_view", { section });
-              observerRef.current?.unobserve(entry.target);
-            }
+          if (
+            !sectionCountsAsViewed({
+              isIntersecting: entry.isIntersecting,
+              intersectionRatio: entry.intersectionRatio,
+              intersectionHeight: entry.intersectionRect.height,
+              viewportHeight: entry.rootBounds?.height ?? window.innerHeight,
+              sectionHeight: entry.boundingClientRect.height,
+            })
+          ) {
+            return;
           }
+          const section = entry.target.getAttribute("data-analytics-section");
+          if (!section) return;
+          observerRef.current?.unobserve(entry.target);
+          if (seenSections.has(section)) return;
+          seenSections.add(section);
+          void track("section_view", path, { section });
         });
       },
-      { threshold: 0.4 },
+      // 0 lets a section taller than the screen report before a 0.4 ratio is possible.
+      { threshold: [0, 0.4] },
     );
 
     document.querySelectorAll("[data-analytics-section]").forEach((el) => {
@@ -274,7 +298,8 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("click", handleClick, { capture: true });
       document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
-      window.removeEventListener("beforeunload", handleExit);
+      window.removeEventListener("pagehide", handlePageHide);
+      document.removeEventListener("visibilitychange", handleVisibility);
       if (typeof window.cancelIdleCallback === "function") {
         window.cancelIdleCallback(idleHandle as number);
       } else {
@@ -283,6 +308,8 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       observerRef.current?.disconnect();
       window.clearInterval(flushInterval);
       window.clearTimeout(metaTimeout);
+      creditActiveCell();
+      activeCellRef.current = null;
       flushDwell();
     };
   }, [pathname, skipTracking]);

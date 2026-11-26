@@ -80,13 +80,14 @@ export async function POST(request: NextRequest) {
     }
 
     const blogPath = blogPostPath(slug);
-    const { record, changed } = await incrementBlogEngagement(blogPath, action, sessionId);
+    const { changed } = await incrementBlogEngagement(blogPath, action, sessionId);
     if (changed) {
       await mirrorToAnalytics(blogPath, action, sessionId, slug);
     }
 
     const stats = await getBlogEngagementForSlugAsync(slug);
-    return NextResponse.json({ ok: true, stats, record, changed });
+    // `record` stays on the server. It holds other visitors' session ids.
+    return NextResponse.json({ ok: true, stats, changed });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

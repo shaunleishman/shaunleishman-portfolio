@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeEventAsync, writeEventsAsync, getAnalyticsSummary, readEventsAsync } from "@/lib/analytics";
+import { writeEventAsync, writeEventsAsync, getAnalyticsSummary } from "@/lib/analytics";
 import { normalizeAnalyticsPath } from "@/lib/analytics-paths";
 import { METRICS_COOKIE_NAME } from "@/lib/metrics-config";
 import { verifyMetricsPassword, verifyMetricsSessionToken } from "@/lib/metrics-auth";
@@ -78,20 +78,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing or invalid fields" }, { status: 400 });
     }
 
-    if (event.type === "blog_like") {
-      const events = await readEventsAsync();
-      const alreadyLiked = events.some(
-        (existing) =>
-          existing.type === "blog_like" &&
-          existing.path === event.path &&
-          existing.sessionId === event.sessionId,
-      );
-      if (alreadyLiked) {
-        return NextResponse.json({ ok: true, duplicate: true });
-      }
+    const written = await writeEventAsync(event);
+    if (written.duplicate) {
+      return NextResponse.json({ ok: true, duplicate: true });
     }
-
-    await writeEventAsync(event);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });

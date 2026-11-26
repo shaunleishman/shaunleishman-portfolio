@@ -24,8 +24,10 @@ export async function readEventsAsync(): Promise<AnalyticsEvent[]> {
   return readAnalyticsEvents();
 }
 
-export async function writeEventAsync(event: AnalyticsEvent): Promise<void> {
-  await appendAnalyticsEvent(event);
+export async function writeEventAsync(
+  event: AnalyticsEvent,
+): Promise<{ duplicate: boolean }> {
+  return appendAnalyticsEvent(event);
 }
 
 export async function writeEventsAsync(batch: AnalyticsEvent[]): Promise<void> {

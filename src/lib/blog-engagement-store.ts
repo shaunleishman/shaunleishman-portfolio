@@ -122,7 +122,27 @@ async function writeBlogEngagementStore(store: BlogEngagementStore) {
 
 export type BlogEngagementAction = "view" | "like" | "share";
 
+/** One increment at a time. Overlapping writes used to both read the old count and save twice. */
+let engagementQueue: Promise<void> = Promise.resolve();
+
+function enqueueEngagement<T>(task: () => Promise<T>): Promise<T> {
+  const run = engagementQueue.then(task, task);
+  engagementQueue = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
 export async function incrementBlogEngagement(
+  blogPath: string,
+  action: BlogEngagementAction,
+  sessionId: string,
+): Promise<{ record: BlogEngagementRecord; changed: boolean }> {
+  return enqueueEngagement(() => incrementBlogEngagementNow(blogPath, action, sessionId));
+}
+
+async function incrementBlogEngagementNow(
   blogPath: string,
   action: BlogEngagementAction,
   sessionId: string,

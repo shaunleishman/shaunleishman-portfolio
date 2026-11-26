@@ -1,19 +1,12 @@
-export function getAnalyticsSessionId(): string {
-  if (typeof window === "undefined") return "";
-  let id = sessionStorage.getItem("analytics_session");
-  if (!id) {
-    id = crypto.randomUUID();
-    sessionStorage.setItem("analytics_session", id);
-  }
-  return id;
-}
-
+import type { BlogEngagementStats } from "@/lib/blog-engagement-shared";
+import { getAnalyticsSessionId } from "@/lib/analytics-session";
 import { isAnalyticsAllowed } from "@/lib/consent";
 import {
   getCachedMetricsTrackingExcluded,
   isMetricsTrackingExcluded,
 } from "@/lib/metrics-tracking-exclusion-client";
-import type { BlogEngagementStats } from "@/lib/blog-engagement-shared";
+
+export { getAnalyticsSessionId };
 
 export async function trackAnalyticsEvent(
   type: "blog_like" | "blog_share",
