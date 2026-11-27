@@ -1,4 +1,4 @@
-import { getAllPosts } from "@/lib/blog";
+import { listPublishedPosts } from "@/lib/blog";
 import { projects } from "@/content/projects";
 import { readAnalyticsEvents } from "@/lib/analytics-store";
 import type { AnalyticsEvent } from "@/lib/analytics-types";
@@ -21,68 +21,28 @@ import {
 
 const ACTIVE_WINDOW_MS = 5 * 60 * 1000;
 
-function filterByPeriod(events: AnalyticsEvent[], period: AnalyticsPeriod): AnalyticsEvent[] {
-  return events.filter((e) => eventInPeriod(e.timestamp, period));
+/**
+ * Catalogue order is lexical descending. Pad so "999" does not sort above "1000".
+ * Unknown paths stay "0", which still sorts last.
+ */
+function projectCatalogSortKey(index: number): string {
+  return String(1000 - index).padStart(4, "0");
 }
 
-function countPageviews(events: AnalyticsEvent[], matcher: (path: string) => boolean): number {
-  return events.filter(
-    (e) => e.type === "pageview" && matcher(normalizeAnalyticsPath(e.path)),
-  ).length;
+function emptyContentRow(path: string, slug: string, title: string, sortDate: string): ContentRow {
+  return { path, slug, title, views: 0, listeners: 0, likes: 0, shares: 0, sortDate };
 }
 
 function buildContentCatalog(): { projects: ContentRow[]; articles: ContentRow[] } {
-  const projectRows: ContentRow[] = projects.map((p, index) => ({
-    path: `/work/${p.slug}`,
-    slug: p.slug,
-    title: p.title,
-    views: 0,
-    listeners: 0,
-    likes: 0,
-    shares: 0,
-    sortDate: String(1000 - index),
-  }));
+  const projectRows: ContentRow[] = projects.map((p, index) =>
+    emptyContentRow(`/work/${p.slug}`, p.slug, p.title, projectCatalogSortKey(index)),
+  );
 
-  const articleRows: ContentRow[] = getAllPosts().map((post) => ({
-    path: `/blog/${post.slug}`,
-    slug: post.slug,
-    title: post.title,
-    views: 0,
-    listeners: 0,
-    likes: 0,
-    shares: 0,
-    sortDate: post.date,
-  }));
+  const articleRows: ContentRow[] = listPublishedPosts().map((post) =>
+    emptyContentRow(`/blog/${post.slug}`, post.slug, post.title, post.date),
+  );
 
   return { projects: projectRows, articles: articleRows };
-}
-
-function applyEventStats(rows: Map<string, ContentRow>, events: AnalyticsEvent[]) {
-  const listenersByPath = new Map<string, Set<string>>();
-
-  events.forEach((event) => {
-    const path = normalizeAnalyticsPath(event.path);
-    if (event.type === "pageview") {
-      const row = rows.get(path);
-      if (row) row.views += 1;
-      const set = listenersByPath.get(path) ?? new Set();
-      set.add(event.sessionId);
-      listenersByPath.set(path, set);
-    }
-    if (event.type === "blog_like") {
-      const row = rows.get(path);
-      if (row) row.likes += 1;
-    }
-    if (event.type === "blog_share") {
-      const row = rows.get(path);
-      if (row) row.shares += 1;
-    }
-  });
-
-  listenersByPath.forEach((sessions, path) => {
-    const row = rows.get(path);
-    if (row) row.listeners = sessions.size;
-  });
 }
 
 function sortContentRows(rows: ContentRow[], sort: ContentSortKey): ContentRow[] {
@@ -107,131 +67,29 @@ function bucketKey(timestamp: string, period: AnalyticsPeriod): string {
   return timestamp.slice(0, 10);
 }
 
-function buildTrend(events: AnalyticsEvent[], period: AnalyticsPeriod): TimeSeriesPoint[] {
-  const counts = new Map<string, number>();
-  events
-    .filter((e) => e.type === "pageview")
-    .forEach((e) => {
-      const key = bucketKey(e.timestamp, period);
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-    });
+type AudienceBucket = {
+  pageviews: number;
+  sessions: Set<string>;
+  projectViews: number;
+  articleViews: number;
+  shares: number;
+};
 
-  return [...counts.entries()]
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([date, value]) => ({ date, value }));
-}
-
-function getActiveVisitors(allEvents: AnalyticsEvent[], now = new Date()): ActiveVisitor[] {
-  const cutoff = now.getTime() - ACTIVE_WINDOW_MS;
-  const latestBySession = new Map<string, AnalyticsEvent>();
-
-  allEvents.forEach((event) => {
-    const ts = new Date(event.timestamp).getTime();
-    if (ts < cutoff) return;
-    const existing = latestBySession.get(event.sessionId);
-    if (!existing || ts > new Date(existing.timestamp).getTime()) {
-      latestBySession.set(event.sessionId, event);
-    }
-  });
-
-  return [...latestBySession.values()]
-    .map((event) => ({
-      sessionId: event.sessionId,
-      path: event.path,
-      lastSeen: event.timestamp,
-    }))
-    .sort((a, b) => b.lastSeen.localeCompare(a.lastSeen));
-}
-
-function computeAudienceSeries(
-  events: AnalyticsEvent[],
-  period: AnalyticsPeriod,
-  metric: AudienceMetricKey,
-): { series: TimeSeriesPoint[]; summary: number } {
-  const buckets = new Map<string, { pageviews: number; sessions: Set<string>; projectViews: number; articleViews: number; shares: number }>();
-
-  const ensure = (key: string) => {
-    if (!buckets.has(key)) {
-      buckets.set(key, {
-        pageviews: 0,
-        sessions: new Set(),
-        projectViews: 0,
-        articleViews: 0,
-        shares: 0,
-      });
-    }
-    return buckets.get(key)!;
-  };
-
-  events.forEach((event) => {
-    const key = bucketKey(event.timestamp, period);
-    const bucket = ensure(key);
-    bucket.sessions.add(event.sessionId);
-
-    if (event.type === "pageview") {
-      bucket.pageviews += 1;
-      const path = normalizeAnalyticsPath(event.path);
-      if (isProjectPath(path)) bucket.projectViews += 1;
-      if (isArticlePath(path)) bucket.articleViews += 1;
-    }
-    if (event.type === "blog_share") bucket.shares += 1;
-  });
-
-  const series = [...buckets.entries()]
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([date, bucket]) => {
-      let value = 0;
-      switch (metric) {
-        case "active_viewers":
-          value = bucket.sessions.size;
-          break;
-        case "project_views":
-          value = bucket.projectViews;
-          break;
-        case "article_views":
-          value = bucket.articleViews;
-          break;
-        case "views_per_viewer":
-          value =
-            bucket.sessions.size > 0 ? Math.round((bucket.pageviews / bucket.sessions.size) * 10) / 10 : 0;
-          break;
-        case "shares":
-          value = bucket.shares;
-          break;
-      }
-      return { date, value };
-    });
-
-  const sessions = new Set(events.map((e) => e.sessionId));
-  const pageviews = events.filter((e) => e.type === "pageview").length;
-  const projectViews = events.filter(
-    (e) => e.type === "pageview" && isProjectPath(normalizeAnalyticsPath(e.path)),
-  ).length;
-  const articleViews = events.filter(
-    (e) => e.type === "pageview" && isArticlePath(normalizeAnalyticsPath(e.path)),
-  ).length;
-  const shares = events.filter((e) => e.type === "blog_share").length;
-
-  let summary = 0;
+function audienceBucketValue(bucket: AudienceBucket, metric: AudienceMetricKey): number {
   switch (metric) {
     case "active_viewers":
-      summary = sessions.size;
-      break;
+      return bucket.sessions.size;
     case "project_views":
-      summary = projectViews;
-      break;
+      return bucket.projectViews;
     case "article_views":
-      summary = articleViews;
-      break;
+      return bucket.articleViews;
     case "views_per_viewer":
-      summary = sessions.size > 0 ? Math.round((pageviews / sessions.size) * 10) / 10 : 0;
-      break;
+      return bucket.sessions.size > 0
+        ? Math.round((bucket.pageviews / bucket.sessions.size) * 10) / 10
+        : 0;
     case "shares":
-      summary = shares;
-      break;
+      return bucket.shares;
   }
-
-  return { series, summary };
 }
 
 export async function getAnalyticsDashboard(options: {
@@ -244,90 +102,182 @@ export async function getAnalyticsDashboard(options: {
   const audienceMetric = options.audienceMetric ?? "active_viewers";
 
   const allEvents = await readAnalyticsEvents();
-  const events = filterByPeriod(allEvents, period);
-  const sessions = new Set(events.map((e) => e.sessionId));
-  const feedbackSubmissions = events.filter((e) => e.type === "click" && e.metadata?.feedback).length;
-
   const catalog = buildContentCatalog();
   const rowMap = new Map<string, ContentRow>();
-  [...catalog.projects, ...catalog.articles].forEach((row) => rowMap.set(row.path, { ...row }));
-
-  applyEventStats(rowMap, events);
+  for (const row of [...catalog.projects, ...catalog.articles]) {
+    rowMap.set(row.path, { ...row });
+  }
 
   const unknownProjects = new Map<string, ContentRow>();
   const unknownArticles = new Map<string, ContentRow>();
+  const listenersByPath = new Map<string, Set<string>>();
+  const trendCounts = new Map<string, number>();
+  const audienceBuckets = new Map<string, AudienceBucket>();
 
-  events.forEach((event) => {
-    if (event.type !== "pageview" && event.type !== "blog_like" && event.type !== "blog_share") return;
-    const path = normalizeAnalyticsPath(event.path);
-    if (isProjectPath(path) && !rowMap.has(path)) {
-      const slug = slugFromPath(path, "/work/");
+  const sessions = new Set<string>();
+  let pageviews = 0;
+  let projectViews = 0;
+  let articleViews = 0;
+  let blogLikes = 0;
+  let blogShares = 0;
+  let cvViews = 0;
+  let contactViews = 0;
+  let feedbackSubmissions = 0;
+
+  const cutoff = Date.now() - ACTIVE_WINDOW_MS;
+  const latestBySession = new Map<string, AnalyticsEvent>();
+  let lastSeen: string | null = null;
+
+  const ensureUnknown = (path: string) => {
+    if (rowMap.has(path)) return;
+    if (isProjectPath(path)) {
       if (!unknownProjects.has(path)) {
-        unknownProjects.set(path, {
+        unknownProjects.set(
           path,
-          slug,
-          title: formatPathLabel(path),
-          views: 0,
-          listeners: 0,
-          likes: 0,
-          shares: 0,
-          sortDate: "0",
-        });
+          emptyContentRow(path, slugFromPath(path, "/work/"), formatPathLabel(path), "0"),
+        );
       }
+      return;
     }
-    if (isArticlePath(path) && !rowMap.has(path)) {
-      if (!unknownArticles.has(path)) {
-        unknownArticles.set(path, {
-          path,
-          slug: slugFromPath(path, "/blog/"),
-          title: formatPathLabel(path),
-          views: 0,
-          listeners: 0,
-          likes: 0,
-          shares: 0,
-          sortDate: "0",
-        });
-      }
+    if (isArticlePath(path) && !unknownArticles.has(path)) {
+      unknownArticles.set(
+        path,
+        emptyContentRow(path, slugFromPath(path, "/blog/"), formatPathLabel(path), "0"),
+      );
     }
-  });
+  };
 
-  applyEventStats(unknownProjects, events);
-  applyEventStats(unknownArticles, events);
+  // One pass over the log. Active visitors use the full log; everything else
+  // stays inside the selected period. A non-numeric timestamp still counts as
+  // active because NaN < cutoff is false.
+  for (const event of allEvents) {
+    if (lastSeen === null || event.timestamp > lastSeen) lastSeen = event.timestamp;
+
+    const ts = new Date(event.timestamp).getTime();
+    if (!(ts < cutoff)) {
+      const existing = latestBySession.get(event.sessionId);
+      if (!existing || ts > new Date(existing.timestamp).getTime()) {
+        latestBySession.set(event.sessionId, event);
+      }
+    }
+
+    if (!eventInPeriod(event.timestamp, period)) continue;
+
+    sessions.add(event.sessionId);
+    const path = normalizeAnalyticsPath(event.path);
+    const audienceKey = bucketKey(event.timestamp, period);
+    let audienceBucket = audienceBuckets.get(audienceKey);
+    if (!audienceBucket) {
+      audienceBucket = {
+        pageviews: 0,
+        sessions: new Set(),
+        projectViews: 0,
+        articleViews: 0,
+        shares: 0,
+      };
+      audienceBuckets.set(audienceKey, audienceBucket);
+    }
+    audienceBucket.sessions.add(event.sessionId);
+
+    if (event.type === "pageview" || event.type === "blog_like" || event.type === "blog_share") {
+      ensureUnknown(path);
+    }
+
+    const row = rowMap.get(path) ?? unknownProjects.get(path) ?? unknownArticles.get(path);
+
+    if (event.type === "pageview") {
+      pageviews += 1;
+      if (isProjectPath(path)) {
+        projectViews += 1;
+        audienceBucket.projectViews += 1;
+      }
+      if (isArticlePath(path)) {
+        articleViews += 1;
+        audienceBucket.articleViews += 1;
+      }
+      if (path === "/cv" || path.startsWith("/cv")) cvViews += 1;
+      if (path === "/contact") contactViews += 1;
+      audienceBucket.pageviews += 1;
+      trendCounts.set(audienceKey, (trendCounts.get(audienceKey) ?? 0) + 1);
+      if (row) row.views += 1;
+
+      const listeners = listenersByPath.get(path) ?? new Set<string>();
+      listeners.add(event.sessionId);
+      listenersByPath.set(path, listeners);
+    } else if (event.type === "blog_like") {
+      blogLikes += 1;
+      if (row) row.likes += 1;
+    } else if (event.type === "blog_share") {
+      blogShares += 1;
+      audienceBucket.shares += 1;
+      if (row) row.shares += 1;
+    } else if (event.type === "click" && event.metadata?.feedback) {
+      feedbackSubmissions += 1;
+    }
+  }
+
+  for (const [path, listeners] of listenersByPath) {
+    const row = rowMap.get(path) ?? unknownProjects.get(path) ?? unknownArticles.get(path);
+    if (row) row.listeners = listeners.size;
+  }
 
   const projectRows = sortContentRows(
-    [
-      ...catalog.projects.map((row) => rowMap.get(row.path)!),
-      ...unknownProjects.values(),
-    ],
+    [...catalog.projects.map((row) => rowMap.get(row.path)!), ...unknownProjects.values()],
     contentSort,
   );
   const articleRows = sortContentRows(
-    [
-      ...catalog.articles.map((row) => rowMap.get(row.path)!),
-      ...unknownArticles.values(),
-    ],
+    [...catalog.articles.map((row) => rowMap.get(row.path)!), ...unknownArticles.values()],
     contentSort,
   );
 
-  const audience = computeAudienceSeries(events, period, audienceMetric);
-  const activeVisitors = getActiveVisitors(allEvents);
-  const lastSeen = allEvents.reduce<string | null>(
-    (latest, event) => (latest === null || event.timestamp > latest ? event.timestamp : latest),
-    null,
-  );
+  const audienceSeries = [...audienceBuckets.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([date, bucket]) => ({ date, value: audienceBucketValue(bucket, audienceMetric) }));
+
+  let audienceSummary = 0;
+  switch (audienceMetric) {
+    case "active_viewers":
+      audienceSummary = sessions.size;
+      break;
+    case "project_views":
+      audienceSummary = projectViews;
+      break;
+    case "article_views":
+      audienceSummary = articleViews;
+      break;
+    case "views_per_viewer":
+      audienceSummary =
+        sessions.size > 0 ? Math.round((pageviews / sessions.size) * 10) / 10 : 0;
+      break;
+    case "shares":
+      audienceSummary = blogShares;
+      break;
+  }
+
+  const activeVisitors: ActiveVisitor[] = [...latestBySession.values()]
+    .map((event) => ({
+      sessionId: event.sessionId,
+      path: event.path,
+      lastSeen: event.timestamp,
+    }))
+    .sort((a, b) => b.lastSeen.localeCompare(a.lastSeen));
+
+  const trend: TimeSeriesPoint[] = [...trendCounts.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([date, value]) => ({ date, value }));
 
   return {
     period,
     periodLabel: getPeriodLabel(period),
     overview: {
-      pageviews: events.filter((e) => e.type === "pageview").length,
+      pageviews,
       uniqueSessions: sessions.size,
-      projectViews: countPageviews(events, isProjectPath),
-      articleViews: countPageviews(events, isArticlePath),
-      blogLikes: events.filter((e) => e.type === "blog_like").length,
-      blogShares: events.filter((e) => e.type === "blog_share").length,
-      cvViews: countPageviews(events, (p) => p === "/cv" || p.startsWith("/cv")),
-      contactViews: countPageviews(events, (p) => p === "/contact"),
+      projectViews,
+      articleViews,
+      blogLikes,
+      blogShares,
+      cvViews,
+      contactViews,
       feedbackSubmissions,
     },
     activeNow: {
@@ -337,13 +287,13 @@ export async function getAnalyticsDashboard(options: {
     },
     topProjects: sortContentRows(projectRows, "views").slice(0, 5),
     topArticles: sortContentRows(articleRows, "views").slice(0, 5),
-    trend: buildTrend(events, period),
+    trend,
     content: { projects: projectRows, articles: articleRows },
     audience: {
       metric: audienceMetric,
       metricLabel: getAudienceMetricLabel(audienceMetric),
-      series: audience.series,
-      summary: audience.summary,
+      series: audienceSeries,
+      summary: audienceSummary,
     },
   };
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import {
   buildHeatmapOverlayUrl,
   type PageClickmapData,
@@ -8,6 +7,8 @@ import {
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
 import { clickColor } from "@/lib/heatmap-visual";
 import { startHeatmapOverlaySession } from "@/lib/metrics-heatmap-session";
+import { useMetricsGet } from "@/hooks/useMetricsGet";
+import { useMetricsReturnPath } from "@/hooks/useMetricsReturnPath";
 
 type ClickmapResponse = {
   paths: string[];
@@ -15,32 +16,13 @@ type ClickmapResponse = {
 };
 
 export function MetricsClickmapViewer({ path, period = "12m" }: { path: string; period?: AnalyticsPeriod }) {
-  const [clickmap, setClickmap] = useState<PageClickmapData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const loadClickmap = useCallback(async (pagePath: string, periodFilter: AnalyticsPeriod) => {
-    setLoading(true);
-
-    const params = new URLSearchParams({ path: pagePath, period: periodFilter });
-
-    const res = await fetch(`/api/metrics/clickmap?${params.toString()}`, {
-      credentials: "include",
-    });
-    if (!res.ok) {
-      setLoading(false);
-      return;
-    }
-    const json = (await res.json()) as ClickmapResponse;
-    setClickmap(json.clickmap);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void loadClickmap(path, period);
-  }, [loadClickmap, path, period]);
-
-  const metricsReturnPath =
-    typeof window !== "undefined" ? `${window.location.pathname}${window.location.search}` : "";
+  const params = new URLSearchParams({ path, period });
+  const { data, loading } = useMetricsGet<ClickmapResponse>(
+    `/api/metrics/clickmap?${params.toString()}`,
+    { clearOnError: false },
+  );
+  const clickmap = loading ? null : (data?.clickmap ?? null);
+  const metricsReturnPath = useMetricsReturnPath();
   const overlayUrl = buildHeatmapOverlayUrl(path, metricsReturnPath || undefined, "click");
 
   const topCells = clickmap?.cells.slice(0, 12) ?? [];

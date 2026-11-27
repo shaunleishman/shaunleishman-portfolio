@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import type { AnalyticsDashboard } from "@/lib/analytics-metrics-types";
+import { useCallback } from "react";
+import type { AnalyticsDashboard, AudienceMetricKey, ContentSortKey } from "@/lib/analytics-metrics-types";
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
-import type { AudienceMetricKey, ContentSortKey } from "@/lib/analytics-metrics-types";
+import { useMetricsGet } from "@/hooks/useMetricsGet";
 
 type DashboardParams = {
   period: AnalyticsPeriod;
@@ -18,36 +18,19 @@ export function useMetricsDashboard({
   metric,
   enabled = true,
 }: DashboardParams) {
-  const [data, setData] = useState<AnalyticsDashboard | null>(null);
-  const [loading, setLoading] = useState(false);
+  const params = new URLSearchParams({ period });
+  if (sort) params.set("sort", sort);
+  if (metric) params.set("metric", metric);
 
-  const load = useCallback(async () => {
-    if (!enabled) return null;
+  const { data, loading, reload } = useMetricsGet<AnalyticsDashboard>(
+    enabled ? `/api/metrics/dashboard?${params.toString()}` : null,
+    { initialLoading: false },
+  );
 
-    setLoading(true);
-    const params = new URLSearchParams({ period });
-    if (sort) params.set("sort", sort);
-    if (metric) params.set("metric", metric);
+  const reloadDashboard = useCallback(async () => {
+    reload();
+    return null;
+  }, [reload]);
 
-    const res = await fetch(`/api/metrics/dashboard?${params.toString()}`, {
-      credentials: "include",
-    });
-
-    if (!res.ok) {
-      setData(null);
-      setLoading(false);
-      return null;
-    }
-
-    const json = (await res.json()) as AnalyticsDashboard;
-    setData(json);
-    setLoading(false);
-    return json;
-  }, [enabled, metric, period, sort]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  return { data, loading, reload: load };
+  return { data, loading, reload: reloadDashboard };
 }

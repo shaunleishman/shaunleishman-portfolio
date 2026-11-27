@@ -1,12 +1,6 @@
 import type { AnalyticsPeriod } from "@/lib/analytics-period";
 import { eventInPeriod, getPeriodLabel } from "@/lib/analytics-period";
 import {
-  getEventTypeBreakdown,
-  getHeatmapPagePaths,
-  getHourlyActivity,
-  getTotalDwellMs,
-} from "@/lib/analytics-heatmap";
-import {
   getImprovementAreaDisplayLabel,
   getQualityLabel,
 } from "@/lib/feedback-config";
@@ -39,16 +33,17 @@ export const writeEvent = writeEventAsync;
 /** @deprecated Use writeEventsAsync */
 export const writeEvents = writeEventsAsync;
 
-function filterEvents(
-  events: AnalyticsEvent[],
-  filterPath?: string | null,
-  filterPeriod: AnalyticsPeriod = "12m",
-) {
-  let filtered = events.filter((event) => eventInPeriod(event.timestamp, filterPeriod));
-  if (filterPath) {
-    filtered = filtered.filter((event) => event.path === filterPath);
-  }
-  return filtered;
+const MAP_PATH_TYPES = new Set<AnalyticsEvent["type"]>([
+  "pageview",
+  "heatmap_dwell",
+  "click_map",
+  "section_view",
+]);
+
+/** Milestone number so "100%" follows "75%". Lexical order puts "100%" first. */
+function scrollDepthRank(depth: string): number {
+  const match = /^(\d+)/.exec(depth);
+  return match ? Number(match[1]) : Number.POSITIVE_INFINITY;
 }
 
 export function buildAnalyticsSummary(
@@ -56,41 +51,54 @@ export function buildAnalyticsSummary(
   filterPath?: string | null,
   filterPeriod: AnalyticsPeriod = "12m",
 ): AnalyticsSummary {
-  const events = filterEvents(allEvents, filterPath, filterPeriod);
-  const periodEvents = filterEvents(allEvents, null, filterPeriod);
-  const pageviews = events.filter((e) => e.type === "pageview");
-  const sessions = new Set(events.map((e) => e.sessionId));
-  const totalDwellMs = getTotalDwellMs(allEvents, filterPath, filterPeriod);
-
+  const paths = new Set<string>();
+  const events: AnalyticsEvent[] = [];
+  const sessions = new Set<string>();
   const pageCounts = new Map<string, number>();
-  (filterPath ? pageviews : periodEvents.filter((e) => e.type === "pageview")).forEach((e) => {
-    pageCounts.set(e.path, (pageCounts.get(e.path) ?? 0) + 1);
-  });
-
   const sectionCounts = new Map<string, number>();
-  events
-    .filter((e) => e.type === "section_view")
-    .forEach((e) => {
-      const section = String(e.metadata?.section ?? "unknown");
-      sectionCounts.set(section, (sectionCounts.get(section) ?? 0) + 1);
-    });
-
   const scrollCounts = new Map<string, number>();
-  events
-    .filter((e) => e.type === "scroll")
-    .forEach((e) => {
-      const depth = String(e.metadata?.depth ?? "unknown");
-      scrollCounts.set(depth, (scrollCounts.get(depth) ?? 0) + 1);
-    });
-
   const exitCounts = new Map<string, number>();
-  events
-    .filter((e) => e.type === "exit")
-    .forEach((e) => {
-      exitCounts.set(e.path, (exitCounts.get(e.path) ?? 0) + 1);
-    });
+  const hourlyCounts = new Map<string, number>();
+  const eventTypeCounts = new Map<string, number>();
+  const dailyCounts = new Map<string, number>();
+  let totalDwellMs = 0;
+  let pageviewCount = 0;
 
-  const feedbackEvents = events.filter((e) => e.type === "click" && e.metadata?.feedback);
+  const feedbackEvents: AnalyticsEvent[] = [];
+
+  for (const event of allEvents) {
+    if (MAP_PATH_TYPES.has(event.type)) paths.add(event.path);
+    if (!eventInPeriod(event.timestamp, filterPeriod)) continue;
+    if (filterPath && event.path !== filterPath) continue;
+
+    events.push(event);
+    sessions.add(event.sessionId);
+    hourlyCounts.set(
+      event.timestamp.slice(0, 13),
+      (hourlyCounts.get(event.timestamp.slice(0, 13)) ?? 0) + 1,
+    );
+    eventTypeCounts.set(event.type, (eventTypeCounts.get(event.type) ?? 0) + 1);
+
+    if (event.type === "pageview") {
+      pageviewCount += 1;
+      pageCounts.set(event.path, (pageCounts.get(event.path) ?? 0) + 1);
+      const date = event.timestamp.slice(0, 10);
+      dailyCounts.set(date, (dailyCounts.get(date) ?? 0) + 1);
+    } else if (event.type === "section_view") {
+      const section = String(event.metadata?.section ?? "unknown");
+      sectionCounts.set(section, (sectionCounts.get(section) ?? 0) + 1);
+    } else if (event.type === "scroll") {
+      const depth = String(event.metadata?.depth ?? "unknown");
+      scrollCounts.set(depth, (scrollCounts.get(depth) ?? 0) + 1);
+    } else if (event.type === "exit") {
+      exitCounts.set(event.path, (exitCounts.get(event.path) ?? 0) + 1);
+    } else if (event.type === "heatmap_dwell") {
+      totalDwellMs += Number(event.metadata?.dwellMs ?? 0);
+    } else if (event.type === "click" && event.metadata?.feedback) {
+      feedbackEvents.push(event);
+    }
+  }
+
   const bucketCounts = new Map<string, number>();
   const qualityCounts = new Map<string, number>();
   const improvementCounts = new Map<string, { count: number; contentType: string | null }>();
@@ -190,12 +198,6 @@ export function buildAnalyticsSummary(
       contentType: value.contentType,
     }));
 
-  const dailyCounts = new Map<string, number>();
-  pageviews.forEach((e) => {
-    const date = e.timestamp.slice(0, 10);
-    dailyCounts.set(date, (dailyCounts.get(date) ?? 0) + 1);
-  });
-
   let dailyPageviews = [...dailyCounts.entries()]
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([date, count]) => ({ date, count }));
@@ -217,8 +219,8 @@ export function buildAnalyticsSummary(
     filterPath: filterPath ?? null,
     filterPeriod,
     filterPeriodLabel: getPeriodLabel(filterPeriod),
-    paths: getHeatmapPagePaths(allEvents),
-    totalPageviews: pageviews.length,
+    paths: [...paths].sort((a, b) => a.localeCompare(b)),
+    totalPageviews: pageviewCount,
     uniqueSessions: sessions.size,
     totalDwellMs,
     avgDwellPerSession: sessions.size > 0 ? Math.round(totalDwellMs / sessions.size) : 0,
@@ -231,14 +233,18 @@ export function buildAnalyticsSummary(
       .slice(0, 10)
       .map(([section, views]) => ({ section, views })),
     scrollDepth: [...scrollCounts.entries()]
-      .sort((a, b) => a[0].localeCompare(b[0]))
+      .sort((a, b) => scrollDepthRank(a[0]) - scrollDepthRank(b[0]) || a[0].localeCompare(b[0]))
       .map(([depth, count]) => ({ depth, count })),
     exitPages: [...exitCounts.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
       .map(([pathKey, count]) => ({ path: pathKey, count })),
-    hourlyActivity: getHourlyActivity(allEvents, filterPath, filterPeriod),
-    eventTypes: getEventTypeBreakdown(allEvents, filterPath, filterPeriod),
+    hourlyActivity: [...hourlyCounts.entries()]
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([hour, count]) => ({ hour: `${hour}:00`, count })),
+    eventTypes: [...eventTypeCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([type, count]) => ({ type, count })),
     feedback: {
       total: feedbackEvents.length,
       averageScore: scoreCount > 0 ? Math.round((scoreSum / scoreCount) * 10) / 10 : 0,
