@@ -19,21 +19,27 @@ type FindingsSeverityFilterProps = {
   onChange: (value: FindingsSeverityFilterValue) => void;
 };
 
-export function countFindingsBySeverity(findings: readonly HeuristicFinding[], severity: Severity) {
-  return findings.filter((finding) => finding.severity === severity).length;
+export type SeverityCounts = Record<Severity, number>;
+
+/** One pass over the findings. Chip counts must not filter the list once per severity. */
+export function summarizeFindingSeverities(findings: readonly HeuristicFinding[]): SeverityCounts {
+  const counts: SeverityCounts = { critical: 0, high: 0, medium: 0, low: 0 };
+  for (const finding of findings) {
+    counts[finding.severity] += 1;
+  }
+  return counts;
 }
 
 export function FindingsSeverityFilter({ findings, value, onChange }: FindingsSeverityFilterProps) {
+  const counts = summarizeFindingSeverities(findings);
+
   return (
     <div className="mb-4">
       <p className="mb-2 text-label text-[var(--color-text-muted)]">Filter by severity</p>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Filter findings by severity">
         {FILTER_OPTIONS.map((option) => {
           const active = value === option.value;
-          const count =
-            option.value === "all"
-              ? findings.length
-              : countFindingsBySeverity(findings, option.value);
+          const count = option.value === "all" ? findings.length : counts[option.value];
 
           return (
             <button

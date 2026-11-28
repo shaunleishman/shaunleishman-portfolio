@@ -650,11 +650,15 @@ export function OffAxisRedesign() {
 
   useEffect(() => {
     if (!mobileNavOpen) return;
+    // Capture phase. preventDefault lets the full-screen preview ignore this Escape and stay open.
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMobileNavOpen(false);
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      e.stopPropagation();
+      setMobileNavOpen(false);
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
   }, [mobileNavOpen]);
 
   /** Keep the slide-down panel/backdrop pinned to the bottom edge of the header

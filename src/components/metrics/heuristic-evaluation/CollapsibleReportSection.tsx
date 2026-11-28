@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { forwardRef, useCallback, useId, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useId, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const SCROLL_OFFSET_PX = 96;
@@ -134,6 +134,7 @@ function CollapsibleContent({
       role="region"
       aria-labelledby={labelledBy}
       aria-hidden={!isOpen}
+      inert={isOpen ? undefined : true}
       className={cn(
         "grid motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-300 motion-safe:ease-out",
         isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
@@ -155,22 +156,32 @@ function CollapsibleContent({
 
 function useCollapsibleDisclosure(defaultOpen: boolean) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const isOpenRef = useRef(defaultOpen);
   const rootRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const controlsId = useId();
+  const scrollTimerRef = useRef<number | null>(null);
+
+  const clearScrollTimer = useCallback(() => {
+    if (scrollTimerRef.current === null) return;
+    window.clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = null;
+  }, []);
+
+  useEffect(() => clearScrollTimer, [clearScrollTimer]);
 
   const toggle = useCallback(() => {
-    setIsOpen((wasOpen) => {
-      const nextOpen = !wasOpen;
-      if (nextOpen) {
-        window.setTimeout(() => {
-          const target = contentRef.current ?? rootRef.current;
-          if (target) scrollIntoReportViewport(target);
-        }, 80);
-      }
-      return nextOpen;
-    });
-  }, []);
+    clearScrollTimer();
+    const nextOpen = !isOpenRef.current;
+    isOpenRef.current = nextOpen;
+    setIsOpen(nextOpen);
+    if (!nextOpen) return;
+    scrollTimerRef.current = window.setTimeout(() => {
+      scrollTimerRef.current = null;
+      const target = contentRef.current ?? rootRef.current;
+      if (target) scrollIntoReportViewport(target);
+    }, 80);
+  }, [clearScrollTimer]);
 
   return { isOpen, toggle, rootRef, contentRef, controlsId };
 }

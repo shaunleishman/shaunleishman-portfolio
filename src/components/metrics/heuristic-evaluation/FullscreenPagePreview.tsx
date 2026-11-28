@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { Maximize2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { RedesignCallout } from "@/content/heuristic-evaluations/types";
-import { RedesignPreviewProvider } from "./RedesignPreviewContext";
+import { EMPTY_CALLOUTS, RedesignPreviewProvider } from "./RedesignPreviewContext";
 
 /** Inline teaser scale — content is laid out full-size then scaled down inside the frame */
 const INLINE_PREVIEW_SCALE = 0.68;
@@ -202,7 +202,7 @@ export function FullscreenPagePreview({
   returnAnchorId,
   children,
   className,
-  callouts = [],
+  callouts = EMPTY_CALLOUTS,
   accentColor = "#E85D04",
 }: FullscreenPagePreviewProps) {
   const dialogId = useId();
@@ -236,14 +236,16 @@ export function FullscreenPagePreview({
     if (!fullscreen) return;
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeFullscreen();
+      if (e.key !== "Escape" || e.defaultPrevented) return;
+      closeFullscreen();
     };
 
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
 
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKey);
     };
   }, [fullscreen, closeFullscreen]);

@@ -14,6 +14,7 @@ export const HEURISTIC_EVALUATIONS: Record<string, HeuristicEvaluation> = {
   [offAxisToursEvaluation.slug]: offAxisToursEvaluation,
 };
 
+/** Report pages import this lookup. Study files do not export another copy. */
 export function getEvaluationBySlug(slug: string): HeuristicEvaluation | undefined {
   return HEURISTIC_EVALUATIONS[slug];
 }
